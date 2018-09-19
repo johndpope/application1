@@ -1,0 +1,6 @@
+.row
+  - selected_license = params[:license] || Artifacts::IconfinderImage::DEFAULTS[:license]
+  - Artifacts::IconfinderImage::LICENSES.each do |license|
+    .col-md-4
+      = radio_button_tag 'license', license, selected_license == license
+      = label_tag "license_#{license}", license.titleize

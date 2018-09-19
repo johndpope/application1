@@ -1,0 +1,9 @@
+<%
+	image_block_id = "artifacts_image_#{@image.id}"
+  image_footer = render partial: 'image_footer', locals: {image: @image}
+	update_url = artifacts_image_gravity_path(@image.id, authenticity_token: form_authenticity_token)
+%>
+
+image_block = $("[data-source-id='<%= @image.source_id %>']");
+image_block.attr('id', '<%= image_block_id %>').attr('data-update-url', '<%= update_url%>');
+$('.box-footer',image_block).replaceWith('<%= escape_javascript(image_footer) %>');

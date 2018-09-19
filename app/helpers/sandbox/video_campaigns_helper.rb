@@ -1,0 +1,2 @@
+module Sandbox::VideoCampaignsHelper
+end

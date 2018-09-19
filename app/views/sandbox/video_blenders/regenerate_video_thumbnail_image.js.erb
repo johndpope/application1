@@ -1,0 +1,31 @@
+<%
+  video_thumbnail_component = render partial: "sandbox/video_blenders/youtube_setup/video_setup/video_thumbnail_component", locals: {video_thumbnails: @video_thumbnails}
+  thumbnail_src = @video_thumbnails.first.file.url unless @video_thumbnails.blank?
+%>
+$('.video_thumbnail_component').html('<%= escape_javascript(video_thumbnail_component) %>');
+$('.video_thumbnail_img').attr('src','<%= thumbnail_src %>');
+$('body').find('.selected_thumbnail').first().parent().attr('href','<%= thumbnail_src %>');
+
+$('.thumbnail_img').on('click', function(e){
+  var th_src = $(e.target).data('src');
+  $('body').find('.selected_thumbnail').attr('src', th_src);
+  $('body').find('.selected_thumbnail').first().parent().attr('href', th_src);
+  $('.thumbnail_img').removeClass('active');
+  $(e.target).addClass('active');
+
+  src = $('#video1_html5_api').attr('src');
+  $('#video2_html5_api').attr('src', src).attr('poster',th_src);
+
+});
+
+$('.thumbnail_img').each(function(index, element){
+  $(element).css("opacity",0);
+  var self = this
+  setTimeout(function(){
+    $(self).css("opacity",1);
+  }, index*50);
+});
+
+video_src = $('#video1_html5_api').attr('src');
+$('#video2_html5_api').attr('src',video_src).attr('poster','<%=thumbnail_src%>');
+$('#video3_html5_api').attr('src',video_src).attr('poster','<%=thumbnail_src%>');

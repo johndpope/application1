@@ -1,0 +1,3 @@
+- centered_columns = %w(id is_active is_test)
+- %w(id name vmware_server_id order_nr ip user password is_test is_active).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("rendering_machine.#{c}")

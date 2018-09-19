@@ -1,0 +1,11 @@
+.form-group{class: 'control-box dynamic-text-value', id: "new_dynamic_text_value_block"}
+  = f.label :value, class: 'control-label'
+  = tooltip_by_field({table_name: "templates_aae_project_dynamic_texts", table_column: "value"})
+  .row
+    .col-md-10
+      %p.help-block
+        %b Samples:
+        = I18n.t("templates_aae_projects.project_text_type_hints.#{f.object.text_type}")
+    .col-md-2
+      = link_to t('add'), templates_aae_project_dynamic_texts_add_value_path(maxlength: f.object.text_type_limit, placeholder: "Enter #{t("templates_aae_projects.project_text_types.#{f.object.text_type}")} (character limit: #{f.object.text_type_limit})"), class: "btn btn-sm btn-primary pull-right", data: {disable_with: t('adding'), remote: true}
+  = f.text_area :value, class: "form-control text-counter", rows: 3, maxlength: "#{f.object.text_type_limit}", placeholder: "Enter #{t("templates_aae_projects.project_text_types.#{f.object.text_type}")} (character limit: #{f.object.text_type_limit})"

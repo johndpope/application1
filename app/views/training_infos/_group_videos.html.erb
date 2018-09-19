@@ -1,0 +1,30 @@
+<div class="row">
+	<div class="col-md-5">
+		<%= link_to 'New training info', new_training_info_path, class: 'btn btn-sm btn-primary' %>
+	</div>
+	<div class="col-md-7">
+		<div class="form-group">
+			<label class="control-label"><i class="fa fa-database"></i> Total training infos:</label>
+			<span class="badge bg-blue"><%= TrainingInfo.all.size%></span>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<h4 class="col-md-12"><u><b>Groups:</b></u></h4>
+	<% group_names = TrainingInfo.group_names.to_a %>
+	<% group_names.each_with_index do |row, index| %>
+		<div class="col-md-3">
+			<a class="btn btn-app" href="/training_infos?group_name=<%=row['group_name']%>">
+				<i class="fa fa-list"></i>
+	      <span class="badge bg-blue"><%= row['cnt']%></span>
+	      <%= row['group_name'] %>
+			</a>
+		</div>
+	<% end %>
+</div>
+<% if group_names.empty? %>
+	<div class="row col-md-12">
+		<br>
+		<div class="alert alert-info">No items available</div>
+	</div>
+<% end %>

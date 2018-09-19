@@ -1,0 +1,8 @@
+%td= item.id
+%td= item.name
+%td
+  - item.values.each  do |v|
+    %span.label{class: "label-#{v == 'subject' ? "info" : "default"}"}= I18n.t("templates.video_types.#{v.to_s}")
+%td= item.try(:client).try(:name)
+%td= item.try(:product).try(:name)
+%td= item.try(:source_video).try(:custom_title)

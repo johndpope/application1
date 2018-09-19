@@ -1,0 +1,9 @@
+.admin_vmware_servers{
+	&.index{
+		#vmware_server_items{
+			.id{width: 40px;}
+			.ip, .user, .password{width: 140px;}
+			.order_nr, .is_active, .is_test{width: 100px;}
+		}
+	}
+}

@@ -1,0 +1,26 @@
+<% if defined?(@audio.errors) && !@audio.errors.empty? %>
+  window.error_messages = JSON.parse('<%= escape_javascript(@audio.errors.messages.select{|k,v| k unless v.blank?}.to_json.html_safe) %>');
+  $('.form-group').removeClass('has-error');
+	$('.error-label').remove();
+
+  for(k in window.error_messages){
+    control_el = $("#audios_" + k);
+    control_el.closest('.form-group').addClass('has-error');
+    for(i in window.error_messages[k]){
+      error_block = $('<div class="error-label"><label class="control-label"></label></div>')
+      error_block.find('label').text(window.error_messages[k][i])
+			control_el.after(error_block)
+    }
+  }
+<% else %>
+  <% row = render partial: "index_table_row", locals: {audio: @audio} %>
+  $('.uploading_audio_modal').modal('hide');
+
+  if ($('tbody.tbody tr').length == $('#limit').val()){
+    $('tbody.tbody','.audio_items').prepend('<%= escape_javascript(row) %>');
+    $('tbody.tbody tr:last').remove();
+  }else{
+    $('tbody.tbody','.audio_items').prepend('<%= escape_javascript(row) %>');
+  }
+
+<% end %>

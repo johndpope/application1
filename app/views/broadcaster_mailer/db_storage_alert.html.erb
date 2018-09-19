@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+	</head>
+	<body>
+		<h2>Database storage alert!</h2>
+    <p>Database storage usage exceeded limit - <%= Setting.get_value_by_name("Utils::DATABASE_SHUTDOWN_BOTS_PERCENTAGE").to_i %>%.</p>
+    <p>All bot servers were killed and disabled daily activity.</p>
+    <br/>
+    <p>Thanks!</p>
+	</body>
+</html>

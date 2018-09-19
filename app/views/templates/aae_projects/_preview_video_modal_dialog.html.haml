@@ -1,0 +1,14 @@
+.modal{class: 'modal-wide fade aae-project-preview-video-modal', id: dom_id(@aae_project, 'preview_video_modal')}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button{type: 'button', class: 'close', data: {dismiss: 'modal'}, 'area-label' => 'Close'}
+          %span{'area-hidden' => true} &times;
+        %h4{class: 'modal-title'}
+          Preview AAE Project Video #
+          =@aae_project.id
+      .modal-body
+        %div= @aae_project.title
+        = video_tag @aae_project.video.url, style: 'max-height: 1280px; max-width: 720px;', controls: true, autobuffer: false
+      .modal-footer
+        %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}} Close

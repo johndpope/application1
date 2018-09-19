@@ -1,0 +1,9 @@
+.nav-tabs-custom
+  %ul.nav.nav-tabs
+    %li.active= link_to 'General','#general', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+    %li= link_to 'Tags and Locations','#tags_and_locations', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+    %li= link_to 'Descriptions','#descriptions', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+  .tab-content
+    .tab-pane#general.active=render partial: "general", locals: {f: f}
+    .tab-pane#tags_and_locations=render partial: "tags_and_locations", locals: {f: f}
+    .tab-pane#descriptions=render partial: "descriptions", locals: {f: f}

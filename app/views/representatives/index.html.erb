@@ -1,0 +1,78 @@
+<% title 'Representatives' %>
+<% header @client.name %>
+<% small_header 'Representatives'%>
+<% breadcrumb :representatives, @client %>
+<%= render 'clients/navigation' %>
+<div id="representatives_list" class="content-block">
+  <div class="row">
+    <div class="col-md-5">
+      <div class="btn-group btn-group-custom">
+        <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, @client.ignore_landing_pages ? @products_link : @client_landing_pages_link, class: 'btn btn-primary' %>
+        <%= link_to 'New representative', new_client_representative_path(@client), class: 'btn btn-success' %>
+        <%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, @contracts_link, class: 'btn btn-primary' %>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+        <span class="badge bg-blue">
+          <%=@representatives.size%>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @representatives.to_a.empty? %>
+    <table id="representatives_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th style="width: 75px;" id="id-th" data-field="id" class="text-center">ID</th>
+          <th id="first_name-th" data-field="name">Name</th>
+          <th>Products</th>
+          <th id="email-th" data-field="email">Email</th>
+          <th id="title-th" data-field="title">Title</th>
+          <th id="primary-th" data-field="primary" style="width: 55px;" class="text-center">Primary</th>
+          <th style="width: 115px;" class="text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @representatives.each do |representative| %>
+          <tr id="tr_yc_<%=representative.id%>">
+            <td class="text-center"><%=representative.id %></td>
+            <td><%= link_to representative.full_name, edit_client_representative_path(@client, id: representative.id) %></td>
+            <td>
+              <% representative.products.each do |product| %>
+                <%= link_to product.name, edit_client_product_path(@client, id: product.id), target: '_blank' %>
+                <br/>
+              <% end %>
+            </td>
+            <td><%= representative.email %></td>
+            <td><%= representative.title %></td>
+            <td class="text-center">
+              <% if representative.primary %>
+                <a class="label label-success sort_link">YES</a>
+              <% else %>
+                <a class="label label-danger sort_link">NO</a>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-custom">
+                <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_client_representative_path(@client, id: representative.id),  {class: 'btn btn-xs btn-primary' } %>
+                <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, client_representative_path(@client, id: representative.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @representatives.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% end %>
+</div>

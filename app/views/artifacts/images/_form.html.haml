@@ -1,0 +1,103 @@
+.modal.fade{ id: dom_id(image.becomes(Artifacts::Image), 'modal') }
+  .modal-dialog{ style: "width: 1200px;"}
+    .modal-content
+      = form_for image.becomes(Artifacts::Image), authenticity_token: true, remote: true do |f|
+        .modal-header
+          %button.close{ type: 'button', data: { dismiss: 'modal' } }
+            %span &times;
+          %h4= "Artifacts::Image##{image.id}"
+        .modal-body
+          .row
+            .col-md-12
+              = link_to '#collapseArtifactImg', class: "collapseLink", role: "button", title: "Image", data: {toggle: "collapse"} do
+                = "Show Image"
+            .col-md-12
+              .collapse.text-center#collapseArtifactImg
+                = image_tag image.file.url(:thumb), class: "img-thumbnail"
+          .row
+            .col-md-4
+              .form-group
+                = f.label :client_id, "Client"
+                = f.select :client_id,
+                options_from_collection_for_select(clients, :id, :name, image.client_id),
+                {include_blank: true}, class: "form-control"
+            .col-md-4
+              .form-group
+                = f.label :product_id, "Product"
+                = f.select :product_id,
+                options_from_collection_for_select(Product.order(:name), :id, :name, image.product_id), {include_blank: true}, class: "form-control"
+            .col-md-4
+              .form-group
+                = f.label :industry_id, 'Industry'
+                = f.text_field :industry_id, class: 'form-control'
+
+          .row
+            .col-md-3
+              .form-group
+                = f.label 'country', 'Country'
+                - country_id = Geobase::Country.find_by_name(image.country).try(:id)
+                = f.text_field 'country', class: 'form-control', data: {id: country_id}
+            .col-md-3
+              .form-group
+                = f.label 'region1', 'State'
+                - region1_id = Geobase::Region.find_by_name(image.region1).try(:id)
+                = f.text_field 'region1', class: 'form-control', data: {id: region1_id}
+            .col-md-3
+              .form-group
+                = f.label 'region2', 'County'
+                - region2_id = Geobase::Region.find_by_name(image.region2).try(:id)
+                = f.text_field 'region2', class: 'form-control', data: {id: region2_id}
+            .col-md-3
+              .form-group
+                = f.label 'city', 'City'
+                = f.text_field 'city', class: 'form-control'
+          .form-group
+            = f.label :tag_list
+            = f.text_area :tag_list, :class => 'form-control', rows: 3
+          .row
+            .col-md-4
+              .form-group
+                = f.label :reusable, "Is Reusable", class: "control-label"
+                %div
+                  = f.label :reusable, "Yes", value: "true"
+                  = f.radio_button :reusable, true
+                  = f.label :reusable, "No", value: "false"
+                  = f.radio_button :reusable, false
+            .col-md-4
+              .form-group
+                = f.label :use_for_landing_pages, "Use for landing pages", class: "control-label"
+                %div
+                  = f.label :use_for_landing_pages, "Yes", value: "true"
+                  = f.radio_button :use_for_landing_pages, true
+                  = f.label :use_for_landing_pages, "No", value: "false"
+                  = f.radio_button :use_for_landing_pages, false
+            .col-md-4
+              .form-group
+                = f.label :rating
+                = f.hidden_field :rating, class: "form-control"
+                %div
+                - 5.times do |i|
+                  = link_to 'javascript://', class: "image_rating", title: "Image rating", data: {index: i} do
+                    = fa_icon 'star-o 2x'
+
+          .row
+            - arr = []
+            - @image.image_categories.each{|it| arr.push(it.id)}
+            .col-md-12
+              = link_to '#collapseCategoryItems', class: "collapseLink", role: "button", title: "Image", data: {toggle: "collapse"} do
+                = "Categories"
+            .col-md-12
+              .collapse.in#collapseCategoryItems
+                - Artifacts::ImageCategory.where(:parent_id => nil).each do |category|
+                  .col-md-2
+                    .form-group
+                      = label_tag category.name, category.name
+                      %br
+                      - Artifacts::ImageCategory.where(:parent_id => category.id).each do |sub_category|
+                        - arr.include?(sub_category.id) ? marker = true : marker = false
+                        = check_box_tag "artifacts_image[categories][#{sub_category.id}]", sub_category.id, marker, class: "image_categories"
+                        = label_tag "artifacts_image[categories][#{sub_category.id}]", sub_category.name, class: "image_categories_label"
+                        %br
+        .modal-footer
+          = button_tag 'Cancel', {:class => 'btn btn-default',"data-dismiss" => "modal"}
+          = f.submit 'Update', :class => 'btn btn-primary'

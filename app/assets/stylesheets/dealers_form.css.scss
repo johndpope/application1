@@ -1,0 +1,126 @@
+.ui-autocomplete {
+  z-index: 9999 !important;
+}
+
+.description-name-select { display: inline; }
+
+fieldset.form {
+	border: 1px solid #d5d5d5;
+	margin: 0 0 15px;
+	padding: 10px 15px 0;
+
+	> legend {
+		display: block;
+		width: auto;
+		margin: 0 0 -15px 0;
+		padding: 0 8px;
+		border: 0 none;
+		text-align: right;
+		line-height: normal;
+
+		> .btn { margin: -4px 0 0 0; }
+	}
+
+	.counter-characters {
+		padding: 0 5px 0 0;
+
+		.label {
+			margin-left: 3px;
+			vertical-align: text-top;
+		}
+	}
+}
+
+.parent_description_block {
+	padding-bottom: 15px;
+
+	.remove_nested_fields { width: 100%; }
+}
+
+.select2-container {
+	padding: 0px;
+	border-width: 0px;
+}
+.select2-container .select2-choice {
+	height: 30px;
+	line-height: 30px;
+}
+
+#cities_list{
+  margin-top: 10px;
+  padding-left: 15px;
+  list-style-type: none;
+  li {
+    margin-top: 10px;
+  }
+}
+
+.cities-div {
+  margin-top: 10px;
+}
+
+.delete-city-link {
+  padding: 0 5px;
+  border-radius: 15px;
+  margin-right: 5px;
+  i {
+    color: red;
+  }
+}
+
+.carousel-control>.fa {
+  font-size: 60px;
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  display: inline-block;
+  margin-top: -20px;
+  color: #3c8dbc;
+}
+
+.carousel-indicators .active {
+  margin: 0;
+  width: 15px;
+  height: 15px;
+  background-color: #3c8dbc;
+}
+
+.carousel-indicators li {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin: 1px;
+  text-indent: -999px;
+  border: 1px solid #3c8dbc;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: rgba(214, 44, 44, 0);
+}
+
+.carousel-indicators {
+  top: 10px;
+  height: 20px;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 5%;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  font-size: 20px;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.carousel-control.right{
+  padding-right: 40px;
+}
+
+.disabled-block {
+  opacity: 0.2;
+  pointer-events: none;
+}

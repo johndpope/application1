@@ -1,0 +1,15 @@
+<tr id="<%= dom_id(text_chunk, 'row')%>">
+  <td class="text-center"><%= text_chunk.id %></td>
+  <td><%= text_chunk.chunk_type %></td>
+  <td><%= text_chunk.value %></td>
+  <td><%= text_chunk.admin_user.try(:email) %></td>
+  <td><%= text_chunk.updated_by.try(:email) %></td>
+  <td><%= local_time(text_chunk.updated_at, format: '%m/%d/%y %I:%M %p', title: text_chunk.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if text_chunk.updated_at.present?%></td>
+  <td><%= local_time(text_chunk.created_at, format: '%m/%d/%y %I:%M %p', title: text_chunk.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if text_chunk.created_at.present?%></td>
+  <td class="text-center actions">
+    <div class="btn-group btn-group-custom">
+      <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_text_chunk_path(text_chunk), { class: 'btn btn-xs btn-primary', remote: true, title: 'Edit' } %>
+      <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, text_chunk, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-danger' %>
+    </div>
+  </td>
+</tr>

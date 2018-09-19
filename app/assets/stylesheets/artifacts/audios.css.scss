@@ -1,0 +1,141 @@
+.artifacts_audios{
+  .bootstrap-tagsinput{
+    display: block;
+  }
+}
+
+#fileupload{
+  .bootstrap-tagsinput{
+    display: block;
+  }
+}
+
+.artifacts_audios{
+  &.index{
+    .audio_items{
+      audio{width: 100%;}
+      .audio{width: 550px;}
+      .type{width: 100px;}
+      .attribution_required{width: 80px;}
+      .is_approved{width: 110px;}
+      .client{width: 80px;}
+      .instrument{width: 80px;}
+      .actions{width: 80px;}
+      .tags{width: 50px;}
+      .genre{width: 50px;}
+    }
+    .is_approved_check{ zoom: 1.5;}
+    .is_approved_check_all{ zoom: 1.5;}
+  }
+  .fancybox-skin {
+    padding: 5px 0px 0px 5px !important;
+  }
+
+  .fancybox-inner {
+    overflow: auto; width: 500px !important; height: 45px !important; padding-top: 5px;
+  }
+}
+
+#screenshots-tab {
+  .img-screenshot {
+    padding: 20px 0;
+    height: 250px;
+    text-align: center;
+
+    img {
+      width: auto;
+      max-width: 250px;
+      height: auto;
+      max-height: 220px;
+    }
+
+    p {
+      margin: 0;
+      padding: 8px 0 0;
+    }
+  }
+}
+
+// Sid beg
+.plank-blank,
+.plank-green,
+.plank-maroon,
+.plank-orange,
+.plank-purple,
+.plank-blue {
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  padding: 2px 5px 2px 5px;
+  text-align: center;
+  vertical-align: center;
+  margin: 3px 1px 3px 1px;
+  display: inline-block;
+  height: 24px;
+}
+
+.plank-green {
+  background: rgba(28, 184, 65, .7); /* this is a green */
+}
+
+.plank-maroon {
+  background: rgba(202, 60, 60, .7); /* this is a maroon */
+}
+
+.plank-orange {
+  background: rgba(223, 117, 20, .7); /* this is an orange */
+}
+
+.plank-blue {
+  background: rgba(66, 184, 221, .7); /* this is a light blue */
+}
+
+.plank-purple {
+  background: rgba(164, 82, 135, .7); /* this is a purple */
+}
+
+.flexible {
+  width: 403px;
+  margin-right: 7px;
+  display: inline-block;
+  float: left;
+  position: relative;
+}
+
+.sc {
+  width: auto;
+}
+
+.import_sign {
+  position: absolute;
+  bottom: 10px;
+  right: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: green;
+  border: 2px solid #fff;
+  text-align: center;
+  vertical-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #fff;
+  padding-top: 4px;
+}
+.import_sign:hover {
+  cursor: pointer;
+  background: lightgreen;
+}
+.empty {
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+
+  z-index: 1;
+}
+
+// Sid end

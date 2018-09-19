@@ -1,0 +1,72 @@
+.clients_video_workflow{
+	&.index{
+		.subject-video-name {
+			overflow:hidden;
+  		white-space:nowrap;
+  		text-overflow:ellipsis;
+  		width:200px;
+		}
+
+		table#blended_videos{
+			.collapsed-box{margin-bottom: 0px !important}
+		}
+
+		#blended_video_chunks_details{margin-bottom: 0px;}
+	}
+
+	.video-set-block{
+		border: 1px solid;
+		border-color: #D2D6DE;
+		margin-bottom: 15px;
+		padding: 3px;
+
+		.video-segments-progress{
+			margin-bottom: 5px;
+
+		}
+	}
+
+	table.video-item{
+		margin-bottom: 3px !important;
+		th.id{width: 100px;}
+		th.created_at{width: 100px;}
+		th.client_id{width: 150px;}
+		th.source_id{width: 250px;}
+		th.location_id{width: 200px;}
+		th.blended_video_progress{width: 150px;}
+		th.total_rendering_time{width: 100px;}
+		th.blended_video{width: 40px;}
+		th.approval_status{width: 120px;}
+	}
+
+	table.video-chunks{
+		th.order_nr{width: 40px;}
+		th.id{width: 70px;}
+		th.created_at{width: 90px;}
+		th.rendered_at{width: 90px;}
+		th.templates_dynamic_aae_project_id{width: 90px;}
+		th.templates_aae_project_id{width: 80px;}
+		th.rendering_time{width: 100px;}
+		th.rendering_machine{width: 180px;}
+		th.preview{width: 40px;}
+		th.ready{width: 90px;}
+		th.segment-generation{width: 90px;}
+		th.status{width: 90px;}
+		th.reviewed-by{width: 100px;}
+		th.project_type{width: 120px;}
+	}
+
+	#client_workflow_progress{
+		.progress{margin-bottom: 0px !important;}
+	}
+
+	#client_workflow_errors, #client_workflow_warnings{
+		.callout{
+			padding: 8px !important;
+			margin: 0 0 8px 0 !important;
+			h4, .h4, h5, .h5, h6, .h6{
+				margin-bottom: 5px !important;
+			}
+		}
+	}
+}

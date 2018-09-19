@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+	</head>
+	<body>
+    <% if @killed %>
+      <h2>Successfully killed Zenno!</h2>
+      <p>Zenno was successfully killed on '<%= @bot_server_name %>' at <%= Time.now %>.</p>
+    <% else %>
+      <h2>Failed to kill Zenno!</h2>
+      <p>Failed to kill Zeno on '<%= @bot_server_name %>' at <%= Time.now %>.</p>
+    <% end %>
+    <br/>
+    <p>Thanks!</p>
+	</body>
+</html>

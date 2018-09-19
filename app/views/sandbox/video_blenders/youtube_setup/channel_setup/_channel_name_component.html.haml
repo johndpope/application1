@@ -1,0 +1,7 @@
+- @channel_schema.each_with_index do |(k,v),i|
+  .label_block
+    = link_to 'javascript://' do
+      .ch_name_label
+        .header=k.to_s.humanize.upcase
+        .data=v
+    .plus="+" unless i+1 == @channel_schema.size

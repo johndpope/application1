@@ -1,0 +1,31 @@
+- content_for(:title){'Youtube Video Media Credits'}
+- content_for(:header){'Youtube Video Media Credits'}
+- content_for(:small_header){@youtube_video.title}
+- breadcrumb :youtube_video_credits, @youtube_video
+#youtube_video_credits
+	.box
+		.box-header.with-border
+			%h3.box-title Youtube Video Info
+		.box-body
+			%table.table.table-bordered.table-hover.table-striped{id: "youtube_video_info"}
+				%tbody
+					%tr
+						%th.yv{style: "width: 250px"} Youtube Video
+						%td
+							- unless @youtube_video.youtube_video_id.blank?
+								= link_to @youtube_video.title, @youtube_video.url
+					%tr
+						%th.yc Youtube Channel
+						%td
+							- unless @youtube_video.youtube_channel.blank?
+								= link_to @youtube_video.youtube_channel.youtube_channel_name, @youtube_video.youtube_channel.url
+	#video_content
+		= render partial: "public/credits/youtube/videos/common/image_index_table", locals: {items: @credited_images, table_title: "Youtube Video Media Credits"}
+		%div= paginate @credited_images, theme: "bootstrap"
+- content_for(:javascripts) do
+	:javascript
+		$(function(){
+			  $('.livepreview').livePreview({
+			    position: 'right'
+			  });
+		})

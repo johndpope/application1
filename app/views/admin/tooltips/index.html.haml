@@ -1,0 +1,48 @@
+- title "Tooltips for models"
+- header 'Tooltips'
+- small_header 'Tooltips for models'
+
+.row
+  .col-md-3#recap
+    .box.box-solid
+      .box-header.with-border
+        %h3.box-title All tables
+        .box-tools
+          %strong="items totally: #{@tables.count}"
+      .box-body.no-padding
+        %ul.nav.nav-pills.nav-stacked.list-group
+          - @tables.each do |item|
+            %li{class:('active' if item == @current_table_name)}
+              = link_to item.to_s.underscore.singularize.camelize, admin_tooltips_path(table_name: item), :class => "table_name"
+  .col-md-9
+    - if @available_table_columns.any?
+      .box
+        .box-header.with-border
+          .tb_name= "Table name: #{@current_table_name}"
+          .box-tools
+            %strong.tooltips_count
+            %strong= "items totally: #{@available_table_columns.count}"
+        .box-body
+          %table.table.table-striped.table-bordered.table-hover.tooltips
+            %thead
+              %tr
+                %th.id{class: 'text-center'} ID
+                %th.table_column Column Name
+                %th.value Tooltip
+            %tbody#list
+              - @available_table_columns.each do |c,v|
+                - tooltipped_column = @tooltipped_table_columns.select{|col|col.table_column == c}.first
+                %tr{data: {row: c}, id: tooltipped_column.try(:id)}
+                  %td.text-center.id=tooltipped_column.try(:id)
+                  %td= t("tooltips.#{params[:table_name]}.#{c}", :default => c)
+                  %td
+                    = form_tag admin_tooltips_path, {method: :post, data: {remote: true}} do
+                      .input-group
+                        = text_area_tag 'tooltip[value]', tooltipped_column.try(:value), {class: 'form-control', placeholder: "Enter tooltip here ...", rows: 3}
+                        = hidden_field_tag 'tooltip[table_name]', @current_table_name
+                        = hidden_field_tag 'tooltip[table_column]', c
+                        = hidden_field_tag 'tooltip[id]', tooltipped_column.try(:id)
+    - else
+      .alert.alert-info
+        = fa_icon 'question-circle'
+        %strong Nothing was found

@@ -1,0 +1,79 @@
+- unless blended_video.workflow_status.blank?
+  .video-segments-progress
+    %div
+      %strong Video Set Workflow Progress (refreshes every 2 minutes)
+    - progress = {}
+    - progress_icons = {done: 'check-circle-o', failed: 'exclamation-triangle', in_process: 'refresh'}
+    - progress_label_classes = {done: 'success', failed: 'danger', in_process: 'warning'}
+
+    - status = nil
+    - if (!@delayed_jobs[:segment_generation][:items].blank? && @delayed_jobs[:segment_generation][:items].select{|k,v|v[:blended_video_id]==blended_video.id && v[:attempts]>0}.to_a.count > 0) || blended_video.workflow_status['some_segment_generation_failed'] == true
+      - status = :failed
+    - elsif blended_video.workflow_status['all_segments_generated'] == true
+      - status = :done
+    - elsif blended_video.workflow_status['some_segments_generated'] == true
+      - status = :in_process
+    - progress[:segment_generation] = status
+
+    - status = nil
+    - if blended_video.workflow_status['all_segments_transmitted'] == true
+      - status = :done
+    - elsif blended_video.workflow_status['some_segment_transmition_failed'] == true
+      - status = :failed
+    - elsif blended_video.workflow_status['some_segments_transmitted'] == true
+      - status = :resfresh
+    - progress[:segment_transmission] = status
+
+    - status = nil
+    - if blended_video.workflow_status['all_segments_rendered'] == true
+      - status = :done
+    - elsif blended_video.workflow_status['some_segment_rendering_failed'] == true
+      - status = :failed
+    - elsif blended_video.workflow_status['some_segments_rendered'] == true
+      - status = :in_process
+    - progress[:segment_rendering] = status
+
+    - status = nil
+    - if blended_video.workflow_status['is_blended'] == true
+      - status = :done
+    - elsif !@delayed_jobs[:blending][:items][blended_video.id].blank? && @delayed_jobs[:blending][:items][blended_video.id][:attempts]>0
+      - status = :failed
+    - progress[:blending] = status
+
+    - status = nil
+    - if blended_video.workflow_status['youtube_video_content_generated'] == true && blended_video.workflow_status['youtube_video_thumbnail_generated'] == true
+      - status = :done
+    - elsif (!@delayed_jobs[:youtube_video_content_creation][:items][blended_video.id].blank? && @delayed_jobs[:youtube_video_content_creation][:items][blended_video.id][:attempts]>0) || (!@delayed_jobs[:youtube_video_thumbnail_creation][:items][blended_video.id].blank? && @delayed_jobs[:youtube_video_thumbnail_creation][:items][blended_video.id][:attempts]>0)
+      - status = :failed
+    - elsif (!@delayed_jobs[:youtube_video_content_creation][:items][blended_video.id].blank? && @delayed_jobs[:youtube_video_content_creation][:items][blended_video.id][:attempts] == 0) || (!@delayed_jobs[:youtube_video_thumbnail_creation][:items][blended_video.id].blank? && @delayed_jobs[:youtube_video_thumbnail_creation][:items][blended_video.id][:attempts] == 0)
+      - status = :in_process
+    - progress[:content_creation] = status
+
+    - status = nil
+    - if blended_video.workflow_status['youtube_video_posted'] == true
+      - status = :done
+    - progress[:posting_on_youtube] = status
+
+    #progress_tabs.visible-lg
+      .sw-main.sw-theme-arrows
+        %ul.nav.nav-tabs.step-anchor
+          - progress.each do |k,v|
+            %li{class: v}
+              - workflow_stages = [:segment_generation, :segment_transmission, :blending, :content_creation]
+              - url = workflow_stages.include?(k) ? client_delayed_jobs_path(@client.id, blended_video.id, k) : 'javascript://'
+              - data = {}
+              - if workflow_stages.include?(k)
+                - data[:remote] = true
+                - data[:disable_with] = '<i class="fa fa-refresh fa-spin"></i>'
+              = link_to url, data: data do
+                = fa_icon progress_icons[v]
+                = k.to_s.titleize
+    #progress_labels.visible-xs.visible-md.visible-sm
+      - progress.each do |k,v|
+        .row
+          .col-md-4= k.to_s.titleize
+          .col-md-8
+            - unless v.blank?
+              %span{class:(v.blank? ? '' : "label label-#{progress_label_classes[v]}")}
+                = fa_icon progress_icons[v]
+                = v.to_s.titleize

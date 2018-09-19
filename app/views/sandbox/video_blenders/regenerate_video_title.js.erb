@@ -1,0 +1,6 @@
+<%
+  video_title_component = render partial: "sandbox/video_blenders/youtube_setup/video_setup/video_title_patterns_component", locals: {video_title_schema: @video_title_schema}
+%>
+$('.video_title_components').html('<%= escape_javascript(video_title_component) %>');
+$('.yt_video_title').text('<%=@video_title%>');
+$('.video_title_components .label_block').animate({opacity:0},200).animate({opacity:1},200)

@@ -1,0 +1,67 @@
+<% title 'Email Accounts Setup' %>
+<% header @client.name %>
+<% small_header 'Email Accounts Setups' %>
+<% breadcrumb :email_accounts_setups, @client %>
+<%= render 'clients/navigation' %>
+<div id="email_accounts_setups_list" class="content-block">
+	<div class="row">
+		<div class="col-md-5">
+			<div class="btn-group btn-group-custom">
+				<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_contracts_path(@client), class: 'btn btn-primary' %>
+				<%= link_to 'New email accounts setup', new_client_email_accounts_setup_path(@client), class: 'btn btn-success' %>
+				<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, client_youtube_setups_path(@client), class: 'btn btn-primary' %>
+			</div>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+				<span class="badge bg-blue"><%= @email_accounts_setups.size %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @email_accounts_setups.to_a.empty? %>
+		<table id="email_accounts_setups_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 75px;" id="id-th" data-field="id" class="text-center">ID</th>
+					<th id="representative_id-th" data-field="representative_id">Contract</th>
+					<th class="text-center">Package</th>
+					<th style="width: 120px;">Number of Accounts</th>
+					<th style="width: 130px;">Channels per account</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @email_accounts_setups.each do |email_accounts_setup| %>
+					<tr id="tr_yc_<%= email_accounts_setup.id %>">
+						<td class="text-center"><%= email_accounts_setup.id %></td>
+						<td>
+							<% if email_accounts_setup.contract %>
+								<%= link_to email_accounts_setup.contract.display_name, edit_client_contract_path(@client, id: email_accounts_setup.contract.id), target: '_blank' %>
+							<% end %>
+						</td>
+						<td class="text-center"><%= email_accounts_setup.package.to_s.humanize %></td>
+						<td class="text-center"><%= email_accounts_setup.accounts_number %></td>
+						<td class="text-center"><%= email_accounts_setup.channels_per_account %></td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_client_email_accounts_setup_path(@client, id: email_accounts_setup.id),  {class: 'btn btn-xs btn-primary' } %>
+                <% if email_accounts_setup.cities.present? %>
+                  <%= link_to '<i class="fa fa-eye"></i> Check localities'.html_safe, report_by_localities_artifacts_images_path(locality_ids: email_accounts_setup.cities.map(&:to_i).join(",")), target: "_blank", class: 'btn btn-xs btn-info', title: 'Click here to review content statistics for localities' %>
+                <% end %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, client_email_accounts_setup_path(@client, id: email_accounts_setup.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @email_accounts_setups.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

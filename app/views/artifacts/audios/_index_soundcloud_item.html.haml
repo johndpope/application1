@@ -1,0 +1,10 @@
+- unless audio.embed_info.nil?
+	.flexible.sc
+		= raw audio.embed_info['html']
+		- if audio.sc_data['downloadable']
+			= link_to artifacts_audio_import_path(audio_id: audio.sc_data['id'], api: 'Soundcloud'),
+          		:method =>'get',
+          		:remote => true,
+  				title: 'Import',
+  				:class => 'import_sign' do
+				= fa_icon 'save'

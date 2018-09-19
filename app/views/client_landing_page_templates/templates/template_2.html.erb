@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><%= @client_landing_page.title %></title>
+    <meta name="keywords" content="<%= @client_landing_page.meta_keywords %>">
+    <meta name="description" content="<%= @client_landing_page.meta_description %>">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="x-ua-compatible" content="IE=9">
+
+    <!-- Font Awesome -->
+    <link href="stylesheets/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheets/menu.css">
+    <link rel="stylesheet" href="stylesheets/flat-ui-slider.css">
+    <link rel="stylesheet" href="stylesheets/base.css">
+    <link rel="stylesheet" href="stylesheets/skeleton.css">
+    <link rel="stylesheet" href="stylesheets/landings.css">
+    <link rel="stylesheet" href="stylesheets/main.css">
+    <link rel="stylesheet" href="stylesheets/landings_layouts.css">
+    <link rel="stylesheet" href="stylesheets/box.css">
+    <link rel="stylesheet" href="stylesheets/jquery.floating-social-share.min.css" />
+    <!-- <link rel="stylesheet" href="stylesheets/pixicon.css"> -->
+    <style>
+      @media (max-width: 780px) {
+        #logo {
+          padding: 0 !important;
+        }
+        #logo-container {
+          visibility: hidden;
+          max-height: 0px;
+        }
+        #share_img {
+          display: none;
+          max-height: 0px;
+          width: 0px !important;
+          margin-bottom: 0 !important;
+        }
+      }
+      .fancybox-overlay {
+        z-index: 100000 !important;
+      }
+      #floatingSocialShare .top-left, #floatingSocialShare .top-right {
+        z-index: 99999;
+        position: fixed;
+        top: 12% !important;
+      }
+    </style>
+    <%= @client_landing_page.piwik_code.try(:html_safe) %>
+  </head>
+  <body>
+    <div id="page" class="page">
+      <div style="position: fixed; top: 0; width: 100%; z-index: 99999; background-color: white;">
+        <% if @client_landing_page.logo_image_url.present? %>
+          <div class="light_gray_bg small_padding pix_builder_bg" id="logo" style="outline-offset: -3px; padding: 10px 0; background-color: white;">
+            <div class="container">
+              <div class="sixteen columns alpha center_text" id="logo-container">
+                <img class="padding_left_10" src="<%= @client_landing_page.logo_image_url %>" alt="" style="border-radius: 0px; border: 1px none rgb(68, 68, 68); max-height: 50px;">
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <% if @client_landing_page.menu %>
+          <div class="" id="section_header_5">
+            <div class="header_nav_1 pix_builder_bg" style="outline-offset: -3px;">
+              <div class="container">
+                <div class="sixteen columns">
+                  <nav role="navigation" class="navbar navbar_no_margin navbar-white navbar-embossed navbar-lg pix_nav_1">
+                    <div class="container">
+                      <div class="navbar-header">
+                        <button data-target="#navbar-collapse-02" data-toggle="collapse" class="navbar-toggle header_5_nav" type="button">
+                          <span class="sr-only">Toggle navigation</span>
+                        </button>
+                      </div>
+                      <div id="navbar-collapse-02" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-center center_mobile_menu">
+                          <li class="active propClone"><a href="#section_call_header">Home</a></li>
+                          <% @client_landing_page.body_sections_json.each do | key, body_section | %>
+                            <% if body_section['body'].present? && body_section['action_title'].present? %>
+                              <li class="propClone"><a href="#section_call_<%=key%>"><%= body_section['title'] %></a></li>
+                            <% end %>
+                          <% end %>
+                          <li class="propClone"><a href="#section_call_footer"><%= @client_landing_page.footer_title %></a></li>
+                        </ul>
+                      </div><!-- /.navbar-collapse -->
+                    </div><!-- /.container -->
+                  </nav>
+                </div>
+              </div><!-- container -->
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="pixfort_agency_14 pixfort_normal_1" id="section_call_header">
+        <div class="page_style pix_builder_bg" style="padding-top: 0; padding-bottom: 0; box-shadow: none; background-image: url(<%= @client_landing_page.header_image_url %>); background-attachment: fixed; background-position: initial; background-color: rgb(68, 68, 68); background-size: cover; background-repeat: no-repeat; outline-offset: -3px;">
+          <div class="container">
+            <div class="sixteen columns">
+              <div class="text_page" style="width: 100%; margin: 200px 0 0 0; background: rgba(255, 255, 255, 0.5); box-shadow: 0 0 150px 150px rgba(255, 255, 255, 0.5); -moz-box-shadow: 0 0 150px 150px rgba(255, 255, 255, 0.5); -webkit-box-shadow: 0 0 150px 150px rgba(255, 255, 255, 0.5);">
+                <h1 class="title" style="margin: 0; padding: 0; color: #000; font-size: 48px; font-family: 'Open Sans',sans-serif; background-color: transparent;">
+                  <span class="editContent"><%= @client_landing_page.header_title %></span>
+                  <div class="green_segment pix_builder_bg" style="padding-top: 0px; padding-bottom: 0px; box-shadow: none; border-color: rgb(68, 68, 68); background-image: none; background-attachment: scroll; background-color: rgb(61, 133, 198); background-size: auto auto; background-repeat: repeat;"></div>
+                </h1>
+                <p class="subtitle editContent" style="color: rgb(0, 0, 0); font-size: 20px; font-family: 'Open Sans',sans-serif; background-color: transparent;">
+                  <span><%= @client_landing_page.header_body %></span>
+                </p>
+              </div>
+              <% if @client_landing_page.header_action_title.present? && @client_landing_page.header_action_link %>
+                <div class="text_page">
+                  <a class="subscribe_btn pix_text" id="subscribe_btn_header" style="color: rgb(255, 255, 255); font-size: 14px; font-family: 'Open Sans',sans-serif; background-color: rgb(61, 133, 198);" href="<%= @client_landing_page.header_action_link %>" target="_blank">
+                    <span class="editContent"><%= @client_landing_page.header_action_title.try(:upcase) %></span>
+                  </a>
+                </div>
+              <% end %>
+              <div class="first_link">
+                <span class="get_1_btn"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% videos_count = 0 %>
+      <% @client_landing_page.body_sections_json.each do | key, body_section | %>
+        <% if body_section['body'].present? || (body_section['action_title'].present? && body_section['action_link'].present?) %>
+          <% if key.to_i.even? %>
+            <div class="pix_builder_bg" id="section_call_<%=key%>" style="padding-top: 0px; padding-bottom: 0px; box-shadow: none; border-color: rgb(68, 68, 68); background-image: none; background-attachment: scroll; background-color: rgb(207, 226, 243); background-size: auto auto; background-repeat: repeat; outline-offset: -3px;">
+          <% else %>
+            <div style="outline-offset: -3px;" class="pix_builder_bg" id="section_call_<%=key%>">
+          <% end %>
+            <div class="footer3">
+              <div class="container">
+                <% if body_section['video_url'].present? || body_section['image_url'].present? %>
+                  <div class="sixteen columns">
+                    <div class="center_text">
+                      <div class="margin_bottom_30 green_1">
+                        <i class="fa fa-newspaper-o" style="color: rgb(61, 133, 198); font-size: 56px; background-color: transparent;"></i>
+                      </div>
+                    </div>
+                    <% if body_section['text_first'].to_s == true.to_s %>
+                      <div class="eight columns alpha">
+                        <div class="gtext_style">
+                          <h3 class="t1_style bold_text editContent"><%= body_section['title'] %></h3>
+                          <p class="t3_style editContent"><%= body_section['body'] %></p>
+                        </div>
+                        <% if body_section['action_title'].present? && body_section['action_link'].present? %>
+                          <div class="center_text">
+                            <a target="_blank" href="<%= body_section['action_link'] %>" class="pix_button pix_button_line bold_text green_1 btn_big" src="images/uploads/san-francisco-california-usa-3833_.jpg" style="color: rgb(61, 133, 198); font-size: 16px; font-family: 'Open Sans',sans-serif; border-color: rgb(61, 133, 198); border-radius: 3px; border-width: 2px; background-color: transparent;">
+                              <span><%= body_section['action_title'].try(:upcase) %></span>
+                            </a>
+                          </div>
+                        <% end %>
+                      </div>
+                      <div class="eight columns omega">
+                        <% if body_section['video_url'].present? %>
+                          <% videos_count += 1 %>
+                          <% if body_section['video_url'].include?(".mp4") %>
+                            <video width="100%" controls="controls" preload="metadata">
+                              <source src="<%= body_section['video_url'] %>" type="video/mp4">
+                              Your browser does not support the video tag.
+                            </video>
+                          <% else %>
+                            <iframe width="100%" height="350" src="<%= body_section['video_url'] %>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                          <% end %>
+                          <% if videos_count == 1 %>
+                            <a id="fancybox_video_link" class="video-link fancybox" href="<%= body_section['video_url'] + '?autoplay=1' %>" style="display: none;"></a>
+                          <% end %>
+                        <% else %>
+                          <img src="<%= body_section['image_url'] %>" class="img_style" alt="" style="border-radius: 0px; border: 1px none rgb(68, 68, 68); width: 450px;">
+                        <% end %>
+                      </div>
+                    <% else %>
+                      <div class="eight columns alpha">
+                        <% if body_section['video_url'].present? %>
+                          <% videos_count += 1 %>
+                          <% if body_section['video_url'].include?(".mp4") %>
+                            <video width="100%" controls="controls" preload="metadata">
+                              <source src="<%= body_section['video_url'] %>" type="video/mp4">
+                              Your browser does not support the video tag.
+                            </video>
+                          <% else %>
+                            <iframe width="100%" height="350" src="<%= body_section['video_url'] %>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                          <% end %>
+                          <% if videos_count == 1 %>
+                            <a id="fancybox_video_link" class="video-link fancybox" href="<%= body_section['video_url'] + '?autoplay=1' %>" style="display: none;"></a>
+                          <% end %>
+                        <% else %>
+                          <img src="<%= body_section['image_url'] %>" class="img_style" alt="" style="border-radius: 0px; border: 1px none rgb(68, 68, 68); width: 450px;">
+                        <% end %>
+                      </div>
+                      <div class="eight columns omega">
+                        <div class="gtext_style">
+                          <h3 class="t1_style bold_text editContent"><%= body_section['title'] %></h3>
+                          <p class="t3_style editContent"><%= body_section['body'] %></p>
+                        </div>
+                        <% if body_section['action_title'].present? && body_section['action_link'].present? %>
+                          <div class="center_text">
+                            <a target="_blank" href="<%= body_section['action_link'] %>" class="pix_button pix_button_line bold_text green_1 btn_big" src="images/uploads/san-francisco-california-usa-3833_.jpg" style="color: rgb(61, 133, 198); font-size: 16px; font-family: 'Open Sans',sans-serif; border-color: rgb(61, 133, 198); border-radius: 3px; border-width: 2px; background-color: transparent;">
+                              <span><%= body_section['action_title'].try(:upcase) %></span>
+                            </a>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div class="twelve columns alpha offset-by-two">
+                    <div class="content_div center_text">
+                      <div class="margin_bottom_30 green_1">
+                        <i class="fa fa-newspaper-o" style="color: rgb(61, 133, 198); font-size: 56px; background-color: transparent;"></i>
+                      </div>
+                      <div class="margin_bottom_30">
+                        <p class="big_title bold_text editContent"><%= body_section['title'] %></p>
+                        <p class="t3_style center_text editContent"><%= body_section['body'] %></p>
+                      </div>
+                      <% if body_section['action_title'].present? && body_section['action_link'].present? %>
+                        <a target="_blank" href="<%= body_section['action_link'] %>" class="pix_button pix_button_line bold_text green_1 btn_big" src="images/uploads/san-francisco-california-usa-3833_.jpg" style="color: rgb(61, 133, 198); font-size: 16px; font-family: 'Open Sans',sans-serif; border-color: rgb(61, 133, 198); border-radius: 3px; border-width: 2px; background-color: transparent;">
+                          <span><%= body_section['action_title'].try(:upcase) %></span>
+                        </a>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+      <div class="pixfort_normal_1" id="section_call_footer">
+        <div class="page_style pix_builder_bg" style="padding-top: 0; padding-bottom: 0; box-shadow: none; background-image: url(<%= @client_landing_page.footer_image_url %>); background-attachment: fixed; background-color: rgb(0, 0, 0); background-size: cover; background-repeat: repeat;">
+          <div class="container">
+            <div class="sixteen columns context_style">
+              <div class="text_page" style="width: 100%; margin: 200px 0 0 0; background: rgba(255, 255, 255, 0.5); box-shadow: 0 0 150px 150px rgba(255, 255, 255, 0.5); -moz-box-shadow: 0 0 150px 150px rgba(255, 255, 255, 0.5); -webkit-box-shadow: 0 0 150px 150px rgba(255, 255, 255, 0.5);">
+                <h1 class="title margin_bottom_30" style="margin: 0; padding: 0; color: #000; font-size: 48px; font-family: 'Open Sans',sans-serif; background-color: transparent;">
+                  <span class="editContent"><%= @client_landing_page.footer_title %></span>
+                </h1>
+                <p class="subtitle editContent" style="color: rgb(0, 0, 0); font-size: 20px; font-family: 'Open Sans',sans-serif; background-color: transparent;">
+                  <span><%= @client_landing_page.footer_body %></span>
+                </p>
+              </div>
+              <% if @client_landing_page.footer_action_title.present? && @client_landing_page.footer_action_link.present? %>
+                <div>
+                  <a class="subscribe_btn pix_text" id="subscribe_btn_1" style="color: rgb(255, 255, 255); font-size: 14px; font-family: 'Open Sans',sans-serif; background-color: rgb(61, 133, 198);" href="<%= @client_landing_page.footer_action_link %>" target="_blank">
+                    <span class="editContent"><%= @client_landing_page.footer_action_title.try(:upcase) %></span>
+                  </a>
+                </div>
+              <% end %>
+              <div class="note_st">
+                <span class="editContent"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- JavaScript
+    ================================================== -->
+    <script src="js-files/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script src="js-files/jquery.easing.1.3.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js-files/jquery.common.min.js"></script>
+    <script src="js-files/ticker.js" type="text/javascript"></script>
+    <script src="js-files/custom1.js" type="text/javascript"></script>
+    <script src="assets/js/smoothscroll.min.js" type="text/javascript"></script>
+    <script src="assets/js/appear.min.js" type="text/javascript"></script>
+    <script src="js-files/jquery.ui.touch-punch.min.js"></script>
+    <script src="js-files/bootstrap.min.js"></script>
+    <script src="js-files/bootstrap-switch.js"></script>
+    <script src="js-files/custom3.js" type="text/javascript"></script>
+    <script src="assets/js/appear.min.js" type="text/javascript"></script>
+    <script src="assets/js/animations.js" type="text/javascript"></script>
+    <script src="js-files/jquery.floating-social-share.min.js" type="text/javascript" ></script>
+    <script>
+      $(document).ready(function(){
+        $("body").floatingSocialShare({
+          place: "top-left", // alternatively top-right
+          counter: false, // set to false to hide counters of pinterest, facebook, twitter and linkedin
+          buttons: ["facebook", "twitter", "google-plus", "linkedin", "vk", "reddit", "stumbleupon", "tumblr"], // all of the currently avalaible social buttons
+          title: document.title, // your title, default is current page's title
+          text: "SHARE THIS PAGE ON ", // the title of a tags
+          description: $("meta[name='description']").attr("content"), // your description, default is current page's description
+          popup_width: 800, // the sharer popup's width, default is 400px
+          popup_height: 600 // the sharer popup's width, default is 300px
+        });
+        $(".pop-upper").each(function(){
+          var share_icon_title = $(this).attr("title");
+          $(this).attr("title", share_icon_title + ". "  + "<%= @client_landing_page.share_icons_hover_text.to_s.html_safe() %>");
+        })
+        $("#floatingSocialShare .top-left").first().prepend("<img id='share_img' src='<%= @share_icon_url %>' style='z-index: 99999;width: 75px; margin-bottom: -5px;'/>");
+        if(window.innerWidth > 960) {
+          if($('#fancybox_video_link').length > 0) {
+            var target_element = $('#fancybox_video_link').prev();
+            if (target_element.is("video")){
+              var video_src = $('#fancybox_video_link').attr("href");
+              var content = '<video id="fancy_video" src="' + video_src + '" type="video/mp4" style="width: 960px; height: 540px;" controls="true" onloadstart="this.volume=0.5"></video>';
+              $('#fancybox_video_link').fancybox({
+                content: content,
+                'showCloseButton': true,
+                minWidth: 960,
+                minHeight: 540
+              });
+              $("#fancybox_video_link").trigger("click");
+              $("#fancy_video")[0].play();
+            } else {
+              $('#fancybox_video_link').fancybox({
+                type: 'iframe',
+                'showCloseButton': true,
+                minWidth: 960,
+                minHeight: 540
+              });
+              $("#fancybox_video_link").trigger("click");
+            }
+          }
+        } else {
+          if($('#fancybox_video_link').length > 0) {
+            var target_element = $('#fancybox_video_link').prev();
+            if (target_element.is("video")){
+              $('html, body').animate({
+                scrollTop: $("video").first().offset().top - 80
+              }, 3000);
+              $("video").get(0).play();
+            } else {
+              $('html, body').animate({
+                scrollTop: $("iframe").first().offset().top - 80
+              }, 3000);
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

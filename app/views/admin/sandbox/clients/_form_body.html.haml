@@ -1,0 +1,43 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.row
+	.col-md-4
+		.form-group
+			= f.label :client_id, t('sandbox.client.client_id')
+			= f.select(:client_id, options_from_collection_for_select(Client.order(:name), "id", "name", f.object.client_id), {include_blank: ''}, {class: 'form-control'})
+	.col-md-4
+		.form-group
+			= f.label :client_category_id, t('sandbox.client.client_category_id')
+			= f.select(:client_category_id, options_from_collection_for_select(Sandbox::ClientCategory.order(:name), "id", "name", f.object.client_category_id), {include_blank: ''}, {class: 'form-control'})
+	.col-md-4
+		.form-group
+			= f.label :is_active, t('sandbox.client.is_active')
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= f.select(:is_active, yes_no_options, {include_blank: '', selected: f.object.is_active}, {class: 'form-control'})
+.form-group
+	= f.label :description, t('sandbox.client.description')
+	= f.text_area :description, class: "form-control", rows: 4
+.row
+	- %w(logo background_image subject_image).each do |img|
+		.col-md-4
+			.form-group{class: "control-box #{img}_container"}
+				= f.label img, t("sandbox.client.#{img}")
+				.logo_preview
+				.form-group
+					= check_box_tag "upload_#{img}_type", '', false, class: 'iCheck-helper upload_from_artifacts', style: 'float: left; margin-right: 10px'
+					.help-block="Local from Local/Artifacts"
+					= link_to admin_sandbox_browse_path(img), class: "btn btn-primary btn-sm search_artifacts_images hidden", data: {remote: true, disable_with: "browsing..."} do
+						= fa_icon 'search'
+						= t('browse')
+
+				= f.file_field img, accept: 'image/png,image/gif,image/jpeg', class: "search_local_images hidden"
+				= f.text_field "#{img}_path", class: "hidden", value: ""
+				%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+				%p{class: 'help-block'} May need to be processed in photoshop before uploading
+				.form-group
+					= label_tag nil, 'Current Image'
+					%div{:class => "#{img}_image"}
+						- unless f.object.send(img).blank?
+							= image_tag f.object.send(img).url(:square_256), class: "img-thumbnail #{img}_img", alt:  "no image"

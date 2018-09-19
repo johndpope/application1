@@ -1,0 +1,64 @@
+<% title 'Video Marketing Campaign Forms' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i><%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+
+<div id="video_marketing_campaign_forms_list">
+	<div class="row">
+		<div class="col-md-5">
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @video_marketing_campaign_forms.total_count %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @video_marketing_campaign_forms.to_a.empty? %>
+		<table id="video_marketing_campaign_forms_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="text-center">ID</th>
+					<th>Name</th>
+          <th class="text-center">Created at</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @video_marketing_campaign_forms.each do |video_marketing_campaign_form| %>
+					<tr>
+						<td class="text-center"><%=video_marketing_campaign_form.id %></td>
+						<td><%=video_marketing_campaign_form.company_name %></td>
+            <td class="text-center"><%= local_time(video_marketing_campaign_form.created_at, format: '%m/%d/%y %I:%M %p', title: video_marketing_campaign_form.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if video_marketing_campaign_form.created_at.present? %></td>
+						<td class="text-center actions">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_video_marketing_campaign_form_path(video_marketing_campaign_form), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, video_marketing_campaign_form, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+  <div><%= paginate @video_marketing_campaign_forms, theme: 'bootstrap' %></div>
+
+	<% if @video_marketing_campaign_forms.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

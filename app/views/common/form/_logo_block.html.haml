@@ -1,0 +1,22 @@
+.row.logo-block{data: {role: "logo-block"}}
+	.col-md-12
+		%div{class: "form-group #{'has-error' if f.object.errors[logo_field].present?}", data: {content: f.object.errors[logo_field].try(:join, ', ')}}
+			= f.label logo_field, logo_field_label, class: "control-label"
+			= tooltip_by_field({tooltip_text: t("tooltips.client.#{logo_field_label}", :default => "")})
+			= f.hidden_field remove_logo_attr_field, data: {role: 'remove-logo-attr-field'}
+			= f.file_field logo_field, accept: 'image/png'
+			%p{class: "help-block"}
+				File Format:
+				%strong PNG
+				only!
+			%p{class: "help-block"}
+				File Size: up to
+				%strong 2 megabytes
+			- if display_info_block
+				.logo-info{data:{role: "logo-info"}}
+					%div
+						%strong Current image
+					= link_to (image_tag URI::escape(thumb_url, '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(original_url, '[]'), { target: '_blank' }
+					%div
+						= link_to 'javascript://', class: 'btn btn-xs btn-danger', data:{role: "btn-remove-logo"} do
+							= fa_icon 'trash-o', text: t('remove')

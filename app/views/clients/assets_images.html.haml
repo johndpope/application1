@@ -1,0 +1,47 @@
+= stylesheet_link_tag 'artifacts/images'
+- title 'Images Assets'
+- header @client.name
+- small_header 'Images Assets'
+- breadcrumb :client_assets, @client
+= render 'clients/navigation'
+- if params[:target] == 'donors' && @client.donors.present?
+  .text-center
+    .btn-group
+      = link_to 'All donors', assets_images_client_path(@client, target: 'donors'), class: "btn #{params[:donor_id].present? ? 'btn-default' : 'btn-info disabled'}", type: "button"
+      - @client.donors.each do |donor|
+        = link_to donor.name, assets_images_client_path(@client, target: 'donors', donor_id: donor.id), class: "btn #{params[:donor_id] == donor.id.to_s ? 'btn-info disabled' : 'btn-default'}", type: "button"
+- if params[:target] == 'industry'
+  .text-center
+    %h4
+      %b= @client.industry.name
+.artifacts_images.index
+  - if @total_count.present? && @total_count > 0
+    .row
+      .col-md-12
+        %h4
+          %span{class: "label label-success"}= @total_count
+          items totally
+    .row
+      .col-lg-6.col-md-6
+        .pull-left= paginate @images, theme: 'bootstrap_without_last'
+    - if !@images.any?
+      .row
+        .col-lg-12.col-md-12
+          .alert.alert-info All images on this page are already imported or rejected, please go to the next page
+    .row
+      - @images.each do |image|
+        - url_o = image.url_o
+        - source_tag_list = image.source_tag_list
+        - image = image.becomes(Artifacts::Image)
+        - image.url_o = url_o
+        - image.source_tag_list = source_tag_list
+        = render 'artifacts/images/image', image: image
+    .row
+      .col-lg-6.col-md-6
+        .pull-left= paginate @images, theme: 'bootstrap'
+  - else
+    .row
+      .col-md-12
+        %h4
+          %span{class: "label label-danger"} 0
+          items totally

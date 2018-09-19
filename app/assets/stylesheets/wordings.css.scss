@@ -1,0 +1,114 @@
+.wordings{
+	thead > tr > th,
+	.table > tbody > tr > th,
+	.table > tfoot > tr > th,
+	.table > thead > tr > td,
+	.table > tbody > tr > td,
+	.table > tfoot > tr > td {
+		padding: 4px !important;
+		vertical-align: middle !important;
+		position: relative;
+	}
+
+	.tiers-info-block {
+		display: inline-block;
+		margin-right: 25px;
+	}
+
+	.filter-label {
+		margin-top: 2px;
+		font-weight: bold;
+	}
+
+  .history-wording-name {
+    margin-bottom: 5px;
+    font-size: 15px !important;
+  }
+
+	form {
+    .box {
+      margin-top: 15px;
+    }
+		display: block;
+		margin-bottom: 30px;
+
+		.form-control input { height: 24px; }
+
+		.popover.bottom {
+			padding: 0;
+			border-color: #f56954;
+
+			.arrow {
+				border-bottom-color: #f56954 !important;
+
+				&::after { border-bottom-color: #f2dede; }
+			}
+
+			.popover-content {
+				background-color: #f2dede;
+				color: #a94442;
+				border-radius: 6px;
+			}
+		}
+	}
+
+	th, td { font-size: 13px; }
+
+	.ws-pw {
+		white-space: pre-wrap;
+		word-break: normal;
+	}
+
+	fieldset.form {
+		border: 1px solid #d5d5d5;
+		margin: 0 0 15px;
+		padding: 10px 15px 0;
+
+		> legend {
+			display: inline-block;
+			width: auto;
+			margin: 0;
+			padding: 0 8px;
+			border: 0 none;
+			line-height: normal;
+
+			> .btn { margin: -4px 0 0 6px; }
+		}
+
+		.remove-fields { display: none; }
+
+		.row { margin-bottom: 10px; }
+
+		.counter-characters {
+			padding: 0 5px 0 0;
+
+			.label {
+				margin-left: 3px;
+				vertical-align: text-top;
+			}
+		}
+	}
+
+	.bootstrap-tagsinput { width: 100%; }
+
+	.wordings.geo_index {
+		.center { text-align: center; }
+		.search-form label.control-label { margin-top: 10px; }
+
+		.head-title {
+			padding-bottom: 5px;
+			border-bottom: 1px solid #d5d5d5;
+
+			a.size-of {
+				margin-top: 10px;
+				font-size: 19px;
+				text-decoration: underline;
+
+				&:hover, &:active, &:focus {
+					color: #2576a5;
+					text-decoration: none;
+				}
+			}
+		}
+	}
+}

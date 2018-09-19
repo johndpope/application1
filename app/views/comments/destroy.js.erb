@@ -1,0 +1,4 @@
+$("#<%= dom_id(@comment, 'row') %>").remove()
+if ($('#comments_table .direct-chat-msg').length == 0) {
+  $('#no_items_tr').show();
+}

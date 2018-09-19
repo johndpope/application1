@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  call_file_url: MyString
+  admin_user_id: 1
+  phone_id: 1
+  sms_code: MyString
+  session_id: MyString
+
+two:
+  call_file_url: MyString
+  admin_user_id: 1
+  phone_id: 1
+  sms_code: MyString
+  session_id: MyString

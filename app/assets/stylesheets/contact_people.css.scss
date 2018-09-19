@@ -1,0 +1,12 @@
+#phones_block {
+	.phone-row {
+		margin-bottom: 2px;
+    .input-group-addon {
+      width: 20px !important;
+      i {color: white;}
+    }
+    .phone-type {width: 20% !important;}
+    .phone {width: 80% !important;}
+    .delete-link i { color: red; }
+	}
+}

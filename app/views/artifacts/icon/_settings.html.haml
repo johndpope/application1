@@ -1,0 +1,58 @@
+= form_tag "#", method: "post", authenticity_token: true, id: "save_form", data:{remote: true} do |f|
+  - @images.each do |img|
+    - url = img.gsub("#{Rails.root.join('public')}",'')
+    .row{:data => {:secure => SecureRandom.uuid}}
+      .col-md-12.box
+        = hidden_field_tag 'icon_path', path
+        = image_tag url, class: "img-responsive thumbnail"
+        %button.btn.btn-success.dialog{type: 'button', data: {path: img, toggle: "modal", target: "#artifacts_icon_image_modal", remote: true}}
+          = "Description"
+          = fa_icon 'pencil'
+        %button.btn.btn-danger.delete{type: 'button', data: {path: img}}
+          = "Remove"
+          = fa_icon 'trash'
+
+.modal.fade#artifacts_icon_image_modal
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{:type => "button", :data => {:dismiss => "modal"}, :aria => {:hidden => true}}
+        %h4.modal-title#myModalLabel="Add information to icon"
+      .modal-body
+        .row
+          .col-md-12
+            .form-group
+              = hidden_field :icon, "url", class: "form-control"
+              = label_tag "Title"
+              = text_field :icon, "title", class: "form-control", placeholder: "Title"
+            .form-group
+              = hidden_field_tag('country_default', nil, data: {id:  Geobase::Country.find_by_code("US").id, name:  Geobase::Country.find_by_code("US").name})
+
+          - %w(country region1 region2 city).each do |g|
+            .col-md-6
+              .form-group.locality
+                = label_tag g
+                - default_country = Geobase::Country.find_by_code("US")
+                - unless default_country == nil
+                  = hidden_field_tag(g, "", class: "form-control", data: {name: default_country.name})
+          .col-md-12
+            .form-group
+              = label_tag "Industry"
+              = hidden_field_tag(:industry_id, "", class: 'ajax form-control', data: {source: industries_json_list_path})
+            .form-group
+              = label_tag "Tags"
+              = text_field :icon, "tags", class: "form-control", placeholder: "Tags"
+              %p.help-block Tags should be separated by commas
+            .form-group
+              = label_tag 'client_id', 'Client', class: "control-label"
+              = select_tag 'client_id', options_from_collection_for_select(Client.order(:name), "id", "name"), include_blank: true
+            .form-group
+              = label_tag 'notes', 'Notes'
+              = text_area_tag 'icon_notes', '', class: 'form-control', rows: 3
+
+      .modal-footer
+        %button.btn.btn-default{:type => "button", data: {dismiss: "modal"}}
+          = "Close"
+        %button.btn.btn-primary{:type => "button", :id => "save", data: {disable_with: 'Saving...'}}
+          = "Save and close"
+          = fa_icon 'hdd-o'

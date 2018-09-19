@@ -1,0 +1,36 @@
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  vertical-align: middle !important;
+}
+.text-project-items-table, .image-project-items-table{
+	th.actions{width: 80px;}
+  i{zoom: 0.75;}
+}
+.text-project-items-table{
+	th.text_type{width: 100px;}
+	th.name{width: 80px;}
+	th.name_presents{width: 50px;}
+	th.value_presents{width: 50px;}
+}
+
+.image-project-items-table{
+	th.image_type{width: 120px;}
+	th.width, th.height{width: 60px;}
+	th.name_presents{width: 80px;}
+}
+
+.templates_aae_projects{
+	&.index{
+		#templates_aae_project_items{
+			.id{width: 40px;}
+			.project_type{width: 150px;}
+			.has_texts, .has_images, .is_approved, .is_special, .sample_video_thumbnail, .sample_video, .sample_video_duration, .content_lock{width: 70px;}
+			.content_validation{width: 100px;}
+			.has_notes{width: 60px;}
+		}
+    .templates_aae_project_modal{
+      .modal-dialog{
+        width: 1010px;
+      }
+    }
+	}
+}

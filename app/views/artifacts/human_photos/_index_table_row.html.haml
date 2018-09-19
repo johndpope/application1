@@ -1,0 +1,18 @@
+%td.text-center= item.id
+%td= item.type
+%td
+	- if item.person_source_url.blank?
+		= item.person_initials
+	- else
+		= link_to item.person_initials, item.person_source_url, target: '_BLANK'
+%td.text-center= item.person_source_id
+%td.text-center= item.person_gender
+%td.text-center= item.person_birth_year
+%td.text-center
+	- if item.file.exists?
+		= link_to item.file.url, class:'human-photo-preview', target: '_BLANK' do
+			= image_tag item.file.url(:w150), class: 'human-photo-thumb', title: 'Click to enlarge'
+%td.text-center
+	- if item.file.exists?
+		= link_to item.file.url, title: 'Download', download: item.file.url do
+			= fa_icon 'download'

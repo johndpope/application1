@@ -1,0 +1,34 @@
+.box.box-default.box-solid#search_conditions
+	.box-header.with-border
+		%h3.box-title= fa_icon 'filter', text: t('filter')
+	.box-body
+		.row
+			.col-md-2
+				.form-group
+					= label_tag :limit, 'Limit'
+					%div
+						- limits = Social::Audio::LIMITS
+						- options = options_for_select(limits.map { |l| ["#{l} items", l] }, selected: params[:limit])
+						= select_tag 'limit', options, include_blank: true, :class => 'form-control'
+			.col-md-2
+				.form-group
+					= label_tag :client_id_eq, 'Client'
+					- options = options_from_collection_for_select(Client.order(:name), :id, :name, params[:client_id_eq])
+					= select_tag 'client_id_eq', options, include_blank: true, class: "form-control"
+			.col-md-2
+				.form-group
+					= label_tag :file_content_type_cont, 'File type'
+					- audio_formats = options_for_select([['mp3','audio/mp3'],['wav','audio/wav']], selected: params[:file_content_type_cont])
+					= select_tag 'file_content_type_cont', audio_formats, include_blank: true, class: "form-control"
+			.col-md-2
+				.form-group
+					= label_tag :notes_cont, 'Notes'
+					= search_field_tag 'notes_cont', params[:notes_cont], class: 'form-control', placeholder: 'notes'
+			.col-md-2
+				.form-group
+					= label_tag :file_file_name_cont, 'Audio track name'
+					= search_field_tag 'file_file_name_cont', params[:file_file_name_cont], class: 'form-control', placeholder: 'track name'
+			.col-md-2
+				.form-group
+					= label_tag :tags_name_cont, 'Tags'
+					= search_field_tag :tags_name_cont, params[:tags_name_cont], class: 'form-control', placeholder: 'tag'

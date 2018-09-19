@@ -1,0 +1,64 @@
+= render partial: 'clients/navigation'
+- title 'Exclude AAE Templates'
+- small_header 'Exclude AAE Templates'
+- header @client.name
+- breadcrumb :exclude_aae_templates, @client
+- content_for(:javascripts) do
+	= stylesheet_link_tag 'fancybox'
+	= javascript_include_tag 'jquery-live-preview'
+	= javascript_include_tag 'fancybox'
+	:javascript
+		$(".aae-project-video").each(function(){
+			src = $(this).attr("href");
+			content = '<video src="' + src + '" autoplay="true" type="video/mp4" controls="true" style="height: 540px; width: 960px" onloadstart="this.volume=0.35"></video>';
+			$(this).fancybox({content: content, minHeight: 540, minWidth: 960});
+		})
+.row
+	.col-md-2
+		.box.box-solid
+			.box-header.with-border
+				%h3.box-title Template Types
+			.box-body.no-padding
+				= render partial: "clients/exclude_aae_templates/index/template_type_sidebar_body"
+	.col-md-10
+		.box.box-default.box-solid
+			.box-header.with-border
+				%h3.box-title
+					Template Exclusion Settings
+				.pull-right
+					= fa_icon 'gear lg'
+			.box-body
+				= form_tag client_template_exclusion_settings_path(@client.id), {data: {remote: true}, id: 'client_template_exclusion_settings_form'} do |f|
+					= render partial: 'clients/exclude_aae_templates/index/exclusion_settings_legend'
+					.form-group
+						= fields_for :client, @client do |client_form|
+							= client_form.label :ignore_special_templates, 'Ignore special templates'
+							%div
+								= client_form.check_box :ignore_special_templates, data:{toggle: 'toggle', disable_with: '<i class="fa fa-refresh fa-spin"></i>'}
+							%p.help-block
+								= fa_icon 'question-circle'
+								This setting helps to ignore group of templates. If this flag is checked off all Special Templates(Holiday Templates, Special Event Tempaltes, etc) will be ignored for this client.
+					.actions
+						= button_tag '', class: "btn btn-primary", type: 'submit', data:{disable_with: "<i class='fa fa-refresh fa-spin'></i>#{t('saving')}"} do
+							= fa_icon 'floppy-o', text: t('save')
+		.box
+			.box-header.with-border
+				%h3.box-title
+					Template Type:
+					%strong= t("templates.video_types.#{@current_type}")
+			.box-body
+				%table.table.table-bordered.table-hover.table-striped{id: "templates_aae_project_opt_out_items"}
+					%thead
+						%tr
+							%th.order_nr.text-center #
+							%th.status_info
+							%th.id.text-center ID
+							%th.video_thumbnail.text-center Thumb
+							%th.video.text-center Video
+							%th.name Name
+							%th.status.text-center Status
+							%th.actions.text-center= t('actions')
+					%tbody
+						- @templates.each_with_index do |item, index|
+							= render partial: "clients/exclude_aae_templates/index/index_table_row", locals: {index: index, item: item}
+				= paginate @templates, theme: 'bootstrap'

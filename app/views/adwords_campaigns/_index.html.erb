@@ -1,0 +1,71 @@
+<div id="adwords_campaigns_list" class="content-block">
+	<div class="row">
+		<div class="col-md-5">
+			<%= link_to 'New Adwords Campaign', new_email_account_adwords_campaign_path(@email_account), class: 'btn btn-sm btn-primary' %>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+				<span class="badge bg-blue"><%= @adwords_campaigns.length %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @adwords_campaigns.to_a.empty? %>
+		<table id="@adwords_campaigns_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Subtype</th>
+					<th class="text-center">Start date</th>
+					<th class="text-center">End date</th>
+					<th class="text-center">Ready</th>
+					<th class="text-center">Linked</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @adwords_campaigns.each do |adwords_campaign| %>
+					<tr id="tr_ac_<%= adwords_campaign.id %>">
+						<td class="text-center"><%= adwords_campaign.id %></td>
+						<td><%= adwords_campaign.name %></td>
+						<td><%= adwords_campaign.campaign_type %></td>
+						<td><%= adwords_campaign.campaign_subtype %></td>
+						<td class="text-center"><%= adwords_campaign.start_date.try(:strftime, "%b %e, %Y") %></td>
+						<td class="text-center"><%= adwords_campaign.end_date.try(:strftime, "%b %e, %Y") %></td>
+						<td class="text-center">
+							<% if adwords_campaign.ready %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<% if adwords_campaign.linked %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_email_account_adwords_campaign_path(@email_account, adwords_campaign), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, email_account_adwords_campaign_path(@email_account, adwords_campaign), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @adwords_campaigns.to_a.empty? %>
+		<div class="row">
+			<div class="col-md-12">
+				<br>
+				<div class="alert alert-info">No items available</div>
+			</div>
+		</div>
+	<% end %>
+</div>

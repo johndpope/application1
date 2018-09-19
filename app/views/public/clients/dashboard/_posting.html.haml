@@ -1,0 +1,119 @@
+- youtube_channels_join = @client.id == 7 ? "" : "LEFT OUTER JOIN google_accounts ON google_accounts.id = youtube_channels.google_account_id LEFT OUTER JOIN email_accounts ON email_accounts.email_item_id = google_accounts.id"
+- youtube_videos_join = @client.id == 7 ? "LEFT OUTER JOIN youtube_channels ON youtube_channels.id = youtube_videos.youtube_channel_id LEFT OUTER JOIN youtube_video_annotations ON youtube_video_annotations.youtube_video_id = youtube_videos.id LEFT OUTER JOIN youtube_video_cards ON youtube_video_cards.youtube_video_id = youtube_videos.id LEFT OUTER JOIN call_to_action_overlays ON call_to_action_overlays.youtube_video_id = youtube_videos.id" : "LEFT OUTER JOIN youtube_channels ON youtube_channels.id = youtube_videos.youtube_channel_id LEFT OUTER JOIN google_accounts ON google_accounts.id = youtube_channels.google_account_id LEFT OUTER JOIN email_accounts ON email_accounts.email_item_id = google_accounts.id LEFT OUTER JOIN geobase_localities ON geobase_localities.id = email_accounts.locality_id LEFT OUTER JOIN geobase_regions ON geobase_regions.id = geobase_localities.primary_region_id LEFT OUTER JOIN geobase_countries ON geobase_countries.id = geobase_regions.country_id LEFT OUTER JOIN geobase_regions regions ON regions.id = email_accounts.region_id LEFT OUTER JOIN geobase_countries countries ON countries.id = regions.country_id LEFT OUTER JOIN clients ON clients.id = email_accounts.client_id LEFT OUTER JOIN youtube_video_annotations ON youtube_video_annotations.youtube_video_id = youtube_videos.id LEFT OUTER JOIN youtube_video_cards ON youtube_video_cards.youtube_video_id = youtube_videos.id LEFT OUTER JOIN call_to_action_overlays ON call_to_action_overlays.youtube_video_id = youtube_videos.id"
+- done_youtube_channels_count = YoutubeChannel.distinct.joins(youtube_channels_join).by_client_id(@client.id).where("youtube_channels.youtube_channel_id IS NOT NULL AND youtube_channels.youtube_channel_id <> '' AND youtube_channels.ready IS TRUE AND youtube_channels.is_verified_by_phone IS TRUE", @client.id).with_channel_type(:business).count
+-# - pending_youtube_channels_count = YoutubeChannel.joins(youtube_channels_join).where("clients.id = ? AND (youtube_channels.linked IS NOT TRUE OR youtube_channels.ready IS NOT TRUE OR youtube_channels.is_verified_by_phone IS NOT TRUE OR youtube_channels.filled IS NOT TRUE)", @client.id).with_channel_type(:business).count
+- total_youtube_channels_count = YoutubeChannel.distinct.joins(youtube_channels_join).by_client_id(@client.id).with_channel_type(:business).count
+- pending_youtube_channels_count = total_youtube_channels_count - done_youtube_channels_count
+- done_youtube_videos_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_client_id(@client.id).where("youtube_videos.deleted IS NOT TRUE AND youtube_videos.youtube_video_id IS NOT NULL AND youtube_videos.youtube_video_id <> '' AND youtube_videos.is_active = TRUE").count
+-# - pending_youtube_videos_count = YoutubeVideo.joins(youtube_channels_join).where("clients.id = ? AND youtube_videos.deleted IS NOT TRUE AND (youtube_videos.youtube_video_id IS NULL OR youtube_videos.linked IS NOT TRUE OR youtube_videos.ready IS NOT TRUE)", @client.id).count
+- total_youtube_videos_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_client_id(@client.id).where("youtube_videos.deleted IS NOT TRUE").count
+- pending_youtube_videos_count = total_youtube_videos_count - done_youtube_videos_count
+- done_associated_websites_count = AssociatedWebsite.distinct.joins(:client_landing_page, :youtube_channel).where("client_landing_pages.client_id = ? AND associated_websites.linked IS TRUE", @client.id).count
+-# - pending_associated_websites_count = AssociatedWebsite.joins(:client_landing_page, :youtube_channel).where("client_landing_pages.client_id = ? AND associated_websites.linked IS NOT TRUE ", @client.id).count
+- total_associated_websites_count = AssociatedWebsite.distinct.joins(:client_landing_page, :youtube_channel).where("client_landing_pages.client_id = ?", @client.id).count
+- pending_associated_websites_count = total_associated_websites_count - done_associated_websites_count
+
+- done_youtube_videos_with_annotations_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_annotations(true.to_s).by_client_id(@client.id).size
+- pending_youtube_videos_with_annotations_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_annotations(false.to_s).by_client_id(@client.id).size
+- total_youtube_videos_with_annotations_count = done_youtube_videos_with_annotations_count + pending_youtube_videos_with_annotations_count
+
+- done_youtube_videos_with_cards_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_cards(true.to_s).by_client_id(@client.id).size
+- pending_youtube_videos_with_cards_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_cards(false.to_s).by_client_id(@client.id).size
+- total_youtube_videos_with_cards_count = done_youtube_videos_with_cards_count + pending_youtube_videos_with_cards_count
+
+- done_youtube_videos_with_call_to_action_overlays_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_call_to_action_overlays(true.to_s).by_client_id(@client.id).size
+- pending_youtube_videos_with_call_to_action_overlays_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_call_to_action_overlays(false.to_s).by_client_id(@client.id).size
+- total_youtube_videos_with_call_to_action_overlays_count = done_youtube_videos_with_call_to_action_overlays_count + pending_youtube_videos_with_call_to_action_overlays_count
+
+- done_youtube_videos_on_google_plus_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_on_google_plus(true.to_s).by_client_id(@client.id).size
+- pending_youtube_videos_on_google_plus_count = YoutubeVideo.distinct.joins(youtube_videos_join).by_is_active(true.to_s).by_posted_on_google_plus(false.to_s).by_client_id(@client.id).size
+- total_youtube_videos_on_google_plus_count = done_youtube_videos_on_google_plus_count + pending_youtube_videos_on_google_plus_count
+
+- percentage_hash = {}
+- ['youtube_channels', 'youtube_videos', 'associated_websites', 'youtube_videos_with_annotations', 'youtube_videos_with_cards', 'youtube_videos_with_call_to_action_overlays', 'youtube_videos_on_google_plus'].each do |e|
+  - percentage_hash["done_#{e}_p"] = eval("total_#{e}_count") > 0 ? (eval("done_#{e}_count") * 100 / eval("total_#{e}_count").to_f) : 0.0
+- youtube_channels_average_posting_time = YoutubeChannel.average_posting_time(nil, nil, @client.id)
+- youtube_videos_average_posting_time = YoutubeVideo.average_posting_time(nil, nil, @client.id)
+- associated_website_average_time = AssociatedWebsite.average_posting_time(nil, nil, @client.id)
+-# - adwords_campaigns_average_time = AdwordsCampaign.average_posting_time(nil, nil, @client.id)
+-# - adwords_campaign_groups_average_time = AdwordsCampaignGroup.average_posting_time(nil, nil, @client.id)
+- youtube_video_call_to_action_overlays_average_time = CallToActionOverlay.average_posting_time(nil, nil, @client.id)
+- youtube_video_annotations_average_time = YoutubeVideoAnnotation.average_posting_time(nil, nil, @client.id)
+- youtube_video_cards_average_time = YoutubeVideoCard.average_posting_time(nil, nil, @client.id)
+- youtube_video_google_plus_average_time = YoutubeVideo.average_google_plus_upload_time(nil, nil, @client.id)
+- business_channel_type = YoutubeChannel.channel_type.find_value(:business).value
+.row
+  .col-md-12
+    %br
+    %br
+    %table.table.table-bordered.table-striped.vertical-align-middle.posting-table
+      %tbody
+        %tr
+          %th{style: "width: 25%;"}
+          %th{style: "width: 15%;", class: "text-center", title: "Average Posting Time"} Average posting time
+          %th{style: "width: 5%;", class: "text-center"} Done
+          %th{style: "width: 5%;", class: "text-center"} Pending
+          %th{style: "width: 5%;", class: "text-center"} Total
+          %th{style: "width: 15%;", class: "text-center"} Progress
+        %tr
+          %th{class: "text-right"} Youtube business channels
+          %td{class: "text-center"}= youtube_channels_average_posting_time > 0 ? Utils.seconds_to_time(youtube_channels_average_posting_time, true) : "-"
+          %td{class: "text-center"}
+            =link_to done_youtube_channels_count.to_s(:delimited), public_client_youtube_channels_path(@client.public_profile_uuid, status: 'done', channel_type: business_channel_type), target: "_blank"
+          %td{class: "text-center"}
+            =link_to pending_youtube_channels_count.to_s(:delimited), public_client_youtube_channels_path(@client.public_profile_uuid, status: 'pending', channel_type: business_channel_type), target: "_blank"
+          %td{class: "text-center"}
+            =link_to total_youtube_channels_count.to_s(:delimited), public_client_youtube_channels_path(@client.public_profile_uuid, channel_type: business_channel_type), target: "_blank"
+          %td
+            .progress
+              - channels_progress_bar_class = percentage_hash['done_youtube_channels_p'] < 100 ? "progress-bar-primary" : "progress-bar-success"
+              %div{class: "progress-bar #{channels_progress_bar_class}", style: "width: #{percentage_hash['done_youtube_channels_p']}%;", title:"Done"}
+                %span{class: "progress-bar-span"}= "#{percentage_hash['done_youtube_channels_p'].to_i}%"
+        %tr
+          %th{class: "text-right"} Youtube videos
+          %td{class: "text-center"}= youtube_videos_average_posting_time > 0 ? Utils.seconds_to_time(youtube_videos_average_posting_time, true) : "-"
+          %td{class: "text-center"}
+            =link_to done_youtube_videos_count.to_s(:delimited), public_client_youtube_videos_path(@client.public_profile_uuid, status: 'done'), target: "_blank"
+          %td{class: "text-center"}
+            =link_to pending_youtube_videos_count.to_s(:delimited), public_client_youtube_videos_path(@client.public_profile_uuid, status: 'pending'), target: "_blank"
+          %td{class: "text-center"}
+            =link_to total_youtube_videos_count.to_s(:delimited), public_client_youtube_videos_path(@client.public_profile_uuid), target: "_blank"
+          %td
+            .progress
+              - videos_progress_bar_class = percentage_hash['done_youtube_videos_p'] < 100 ? "progress-bar-primary" : "progress-bar-success"
+              %div{class: "progress-bar #{videos_progress_bar_class}", style: "width: #{percentage_hash['done_youtube_videos_p']}%;", title:"Done"}
+                %span{class: "progress-bar-span"}= "#{percentage_hash['done_youtube_videos_p'].to_i}%"
+        - field_list = %w(youtube_videos_with_annotations youtube_videos_with_cards youtube_videos_with_call_to_action_overlays youtube_videos_on_google_plus)
+        - field_list.delete('youtube_videos_with_annotations') if total_youtube_videos_with_annotations_count == 0
+        - field_list.delete('youtube_videos_with_call_to_action_overlays') if total_youtube_videos_with_call_to_action_overlays_count == 0
+        - field_list.delete('youtube_videos_with_cards') if total_youtube_videos_with_cards_count == 0
+        - field_list.each do |t|
+          %tr
+            %th{class: "text-right"}= "#{t}".humanize
+            %td{class: "text-center"}= eval("youtube_video_#{t.gsub('youtube_videos_on_', '').gsub('youtube_videos_with_', '')}_average_time") > 0 ? Utils.seconds_to_time(eval("youtube_video_#{t.gsub('youtube_videos_on_', '').gsub('youtube_videos_with_', '')}_average_time"), true) : "-"
+            %td{class: "text-center"}
+              = eval("done_#{t}_count").to_s(:delimited)
+            %td{class: "text-center"}
+              = eval("pending_#{t}_count").to_s(:delimited)
+            %td{class: "text-center"}
+              = eval("total_#{t}_count").to_s(:delimited)
+            %td
+              .progress
+                - progress_bar_class = percentage_hash["done_#{t}_p"] < 100 ? "progress-bar-primary" : "progress-bar-success"
+                - percentage = percentage_hash["done_#{t}_p"]
+                %div{class: "progress-bar #{progress_bar_class}", style: "width: #{percentage}%;", title:"Done"}
+                  %span{class: "progress-bar-span"}= "#{percentage.to_i}%"
+        %tr
+          %th{class: "text-right"} Associated websites
+          %td{class: "text-center"}= associated_website_average_time > 0 ? Utils.seconds_to_time(associated_website_average_time, true) : "-"
+          %td{class: "text-center"}
+            =link_to done_associated_websites_count.to_s(:delimited), public_client_client_landing_pages_path(@client.public_profile_uuid, status: 'done'), target: "_blank"
+          %td{class: "text-center"}
+            =link_to pending_associated_websites_count.to_s(:delimited), public_client_client_landing_pages_path(@client.public_profile_uuid, status: 'pending'), target: "_blank"
+          %td{class: "text-center"}
+            =link_to total_associated_websites_count.to_s(:delimited), public_client_client_landing_pages_path(@client.public_profile_uuid), target: "_blank"
+          %td
+            .progress
+              - associated_websites_progress_bar_class = percentage_hash['done_associated_websites_p'] < 100 ? "progress-bar-primary" : "progress-bar-success"
+              %div{class: "progress-bar #{associated_websites_progress_bar_class}", style: "width: #{percentage_hash['done_associated_websites_p']}%;", title:"Done"}
+                %span{class: "progress-bar-span"}= "#{percentage_hash['done_associated_websites_p'].to_i}%"

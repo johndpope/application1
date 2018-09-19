@@ -1,0 +1,22 @@
+<table class="table table-bordered table-striped vertical-align-middle">
+  <thead>
+    <tr>
+			<th>URL</th>
+			<th style="width: 45px;" class="text-center" title="Visits"><i class="fa fa-group"></i></th>
+			<th style="width: 45px;" class="text-center" title="Actions"><i class="fa fa-hand-o-up"></i></th>
+			<th style="width: 45px;" class="text-center" title="Page views"><i class="fa fa-eye"></i></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% client_landing_pages.each do |clp| %>
+      <tr>
+        <% clp_url = clp.page_url%>
+				<td><%= link_to clp_url, clp_url, target: '_blank', class: "hyphenate", title: clp_url, style: "width: 200px;" %></td>
+				<td class="text-center"><%= clp.piwik_statistics.last.try(:nb_visits) %></td>
+        <td class="text-center"><%= clp.piwik_statistics.last.try(:nb_actions) %></td>
+        <td class="text-center"><%= clp.piwik_statistics.last.try(:nb_pageviews) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

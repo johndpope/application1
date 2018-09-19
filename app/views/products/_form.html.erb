@@ -1,0 +1,149 @@
+<%= content_for(:javascripts){javascript_include_tag 'products_form'} %>
+<%= nested_form_for @product, url: client_product_path(@client, @product), :html => { :multipart => true } do |f| %>
+  <div class="row">
+    <% if @product.errors.any? %>
+      <div class="col-md-12">
+          <div id="error_explanation" class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@product.errors.count, 'error') %> prohibited this product from being saved</h4>
+          </div>
+        </div>
+    <% end %>
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group <%= 'has-error' if @product.errors[:logo].present? %>" data-content="<%= @product.errors[:logo].try(:join, ',') %>" id="logo_block">
+                <%= f.label :logo, class: 'control-label' %>
+                <%= tooltip_by_field({tooltip_text: t("tooltips.products.logo", :default => "")}) %>
+                <%= f.file_field :logo, accept: 'image/png' %>
+								<%= f.hidden_field :remove_logo %>
+								<p class="help-block">File Format: <strong>PNG</strong> only!</p>
+								<p class="help-block">File Size: up to <strong>2 megabytes</strong></p>
+								<% if !f.object.new_record? && f.object.logo.present? %>
+									<div id="logo_info">
+										<%= link_to (image_tag URI::escape(f.object.logo.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(f.object.logo.url(:original), '[]'), { target: '_blank' } %>
+										<div>
+											<%= link_to 'javascript://', class: 'btn btn-danger', id: 'btn_remove_logo' do %>
+												<%= fa_icon 'trash-o', text: 'Remove' %>
+											<% end %>
+										</div>
+									</div>
+								<% end %>
+              </div>
+							<div class="form-group <%#= 'has-error' if @product.errors[:parent_id].present? %>" data-content="<%#= @product.errors[:parent_id].try(:join, ',') %>">
+								<div class="row">
+									<div class="col-md-4">
+										<%= f.label :parent_id, "Donor Product", class: 'control-label' %>
+										<%= tooltip_by_field({table_name: "products", table_column: "parent_id"}) %>
+										<div class="input-group">
+											<span class="input-group-addon" style="background-color: rgb(54, 127, 169); border: 1px solid rgb(54, 127, 169);"><i class="fa fa-sitemap"></i></span>
+											<% available_parents = Product.where(client_id: @client.donors.map(&:id)).order(:name) %>
+											<%= f.select :parent_id, options_for_select(available_parents.map{ |product| ["Product: " + product.name + " ···> Client: " + product.client.name, product.id, { 'data-title-components' => product.subject_title_components.join("<sep/>") }] }, @product.parent_id), {include_blank: true}, class: 'form-control' %>
+										</div>
+									</div>
+								</div>
+							</div>
+              <div class="form-group <%= 'has-error' if @product.errors[:name].present? %>" data-content="<%= @product.errors[:name].try(:join, ',') %>">
+                <%= f.label :name, class: 'control-label' %>
+                <%= tooltip_by_field({table_name: "products", table_column: "name"}) %>
+                <div class="input-group">
+                  <span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+                  <%= f.text_field :name, class: 'form-control', placeholder: "Name" %>
+                  <%= f.hidden_field :client_id %>
+                </div>
+              </div>
+              <div class="form-group" title="In Video Title will be used 1 component (either Subject Video component (from subject videos tab) OR product video title component (from products tab) OR subject component (from YouTube Setup tab))">
+                <div class="select2-tags-wrapper">
+                  <label id="subject_title_components_csv">Product video title components</label>
+                  <%= tooltip_by_field({tooltip_text: t("tooltips.products.product_video_title_component",:default => "One component should have 1-3 words. Product Video Title Components represent the key words defining the product.")}) %>
+                  <span id="product_subject_title_components_csv_count" class="badge">0</span>
+                  <%= f.hidden_field :subject_title_components_csv, data: { placeholder: "Subject title components" } %>
+                </div>
+              </div>
+							<div class="form-group">
+								<div class="panel-group" id="descriptions-accordion" role="tablist" aria-multiselectable="true">
+									<% has_errors_in_descriptions = (@product.errors.messages[:"wordings.source"].present? || @product.errors.messages[:"wordings.name"].present?) ? true: false %>
+									<div class="panel panel-default">
+										<div id="descriptions_heading" class="panel-heading">
+											<h4 class="panel-title">
+												<a role="button" data-toggle="collapse" data-parent="descriptions-accordion" href="#descriptions" aria-expanded="true" aria-controls="descriptions"><b>Descriptions & short statements</b> <%= tooltip_by_field({tooltip_text: t("tooltips.products.wordings",:default => "Write specific product descriptions. Long - will be used in Video descriptions, short - in channel descriptions. Short statements will be used in YouTube Video Cards and Call to Action Overlays.")}) %> <span class="badge calc"><%= @product.wordings.size%></span></a>
+												<% if has_errors_in_descriptions %><small class="text-danger">One of the fields is blank</small><% end %>
+											</h4>
+										</div>
+										<div id="descriptions" class="panel-collapse collapse" aria-labelledby="descriptions">
+											<div class="panel-body">
+												<div class="form-group">
+													<%= f.fields_for :wordings do |builder| %>
+														<%= builder.hidden_field :resource_id, value: @product.id %>
+														<%= builder.hidden_field :resource_type, value: 'Product' %>
+														<fieldset class="form">
+															<legend>
+																<%= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i> Remove'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger btn-flat' %>
+															</legend>
+															<div class="row">
+																<div class="col-md-2">
+																	<label class="control-label">Type</label>
+																	<%= builder.select(:name, {'short_description'=>{'data-text-type-limit' => 300}, 'long_description'=>{'data-text-type-limit' => 1000}, 'short_statement'=>{'data-text-type-limit' => CallToActionOverlay::HEADLINE_LIMIT}}, {include_blank: true}, class: 'form-control description-name-select m-b') %>
+																</div>
+															</div>
+															<div class="form-group">
+																<label class="control-label">Text</label>
+																<div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+                                <% if builder.object.name.present? %>
+                                  <% limits = {'short_statement'=>CallToActionOverlay::HEADLINE_LIMIT, 'short_description'=>300, 'long_description'=>1000}%>
+                                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits[builder.object.name]})", maxlength: limits[builder.object.name] %>
+                                <% else %>
+                                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: 'Enter text' %>
+                                <% end %>
+															</div>
+														</fieldset>
+													<% end %>
+													<%= f.link_to_add '<i class="fa fa-plus"></i> Add text'.html_safe, :wordings, class: "btn btn-sm btn-primary" %>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+              <div class="form-group <%= 'has-error' if @product.errors[:tag_list].present? %>" data-content="<%= @product.errors[:tag_list].try(:join, ',') %>" id="tag_list_block">
+                <div>
+                  <%= f.label :tags, class: 'control-label' %>
+                  <%= tooltip_by_field({tooltip_text: t("tooltips.common.tags", :default => "")}) %>
+                  <span id="tag_list_count" class="badge">0</span>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-addon" style="background-color: #3c8dbc; border: 1px solid #3c8dbc;"><i class="fa fa-tags" style="color: #ffffff"></i></span>
+                  <%= f.text_field :tag_list, class: 'form-control', placeholder: 'Enter tags', value: @product.tag_list.to_a.sort.join(",") %>
+                </div>
+              </div>
+							<!-- <div class="form-group">
+								<%#= f.label :protected_words, class: 'control-label' %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #5F7077; border: 1px solid #5F7077;"><i class="fa fa-lock"></i></span>
+									<%#= f.text_field :protected_words, { placeholder: "Protected Words"} %>
+								</div>
+							</div> -->
+              <div class="row center">
+                <div class="btn-group btn-group-custom">
+                  <% if params[:action] == "new" %>
+                    <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, @edit_client_link, class: 'btn btn-lg btn-primary' %>
+                  <% else %>
+                    <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_products_path(@client), class: 'btn btn-lg btn-primary' %>
+                  <% end %>
+                  <%= f.submit :class => 'btn btn-lg btn-success', :id => 'product_submit' %>
+                  <% if params[:action] == "new" && @client.contracts.empty?%>
+                    <%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, new_client_representative_path(@client), class: 'btn btn-lg btn-primary' %>
+                  <% else %>
+                    <%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, client_representatives_path(@client), class: 'btn btn-lg btn-primary' %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

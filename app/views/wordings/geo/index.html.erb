@@ -1,0 +1,59 @@
+<%= javascript_include_tag '/assets/wordings/geo' %>
+<%
+	title @has_type ? params[:type].capitalize : 'List of geo base'
+	breadcrumb @has_type ? params[:type].to_sym : :geo
+
+	if @has_type
+%>
+	<div class="row">
+		<div class="col-md-9">
+			<%
+				@list_of_names.each do | i |
+					list_if_source = @wording.select(:source).where('name = ?', i)
+			%>
+				<h2 class="head-title">
+					<%= i.humanize %>
+					<%= link_to "View all (#{list_if_source.size})", "/wordings?name=#{i}&resource_id=#{params[:resource_id]}&resource_type=#{params[:resource_type]}", class: 'right size-of' %>
+				</h2>
+				<p class="lead"><%= list_if_source.try('first').source %></p>
+			<% end %>
+		</div>
+		<div class="col-md-3">
+			<%
+				@defaults[params[:type].to_sym][1].each do | sym |
+					# if @resource.try(sym).present?
+			%>
+				<p class="lead"><%= sym.humanize %>: <b><%= @resource.try(sym) %></b></p>
+				<%= @resource.to_json %>
+			<%
+				end
+			%>
+		</div>
+	</div>
+<% else %>
+	<div class="row search-form">
+		<div class="col-md-4 col-md-offset-3">
+			<div class="col-md-6">
+				<label class="control-label" for="resource_type">Type:</label>
+				<select id="resource_type" class="form-control" name="resource_type" tabindex="-1">
+					<option value="country">Country</option>
+					<option value="state">State</option>
+					<option value="county">County</option>
+					<option value="locality">Locality</option>
+					<option value="landmark">Landmark</option>
+				</select>
+				<input id="resource_id" type="hidden" value="">
+			</div>
+			<% @defaults.each do | type, value | %>
+				<div class="col-md-6">
+					<label class="control-label" for="<%= type %>_id"><%= type.capitalize %>:</label>
+					<input id="<%= type %>_id" class="form-control select2-ajax" type="text" name="<%= type %>_id" value="<%= value.first if value.first.present? %>" data-type="<%= type %>" placeholder="Select <%= type %>">
+				</div>
+			<% end %>
+			<div class="center">
+				<hr class="cb m-v">
+				<button id="search" class="btn btn-primary btn-lg" type="button">Search</button>
+			</div>
+		</div>
+	</div>
+<% end %>

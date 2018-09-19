@@ -1,0 +1,60 @@
+- content_for(:header){'Youtube Channels'}
+- content_for(:small_header){@client.name}
+- page = params[:page].present? ? params[:page].to_i - 1 : 0
+-# = generic_search_box search: @search,
+-# form_url: url_for(controller: "public/clients", action: :youtube_channels),
+-# body_url: "youtube_channels_search_box_body"
+.box
+  .box-header.with-border
+    %h3.box-title Created Youtube Channels
+    .box-tools
+      %strong= @youtube_channels.total_count
+      items totally
+  .box-body
+    %table.table.table-bordered.table-hover.table-striped
+      %tbody
+        %tr
+          %th{style: "width: 40px;"} #
+          %th{style: "width: 40px;"} ID
+          %th{style: "width: 32px;"} Channel Icon
+          %th{style: "width: 36px;"} Channel Art
+          %th{style: "width: 50px;"} Channel Screenshot
+          %th{style: "width: 120px;"} Channel Type
+          %th Channel Name
+          %th{style: "width: 200px;"} GMail
+          %th{style: "width: 150px;"} Location
+          %th{class: "text-center", style: "width: 70px;"} Posted at
+          %th{style: "width: 45px;", class: "text-center", title: "Views"}
+            %i{class: "fa fa-eye"}
+            %br
+            = YoutubeChannel.yt_statistics_data("sum", "view_count", @client.id).to_s(:delimited)
+          %th{style: "width: 45px;", class: "text-center", title: "Subscribers"}
+            %i{class: "fa fa-pencil-square-o"}
+            %br
+            = YoutubeChannel.yt_statistics_data("sum", "subscriber_count", @client.id).to_s(:delimited)
+          %th{style: "width: 45px;", class: "text-center", title: "Comments"}
+            %i{class: "fa fa-comments-o"}
+            %br
+            = YoutubeChannel.yt_statistics_data("sum", "comment_count", @client.id).to_s(:delimited)
+          %th{class: "text-center", style: "width: 85px;"} Yt statistics updated at
+        - @youtube_channels.each_with_index do |item, index|
+          = render partial: "youtube_channels_table_row", locals: {index: index, item: item, page: page}
+    = paginate @youtube_channels, theme: 'bootstrap'
+= form_tag public_client_youtube_channels_path(@client.public_profile_uuid), method: 'get', id: 'search' do
+  - is_open = [params[:channel_type], params[:status]].reject(&:blank?).any?
+  #toolbar-toggle{ class: ('open' if is_open).to_s }
+    = fa_icon 'gear'
+  #toolbar{ class: ('open' if is_open).to_s }
+    %h4 Filters
+    .form-group
+      = label_tag :channel_type, nil, class: 'control-label'
+      = select_tag(:channel_type, options_for_select(YoutubeChannel::CHANNEL_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, params[:channel_type]), { include_blank: true, class: 'dropdown-toggle select-box form-control' })
+    .form-group
+      = label_tag :status, nil, class: 'control-label'
+      = select_tag(:status, options_for_select([['Done', 'done'], ['Pending', 'pending']], params[:status]), { include_blank: true, class: 'form-control' } )
+    .form-group
+      = label_tag :limit, 'Limit'
+      = select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500], params[:limit]), class: 'form-control')
+    %button.btn.btn-primary.search-btn{ type: 'button' }
+      Search
+      = fa_icon 'search'

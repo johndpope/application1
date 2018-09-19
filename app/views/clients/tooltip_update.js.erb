@@ -1,0 +1,2 @@
+$("#tooltip_edit_<%=@tooltip.id%>").modal('hide');
+$('body').find("[data-original-title='<%=@tooltip.id%>']").data('content','<%=@tooltip.value%>');

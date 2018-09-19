@@ -1,0 +1,32 @@
+- license = image.license_info
+- license[:image_url] = asset_url(image.file.url(:original, timestamp: false)) if image.is_local?
+
+%div
+	%div
+		%strong Author
+	%div
+	- if !license[:author_url].blank?
+		= link_to license[:author_name], license[:author_url], target: "BLANK"
+	- else
+		= license[:author_name]
+- unless license[:image_title].blank?
+	%div
+		%div
+			%strong Title
+		%div= license[:image_title]
+%div
+	%div
+		%strong Source
+	%div
+		= link_to license[:image_url], license[:image_url], target: "BLANK"
+%div
+	%div
+		%strong Licence
+	%div
+		- if !license[:license_url].blank?
+			= link_to license[:license_url], target: "BLANK" do
+				= license[:license_name]
+				= image_tag "licenses/#{license[:license_acronym].downcase}.png", class: "license" unless license[:license_acronym].blank?
+		- else
+			= license[:license_name]
+			= image_tag "licenses/#{license[:license_acronym].downcase}.png", class: "license" unless license[:license_acronym].blank?

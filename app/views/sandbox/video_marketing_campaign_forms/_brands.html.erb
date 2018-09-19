@@ -1,0 +1,49 @@
+<% all_brands_ids = ([@video_marketing_campaign_form.primary_brand.to_s] + @video_marketing_campaign_form.brands.to_a).compact.reject(&:blank?) %>
+<div class="form-group <%= 'has-error' if @video_marketing_campaign_form.errors[:primary_brand].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:primary_brand].try(:join, ',') %>">
+  <%= f.label :primary_brand, "Check off the <span style='color: #c7932b;'><i>PRIMARY BRAND</i></span> you service from the list below.".html_safe, class: "control-label" %>
+  <div class="row">
+    <% manufacturers.each do |manufacturer| %>
+      <div class="primary-brand-div claim_option_brand col-md-2" style="<%= 'display: none' if @video_marketing_campaign_form.primary_brand.present? && @video_marketing_campaign_form.primary_brand.to_s != manufacturer.id.to_s %>">
+        <div class="img-frame brand-frame <%='brand-frame-selected' if @video_marketing_campaign_form.primary_brand.to_s == manufacturer.id.to_s %>">
+          <!-- <span class="img-helper"></span> -->
+          <img class="brand-logo" src="<%= manufacturer.logo.present? ? manufacturer.logo.url(:original) : '/company_logo_missing.svg' %>" title="Brand: <%= manufacturer.name.to_s %>"/>
+        </div>
+        <div class="checkbox text-center" style="margin-top: 10px;">
+          <label><%= f.radio_button(:primary_brand, manufacturer.id.to_s, class: "iCheck-helper primary-brand") %> <%= manufacturer.name %></label>
+        </div>
+      </div>
+    <% end %>
+    <% if @video_marketing_campaign_form.primary_brand.present? && manufacturers.size > 1 %>
+      <div class="col-md-4">
+        <span id="more_primary_brands_span">Not your PRIMARY BRAND? <a id="more_primary_brands" href="javascript://" style="text-decoration: underline; font-weight: bold; line-height: 160px;">Click here to change</a></span>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div class="form-group">
+  <%= f.label :brands, "Check off the <span style='color: #c7932b;'><i>SECONDARY BRAND(S)</i></span> you service from the list below.".html_safe %>
+  <div class="row">
+    <% manufacturers.each do |manufacturer| %>
+      <div class="secondary-brand-div col-md-2" style="<%= 'display: none' if @video_marketing_campaign_form.brands.present? && !all_brands_ids.include?(manufacturer.id.to_s) %>">
+        <div class="checkbox <%= 'disabled-block' if @video_marketing_campaign_form.primary_brand.to_s == manufacturer.id.to_s %>">
+          <label><%= f.check_box(:brands, { multiple: true, class: "iCheck-helper" }, manufacturer.id.to_s) %> <%= manufacturer.name %></label>
+        </div>
+      </div>
+    <% end %>
+    <div class="secondary-brand-div col-md-2" style="<%= 'display: none' if !@video_marketing_campaign_form.other_brands.present? && @video_marketing_campaign_form.brands.present? && all_brands_ids.size != manufacturers.size %>">
+      <div class="checkbox">
+        <label><%= check_box_tag :other_brands, "0", @video_marketing_campaign_form.other_brands.present? || !manufacturers.present? , class: 'iCheck-helper' %> Other</label>
+      </div>
+    </div>
+    <div class="secondary-brand-div col-md-12" style="<%= 'display: none' if !@video_marketing_campaign_form.other_brands.present? && @video_marketing_campaign_form.brands.present? && all_brands_ids.size != manufacturers.size %>">
+      <%= f.text_area :other_brands, class: "form-control", rows: '1', placeholder: "Type here other brands separated by semicolon", style: "#{'display: none;' if !(@video_marketing_campaign_form.other_brands.present? || !manufacturers.present?)}" %>
+    </div>
+    <% if @video_marketing_campaign_form.brands.present? && all_brands_ids.size != manufacturers.size %>
+      <div class="col-md-2">
+        <a id="more_secondary_brands" href="javascript://" style="text-decoration: underline; font-weight: bold;">Show more brands</a>
+      </div>
+    <% end %>
+  </div>
+</div>
+<a id="brands_selection_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+<a id="brands_selection_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>

@@ -1,0 +1,2 @@
+module Clients::BlendingSettingsHelper
+end

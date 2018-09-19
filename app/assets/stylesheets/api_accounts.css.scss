@@ -1,0 +1,37 @@
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  padding: 4px !important;
+  vertical-align: middle !important;
+}
+.filter-label {
+	margin-top: 2px;
+	font-weight: bold;
+}
+form {
+  display: block;
+  margin-bottom: 30px;
+
+  .form-control input { height: 24px; }
+
+  .popover.bottom {
+    padding: 0;
+    border-color: #f56954;
+
+    .arrow {
+      border-bottom-color: #f56954 !important;
+
+      &::after { border-bottom-color: #f2dede; }
+    }
+
+    .popover-content {
+      background-color: #f2dede;
+      color: #a94442;
+      border-radius: 6px;
+    }
+  }
+}
+th, td {
+  font-size: 13px;
+}
+.overflow {
+  word-wrap: break-word;
+}

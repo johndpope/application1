@@ -1,0 +1,27 @@
+<div id="youtube_video_search_rank">
+	<% title 'Youtube video search rank' %>
+	<% breadcrumb :edit_youtube_video_search_rank %>
+
+	<div class="row">
+  	<div class="center">
+  		<div class="form-group">
+  			<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+  			<span class="badge bg-blue"><%=@report_rating.screenshots.count%></span>
+  		</div>
+  	</div>
+  </div>
+
+  <% @report_rating.screenshots.sort.to_a.reverse.each_with_index do |screenshot, index| %>
+    <div class="col-lg-2 col-md-2 img-screenshot1 center">
+			<span title="Action Type"><b><%= screenshot.action_type ? screenshot.action_type : '-' %></b></span><br/>
+
+			<a  class="image-preview" href="<%=screenshot.image(:original)%>" target="_blank">
+				<img class="img-thumbnail livepreview" data-src="<%=screenshot.image(:original)%>" src="<%=screenshot.image(:thumb)%>">
+			</a>
+
+			<p>
+			  <%= local_time(screenshot.created_at, format: '%m/%d/%y %I:%M %p', title: screenshot.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if screenshot.created_at.present? %>
+			</p>
+    </div>
+  <% end %>
+</div>

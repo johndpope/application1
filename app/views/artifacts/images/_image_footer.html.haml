@@ -1,0 +1,96 @@
+.box-footer
+	%div
+		.btn-group
+			- url = image.file.exists? ? image.file.url : image.url_o
+			= link_to url, :class => 'btn btn-default btn-sm', target: '_blank', title: 'URL' do
+				= fa_icon 'eye'
+			= link_to image.page_url, :class => 'btn btn-default btn-sm', target: '_blank', title: 'Page URL' do
+				= fa_icon 'link'
+			- icon_colors = {tag_list: "text-success", special_tag_list: "text-info"}
+			- popover_titles = {tag_list: t("artifacts.images.tags"), special_tag_list: t("artifacts.images.special_tags.special_tags")}
+			= link_to 'javascript:', :class => 'btn btn-default btn-sm tags-toggle',
+				data: { :tags => (image.tag_list.join(',') if image.tag_list.any?)},
+				title: popover_titles[:tag_list],
+				:disabled => ("disabled" unless image.tag_list.any?) do
+				= fa_icon 'tags', class: icon_colors[:tag_list]
+			= link_to 'javascript:', :class => 'btn btn-default btn-sm tags-toggle',
+				data: { :tags => (image.source_tag_list.join(',') if image.source_tag_list.any?)},
+				title: popover_titles[:special_tag_list],
+				:disabled => ("disabled" unless image.source_tag_list.any?) do
+				= fa_icon 'tags', class: icon_colors[:special_tag_list]
+			= link_to 'javascript:', :class => 'btn btn-default btn-sm',
+				title: (image.description if image.description.present?),
+				:disabled => ("disabled" unless image.description.present?) do
+				= fa_icon 'align-left'
+			= link_to (image.persisted? ? artifacts_image_path(image, authenticity_token: form_authenticity_token) : 'javascript:'), :class => 'btn btn-default btn-sm',
+			title: 'Details', :disabled => ("disabled" unless image.persisted?) do
+				= fa_icon 'ellipsis-h'
+			= link_to (image.persisted? ? edit_artifacts_image_path(image, authenticity_token: form_authenticity_token) : 'javascript:'), remote: true, title: 'Edit',
+			:class => 'btn btn-default btn-sm', :disabled => ("disabled" unless image.persisted?) do
+				= fa_icon 'pencil'
+			= link_to (image.persisted? ? artifacts_image_path(image, authenticity_token: form_authenticity_token) : 'javascript:'),
+				:method => ("delete" if image.persisted?),
+				:data => ({ confirm: 'Are you sure?', remote: true } if image.persisted?),
+				title: 'Delete', :disabled => ("disabled" unless image.persisted?),
+				:class => 'btn btn-default btn-sm' do
+				= fa_icon 'times', :class => 'text-danger'
+		- unless image.imported? || image.persisted?
+			.btn-group
+				= link_to artifacts_reject_image_path(source_id: image.source_id, type: image.type, add: true),
+          :method =>'post',
+  				:data => ({remote: true, id: image.source_id } if !image.persisted?),
+  				title: 'Reject', :disabled => ("disabled" if @rejected_images_ids.include?(image.source_id)),
+  				:class => 'btn btn-default btn-sm reject-image' do
+					= fa_icon 'thumbs-o-down', :class => 'text-danger'
+				= link_to artifacts_reject_image_path(source_id: image.source_id, type: image.type, add: false),
+          :method =>'post',
+  				:data => ({remote: true, id: image.source_id } if !image.persisted?),
+  				title: 'Re enable', :disabled => ("disabled" if !@rejected_images_ids.include?(image.source_id)),
+  				:class => 'btn btn-default btn-sm unreject-image' do
+					= fa_icon 'thumbs-o-up', :class => 'text-success'
+	%div
+		.btn-group
+			= link_to 'javascript:', class: "btn btn-default btn-sm",
+			title: "Image ID", :disabled => ("disabled" unless image.persisted?) do
+				= fa_icon 'file-image-o', text: image.id
+			- if !image.width.blank? && !image.height.blank?
+				= link_to 'javascript:', class: "btn btn-default btn-sm #{'btn-warning blink' if image.width < Artifacts::Image::HIGH_RESOLUTION_WIDTH_LIMIT}",
+				title: "Image dimensions#{' are too small' if image.width < Artifacts::Image::HIGH_RESOLUTION_WIDTH_LIMIT}" do
+					= fa_icon 'file-image-o', text: "#{image.width}x#{image.height}"
+		.btn-group
+			- reusable_label = if image.reusable == true;'YES';elsif image.reusable == false;'NO';else;''end
+			- reusable_btn_class = if image.reusable == true;'btn-success';elsif image.reusable == false;'btn-danger';else;'btn-default'end
+			= link_to 'javascript:', class: "btn btn-sm #{reusable_btn_class}",
+			title: "This image is#{image.reusable? ? '' : ' not'} reusable, which means that it can#{image.reusable? ? '' : 'not'} be suitable for any client" do
+				= fa_icon 'recycle', :text => reusable_label
+			= link_to 'javascript:', title: 'Gravity', :class => 'btn btn-default btn-sm' do
+				= fa_icon 'anchor'
+				%span.gravity-name= if image.gravity.blank?;'';else;t("artifacts.images.gravities.#{image.gravity.to_s}");end
+				= fa_icon 'refresh spin', class: 'gravity-spin', style: 'display:none'
+			= link_to (image.persisted? && image.file.exists? ? artifacts_image_aspect_cropping_variations_path(image) : ''),
+			remote: true,
+			title: 'Cropping variations',
+			:disabled => ("disabled" if image.image_aspect_cropping_variations.blank?),
+			:class => 'btn btn-default btn-sm' do
+				= fa_icon 'crop'
+	%div
+		.btn-group
+			= link_to 'javascript:', class: "btn btn-default btn-sm", title: "Imported by",
+			:disabled => ("disabled" unless image.persisted?) do
+				= fa_icon 'user', text: "#{image.persisted? ? image.versions.where(event: "create").try(:first).try(:whodunnit) || 'UNKNOWN USER' : ''}"
+			- if image.imported?
+				= link_to	'javascript:', class: "btn btn-default btn-sm", title: "Imported at" do
+					= fa_icon 'calendar', text: "#{image.created_at.strftime("%Y-%m-%d %H:%M:%S")}"
+		.rating_block.pull-right{data: {id: image.id}}
+			- unless image.rating.blank?
+				- 5.times do |i|
+					- if i < image.rating
+						= link_to 'javascript://', data: {id: image.id}, class: "img_rating", title: "Image rating" do
+							= fa_icon 'star'
+					- else
+						= link_to 'javascript://', data: {id: image.id}, class: "img_rating", title: "Image rating" do
+							= fa_icon 'star-o'
+			- else
+				- 5.times do |i|
+					= link_to 'javascript://', data: {id: image.id}, class: "img_rating", title: "Image rating" do
+						= fa_icon 'star-o'

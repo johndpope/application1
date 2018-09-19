@@ -1,0 +1,103 @@
+.box.box-primary.uploaded_images.hidden
+  .box-header.with-border
+    %h3
+      %i.fa.fa-picture-o
+    %span.total_uploaded_img
+    .box-tools.pull-right
+      %button.btn.btn-box-tool{:type => "button", :data => {:widget => 'collapse'}}
+        %i.fa.fa-minus
+  .box-body.no-padding
+    .row#uploaded_images
+      %script#tmpl-uploaded-images{:type => "text/x-tmpl"}
+        {% for (var i=0, image_file; image_file=o.files[i]; i++){ %}
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .box.box-solid.box-primary.uploaded_image
+            .box-header
+              %h3.box-title{title: "{%=image_file.name%}"}
+                = truncate("{%=image_file.name%}", length: 25, separator: ' ').presence || 'NO TITLE'
+              .box-tools.pull-right
+                %button.btn.btn-box-tool{data: {widget: "collapse"}}
+                  %i.fa.fa-minus
+            .box-body
+              .parent
+                %img{:src => "{%=image_file.url%}", :class => "img-thumbnail"}
+            .box-footer
+              %div
+                .btn-group
+        {% } %}
+%hr
+
+.box.box-primary.uploaded_audio.hidden
+  .box-header.with-border
+    %h3
+      %i.fa.fa-music
+    %span.total_uploaded_audio
+    .box-tools.pull-right
+      %button.btn.btn-box-tool{:type => "button", :data => {:widget => 'collapse'}}
+        %i.fa.fa-minus
+      %button.btn.btn-box-tool{:type => "button", :data => {:widget => "remove"}}
+        %i.fa.fa-times
+  .box-body.no-padding
+    %table.table.table-striped#uploaded_audio
+      %tbody
+        %thead
+          %th.preview
+            %i.fa.fa-music{:title => "Audio"}
+            ="Audio preview"
+          %th.title
+            %i.fa.fa-info-circle{:title => "Track name"}
+            ="Track name"
+          %th.size
+            %i.fa.fa-info-circle{:title => "Track name"}
+            ="Size"
+          %th.description="Description"
+          %th.tags_notes
+            %i.fa.fa-tags{:title => "Tags and notes"}
+            ="tags & notes"
+      %script#tmpl-uploaded-audio{:type => "text/x-tmpl"}
+        {%= audio_file=o.files[0] %}
+        %tr
+          %td
+            %audio{:controls => true, :class => 'audio_item'}
+              %source{:src => "{%=audio.url%}", :type => "audio/mp3"}
+          %td="{%=audio_file.name%}"
+          %td="{%=audio_file.size%}"
+          %td="{%=audio.notes%}"
+          %td="{%=audio_file.tag_list%}"
+%hr
+
+.box.box-primary.uploaded_video.hidden
+  .box-header.with-border
+    %h3
+      %i.fa.fa-file-video-o
+    %span.total_uploaded_video
+    .box-tools.pull-right
+      %button.btn.btn-box-tool{:type => "button", :data => {:widget => 'collapse'}}
+        %i.fa.fa-minus
+      %button.btn.btn-box-tool{:type => "button", :data => {:widget => "remove"}}
+        %i.fa.fa-times
+  .box-body.no-padding
+    .row#uploaded_video
+      %script#tmpl-uploaded-video{:type => "text/x-tmpl"}
+        {% for (var i=0, video_file; video_file=o.files[i]; i++){ %}
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12.video_box
+          .box.box-solid.box-default
+            .box-header
+              %h3.box-title{title: "{%=video_file.name%}"}
+                = truncate("{%=video_file.name%}", length: 25, separator: ' ').presence || 'NO TITLE'
+              .box-tools.pull-right
+                %button.btn.btn-box-tool{data: {widget: "collapse"}}
+                  %i.fa.fa-minus
+            .box-body
+              .parent
+                %video{:controls => true, :style => "width: 90%"}
+                  %source{:src => "{%= video_file.url%}", :type => "video/mp4"}
+            .box-footer
+              .btn-group
+        {% } %}
+
+.row.center
+  .btn-group.btn-group-custom
+    = link_to "#", :class => "btn btn-primary btn-lg prev-step" do
+      = fa_icon "arrow-left"
+      = "Back"

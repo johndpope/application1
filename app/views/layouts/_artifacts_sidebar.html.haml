@@ -1,0 +1,65 @@
+%li.treeview{ :class => ('menu-open active' if %w(artifacts/images artifacts/common artifacts/image_blender artifacts/blended_images artifacts/icon artifacts/human_photos).include? params[:controller]) }
+  = link_to '#' do
+    = fa_icon 'picture-o'
+    %span Images
+    %i{class: "fa pull-right fa-angle-left"}
+  %ul.treeview-menu
+    %li.treeview{:class => ('active' if params[:controller] == 'artifacts/common' && params[:action] == 'home')}
+      = link_to artifacts_root_path do
+        = fa_icon 'dashboard'
+        %span Dashboard
+    %li.treeview{:class => ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'index' && params[:api].present?)}
+      = link_to artifacts_images_path(api: Artifacts::Image::API_SOURCES_LIST.first) do
+        = fa_icon 'hdd-o'
+        %span Browse
+    %li.treeview{:class => ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'index' && !params[:api].present? && params[:extension] != "svg")}
+      = link_to artifacts_images_path do
+        = fa_icon 'search'
+        %span Local search
+    %li.treeview{:class => ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'index' && !params[:api].present? && params[:extension] == "svg")}
+      = link_to artifacts_images_path(extension: "svg", by_resolution: "all", limit: 25) do
+        = fa_icon 'file-code-o'
+        %span SVG local search
+    %li.treeview{:class => ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'local_import')}
+      = link_to local_import_artifacts_images_path do
+        = fa_icon 'upload'
+        %span Upload Local files
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/image_blender')}
+      = link_to artifacts_image_blender_path do
+        = fa_icon 'link'
+        %span Image Blender
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/blended_images')}
+      = link_to artifacts_blended_images_path do
+        = fa_icon 'link'
+        %span Blended Images
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'report_by_localities')}
+      = link_to report_by_localities_artifacts_images_path do
+        = fa_icon 'link'
+        %span Report by localities
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'report_by_industries')}
+      = link_to report_by_industries_artifacts_images_path do
+        = fa_icon 'link'
+        %span Report by industries
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'report_by_admin_users')}
+      = link_to report_by_admin_users_artifacts_images_path do
+        = fa_icon 'link'
+        %span Report by admin users
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/icon')}
+      = link_to artifacts_icon_path do
+        = fa_icon 'link'
+        %span Icon customize
+    %li.treeview{class: ('active' if params[:controller] == 'artifacts/human_photos')}
+      = link_to artifacts_human_photos_path do
+        = fa_icon 'user'
+        %span Human Social Photos
+
+%li.treeview{ :class => ('menu-open active' if %w( artifacts/audios).include? params[:controller]) }
+  = link_to '#' do
+    = fa_icon 'music'
+    %span Audio
+    %i{class: "fa pull-right fa-angle-left"}
+  %ul.treeview-menu
+    %li.treeview{:class => ('active' if params[:controller] == 'artifacts/audios' && params[:action] == 'index')}
+      = link_to artifacts_audios_path do
+        = fa_icon 'hdd-o'
+        %span Browse

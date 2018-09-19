@@ -1,0 +1,7 @@
+<%= stylesheet_link_tag 'public/clients' %>
+<% title 'Assets' %>
+<% header @client.name %>
+<% small_header 'Assets' %>
+<% breadcrumb :client_assets, @client %>
+<%= render 'clients/navigation' %>
+<%= render partial: 'public/clients/assets_index', locals: {assets: @assets} %>

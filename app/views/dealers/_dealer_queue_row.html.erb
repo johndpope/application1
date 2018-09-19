@@ -1,0 +1,107 @@
+<div id="queue_<%= dom_id(dealer, 'row')%>">
+  <div class="row">
+    <div class="col-md-4">
+      <label>Name</label>
+      <p style='font-size: large; font-weight: bold; color: #3c8dbc;'><%= dealer.name %></p>
+      <label>Brand</label>
+      <p><%= dealer.brand_id %></p>
+      <label>Other brands</label>
+      <p class="overflow"><%= dealer.other_brands.present? ? dealer.other_brands : "-" %></p>
+      <label>Phones</label>
+      <% phones = [dealer.target_phone, dealer.phone1, dealer.phone2, dealer.phone3, dealer.permalease_phone].compact.reject(&:empty?).uniq %>
+      <% phones.each do |phone| %>
+        <p style='font-size: x-large;'><span style='color: green;'><b><i class='fa fa-fw fa-phone-square'></i> <%= number_to_phone(phone.to_s, area_code: true) %></b></span></p>
+      <% end %>
+      <% unless phones.present? %>
+        <p>-</p>
+      <% end %>
+      <label>Fax</label>
+      <p><%= dealer.fax.present? ? dealer.fax : "-" %></p>
+      <label>Email</label>
+      <p><%= dealer.email.present? ? dealer.email : "-" %></p>
+      <label>Signup form URL</label>
+      <%= tooltip_by_field({tooltip_text: t("tooltips.dealers.signup_form_url", :default => "If the dealer agrees to cooperate with us, copy the given link and send it to the dealer to update the company information and sign up.")}) %>
+      <br/>
+      <%= link_to "#{Rails.configuration.routes_default_url_options[:host]}#{Rails.application.routes.url_helpers.new_sandbox_video_marketing_campaign_form_path(dealer_id: dealer.id)}", "#{Rails.configuration.routes_default_url_options[:host]}#{Rails.application.routes.url_helpers.new_sandbox_video_marketing_campaign_form_path(dealer_id: dealer.id)}", class: "overflow", target: "_blank" %>
+    </div>
+    <div class="col-md-4">
+      <% %w(website facebook_url twitter_url google_plus_url youtube_url linkedin_url blog_url yellow_pages_url).each do |social_url| %>
+        <label><%= social_url.humanize.gsub("url", "URL") %></label>
+        <% if dealer[social_url].present? %>
+          <p><%= link_to truncate(dealer[social_url], :length => 55, :omission => "...") , dealer[social_url][/^https?/] ? dealer[social_url] : "http://#{dealer[social_url].downcase.gsub('http://', '')}", class: "overflow", target: "_blank" %></p>
+        <% else %>
+          <p>-</p>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="col-md-4">
+      <label>License number</label>
+      <p class="overflow"><%= dealer.license_number.present? ? dealer.license_number : "-" %></p>
+      <label>Address</label>
+      <p class="overflow">
+        <% address_array = [dealer.address_line1, dealer.address_line2, [dealer.city, dealer.state, dealer.zipcode].compact.reject(&:empty?).join(", ")].compact.reject(&:empty?) %>
+        <% address_array.each do |address_line| %>
+          <%= address_line %>
+          <br/>
+        <% end %>
+        <%= "-" unless address_array.present? %>
+      </p>
+      <label>Service areas</label>
+      <span class="badge bg-blue"><%= dealer.cities.to_a.size %></span>
+      <% if dealer.cities.present? %>
+        <%
+          cities_json = {}
+          cities = dealer.cities.present? ? Geobase::Locality.joins("LEFT OUTER JOIN geobase_regions ON geobase_regions.id = geobase_localities.primary_region_id").where("geobase_localities.id in (#{dealer.cities.to_s.gsub(/(\[|\])|"/, '')})").order("geobase_regions.name ASC, geobase_localities.name ASC") : []
+          cities.each do |city|
+            state = [city.try(:primary_region).try(:name), city.try(:primary_region).try(:code).try(:split, '<sep/>').try(:first).to_s.gsub('US-', '')]
+            cities_json[state] = [] unless cities_json.keys.include?(state)
+            cities_json[state] << city.name
+          end
+        %>
+        <div class="localities_list">
+          <% cities_json.each do |key, value| %>
+            <div aria-multiselectable="true" class="panel-group" id="descriptions-accordion<%=key.last%>" role="tablist">
+              <div class="panel panel-default">
+                <div class="panel-heading" id="descriptions_heading<%=key.last%>">
+                  <h4 class="panel-title">
+                    <a aria-controls="descriptions<%=key.last%>" aria-expanded="true" data-parent="descriptions-accordion<%=key.last%>" data-toggle="collapse" href="#descriptions<%=key.last%>" role="button" class="collapsed">
+                      <b><%= key.first %></b>
+                      <span class="badge bg-blue calc pull-right">
+                        <%= value.size %>
+                      </span>
+                    </a>
+                  </h4>
+                </div>
+                <div aria-labelledby="descriptions<%=key.last%>" class="panel-collapse collapse" id="descriptions<%=key.last%>" style="height: 0px;">
+                  <div class="panel-body">
+                    <% value.each do |c| %>
+                      <span class="label label-primary"><%= c %></span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div style="padding-left: 10px;">
+              <span title="<%= key.first %>"><b style="color: #0073b7;"><%= key.last %></b> <span class="badge bg-blue"><%= value.size %></span></span><br/>
+              <div style="padding-left: 10px;">
+                <span><%#= value.join(" · ") %></span>
+              </div>
+            </div> -->
+          <% end %>
+        </div>
+      <% else %>
+        <p>-</p>
+      <% end %>
+      <!-- <label>Week Hours</label>
+      <%# if dealer.week_hours.present? %>
+        <ul>
+          <%# dealer.week_hours.each do |k,v| %>
+            <li><p><b><%#= k.upcase %></b>: <%#= v %></p></li>
+          <%# end %>
+        </ul>
+      <%# else %>
+        <p>-</p>
+      <%# end %> -->
+    </div>
+  </div>
+</div>

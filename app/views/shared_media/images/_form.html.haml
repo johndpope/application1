@@ -1,0 +1,49 @@
+.modal.fade{ id: dom_id(image.becomes(Social::Image), 'modal') }
+  .modal-dialog
+    .modal-content
+      = form_for @image, url: {controller: 'shared_media/images', action: 'update'}, method: 'patch', authenticity_token: true, remote: true do |f|
+        .modal-header
+          %button.close{ type: 'button', data: { dismiss: 'modal' } }
+            %span &times;
+          %h4= "Social::Image##{image.id}"
+        .modal-body
+          .row
+            .col-md-12{:style => "text-align:center"}
+              = image_tag image.file.url(:thumb), :class => "img-thumbnail"
+          .row
+            .col-md-12
+              .form-group
+                = f.label 'title', 'Title'
+                = f.text_field 'title', value: image.title, class: 'form-control', placeholder: "title"
+                = hidden_field_tag('country_default', @image.country, data: {id:  Geobase::Country.find_by_code("US").id, name:  Geobase::Country.find_by_code("US").name})
+
+            .col-md-6
+              .form-group
+                = label_tag "country"
+                - country_name = Geobase::Country.find(@image.country).name unless @image.country == nil
+                = hidden_field_tag("country", @image.country, class: "form-control", data: {name: country_name, id: @image.country})
+            .col-md-6
+              .form-group
+                = label_tag "state"
+                - region1_name = Geobase::Region.find(@image.region1).name unless @image.region1 == nil
+                = hidden_field_tag("region1", @image.region1, class: "form-control", data: {name: region1_name, id: @image.region1})
+            .col-md-6
+              .form-group
+                = label_tag "county"
+                - region2_name = Geobase::Region.find(@image.region2).name unless @image.region2 == nil
+                = hidden_field_tag("region2", @image.region2, class: "form-control", data: {name: region2_name, id: @image.region2})
+            .col-md-6
+              .form-group
+                = label_tag "city"
+                - city_name = Geobase::Locality.find(@image.city).name unless @image.city == nil
+                = hidden_field_tag("city", @image.city, class: "form-control", data: {name: city_name, id: @image.city})
+
+
+          .form-group
+            = f.label :tag_list
+            = f.text_field "tag_list", value: "#{@image.try(:tag_list).to_a.sort.join(",")}", :class => 'form-control tag_list'
+          .form-group
+            = f.label :notes
+            = f.text_area :notes, value: "#{@image.notes}", rows: "3", class: 'form-control', placeholder: 'Notes'
+        .modal-footer
+          = f.submit 'Update', :class => 'btn btn-primary'

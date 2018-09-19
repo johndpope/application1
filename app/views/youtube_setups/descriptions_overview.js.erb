@@ -1,0 +1,12 @@
+<%
+  modal = render partial: 'descriptions', locals: {email_accounts_setup: email_accounts_setup, target: target}
+  modal_dom_id = 'descriptions_modal'
+%>
+
+$("#<%= modal_dom_id %>").remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('body').removeClass('waiting');

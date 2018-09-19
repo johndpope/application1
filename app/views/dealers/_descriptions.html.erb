@@ -1,0 +1,53 @@
+<div aria-multiselectable="true" class="panel-group" id="descriptions-accordion" role="tablist">
+  <% has_errors_in_descriptions = (dealer.errors.messages[:"wordings.source"].present? || dealer.errors.messages[:"wordings.name"].present?) ? true: false %>
+  <div class="panel panel-default">
+    <div class="panel-heading" id="descriptions_heading">
+      <h4 class="panel-title">
+        <a aria-controls="descriptions" aria-expanded="true" data-parent="descriptions-accordion" data-toggle="collapse" href="#descriptions" role="button">
+          <b>Descriptions</b>
+          <span class="badge calc">
+            <%= dealer.wordings.size %>
+          </span>
+        </a>
+        <% if has_errors_in_descriptions %>
+          <small class="text-danger">One of the fields is blank</small>
+        <% end %>
+      </h4>
+    </div>
+    <div aria-labelledby="descriptions" class="panel-collapse collapse" id="descriptions">
+      <div class="panel-body">
+        <div class="form-group">
+          <%= f.fields_for :wordings do |builder| %>
+            <%= builder.hidden_field :resource_id, value: dealer.id %>
+            <%= builder.hidden_field :resource_type, value: 'Dealer' %>
+            <fieldset class="form">
+              <legend>
+                <%= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i> Remove'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger btn-flat' %>
+              </legend>
+              <div class="row">
+                <div class="col-md-3">
+                  <label class="control-label">Type</label>
+                  <%= builder.select(:name, {'short_description'=>{'data-text-type-limit' => 1000}, 'long_description'=>{'data-text-type-limit' => 5000}}, {include_blank: true}, class: 'form-control description-name-select m-b') %>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Text</label>
+                <div class="counter-characters pull-right">
+                  Characters count:
+                  <span class="badge calc-one">0</span>
+                </div>
+                <% limits = {'short_description'=>1000, 'long_description'=>5000} %>
+                <% if builder.object.id.present? %>
+                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits[builder.object.name]})", maxlength: limits[builder.object.name] %>
+                <% else %>
+                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: 'Enter text' %>
+                <% end %>
+              </div>
+            </fieldset>
+          <% end %>
+          <%= f.link_to_add '<i class="fa fa-plus"></i> Add text'.html_safe, :wordings, class: "btn btn-sm btn-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

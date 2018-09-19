@@ -1,0 +1,31 @@
+%table.table{class: "video-chunks"}
+	%thead
+		%tr
+			%th{class: "order_nr text-center"} #
+			%th{class: "id text-center"} Segment ID
+			%th{class: "created_at text-center"} Segment Created At
+			%th{class: "rendered_at text-center"} Segment Rendered At
+			%th{class: "templates_dynamic_aae_project_id id text-center"} Dyn. AAE Proj. ID
+			%th{class: "templates_aae_project_id id text-center", title: "AAE Template ID"} AAE Tmpl ID
+			%th{class: "project_type"} Segment Type
+			%th{class: "rendering_machine"}
+				%span{title: "Rendering Container"} Rendering Container
+			%th{class: "segment-generation text-center"} Segment Generation
+			%th{class: "ready text-center"} Segment Rendering
+			%th{class: "preview text-center"}
+				= fa_icon 'youtube-play', title: "Preview Video Segment"
+			%th{class: "status text-center"} Segment Approval
+			%th{class: "reviewed-by text-center"}
+				= fa_icon 'user', title: "Reviewed By"
+			%th{class: 'notes', style: "width: 40px"}
+				= fa_icon 'sticky-note text-center', title: 'Notes'
+			%th{style: "width: 220px;"}
+				.btn-group
+					%button{type: "button", class: "btn btn-default dropdown-toggle", data:{toggle: "dropdown"}, "aria-haspopup" => "true", "aria-expanded" => "false"}
+						Bulk Actions
+						%span{class: "caret"}
+					%ul{class:"dropdown-menu"}
+						%li= link_to 'Accept All', client_approve_blended_video_path(@client, blended_video, true), data: {remote: true, method: 'post', disable_with: 'Accepting All ...'}
+						%li= link_to 'Reject All', client_approve_blended_video_path(@client, blended_video, false), data: {remote: true, method: 'post', disable_with: 'Rejecting All ...'}
+						%li= link_to 'Reset All', client_approve_blended_video_path(@client, blended_video, nil), data: {remote: true, method: 'post', disable_with: 'Resetting All ...'}
+	= render partial: 'clients/video_workflow/video_set_block/video_segments_block/video_segments_table_body', locals: {blended_video: blended_video}

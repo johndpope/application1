@@ -1,0 +1,5 @@
+<div class="client_images_paginate">
+  <% if uploaded_images.try(:total_count).to_i > 0 %>
+    <%= paginate uploaded_images, params: {controller: 'sandbox/video_marketing_campaign_forms', action: 'edit'}, theme: 'bootstrap', remote: true, param_name: "client_images_page" %>
+  <% end %>
+</div>

@@ -1,0 +1,13 @@
+%li
+	%span.handle.ui-sortable-handle{title: "Drag up/down to sort items"}
+		= fa_icon 'arrows-alt'
+	%span.text
+		= select_tag '', grouped_options_for_select(video_type_name_grouped_options, video_type), include_blank: true, class: "form-control blending-pattern-select"
+	.tools
+		= link_to 'javascript://', class: "btn btn-danger btn-sm btn-delete-blending-pattern-item", title: t('delete') do
+			= fa_icon 'trash-o'
+:javascript
+	$('select').select2({
+		placeholder: "Choose ..",
+		allowClear: true
+	})

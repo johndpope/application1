@@ -1,0 +1,7 @@
+<%
+  new_row = render partial: 'contact_person_row', locals: {contact_person: @contact_person, resource_id: @contact_person_resource_id, resource_type: @contact_person_resource_type}
+%>
+
+$('#modal_contact_person').modal('hide')
+$('#no_items_tr').hide();
+$('#contact_people_table').prepend('<%= escape_javascript(new_row) %>');

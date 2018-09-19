@@ -1,0 +1,8 @@
+- centered_columns = %w(id texts_preview sample)
+- iconed_columns = {'sample' => 'image', 'texts_preview' => 'file-text'}
+- %w(id name type client_id product_id sample is_active texts_preview).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}
+		- if iconed_columns.key? c
+			= fa_icon iconed_columns[c], title: t("templates.image_template.#{c}")
+		- else
+			= t("templates.image_template.#{c}")

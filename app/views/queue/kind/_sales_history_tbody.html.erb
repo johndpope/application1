@@ -1,0 +1,38 @@
+<% status_labels = %w(bg-navy bg-navy bg-navy bg-navy bg-navy bg-navy bg-navy bg-teal bg-navy bg-yellow bg-olive bg-green bg-orange bg-fuchsia bg-maroon bg-fuchsia bg-purple bg-red bg-aqua bg-blue bg-teal bg-lime bg-lighten-3 bg-gray bg-gray bg-lighten-2 bg-lighten-4 bg-lighten-1) %>
+<tbody id="jobs_table_body" role="alert" aria-live="polite" aria-relevant="all">
+  <% jobs.each do |job| %>
+    <% dealer = job.resource.resource %>
+    <tr>
+      <td><%= job.id %></td>
+      <td><%= dealer.id %></td>
+      <td><%= dealer.name %></td>
+      <td><%= dealer.brand_id %></td>
+      <td><%= dealer.city %></td>
+      <td><%= dealer.state %></td>
+      <td class="text-center"><span class="label <%= status_labels[job.status.try(:value).to_i] %>"><%= job.status.to_s.upcase %></span></td>
+      <td class="text-center"><%= job.admin_user.try(:full_name) %></td>
+      <td class="text-center"><%= local_time(job.run_at, format: '%m/%d/%y %I:%M %p', title: job.run_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if job.run_at.present? %></td>
+      <td class="text-center">
+        <%= local_time(job.updated_at, format: '%m/%d/%y %I:%M %p', title: job.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+      </td>
+      <td class="text-center">
+        <%= local_time(job.created_at, format: '%m/%d/%y %I:%M %p', title: job.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+      </td>
+      <td class="text-center">
+        <%= Utils.seconds_to_time(job.running_time, true) %>
+      </td>
+      <td class="text-center">
+        <%= Utils.seconds_to_time(job.resource.duration, true) %>
+      </td>
+      <% if params[:action] == 'index' %>
+        <td class="text-center">
+          <%= link_to "<i class='fa fa-eye'></i> View".html_safe, edit_queue_path(name: params[:name], id: job.id), class: "btn btn-sm btn-info", target: "_blank" %>
+          <%= link_to "Process again <i class='fa fa-chevron-right'></i>".html_safe, process_again_queue_path(name: params[:name], id: job.id), method: :post, target: "_blank", class: "btn btn-sm btn-success" %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+  <% if jobs.to_a.empty? %>
+    <tr><td colspan="<%= params[:action] == 'index' ? '14' : '13'%>" class="text-center">No items available</td></tr>
+  <% end %>
+</tbody>

@@ -1,0 +1,59 @@
+.modal{class: 'modal-wide fade dynamic-text-form-modal'}
+  .modal-dialog
+    .modal-content
+      = form_for dynamic_text, authenticity_token: true, remote: true do |f|
+        .modal-header
+          %button{type: 'button', class: 'close', data: {dismiss: 'modal'}, 'area-label' => t('close')}
+            %span{'area-hidden' => true} &times;
+          %h4{class: 'modal-title'}
+            =t(params[:action])
+            AAE Project Dynamic Text
+            -unless f.object.new_record?
+              &#35;
+              = f.object.id
+        .modal-body
+          = f.hidden_field :id
+          = f.hidden_field :project_type
+          = f.hidden_field :text_type
+          = f.hidden_field :client_id
+          = f.hidden_field :video_marketing_campaign_form_id
+          - unless f.object.new_record?
+            .row
+              - %w(id client_id).each do |field|
+                .col-md-6
+                  .form-group{class: "control-box"}
+                    = label_tag '', I18n.t("templates_aae_dynamic_project_text.#{field}"), class: "control-label"
+                    = text_field_tag '', eval("f.object.#{field}"), class: "form-control", disabled: "disabled"
+          .row
+            -%w(project_type text_type).each do |field|
+              .col-md-6
+                .form-group{class: "control-box"}
+                  = label_tag '', I18n.t("templates_aae_dynamic_project_text.#{field}"), class: "control-label"
+                  = tooltip_by_field({table_name: "templates_aae_project_dynamic_texts", table_column: "#{field}"})
+                  = text_field_tag '', I18n.t("templates_aae_projects.#{field.pluralize}.#{eval("f.object.#{field}")}"), class: "form-control", disabled: "disabled"
+          - if f.object.client.present?
+            .row
+              .col-md-6
+                .form-group{class: 'control-box'}
+                  = f.label :product_id, "Campaign", class: 'control-label'
+                  = tooltip_by_field({table_name: "templates_aae_project_dynamic_texts", table_column: "product_id"})
+                  - products = f.object.client.products.collect{|p| [p.name.titleize, p.id]}
+                  = select(:templates_aae_project_dynamic_text, :product_id, products, {include_blank: '', selected: (f.object.product_id)}, {class: 'form-control'})
+          - suffix = %w(new create).include?(params[:action]) ? 'new' : 'edit'
+          = render partial: "templates/aae_project_dynamic_texts/#{suffix}_value", locals: {f: f}
+        .modal-footer
+          %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}}= t 'close'
+          = f.submit (f.object.new_record? ? t('add') : t('update')), class: 'btn btn-primary', data: {disable_with: f.object.new_record? ? t('adding') : t('updating')}
+
+:javascript
+  $(document).ready(function(){
+    $('.text-counter', '.dynamic-text-form-modal').textcounter({
+      type: "character",
+      countSpaces: true,
+      stopInputAtMaximum: false,
+      counterText: "Characters Count: "
+    })
+    $('body').on('click','.remove-dynamic-text-value',  function(){
+      $(this).closest('.form-group').next('.text-count-wrapper').remove().end().remove()
+    })
+  })

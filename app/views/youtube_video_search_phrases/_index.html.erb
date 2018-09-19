@@ -1,0 +1,31 @@
+<%= link_to 'New search phrase', new_youtube_video_search_phrase_path(youtube_video_id: @youtube_video.id), remote: true, class: 'btn btn-sm btn-primary' %>
+<table id="youtube_video_search_phrases_table" class="table table-bordered table-striped dataTable" style="margin-top: 10px; <%= 'display: none;' unless @youtube_video_search_phrases.present? %>">
+  <thead>
+    <tr>
+      <th class="text-center" style="width: 50px;">ID</th>
+      <th>Phrase</th>
+      <th class="text-center" style="width: 70px;">Google Rank</th>
+      <th class="text-center" style="width: 100px;">Google Rank date</th>
+      <th class="text-center" style="width: 70px;">Youtube Rank</th>
+      <th class="text-center" style="width: 100px;">Youtube Rank date</th>
+      <th class="text-center" style="width: 100px;">Updated at</th>
+      <th class="text-center" style="width: 100px;">Created at</th>
+      <th style="width: 130px;" class="text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% unless @youtube_video_search_phrases.blank? %>
+      <% @youtube_video_search_phrases.each do |youtube_video_search_phrase| %>
+        <%= render partial: 'youtube_video_search_phrases/youtube_video_search_phrase_row', locals: {youtube_video_search_phrase: youtube_video_search_phrase} %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+<% unless @youtube_video_search_phrases.present? %>
+  <div id="youtube_video_search_phrases_empty_alert" class="row col-md-12">
+    <br/>
+    <div class="alert alert-info">
+      No items available
+    </div>
+  </div>
+<% end %>

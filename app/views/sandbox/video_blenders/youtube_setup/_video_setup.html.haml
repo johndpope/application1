@@ -1,0 +1,53 @@
+.col-md-2
+.col-md-6
+  %table.setup_table
+    %tr
+      %td.item_image=link_to (image_tag "/sandbox/icons/icon1.png", class: "horizontal_img"), 'javascript://', {class: 'img_link'}
+      %td.item_time
+        = link_to 'javascript://', class: "item_link" do
+          = image_tag '/assets/sandbox/cv-line-numb.png', class: 'round_img'
+          .item_number 1
+      %td.item_content
+        %h3 Thumbnail
+        .sm_description
+          Size:
+          %span.font_red 1280x720
+          px.
+        .sm_description
+          Format:
+          %span.font_red png,jpg
+    %tr
+      %td.item_image=link_to (image_tag "/sandbox/icons/icon8.png", class: "horizontal2_img"), 'javascript://', {class: 'img_link'}
+      %td.item_time
+        = link_to 'javascript://', class: "item_link" do
+          = image_tag '/assets/sandbox/cv-line-numb.png', class: 'round_img'
+          .item_number 2
+      %td.item_content
+        %h3 Video title patterns
+        .sm_description
+          Max Title Length:
+          %span.font_red 100 characters
+
+    %tr
+      %td.item_image=link_to (image_tag "/sandbox/icons/icon4.png", class: "vertical_img"), 'javascript://', {class: 'img_link'}
+      %td.item_time
+        = link_to 'javascript://', class: "item_link" do
+          = image_tag '/assets/sandbox/cv-line-numb.png', class: 'round_img'
+          .item_number 3
+      %td.item_content
+        %h3 Video description
+        .sm_description
+          Max Description length:
+          %span.font_red 4950 characters
+    %tr
+      %td.item_image=link_to (image_tag "/sandbox/icons/icon5.png", class: "horizontal_img"), 'javascript://', {class: 'img_link'}
+      %td.item_time
+        = link_to 'javascript://', class: "item_link" do
+          = image_tag '/assets/sandbox/cv-line-numb.png', class: 'round_img'
+          .item_number 4
+      %td.item_content
+        %h3 Video tags
+        .sm_description
+          Max Tags:
+          %span.font_red 500 characters
+.col-md-4

@@ -1,0 +1,28 @@
+.templates_aae_project_texts_correct_static_texts{
+	&.index{
+		.template-block{
+			border: 1px solid;
+			border-color: #D2D6DE;
+			margin-bottom: 8px;
+			padding: 3px;
+
+			table.templates_aae_project_items{
+				margin-bottom: 3px !important;
+				.row_nr{width: 40px;}
+				.id{width: 120px;}
+				.project_type{width: 200px;}
+				.sample-video, .test-video{width: 120px;}
+			}
+
+			table.static_texts{
+				.row_nr{width: 40px;}
+				.id{width: 120px;}
+				.name{width: 120px;}
+				.value{width: 250px;}
+				.status{width: 40px;}
+			}
+
+			.static-texts-block{margin-bottom: 0px;}
+		}
+	}
+}

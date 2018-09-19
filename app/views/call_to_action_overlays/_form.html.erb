@@ -1,0 +1,80 @@
+<%= form_for @call_to_action_overlay, url: youtube_video_call_to_action_overlay_path(@call_to_action_overlay.youtube_video, @call_to_action_overlay), :html => { :multipart => true } do |f| %>
+	<%= f.hidden_field :youtube_video_id %>
+	<div class="row">
+		<% if @call_to_action_overlay.errors.any? %>
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@call_to_action_overlay.errors.count, 'error') %> prohibited this call to action overlay from being saved</h4>
+				</div>
+			</div>
+		<% end %>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="form-group col-md-6 <%= 'has-error' if @call_to_action_overlay.errors[:headline].present? %>" data-content="<%= @call_to_action_overlay.errors[:headline].try(:join, ',') %>">
+							<%= f.label :headline, class: 'control-label' %>
+							<%= f.text_field :headline, class: 'form-control', placeholder: 'Headline', maxlength: "#{CallToActionOverlay::HEADLINE_LIMIT}" %>
+						</div>
+						<div class="form-group col-md-6 <%= 'has-error' if @call_to_action_overlay.errors[:display_url].present? %>" data-content="<%= @call_to_action_overlay.errors[:display_url].try(:join, ',') %>">
+							<%= f.label :display_url, class: 'control-label' %>
+							<%= f.text_field :display_url, class: 'form-control', placeholder: 'Display URL', maxlength: "#{CallToActionOverlay::DISPLAY_URL_LIMIT}" %>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="row">
+								<div class="form-group col-md-12 <%= 'has-error' if @call_to_action_overlay.errors[:destination_url].present? %>" data-content="<%= @call_to_action_overlay.errors[:destination_url].try(:join, ',') %>">
+									<%= f.label :destination_url, class: 'control-label' %>
+									<%= f.text_field :destination_url, class: 'form-control', placeholder: 'Destination URL' %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="checkbox">
+										<label><%= f.check_box :enabled_on_mobile, class: 'iCheck-helper' %> Enabled on mobile</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="checkbox">
+										<label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="checkbox">
+										<label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-6">
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="form-group col-md-12">
+									<div class="actions pull-right">
+										<%= link_to 'Back', edit_youtube_video_path(@call_to_action_overlay.youtube_video_id, :anchor => "call-to-action-overlay-tab"), class: 'btn btn-sm btn-primary' %>
+										<%= f.submit :class => 'btn btn-sm btn-success', :id => 'call_to_action_overlay_submit' %>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

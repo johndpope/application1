@@ -1,0 +1,19 @@
+- dropdown_items = [{title: 'Dyn. Text Strings', url: @aae_templates_link, is_active: (params[:controller] == 'clients' && params[:action] == 'aae_templates')},
+	{title: 'Subj. Videos', url: @subject_videos_link, is_active: (params[:controller] == 'clients' && %w(donor_videos subject_videos).include?(params[:action]))},
+	{title: 'Exclude AAE Templates', url: @exclude_aae_templates_link, is_active: (params[:controller] == 'clients/exclude_aae_templates')},
+	{title: 'Image Selection Tags', url: @image_tags_link, is_active: (%w(clients/image_selection_tags clients/source_video_image_tag_selection).include?(params[:controller]))},
+	{title: 'Rendering Settings', url: @rendering_settings_link, is_active: (params[:controller] == 'clients/rendering_settings')},
+	{title: 'Video Workflow', url: @video_workflow_link, is_active: (params[:controller] == 'clients/video_workflow')},
+	{title: 'Blending Settings', url: @blending_settings_link, is_active: (params[:controller] == 'clients/blending_settings')}]
+
+- active_dropdown_item = dropdown_items.select{|di|di[:is_active] == true}.first
+- dropdown_subtitle = "Video Production#{!active_dropdown_item.nil? ? ' | ' + active_dropdown_item[:title] : ''}"
+
+%li.tab-url.dropdown{class: ('active' unless active_dropdown_item.nil?)}
+	= link_to 'javascript://', class: "dropdown-toggle", data: {toggle: "dropdown"}, "area-expanded" => true do
+		= dropdown_subtitle
+		%span.caret
+	%ul.dropdown-menu
+		- dropdown_items.each do |di|
+			%li{role: "presentation"}
+				= link_to di[:title], di[:url], role: "menuitem", tabindex: "-1"

@@ -1,0 +1,9 @@
+en:
+  delayed_jobs:
+    titles_by_names:
+      'Templates::DynamicAaeProjects::CreateDynamicAaeProjectJob': Video Segment Generation
+      'Templates::DynamicAaeProjects::ReplaceDynamicAaeProjectJob': 'Video Segment Regeneration'
+      'BlendedVideos::BlendVideoSetJob': Video Set Blending
+      'BlendedVideos::ForceBlendJob': Video Set Force Blending
+      'Youtube::CreateYoutubeVideoJob': Youtube Video Content Generation
+      'Youtube::GenerateThumbnailForCreatedYoutubeVideoJob': Youtube Video Thumbnail Generation

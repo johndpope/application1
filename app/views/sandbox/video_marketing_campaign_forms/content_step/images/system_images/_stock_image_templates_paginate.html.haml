@@ -1,0 +1,5 @@
+.stock_image_templates_paginate{style:"margin-top: 10px;"}
+	- if stock_image_templates.to_a.any?
+		= paginate stock_image_templates,
+		params: {controller: 'sandbox/video_marketing_campaign_forms', action: 'stock_image_templates'},
+		theme: 'bootstrap', remote: true, param_name: "stock_image_templates_page"

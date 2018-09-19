@@ -1,0 +1,9 @@
+<% resource_name = job.resource.resource_type.gsub('::', '').underscore%>
+<% if File.exists? (Rails.root.join('app', 'views', 'queue', 'kind', 'sales', "_#{resource_name}.html.erb")) %>
+  <%= render partial: "queue/kind/sales/#{resource_name}", locals: { job: job } %>
+<% else %>
+  <div id="notice_explanation" class="alert alert-danger alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4><i class="icon fa fa-exclamation-circle"></i> Missing partial for this resource</h4>
+  </div>
+<% end %>

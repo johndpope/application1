@@ -1,0 +1,7 @@
+<%
+	row = render partial: "generic_crud_elements/index_table_row", locals: {item: item, row_nr: ''}
+	table_id = "#{@clazz.to_s.underscore.gsub('/', '_')}_items"
+%>
+$('tbody.tbody','#<%= table_id%>').append('<%= escape_javascript(row) %>');
+$('tbody.tbody tr:last td.row_nr', '#<%= table_id%>').text($('tbody.tbody tr', '#<%= table_id%>').length);
+$(".<%= item.class.to_s.underscore.gsub('/','_')%>_modal").modal('hide');

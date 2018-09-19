@@ -1,0 +1,13 @@
+.modal.fade{id: "terms_of_use_modal", role: "dialog", "aria-labelledby"=>"terms_of_use_btn"}
+  .modal-dialog{role: "document"}
+    .modal-content
+      .modal-header
+        = link_to class:"close", data:{dismiss: "modal"}, "aria-label"=>"Close" do
+          %span{"aria-hidden"=>"true"}
+            &times;
+        %h4.modal-title Terms of Use and Privacy Policy
+      %img{src: "/assets/sandbox/home_page/icon_coming_soon.png", class: "text-center", style: "display:block; margin:auto; margin-bottom: 20px;"}
+      .modal-body
+
+      .modal-footer
+        = link_to 'Close', 'javascript://', class:"btn btn-primary", data: {dismiss:"modal"}

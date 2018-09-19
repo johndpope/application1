@@ -1,0 +1,27 @@
+- grouped_dynamic_texts = @donor_source_video.templates_aae_project_dynamic_texts.group_by(&:text_type)
+#donor_dynamic_texts_accordion.panel-group
+  - @dynamic_text_settings.each do |project_type, dynamic_texts|
+    - dynamic_texts.each do |text_type, settings|
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            = link_to "#donor_panel_#{text_type}", data:{toggle: "collapse", parent: "#donor_dynamic_texts_accordion"}, "area-expanded" => "true" do
+              .row
+                .col-md-11
+                  %strong= t("templates.aae_project_text.types.#{text_type}")
+                .col-md-1
+                  %span{class: "pull-right label label-#{grouped_dynamic_texts[text_type.to_s].to_a.size == 0 ? 'danger' : 'primary'}"}= grouped_dynamic_texts[text_type.to_s].to_a.size
+        .panel-collapse{id: "donor_panel_#{text_type}",
+        class: "collapse", "aria-labelledby" => "templates_aae_project_dynamic_texts",
+        data:{character_limit: settings[:limit], project_type: project_type, text_type: text_type}}
+          .panel-body
+            %table.table.table-bordered.table-hover.table-striped
+              %thead
+                %tr
+                  %th{class: 'text-center', width: "40px;"} ID
+                  %th Text Value
+              %tbody
+                - grouped_dynamic_texts[text_type.to_s].to_a.each do |dynamic_text|
+                  %tr
+                    %td{class: 'text-center'}= dynamic_text.id
+                    %td= dynamic_text.value

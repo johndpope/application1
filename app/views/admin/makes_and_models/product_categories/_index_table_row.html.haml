@@ -1,0 +1,3 @@
+%td.id{class: 'text-center'}= item.id
+%td.name= item.name
+%td.parent_id= item.try(:parent).try(:name)

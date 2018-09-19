@@ -1,0 +1,2 @@
+module WatchingVideoCategoriesHelper
+end

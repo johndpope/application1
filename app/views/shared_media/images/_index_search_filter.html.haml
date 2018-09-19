@@ -1,0 +1,32 @@
+.box.box-default.box-solid#search_conditions
+	.box-header.with-border
+		%h3.box-title= fa_icon 'filter', text: t('filter')
+	.box-body
+		- criteria = params[:ransack] || {}
+		.row
+			.col-md-2
+				.form-group
+					= label_tag :limit, 'Limit'
+					- limits = Social::Image::LIMITS
+					- options = options_for_select(limits.map { |l| ["#{l} items", l] }, selected: params[:limit])
+					= select_tag 'limit', options, include_blank: true, :class => 'form-control'
+			.col-md-2
+				.form-group
+					= label_tag :country_eq, "Country"
+					= text_field_tag "ransack[country_eq]", criteria[:country_eq], class: 'form-control'
+			.col-md-2
+				.form-group
+					= label_tag :region1_eq, "State"
+					= text_field_tag "ransack[region1_eq]", criteria[:region1_eq], class: 'form-control'
+			.col-md-2
+				.form-group
+					= label_tag :region2_eq, "County"
+					= text_field_tag "ransack[region2_eq]", criteria[:region2_eq], class: 'form-control'
+			.col-md-2
+				.form-group
+					= label_tag :city_eq, "City"
+					= text_field_tag "ransack[city_eq]", criteria[:city_eq], class: 'form-control'
+			.col-md-2
+				.form-group
+					= label_tag :tags_name_cont, 'Tags'
+					= text_field_tag "ransack[tags_name_cont]", criteria[:tags_name_cont], class: 'form-control', placeholder: 'tag'

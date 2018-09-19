@@ -1,0 +1,2 @@
+module Clients::SourceVideoImageTagSelectionHelper
+end

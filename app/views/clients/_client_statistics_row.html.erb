@@ -1,0 +1,75 @@
+<%
+  business_channel_type = YoutubeChannel.channel_type.find_value(:business).value
+  line = {}
+  line['name'] = client.name
+  line['assets_url'] = public_client_assets_path(client.public_profile_uuid)
+  posted_channels_size = YoutubeChannel.distinct.joins(:client).by_display_all(nil).by_client_id(client.id.to_s).by_is_active("true").by_linked("true").by_is_verified_by_phone("true").by_channel_type(business_channel_type.to_s).size
+  pending_channels_size = YoutubeChannel.distinct.joins(:client).by_display_all(nil).by_client_id(client.id.to_s).by_ready("false").by_channel_type(business_channel_type.to_s).size
+  in_progress_channels_size = YoutubeChannel.distinct.joins(:client).by_display_all(nil).by_client_id(client.id.to_s).by_is_active("false").by_linked("false").by_ready("true").by_channel_type(business_channel_type.to_s).count
+  blocked_channels_size = YoutubeChannel.distinct.joins(:client).by_display_all(nil).by_client_id(client.id.to_s).by_blocked("true").by_channel_type(business_channel_type.to_s).count
+  total_channels_size = YoutubeChannel.distinct.joins(:client).by_display_all(nil).by_client_id(client.id.to_s).by_channel_type(business_channel_type.to_s).count
+  line['posted_channels_size'] = posted_channels_size.to_s(:delimited)
+  line['posted_channels_url'] = youtube_channels_path(channel_type: business_channel_type, is_active: true, ready: true, is_verified_by_phone: true, client_id: client.id)
+  line['pending_channels_size'] = pending_channels_size.to_s(:delimited)
+  line['pending_channels_url'] = youtube_channels_path(channel_type: business_channel_type, client_id: client.id, ready: false)
+  line['in_progress_channels_size'] = in_progress_channels_size.to_s(:delimited)
+  line['in_progress_channels_url'] = youtube_channels_path(channel_type: business_channel_type, client_id: client.id, is_active: false, linked: false, ready: true)
+  line['blocked_channels_size'] = blocked_channels_size.to_s(:delimited)
+  line['blocked_channels_url'] = youtube_channels_path(channel_type: business_channel_type, client_id: client.id, blocked: true)
+  line['total_channels_size'] = total_channels_size.to_s(:delimited)
+  line['total_channels_url'] = youtube_channels_path(channel_type: business_channel_type, client_id: client.id)
+
+  posted_videos_size = YoutubeVideo.joins(:client).where("clients.id = ? AND youtube_videos.deleted IS NOT TRUE AND youtube_videos.youtube_video_id IS NOT NULL AND youtube_videos.youtube_video_id <> '' AND youtube_videos.is_active = TRUE", client.id).count
+  in_progress_videos_size = YoutubeVideo.joins(:client).by_client_id(client.id).by_deleted("false").by_is_active("false").by_ready("true").count
+  pending_videos_size = YoutubeVideo.joins(:client).by_client_id(client.id).by_deleted("false").by_linked("false").by_ready("false").count
+  deleted_videos_size = YoutubeVideo.joins(:client).by_client_id(client.id).by_deleted("true").by_is_active("false").count
+  total_videos_size = YoutubeVideo.joins(:client).where("clients.id = ? AND youtube_videos.deleted IS NOT TRUE", client.id).count
+  line['posted_videos_size'] = posted_videos_size.to_s(:delimited)
+  line['posted_videos_url'] = youtube_videos_path(deleted: false, is_active: true, has_youtube_video_id: true, client_id: client.id)
+  line['in_progress_videos_size'] = in_progress_videos_size.to_s(:delimited)
+  line['in_progress_videos_url'] = youtube_videos_path(deleted: false, client_id: client.id, is_active: false, ready: true)
+  line['pending_videos_size'] = pending_videos_size.to_s(:delimited)
+  line['pending_videos_url'] = youtube_videos_path(deleted: false, linked: false, ready: false, client_id: client.id)
+  line['deleted_videos_size'] = deleted_videos_size.to_s(:delimited)
+  line['deleted_videos_url'] = youtube_videos_path(deleted: true, is_active: false, client_id: client.id)
+  line['total_videos_size'] = total_videos_size.to_s(:delimited)
+  line['total_videos_url'] = youtube_videos_path(deleted: false, client_id: client.id)
+
+  posted_associated_websites_size = AssociatedWebsite.joins(:client_landing_page, :youtube_channel).where("client_landing_pages.client_id = ? AND associated_websites.linked IS TRUE", client.id).count
+  total_associated_websites_size = AssociatedWebsite.joins(:client_landing_page, :youtube_channel).where("client_landing_pages.client_id = ?", client.id).count
+  line['posted_associated_websites_size'] = posted_associated_websites_size.to_s(:delimited)
+  line['posted_associated_websites_url'] = youtube_channels_path(channel_type: business_channel_type, associated: true, client_id: client.id)
+  line['pending_associated_websites_size'] = (total_associated_websites_size - posted_associated_websites_size).to_s(:delimited)
+  line['pending_associated_websites_url'] = youtube_channels_path(channel_type: business_channel_type, associated: false, client_id: client.id)
+  line['total_associated_websites_size'] = total_associated_websites_size.to_s(:delimited)
+  line['total_associated_websites_url'] = 'javascript://'
+
+  client_landing_page_url = client_client_landing_pages_path(client)
+  line['posted_landing_pages_size'] = ClientLandingPage.where("parked = true AND hosted = true AND client_id = ?", client.id).count.to_s(:delimited)
+  line['posted_landing_pages_url'] = client_landing_page_url
+  line['pending_landing_pages_size'] = ClientLandingPage.where("(parked IS NOT TRUE OR hosted IS NOT TRUE) AND client_id = ?", client.id).uniq.count.to_s(:delimited)
+  line['pending_landing_pages_url'] = client_landing_page_url
+  line['total_landing_pages_size'] = ClientLandingPage.where("client_id = ?", client.id).count.to_s(:delimited)
+  line['total_landing_pages_url'] = client_landing_page_url
+%>
+<tr>
+  <% if multiple %>
+    <td class="overflow bold-link"><%= link_to client.name, public_client_dashboard_path(client.public_profile_uuid), target: "_blank" %></td>
+  <% end %>
+  <td class="text-center bold-link"><%= link_to line['posted_channels_size'], line['posted_channels_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['pending_channels_size'], line['pending_channels_url'], target: "_blank", style: "#{'color: red;' if pending_channels_size > 0}" %></td>
+  <td class="text-center bold-link"><%= link_to line['in_progress_channels_size'], line['in_progress_channels_url'], target: "_blank", style: "#{'color: orange;' if in_progress_channels_size > 0}" %></td>
+  <td class="text-center bold-link"><%= link_to line['blocked_channels_size'], line['blocked_channels_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['total_channels_size'], line['total_channels_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['posted_videos_size'], line['posted_videos_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['pending_videos_size'], line['pending_videos_url'], target: "_blank", style: "#{'color: red;' if pending_videos_size > 0}" %></td>
+  <td class="text-center bold-link"><%= link_to line['in_progress_videos_size'], line['in_progress_videos_url'], target: "_blank", style: "#{'color: orange;' if in_progress_videos_size > 0}" %></td>
+  <td class="text-center bold-link"><%= link_to line['deleted_videos_size'], line['deleted_videos_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['total_videos_size'], line['total_videos_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['posted_associated_websites_size'], line['posted_associated_websites_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['pending_associated_websites_size'], line['pending_associated_websites_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['total_associated_websites_size'], line['total_associated_websites_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['posted_landing_pages_size'], line['posted_landing_pages_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['pending_landing_pages_size'], line['pending_landing_pages_url'], target: "_blank" %></td>
+  <td class="text-center bold-link"><%= link_to line['total_landing_pages_size'], line['total_landing_pages_url'], target: "_blank" %></td>
+</tr>

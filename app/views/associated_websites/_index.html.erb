@@ -1,0 +1,69 @@
+<div id="associated_websites_list" class="content-block">
+	<% if @youtube_channel.id.present? %>
+		<div class="row">
+			<div class="col-md-5">
+	      <%= link_to 'New Associated Website', new_youtube_channel_associated_website_path(@youtube_channel), class: 'btn btn-sm btn-primary' %>
+	    </div>
+			<div class="col-md-7">
+				<div class="form-group">
+					<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+					<span class="badge bg-blue"><%= @associated_websites.size %></span>
+				</div>
+			</div>
+		</div>
+	<% end %>
+	<% unless @associated_websites.to_a.empty? %>
+		<table id="associated_websites_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="max-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th>Client Landing Page</th>
+          <th>Association Method</th>
+					<th>DNS record</th>
+					<th class="text-center">Ready</th>
+					<th class="text-center">Linked</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @associated_websites.each do |associated_website| %>
+					<tr id="tr_yc_<%= associated_website.id %>">
+						<td class="text-center"><%= associated_website.id %></td>
+						<td><%= associated_website.client_landing_page.page_url %></td>
+            <td><%= associated_website.association_method %></td>
+						<td><%= associated_website.dns_record %></td>
+						<td class="text-center">
+							<% if associated_website.ready %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<% if associated_website.linked %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_youtube_channel_associated_website_path(@youtube_channel.id, associated_website), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, youtube_channel_associated_website_path(@youtube_channel, associated_website), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @associated_websites.to_a.empty? %>
+		<div class="row">
+			<div class="col-md-12">
+				<br>
+				<div class="alert alert-info">No items available</div>
+			</div>
+		</div>
+	<% end %>
+</div>

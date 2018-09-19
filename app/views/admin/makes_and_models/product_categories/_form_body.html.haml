@@ -1,0 +1,12 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	=f.label :name, t('product_category.name') + ' *'
+	=f.text_field :name, class: "form-control"
+
+.form-group
+	= f.label :parent_id, t('product_category.parent_id')
+	- production_categories = ProductCategory.where.not(id: f.object.id).order(:name).collect{|c|[c.name,c.id]}
+	= f.select(:parent_id, production_categories, {include_blank: ''}, {class: 'form-control'})

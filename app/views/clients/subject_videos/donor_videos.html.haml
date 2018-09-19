@@ -1,0 +1,68 @@
+- title "Client's Donor Videos"
+- header @client.name
+- small_header 'Donor Videos'
+- breadcrumb :donor_videos, @client
+
+- content_for(:javascripts) do
+	= javascript_include_tag 'jquery.textcounter'
+	= javascript_include_tag 'clients/source_videos'
+
+- donor_video_ids = @client.client_donor_source_videos.pluck(:source_video_id)
+
+= render layout: 'clients/subject_videos/manage', locals:{client: @client} do
+	- if(@client.donors.count > 0)
+		.box
+			.box-header.with-border
+				%h3.box-title List of Donor Videos
+			.box-body
+				= nested_form_for @client do |f|
+					= hidden_field_tag :is_client_donor_videos_section, :true
+					= f.hidden_field :id
+					#donor_videos_list
+						.panel-group{id: 'donor_videos_accordion'}
+							- @available_donor_videos.each do |k,v|
+								.panel.panel-default
+									.panel-heading
+										%h4.panel-title
+											= link_to "#panel_#{k.id}", data:{parent: '#donor_videos_accordion', toggle: 'collapse'} do
+												.row
+													.col-md-9
+														%strong= k.name
+													.col-md-3
+														.pull-right
+															%span{style: "margin-right: 5px;"} available:
+															%span.label{class: "label-#{v.size>0 ? 'primary' : 'danger'} donor_videos_available"}= v.size
+														.pull-right{style: "margin-right: 5px;"}
+															%span{style: "margin-right: 5px;"} in use:
+															- in_use = v.select{|e|@client.donor_videos.include?(e)}.size
+															%span.label{class: "label-#{in_use>0 ? 'primary': 'danger'} donor_videos_in_use"}= in_use
+									.panel-collapse.collapse{id: "panel_#{k.id}"}
+										.panel-body
+											- v.group_by(&:product).each do |kk,vv|
+												%table.table.table-bordered.table-hover.table-striped
+													%caption= kk.name
+													%thead
+														%tr
+															%th{class:"text-center", width: "40px;"}
+																= check_box_tag '', '', false, {class: 'check_product_videos'}
+															%th{class:"text-center", width: "120px"} Donor Vid. ID
+															%th Donor Vid. Title
+															%th{width: "80px"}= t('actions')
+													%tbody
+													- vv.each do |donor_video|
+														%tr
+															%td{class:"text-center"}= check_box_tag 'client[donor_video_ids][]', donor_video.id, @client.donor_videos.include?(donor_video), {class: 'check_product_video'}
+															%td{class:"text-center"}= donor_video.id
+															%td= donor_video.custom_title
+															%td
+																- if donor_video_ids.include? donor_video.id
+																	= link_to edit_client_source_video_path(@client.id, @client.client_donor_source_videos.select{|cdsv|cdsv.source_video_id == donor_video.id}.first.try(:recipient_source_video_id)), class: "btn btn-default btn-sm edit-btn", data:{remote: true, disable_with: '..'} do
+																		= fa_icon 'pencil'
+					= submit_tag t('update'), class: "btn btn-primary", data: {disable_with: t('updating')}
+	- elsif
+		.callout.callout-info
+			%h4 No donor videos available
+			%p
+				Add
+				%b= link_to 'Donor Clients', client_donors_path(@client)
+				first!

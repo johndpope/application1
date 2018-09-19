@@ -1,0 +1,88 @@
+<% title 'Dealers' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<div id="dealers_list">
+	<div class="row">
+		<div class="col-md-5"><%= link_to 'New dealer', new_dealer_path, remote: true, class: 'btn btn-sm btn-primary' %></div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @dealers.total_count.to_s(:delimited) %></span>
+			</div>
+		</div>
+	</div>
+
+	<table id="dealers_table" class="table table-bordered table-striped dataTable">
+		<thead>
+			<tr>
+				<th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+				<th class="sort" id="name-th" data-field="name">Name</th>
+        <th>Brand</th>
+        <th>Zipcode</th>
+        <th>City</th>
+        <th>State</th>
+        <th class="text-center">Country</th>
+        <th class="text-center">In sales queue</th>
+        <th class="text-center" style="width: 120px;">Dealer check queue admin user</th>
+        <th class="text-center">Updated by</th>
+				<th class="sort" id="updated_at-th" data-field="updated_at" style="width: 75px">Updated at</th>
+				<th class="sort" id="created_at-th" data-field="created_at" style="width: 75px">Created at</th>
+        <th class="text-center">Sign Up Link</th>
+				<th style="width: 150px;" class="text-center">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @dealers.each do |dealer| %>
+				<%= render partial: 'dealer_row', locals: {dealer: dealer} %>
+			<% end %>
+      <tr id="no_items_tr" class="text-center" style="<%= 'display: none' unless @dealers.to_a.empty? %>"><td colspan="12">No items available</td></tr>
+		</tbody>
+	</table>
+
+	<div><%= paginate @dealers, theme: 'bootstrap' %></div>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :name, :updated_at, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :updated_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({ action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+      <div class="filter-label">Name:</div>
+			<%= search_field_tag :name, params[:name], class: 'form-control' %>
+      <div class="filter-label">Brand</div>
+      <%= select_tag(:brand_id, options_for_select(Dealer.select(:brand_id).distinct.pluck(:brand_id).sort, params[:brand_id]), include_blank: true, class: 'dropdown-toggle select-box form-control') %>
+      <div class="filter-label">State</div>
+      <%= select_tag(:state, options_for_select(Dealer.select(:state).distinct.pluck(:state).compact.sort, params[:state]), include_blank: true, class: 'dropdown-toggle select-box form-control') %>
+      <div class="filter-label">Dealer check queue status</div>
+      <%= select_tag(:dealer_check_queue_status, options_for_select(Job::DEALER_CHECK_STATUSES.to_a, params[:dealer_check_queue_status]), { include_blank: true, class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label">Dealer check queue admin user:</div>
+      <%= select_tag(:dealer_check_queue_admin_user_id, options_from_collection_for_select(AdminUser.where("id in (?)", Job.select(:admin_user_id).distinct.where(queue: 'dealer_check').pluck(:admin_user_id)).order(:email), :id, :email, params[:dealer_check_queue_admin_user_id]), { include_blank: true, class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label">Dealer check queue days ago:</div>
+      <%= select_tag(:dealer_check_queue_days_ago, options_for_select([['Last day', 1], ['Last 2 days', 2], ['Last week', 7], ['Last 2 weeks', 14], ['Last month', 30], ['Last 3 months', 60], ['Last 6 months', 180], ['Last year', 365], ['All the time', -1]], params[:dealer_check_queue_days_ago]), { include_blank: true, class: "dropdown-toggle select-box form-control"}) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

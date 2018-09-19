@@ -1,0 +1,8 @@
+= image_tag "#{image_url}", class: "img-responsive thumbnail"
+%hr
+  = button_tag class: "btn btn-success btn-lg button_apply_settings", type: "button", data: {disable_with: "apply...", url: artifacts_apply_color_schema_path} do
+    = fa_icon 'cogs'
+    = 'Apply colors'
+
+  = button_tag class: "btn btn-danger btn-lg cancel_icon", type: "button" do
+    = 'Cancel'

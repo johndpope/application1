@@ -1,0 +1,30 @@
+<% dealer = job.resource %>
+<% if dealer.present? %>
+  <div class="box box-success">
+    <div class="box-header with-border">
+      <div class="row">
+        <div class="col-md-8">
+          <h1 class="box-title" title="Dealer name">
+            <b><i class="fa fa-building"></i> Company Info</b>
+          </h1>
+        </div>
+        <div class="col-md-4">
+          <div class="pull-left">
+            <label class="pull-left" style="padding-top: 5px; margin-right: 5px;"><i class="fa fa-lightbulb-o"></i> Status:</label>
+            <%= select_tag(:job_status, options_for_select(Job::DEALER_CHECK_STATUSES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, Job::DEALER_CHECK_STATUSES["Checked"]), { class: 'dropdown-toggle select-box form-control', name: "job[status]", style: "width: 190px;" }) %>
+          </div>
+          <div class="pull-right">
+            <div class="input-group" style="width: 100%;">
+              <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_dealer_path(dealer), remote: true , class: 'btn btn-sm btn-primary', style: "margin-right: 10px;", title: "Edit dealer" %>
+              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box-body">
+      <%= render partial: "dealers/dealer_queue_row", locals: { dealer: dealer } %>
+    </div>
+  </div>
+<% end %>

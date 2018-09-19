@@ -1,0 +1,16 @@
+<tr id="<%= dom_id(industry, 'row')%>">
+  <td class="text-center"><%= industry.id %></td>
+  <td><%= industry.code %></td>
+  <td><%= industry.name %></td>
+  <td><%= industry.nickname %></td>
+  <td class="text-center"><%= link_to industry.description_wordings_size('short_description').to_s(:delimited), wordings_path(name: 'short_description', resource_id: industry.id, resource_type: 'Industry'), target: "_blank" %></td>
+  <td class="text-center"><%= link_to industry.description_wordings_size('long_description').to_s(:delimited), wordings_path(name: 'long_description', resource_id: industry.id, resource_type: 'Industry'), target: "_blank" %></td>
+  <td class="text-center" title="<%= industry.tag_list %>"><%= link_to industry.tags.size.to_s(:delimited), wordings_path(resource_id: industry.id, resource_type: 'Industry') %></td>
+  <td class="text-center"><%= link_to Artifacts::Image.where(industry_id: industry.id).size.to_s(:delimited), artifacts_images_path(industry_id: industry.id), target: "_blank" %></td>
+  <td class="text-center actions">
+    <div class="btn-group btn-group-custom">
+      <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_industry_path(industry),  { class: 'btn btn-xs btn-primary', remote: true, title: 'Edit', onclick: "$('.animationload').show();" } %>
+      <%#= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, industry, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-danger disabled' %>
+    </div>
+  </td>
+</tr>

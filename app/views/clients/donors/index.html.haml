@@ -1,0 +1,27 @@
+- title 'Client Donors'
+- header @client.name
+- small_header 'Donors'
+- breadcrumb :donors, @client
+- content_for(:javascripts){javascript_include_tag 'jquery_nested_form'}
+= render 'clients/navigation'
+
+- @available_donors = Client.where.not(id: @client.id).where(is_active: true).order(:name)
+
+= tooltip_by_field({tooltip_text: t("tooltips.donors.donor_name", :default => "")})
+%h3 List of Content Donors
+= nested_form_for @client do |f|
+	= f.hidden_field :id
+	.row#donors
+		.col-md-12
+			= f.fields_for :client_donors, @client.client_donors do |donor_form|
+				.row{style: "margin-bottom: 5px;"}
+					.col-md-6
+						.row
+							.col-md-10
+								= donor_form.collection_select :donor_id, @available_donors, :id, :name, {include_blank: true}, {class: "form-control"}
+							.col-md-2
+								= donor_form.link_to_remove '<i class="fa fa-trash-o"></i>'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-sm btn-danger'
+			.form-group
+				= f.link_to_add '<i class="fa fa-plus"></i> Add'.html_safe, :client_donors, class: "btn btn-xs btn-primary", style: "margin-top: 5px"
+			.form-group
+				= f.submit t('update'), class: "btn btn-primary", data: {disable_with: t('updating')}

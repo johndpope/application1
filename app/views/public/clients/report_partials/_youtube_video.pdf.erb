@@ -1,0 +1,21 @@
+<page size="A4">
+  <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+  <div class="content">
+    <section class="">
+      <div class="container">
+        <div class="pd-t-10">
+          <p><strong>Example YouTube Video</strong></p>
+          <p><%= @youtube_video_example.url unless @youtube_video_example.blank? %></p>
+        </div>
+        <div class="crop">
+          <% unless @youtube_video_screenshot.blank? %>
+            <%= wicked_pdf_image_tag @youtube_video_screenshot.image.url, class: "ytb-video-screen" unless @youtube_video_screenshot.blank? %>
+          <% else %>
+            <%= wicked_pdf_image_tag '/missing.png', class: "img-missing" %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </div>
+  <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+</page>

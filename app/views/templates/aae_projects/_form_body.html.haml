@@ -1,0 +1,128 @@
+.nav-tabs-custom
+	%ul.nav.nav-tabs
+		%li.active= link_to 'Project Settings','#project_settings', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+		- unless f.object.new_record?
+			%li= link_to 'Project Items Settings','#project_items_settings', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+	.tab-content{class: 'no-padding'}
+		.tab-pane.active{class: 'chart', id: 'project_settings'}
+			.row
+				.col-md-4
+					.form-group
+						= f.label :title, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "title"})
+						= f.text_field :title, class: 'form-control'
+				.col-md-5
+					.form-group
+						= f.label :name, t('templates.aae_project.name'), class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "name"})
+						= f.text_field :name, class: 'form-control'
+				.col-md-3
+					.form-group
+						= f.label :project_type, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "project_type"})
+						- types = Templates::AaeProject::TYPES.collect{|k,v| [k.to_s.titleize, v]}
+						= select(:templates_aae_project, :project_type, types, {include_blank: '', selected: (f.object.project_type.value unless f.object.project_type.blank?)}, {class: 'form-control'})
+			.row
+				.col-md-4
+					.form-group
+						= f.label :sub_dir, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "sub_dir"})
+						= f.text_field :sub_dir, class: 'form-control'
+						%p{class: 'help-block'} Set subdirectory name if project is placed in subfolder
+				.col-md-4
+					.form-group
+						= f.label :screenshot_time, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "screenshot_time"})
+						= f.text_field :screenshot_time, class: 'form-control'
+			.row
+				.col-md-6
+					.form-group
+						= f.label :description, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "description"})
+						= f.text_area :description, class: 'form-control', rows: 4
+				.col-md-6
+					.form-group
+						= f.label :notes, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "notes"})
+						= f.text_area :notes, class: 'form-control', rows: 4
+			.row
+				.col-md-4
+					.control-box{class: "checkbox"}
+						= f.label :is_approved, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "is_approved"})
+						= f.label :is_approved do
+							= f.check_box :is_approved
+					%p{class: 'help-block'}
+						Template may be selected by AAE Proj. Gemerator if this flag and
+						%strong Is approved
+						flag are set in
+						%strong true
+				.col-md-4
+					.control-box{class: "checkbox"}
+						= f.label :is_active, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "is_active"})
+						= f.label :is_active do
+							= f.check_box :is_active
+					%p{class: 'help-block'}
+						Template may be selected by AAE Proj. Gemerator if this flag and
+						%strong Is approved
+						flag are set in
+						%strong true
+				.col-md-4
+					.control-box{class: "checkbox"}
+						= f.label :is_special, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "is_special"})
+						= f.label :is_special do
+							= f.check_box :is_special
+					%p{class: 'help-block'} Check if project has specific decoration (Christmas decoration for ex.)
+			.row
+				.col-md-4
+					.control-box
+						= f.label :xml
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "xml_file_name"})
+						= f.file_field :xml, autocomplete: 'off'
+						%p{class: 'help-block'} file format: *.aepx
+						%hr
+						- unless f.object.xml.blank?
+							.form-group
+								= label_tag nil, 'Current XML'
+								%div
+									= label_tag nil, 'Uploaded at', class: 'control-label'
+									%div= f.object.xml_updated_at
+								%div
+									= label_tag nil, 'Filename', class: 'control-label'
+									%div= f.object.xml_file_name
+								%div
+									= label_tag nil, 'File Size', class: 'control-label'
+									%div= number_to_human_size(f.object.xml_file_size)
+				.col-md-4
+					.form-group{class: 'control-box'}
+						= f.label :thumbnail, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "thumbnail_file_name"})
+						= f.file_field :thumbnail, accept: 'image/png,image/gif,image/jpeg', autocomplete: 'off'
+						%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+						%hr
+						- unless f.object.thumbnail.blank?
+							.form-group
+								= label_tag nil, 'Current Thumbnail'
+								%div
+									= label_tag nil, 'Uploaded at', class: 'control-label'
+									%div= f.object.thumbnail_updated_at
+								%div= image_tag f.object.thumbnail.url(:thumb), class: 'img-responsive', style: 'height: 170px; width: 300px;'
+				.col-md-4
+					.form-group{class: 'control-box'}
+						= f.label :video, class: 'control-label'
+						= tooltip_by_field({table_name: "templates_aae_projects", table_column: "video_file_name"})
+						= f.file_field :video, accept: 'video/mp4', autocomplete: 'off'
+						%p{class: 'help-block'} file format: mp4, file size: <= 200MB
+						%hr
+						- unless f.object.video.blank?
+							.form-group
+								= label_tag nil, 'Current Video'
+								%div
+									= label_tag nil, 'Uploaded at', class: 'control-label'
+									%div= f.object.video_updated_at
+								%div= video_tag f.object.video.url, style: 'height: 170px; width: 300px;', controls: true, autobuffer: false
+		- unless f.object.new_record?
+			.tab-pane{class: 'chart', id: 'project_items_settings'}
+				= render partial: "templates/aae_projects/aae_project_items_form", locals: {f: f, aae_project: f.object}

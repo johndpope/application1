@@ -1,0 +1,103 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	=f.label :first_name, first_name: t('admin_user.first_name')
+	=f.text_field :first_name, class: "form-control"
+.form-group
+	=f.label :last_name, last_name: t('admin_user.last_name')
+	=f.text_field :last_name, class: "form-control"
+.form-group
+	= f.label :email, email: t('admin_user.email')
+	= f.text_field :email, class: "form-control"
+.form-group
+	= f.label :skype, skype: t('admin_user.skype')
+	= f.text_field :skype, class: "form-control"
+.form-group
+	= f.label :roles, t('admin_user.roles')
+	- role_options = AdminUser::ROLES.map{|k,v| [t("user_roles.#{k}"),v]}
+	= f.select :roles, role_options, {include_blank: true, selected: (f.object.roles.value if f.object.roles)}, class: "form-control"
+.form-group
+	=f.label :title, title: t('admin_user.title')
+	=f.text_field :title, class: "form-control"
+.form-group
+	= f.label :user_company_id, t('admin_user.company')
+	= f.select :admin_user_company_id, options_from_collection_for_select(AdminUserCompany.order(:name), :id, :name, f.object.admin_user_company_id), { include_blank: true, class: 'select2 form-control' }, class: "form-control"
+.form-group
+	= f.label :phones, phones: t('admin_user.phones')
+	= f.hidden_field :phones_csv
+	#phones_block.form-group
+		- if f.object.phones.present?
+			- f.object.phones.each do |phone|
+				.input-group.phone-row
+					= select_tag('phone_type', options_for_select(AdminUser::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type' })
+					%input.form-control.phone{:placeholder => "Phone Number", :type => "text", :value => "#{phone.gsub(/[^0-9]/, '')}"}/
+					%span.input-group-btn
+						%a.btn.btn-default.delete-link{:href => "javascript://", :title => "Delete"}
+							%i.fa.fa-times
+	%a#phones_add.btn.btn-default.btn-xs{:href => "javascript://"}
+		%i.fa.fa-plus-circle
+		Add
+.form-group
+	= f.label :country, country: t('admin_user.country')
+	= f.select :country_id, options_from_collection_for_select(Geobase::Country.order(:id), :id, :name, f.object.country_id), { include_blank: true, class: 'select2 form-control' }, class: "form-control"
+.form-group
+	=f.label :address_1, address_1: t('admin_user.address_1')
+	=f.text_field :address_1, class: "form-control"
+.form-group
+	=f.label :address_2, address_2: t('admin_user.address_2')
+	=f.text_field :address_2, class: "form-control"
+.form-group
+	= f.label :password, t('admin_user.password')
+	= f.text_field :password, class: "form-control"
+	%p{class: 'help-block'} Minimal length is 8 characters
+
+:javascript
+	$(function () {
+	  function collectPhones() {
+	    var phone_numbers = '';
+	    $("#phones_block div.phone-row").each(function (){
+	      var phone_type = $(this).find(".phone-type").select2('val');
+	      var phone = $(this).find(".phone").val().trim();
+	      if(phone != ""){
+	        phone_numbers += phone_type + phone + ","
+	      }
+	    });
+	    $("#admin_user_phones_csv").val(phone_numbers);
+	  }
+
+	  function phone_mask(){
+	    $("div.phone-row .phone").each(function (){
+	      $(this).inputmask("mask", {"mask": "(999)-999-9999 [x99999]"});
+	    });
+			$(".phone-row select").select2();
+	  }
+
+	  $("#phones_add").on("click", function(){
+	    var phone_types_example = "<select class='form-control phone-type' id='phone_type' name='phone_type'><option value='m:'>Mobile</option><option value='w:'>Work</option><option value='h:'>Home</option><option value='o:'>Other</option></select>";
+	    var phone_row = "<div class='input-group phone-row'>"
+	    + phone_types_example
+	    + "<input type='text' class='form-control phone' placeholder='Phone Number'/><span class='input-group-btn'><a href='javascript://' class='btn btn-default delete-link' title='Delete'><i class='fa fa-times'></i></a></span></div>";
+	    $("#phones_block").append(phone_row);
+	    phone_mask();
+	  });
+
+	  $(document).on("click", ".delete-link", function(){
+	    $(this).parent().parent().remove();
+	  });
+
+	  $( document ).ready(function() {
+	    if ($("#admin_user_phones_csv").val() == "") {
+	      $("#phones_add").trigger("click");
+	    }
+	    collectPhones();
+	    phone_mask();
+
+	    $('.new_admin_user, .edit_admin_user').submit(function (e) {
+	        window.onbeforeunload = '';
+	        collectPhones();
+	    });
+
+	  });
+	});

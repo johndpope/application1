@@ -1,0 +1,28 @@
+%td.image
+  = link_to 'javascript://' do
+    = image_tag "/sandbox/icons/icon5.png"
+%td.time.last
+  .last_item
+    = link_to 'javascript://' do
+      %span.num= 5
+%td.regenerate_block
+  .col-md-2
+    = link_to regenerate_channel_tags_sandbox_client_video_blenders_path(params[:client_uuid]), class: "btn btn-regenerate", data: {remote: true, "disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i>'} do
+      = fa_icon 'refresh 2x'
+  .col-md-10
+    .title-block
+      %h3
+        %b Channel
+        %span.font_red_no-weight Tags
+      .sm_description
+        Max Tags:
+        %span.font_red 500 characters
+  .col-md-2
+  .col-md-10
+    .channel_tags_components
+      %p.sm_content
+        - tags = ['Client_short_d.', 'Industry_short_d.', 'Location short.d', 'Other_short_d.(optional)']
+        - tags.each_with_index do |v,i|
+          %span.label.label-info= v.to_s
+          = "+" unless i+1 == tags.size
+      %p.sm_content.yt_channel_tags=@tags

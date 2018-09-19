@@ -1,0 +1,11 @@
+<%
+  modal = render partial: 'test_titles', locals: {titles: @titles}
+%>
+
+$("div.modal-backdrop.fade.in").remove();
+$('#test_titles').remove();
+$('body').append('<%= escape_javascript(modal) %>');
+$("#test_titles").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+});
+$('.animationload').hide();

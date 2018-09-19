@@ -1,0 +1,303 @@
+<a href="#" id="colorize-button" style="display:none;">Choose colors</a>
+<script type="text/javascript" src="http://paletton.com/widget/js/widget.js"></script>
+<%= form_for @client_landing_page, url: client_client_landing_page_path(@client, @client_landing_page), html: { multipart: true } do | f | %>
+	<% if @client_landing_page.errors.any? %>
+		<div id="error_explanation" class="alert alert-danger alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+			<h4><i class="icon fa fa-exclamation-circle"></i> There <%= @client_landing_page.errors.count > 1 ? 'are errors' : 'is error' %> prohibited this landing page from being saved</h4>
+		</div>
+	<% end %>
+  <%= f.hidden_field :ignore_domain, value: params[:ignore_domain] %>
+  <%= f.hidden_field :client_id %>
+	<div class="row">
+		<div class="col-md-7">
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:product_id].present? %>" data-content="<%= @client_landing_page.errors[:product_id].try(:join, ', ') %>">
+				<%= f.label :product, class: 'control-label' %>
+				<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.product", :default => "")}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #7C529E; border: 1px solid #7C529E;"><i class="fa fa-cube"></i></span>
+					<% products_array = Product.where('client_id = ?', @client.id).map { | p | [p.name, p.id] } %>
+					<%= f.select :product_id, options_for_select(products_array, @client_landing_page.product_id), { include_blank: true }, { placeholder: 'Select product', class: 'select2 form-control' } %>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-9 <%= 'has-error' if @client_landing_page.errors[:client_landing_page_template].present? %>" data-content="<%= @client_landing_page.errors[:client_landing_page_template].try(:join, ', ') %>">
+					<%= f.label :template, class: 'control-label' %>
+					<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.template", :default => "")}) %>
+					<div class="input-group">
+						<span class="input-group-addon" style="background-color: #83A948; border: 1px solid #83A948;"><i class="fa fa-file-text-o"></i></span>
+						<%= f.select :client_landing_page_template_id, options_for_select(ClientLandingPageTemplate.order(name: :asc).map { | p | [p.name, p.id] }, @client_landing_page.client_landing_page_template_id), { include_blank: false }, { placeholder: 'Select template', class: 'select2 form-control' } %>
+					</div>
+				</div>
+				<div id="template_preview" class="col-md-3">
+					<label>Preview</label>
+					<%= link_to image_tag(preview_img(:thumb)), preview_img(:original), target: '_blank', class: 'livepreview', data: { src: preview_img(:original) } %>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-5">
+					<div class="form-group <%= 'has-error' if @client_landing_page.errors[:subdomain].present? %>" data-content="<%= @client_landing_page.errors[:subdomain].try(:join, ', ') %>">
+						<%= f.label :subdomain, class: 'control-label' %>
+						<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "subdomain"}) %>
+						<div class="input-group">
+							<span class="input-group-addon" style="background-color: #356392; border: 1px solid #356392;"><i class="fa fa-globe"></i></span>
+							<%= f.text_field :subdomain, class: 'form-control', placeholder: 'Subdomain', readonly: (@client_landing_page.parked && @client_landing_page.hosted) %>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-7">
+					<div class="form-group <%= 'has-error' if @client_landing_page.errors[:domain].present? %>" data-content="<%= @client_landing_page.errors[:domain].try(:join, ', ') %>">
+						<%= f.label :domain, class: 'control-label' %>
+						<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "domain"}) %>
+						<div class="input-group">
+							<span class="input-group-addon" style="background-color: #356392; border: 1px solid #356392;"><i class="fa fa-globe"></i></span>
+              <%= f.select :domain, options_for_select(Domain.select(:name).where(parked: true).order(name: :asc).pluck(:name), @client_landing_page.domain), { include_blank: true }, { placeholder: 'Choose domain', class: 'select2 form-control', disabled: (@client_landing_page.parked && @client_landing_page.hosted) } %>
+						</div>
+					</div>
+				</div>
+			</div>
+      <div style="display:none;" class="form-group <%= 'has-error' if @client_landing_page.errors[:domain_token].present? %>" data-content="<%= @client_landing_page.errors[:domain_token].try(:join, ', ') %>">
+        <%= f.label :domain_token, class: 'control-label' %>
+        <div class="input-group">
+          <span class="input-group-addon" style="background-color: #6ba74d; border: 1px solid #6ba74d;"><i class="fa fa-cloud"></i></span>
+          <%= f.text_field :domain_token, class: 'form-control', placeholder: 'Domain token' %>
+        </div>
+      </div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:title].present? %>" data-content="<%= @client_landing_page.errors[:title].try(:join, ', ') %>">
+				<%= f.label :meta_title, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "title"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+					<%= f.text_field :title, class: 'form-control', placeholder: 'Meta title', maxlength: "#{ClientLandingPage::META_TITLE_LIMIT}" %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:meta_keywords].present? %>" data-content="<%= @client_landing_page.errors[:meta_keywords].try(:join, ', ') %>">
+				<%= f.label :meta_keywords, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "meta_keywords"}) %>
+        <div class="counter-keywords pull-right">Keywords count: <span id="keywords_label" class="label label-default">0</span></div>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+					<%= f.text_area :meta_keywords, class: 'form-control', placeholder: 'Meta keywords', rows: 3 %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:meta_description].present? %>" data-content="<%= @client_landing_page.errors[:meta_description].try(:join, ', ') %>">
+				<%= f.label :meta_description, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "meta_description"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+					<%= f.text_area :meta_description, class: 'form-control', placeholder: 'Meta description', rows: 3 %>
+				</div>
+			</div>
+      <div class="form-group <%= 'has-error' if @client_landing_page.errors[:logo_image_url].present? %>" data-content="<%= @client_landing_page.errors[:logo_image_url].try(:join, ', ') %>">
+        <div>
+				<label class="control-label">Logo image URL</label>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "logo_image_url"}) %>
+        <%= link_to 'Use client logo', 'javascript://', id: 'use_client_logo', class: "pull-right" %>
+        </div>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #4caf50; border: 1px solid #4caf50;"><i class="fa fa-image"></i></span>
+					<%= f.text_field :logo_image_url, class: 'form-control', placeholder: 'Logo image URL' %>
+				</div>
+			</div>
+      <div class="form-group m-t">
+        <%= f.check_box :menu, class: 'iCheck-helper' %>
+        <%= f.label :menu, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "menu"}) %>
+      </div>
+      <div class="form-group <%= 'has-error' if @client_landing_page.errors[:header_image_url].present? || @client_landing_page.errors[:header_background].present? %>" data-content="<%= (@client_landing_page.errors[:header_image_url].to_a + @client_landing_page.errors[:header_background].to_a).uniq.try(:join, ', ') %>">
+				<label class="control-label">Header image URL</label>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "header_image_url"}) %>
+        <%= link_to (image_tag URI::escape(@client_landing_page.header_background.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(@client_landing_page.header_background.url(:original), '[]'), { target: '_blank' } if @client_landing_page.id && @client_landing_page.header_background.present? %>
+        <%= f.file_field :header_background %>
+        <p style="margin-top: 5px;">or insert URL from <%= link_to 'Media Storage', artifacts_images_path, target: "_blank" %>:</p>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #4caf50; border: 1px solid #4caf50;"><i class="fa fa-image"></i></span>
+					<%= f.text_field :header_image_url, class: 'form-control', placeholder: 'Header image URL' %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:header_title].present? %>" data-content="<%= @client_landing_page.errors[:header_title].try(:join, ', ') %>">
+				<%= f.label :header_title, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "header_title"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+					<%= f.text_field :header_title, class: 'form-control', placeholder: 'Header title' %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:header_body].present? %>" data-content="<%= @client_landing_page.errors[:header_body].try(:join, ', ') %>">
+				<%= f.label :header_body, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "header_body"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+					<%= f.text_area :header_body, class: 'form-control', placeholder: 'Header body', rows: 3 %>
+				</div>
+			</div>
+      <div class="form-group <%= 'has-error' if @client_landing_page.errors[:header_action_title].present? %>" data-content="<%= @client_landing_page.errors[:header_action_title].try(:join, ', ') %>">
+        <%= f.label :header_action_title, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "header_action_title"}) %>
+        <div class="input-group">
+          <span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+          <%= f.text_field :header_action_title, class: 'form-control', placeholder: 'Header action title' %>
+        </div>
+      </div>
+      <div class="form-group <%= 'has-error' if @client_landing_page.errors[:header_action_link].present? %>" data-content="<%= @client_landing_page.errors[:header_action_link].try(:join, ', ') %>">
+        <%= f.label :header_action_link, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "header_action_link"}) %>
+        <div class="input-group">
+          <span class="input-group-addon" style="background-color: #00ABDC; border: 1px solid #00ABDC;"><i class="fa fa-link"></i></span>
+          <%= f.text_field :header_action_link, class: 'form-control', placeholder: 'Header action link' %>
+        </div>
+      </div>
+    <div class="form-group <%= 'has-error' if @client_landing_page.errors[:footer_image_url].present? || @client_landing_page.errors[:footer_background].present? %>" data-content="<%= (@client_landing_page.errors[:footer_image_url].to_a + @client_landing_page.errors[:footer_background].to_a).uniq.try(:join, ', ') %>">
+				<label class="control-label">Footer image URL</label>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "footer_image_url"}) %>
+        <%= link_to (image_tag URI::escape(@client_landing_page.footer_background.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(@client_landing_page.footer_background.url(:original), '[]'), { target: '_blank' } if @client_landing_page.id && @client_landing_page.footer_background.present? %>
+        <%= f.file_field :footer_background %>
+        <p style="margin-top: 5px;">or insert URL from <%= link_to 'Media Storage', artifacts_images_path, target: "_blank" %>:</p>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #4caf50; border: 1px solid #4caf50;"><i class="fa fa-image"></i></span>
+					<%= f.text_field :footer_image_url, class: 'form-control', placeholder: 'Footer image URL' %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:footer_title].present? %>" data-content="<%= @client_landing_page.errors[:footer_title].try(:join, ', ') %>">
+				<%= f.label :footer_title, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "footer_title"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+					<%= f.text_field :footer_title, class: 'form-control', placeholder: 'Footer title' %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:footer_body].present? %>" data-content="<%= @client_landing_page.errors[:footer_body].try(:join, ', ') %>">
+				<%= f.label :footer_body, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "footer_body"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+					<%= f.text_area :footer_body, class: 'form-control', placeholder: 'Footer body', rows: 3 %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:footer_action_title].present? %>" data-content="<%= @client_landing_page.errors[:footer_action_title].try(:join, ', ') %>">
+				<%= f.label :footer_action_title, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "footer_action_title"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+					<%= f.text_field :footer_action_title, class: 'form-control', placeholder: 'Footer action title' %>
+				</div>
+			</div>
+			<div class="form-group <%= 'has-error' if @client_landing_page.errors[:footer_action_link].present? %>" data-content="<%= @client_landing_page.errors[:footer_action_link].try(:join, ', ') %>">
+				<%= f.label :footer_action_link, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "footer_action_link"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #00ABDC; border: 1px solid #00ABDC;"><i class="fa fa-link"></i></span>
+					<%= f.text_field :footer_action_link, class: 'form-control', placeholder: 'Footer action link' %>
+				</div>
+			</div>
+      <div class="form-group">
+        <%= f.label :share_icons_hover_text, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "client_landing_pages", table_column: "share_icons_hover_text"}) %>
+        <div class="input-group">
+          <span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+          <%= f.text_area :share_icons_hover_text, class: 'form-control', placeholder: 'Share icons hover text', rows: 3 %>
+        </div>
+      </div>
+		</div>
+		<div id="body_sections" class="col-md-5">
+			<% if @client_landing_page.body_sections.present? %>
+				<% @client_landing_page.body_sections_json.each_with_index do | body_section, index | %>
+					<div class="body-section">
+						<fieldset>
+							<a class="btn btn-xs btn-danger btn-flat remove-fields <%= 'dib' if index > 0 %>" href="javascript://" title="Remove group of fields"><i class="glyphicon glyphicon-remove mr"></i> Remove</a>
+							<legend>Body section <i class="glyphicon glyphicon-move m-lh"></i></legend>
+							<label>Title</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.title",:default => "")}) %>
+							<input class="form-control" name="client_landing_page[body_sections][<%= index %>][title]" data-name="title" type="text" value="<%= body_section[1]['title'] %>">
+							<label class="m-t">Body</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.body", :default => "")}) %>
+							<textarea class="form-control" name="client_landing_page[body_sections][<%= index %>][body]" data-name="body" rows="3"><%= body_section[1]['body'] %></textarea>
+							<label class="m-t">Action title</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.action_title", :default => "")}) %>
+							<input class="form-control" name="client_landing_page[body_sections][<%= index %>][action_title]" data-name="action_title" type="text" value="<%= body_section[1]['action_title'] %>">
+							<label class="m-t">Action link</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.action_link", :default => "")}) %>
+							<input class="form-control" name="client_landing_page[body_sections][<%= index %>][action_link]" data-name="action_link" type="text" value="<%= body_section[1]['action_link'] %>">
+              <div class="form-group m-t" style="margin-bottom: 0px;">
+                <input name="client_landing_page[body_sections][<%= index %>][text_first]" data-name="text_first" type="checkbox" value="<%= body_section[1]['text_first'] %>" <%= 'checked' if body_section[1]['text_first'] == 'true' %>>
+                <label class="control-label">Text first</label>
+								<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.text_first", :default => "")}) %>
+              </div>
+							<div>
+								<label class="m-t">Video URL</label>
+								<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.video_url", :default => "")}) %>
+								<input class="form-control video-url-input" <%= "disabled" if body_section[1]['image_url'].present? %> name="client_landing_page[body_sections][<%= index %>][video_url]" data-name="video_url" type="text" value="<%= body_section[1]['video_url'] %>">
+								<label class="m-t">Or</label>
+								<br>
+								<label class="m-t">Image URL</label>
+								<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.image_url", :default => "")}) %>
+								<input class="form-control image-url-input" <%= "disabled" if body_section[1]['video_url'].present? %> name="client_landing_page[body_sections][<%= index %>][image_url]" data-name="image_url" type="text" value="<%= body_section[1]['image_url'] %>">
+							</div>
+						</fieldset>
+					</div>
+				<% end %>
+			<% else %>
+				<div class="body-section">
+					<fieldset>
+						<a class="btn btn-xs btn-danger btn-flat remove-fields" href="javascript://" title="Remove group of fields"><i class="glyphicon glyphicon-remove mr"></i> Remove</a>
+						<legend>Body section <i class="glyphicon glyphicon-move m-lh"></i></legend>
+						<label>Title</label>
+						<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.title", :default => "")}) %>
+						<input class="form-control" name="client_landing_page[body_sections][0][title]" data-name="title" type="text" value="">
+						<label class="m-t">Body</label>
+						<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.body", :default => "")}) %>
+						<textarea class="form-control" name="client_landing_page[body_sections][0][body]" data-name="body" rows="3"></textarea>
+						<label class="m-t">Action title</label>
+						<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.action_title", :default => "")}) %>
+						<input class="form-control" name="client_landing_page[body_sections][0][action_title]" data-name="action_title" type="text" value="">
+						<label class="m-t">Action link</label>
+						<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.action_link", :default => "")}) %>
+						<input class="form-control" name="client_landing_page[body_sections][0][action_link]" data-name="action_link" type="text" value="">
+            <div class="form-group m-t" style="margin-bottom: 0px;">
+              <input name="client_landing_page[body_sections][0][text_first]" data-name="text_first" type="checkbox" value="false">
+              <label class="control-label">Text first</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.text_first", :default => "")}) %>
+            </div>
+						<div>
+							<label class="m-t">Video URL</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.video_url", :default => "")}) %>
+							<input class="form-control video-url-input" name="client_landing_page[body_sections][0][video_url]" data-name="video_url" type="text" value="">
+							<label class="m-t">Or</label>
+							<br>
+							<label class="m-t">Image URL</label>
+							<%= tooltip_by_field({tooltip_text: t("tooltips.client_landing_pages.image_url", :default => "")}) %>
+							<input class="form-control image-url-input" name="client_landing_page[body_sections][0][image_url]" data-name="image_url" type="text" value="">
+						</div>
+					</fieldset>
+				</div>
+			<% end %>
+
+			<div class="bs-footer m-t">
+				<a id="bs_add" class="btn btn-primary btn-flat right" href="javascript://"><i class="glyphicon glyphicon-plus m-rh"></i>Add body section</a>
+			</div>
+		</div>
+		<div class="col-md-12 center">
+      <% if %(edit update).include?(params[:action]) %>
+        <div style="margin-bottom: 10px;">
+          <span>Updated<%= " by <b>#{@client_landing_page.versions.last.try(:whodunnit)}</b>".html_safe if @client_landing_page.versions.last.try(:whodunnit).present? %> at <i><%= local_time(@client_landing_page.updated_at, format: '%m/%d/%y %I:%M %p', title: @client_landing_page.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %></i> (<%= time_ago_in_words(@client_landing_page.updated_at) %> ago)</span>
+        </div>
+      <% end %>
+			<div class="btn-group btn-group-custom">
+				<% if params[:action] == "new" %>
+					<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, @products_link, class: 'btn btn-lg btn-primary' %>
+				<% else %>
+					<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_client_landing_pages_path(@client), class: 'btn btn-lg btn-primary' %>
+				<% end %>
+				<%= f.submit :class => 'btn btn-lg btn-success', :id => 'client_landing_page_submit' %>
+        <% if %(edit update).include?(params[:action]) %>
+          <%= f.submit 'Update & Next', :class => 'btn btn-lg btn-warning', :name => 'submit_next' %>
+        <% end %>
+				<% if params[:action] == "new" && @client.representatives.empty? %>
+					<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, new_client_representative_path(@client), class: 'btn btn-lg btn-primary' %>
+				<% else %>
+					<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, client_representatives_path(@client), class: 'btn btn-lg btn-primary' %>
+				<% end %>
+			</div>
+		</div>
+	</div>
+<% end %>

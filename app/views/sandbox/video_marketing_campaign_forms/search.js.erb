@@ -1,0 +1,69 @@
+<%
+  tbody = render partial: 'search_tbody', locals: {dealers: dealers}
+  paginate = render partial: 'paginate', locals: {dealers: dealers}
+  #total_serach_results = dealers.total_count
+  #total_serach_results = dealers.size
+%>
+signup_action_url = "/sandbox/video_marketing_campaign_forms/detect_other_dealers?dealer_id="
+brands_logos_json = JSON.parse($("#brands_logos_json").val());
+var dealer_ids = [];
+$("#search_results").removeClass("col-md-4").addClass("col-md-9")
+$("#search_filters").removeClass("col-md-4").addClass("col-md-3")
+$("#search_results_help").hide();
+$("#search_results_content").show()
+$('#dealers_table_body').replaceWith('<%= escape_javascript(tbody) %>')
+$('.search_paginate').replaceWith('<%= escape_javascript(paginate) %>')
+$('.page, .next, .first, .prev, .next_page').on('click', function () {
+  $('.animationload').show()
+})
+//$("#dealers_table_body").css("float", "left")
+$('.iCheck-helper').iCheck({
+  checkboxClass: 'icheckbox_square-blue',
+  radioClass: 'iradio_square-blue',
+  increaseArea: '20%'
+});
+//$('#total_serach_results').text('<%#= total_serach_results %>')
+$('html, body').animate({scrollTop: $("#search_results_content").offset().top}, 1000);
+$('#dealers_table_body .claim_option').effect('highlight', { color: '#90bcd5' }, 1000)
+$('.animationload').hide()
+$('.dealers').on('ifChecked', function(event){
+  //console.log("Checked: " + $(this).val());
+  find_checked_dealers();
+});
+$('.dealers').on('ifUnchecked', function(event){
+  $(this).closest('.claim_option').find(".img-frame").first().removeClass('brand-frame-selected');
+  var itemtoRemove = $(this).val();
+  dealer_ids.splice($.inArray(itemtoRemove, dealer_ids),1);
+  find_checked_dealers();
+});
+$('.dealers').on('ifChecked', function(event){
+  $(this).closest('.claim_option').find(".img-frame").first().addClass('brand-frame-selected');
+  dealer_ids.push($(this).val());
+  find_checked_dealers();
+});
+
+$(".brand-name").each(function() {
+  brand_name = $(this).data("brand-name");
+  brand_logo_url = brands_logos_json[brand_name];
+  if (brand_logo_url) {
+    $(this).closest('.claim_option').find('.brand-logo').first().attr("src", brand_logo_url);
+  }
+});
+
+$('.img-frame').on('click', function (){
+  $(this).parent().parent().parent().find('.dealers').first().iCheck('toggle');
+});
+
+find_checked_dealers();
+
+$("#video_marketing_campaign_form_sign_up").on("click", function(){
+  $('.animationload').show();
+});
+
+function find_checked_dealers() {
+  // $('.dealers:checked').each(function() {
+  //   dealer_ids.push($(this).val());
+  // })
+  //console.log(ids.join(","));
+  $("#video_marketing_campaign_form_sign_up").attr("href", signup_action_url + dealer_ids.join(",") + "&industry_id=" + $('#industry_id').val() + "&name=" + $("#name").val() + "&phone=" + $("#phone").val() + "&email=" + $("#email").val() + "&website=" + $("#website").val() + "&zipcode=" + $("#zipcode").val())
+}

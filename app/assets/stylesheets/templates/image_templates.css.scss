@@ -1,0 +1,29 @@
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  vertical-align: middle !important;
+}
+.templates_image_templates{
+  &.index{
+    #image_template_texts{
+      .id{width: 40px;}
+      .actions{width: 80px;}
+    }
+
+    #image_template_images{
+      .id{width: 40px;}
+      .height, .width{width: 80px;}
+      .actions{width: 80px;}
+    }
+  }
+
+}
+
+
+#templates_image_template_items{
+  .name{width: 300px;}
+  .client_id{width: 250px;}
+  .product_id{width: 250px;}
+  .sample{width: 80px;}
+  .svg{width: 80px;}
+  .is_active{width: 80px;}
+  .texts_preview{width: 80px;}
+}

@@ -1,0 +1,3 @@
+%tbody
+	- blended_video.blended_video_chunks.order(order_nr: :asc).each do |bvc|
+		= render partial: 'clients/video_workflow/video_set_block/video_segments_block/video_segments_table_row', locals: {bvc: bvc}

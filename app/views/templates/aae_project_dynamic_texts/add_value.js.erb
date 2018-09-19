@@ -1,0 +1,2 @@
+<% value = render partial: '/templates/aae_project_dynamic_texts/value', locals: {maxlength: params[:maxlength], placeholder: params[:placeholder]} %>
+$('.dynamic-text-value:last').after('<%= escape_javascript(value) %>');

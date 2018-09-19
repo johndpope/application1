@@ -1,0 +1,16 @@
+<%= form_for @contact_us, html: { multipart: true, action: 'create' }, data: { remote: true } do | f | %>
+	<%= f.hidden_field :sandbox_client_id %>
+	<%= f.hidden_field :source, value: params[:source] if params[:source].present? %>
+  <%= f.label :name, "Name" %>
+	<%= f.text_field :name, class: 'form-control', placeholder: 'Name' %>
+  <%= f.label :email, "Email" %>
+	<%= f.text_field :email, class: 'form-control', placeholder: 'E-mail' %>
+  <%= f.label :phone, "Phone" %>
+	<%= f.text_field :phone, class: 'form-control', placeholder: 'Phone' %>
+  <%= f.label :text, "Message" %>
+	<%= f.text_area :text, { size: '40x5', class: 'form-control', placeholder: 'Message' } %>
+	<%= button_tag type: 'submit', class: 'btn btn-different btn-red right', data: { disable_with: 'Submitting...' }, style: "margin-top: 15px; margin-bottom: 15px;" do %>
+		<i class="glyphicon glyphicon-arrow-right"></i><span><b>Send</b>Message</span>
+	<% end %>
+  <div class="g-recaptcha" data-sitekey="6LdlUCwUAAAAAPttdvAi5eLTD_yFSeQzYDNmCe6H"></div>
+<% end %>

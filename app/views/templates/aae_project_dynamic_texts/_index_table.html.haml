@@ -1,0 +1,35 @@
+.box
+  .box-header.with-border
+    %h3{class: "box-title"}
+      = t("templates_aae_projects.project_text_types.#{text_type}")
+      - project_text_type_tooltip = t("templates_aae_projects.project_text_types.tooltips.#{text_type}", default: "")
+      - if project_text_type_tooltip.present?
+        %i{class: 'fa fa-question-circle popover-box', data: {content: project_text_type_tooltip, toggle: 'popover'}, style: "font-size: 14px; vertical-align: top;"}
+    .pull-right
+      %strong Total items:
+      %small.items-count{class: "label bg-primary"}= texts.size
+  .box-body
+    %table.table{id: "#{text_type}_index_table", class: "table-bordered table-striped table-hover"}
+      %tbody.thead
+        = render partial: "templates/aae_project_dynamic_texts/index_table_header", locals: {client: client, video_marketing_campaign_form: video_marketing_campaign_form, project_type: project_type, text_type: text_type}
+      %tbody.tbody
+        - texts.each do |dynamic_text|
+          = render partial: "templates/aae_project_dynamic_texts/index_table_row", locals: {dynamic_text: dynamic_text}
+      %tbody.tfoot{style: "#{texts.size == 0 ? 'display: none' : ''}"}
+        = render partial: "templates/aae_project_dynamic_texts/index_table_header", locals: {client: client, video_marketing_campaign_form: video_marketing_campaign_form, project_type: project_type, text_type: text_type}
+- content_for(:javascripts) do
+  :javascript
+    var ready = function () {
+      stripped_url = document.location.toString().split("#")
+      if (stripped_url.length > 1) {
+        search_element_id = "#" + stripped_url[1]
+        $('html, body').animate({scrollTop: $(search_element_id).offset().top - 100}, 1000)
+      }
+    }
+
+    $(document).ready(ready)
+    $(document).on('page:load', ready)
+
+    $(document).on('change', '.table .form-control', function () {
+      $(this).closest('form').submit();
+    });

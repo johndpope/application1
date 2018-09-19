@@ -1,0 +1,8 @@
+<%
+	row = render partial: "generic_crud_elements/index_table_row", locals: {item: item, row_nr: ''}
+	row_id = dom_id(item, 'row')
+%>
+row_nr = $('#<%= row_id%>').index() + 1;
+$('#<%= row_id%>').replaceWith('<%= escape_javascript(row)%>');
+$('#<%= row_id%> .row_nr').text(row_nr);
+$(".<%= item.class.to_s.underscore.gsub('/','_')%>_modal").modal('hide');

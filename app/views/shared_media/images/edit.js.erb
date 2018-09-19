@@ -1,0 +1,158 @@
+<%
+  modal = render partial: 'form', locals: {image: @image}
+  modal_dom_id = dom_id(@image.becomes(Social::Image), 'modal')
+%>
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove();
+});
+
+$('#country').select2({
+  placeholder: 'Choose',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/countries.json',
+    quietMillis: 300,
+    data: function (term, page) { return { name_or_code_cont: term, page: page, per_page: 10, sorts: 'name asc' } },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        ),
+        more: (page * 10) < data.total
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: $(element).data("id"), text: $(element).data("name")}
+    callback(data);
+  }
+}).on("change", function(e){
+  if (e && e.removed){
+    $("#region1").select2("val","");
+    $("#region2").select2("val","");
+    $("#city").select2("val","");
+  }
+});
+
+$('#region1').select2({
+  placeholder: 'Choose',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/regions.json',
+    quietMillis: 300,
+    data: function (term, page) {
+      return {
+        name_or_code_cont: term,
+        level_eq: 1,
+        country_id_eq: $('#country').val(),
+        page: page,
+        per_page: 10,
+        sorts: 'name asc'
+      }
+    },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        )
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: $(element).data("id"), text: $(element).data("name")}
+    callback(data);
+  }
+}).on("change", function(e){
+  if (e && e.removed){
+    $("#region2").select2("val","");
+    $("#city").select2("val","");
+  }
+});
+
+$('#region2').select2({
+  placeholder: 'Choose',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/regions.json',
+    quietMillis: 300,
+    data: function (term, page) {
+      return {
+        name_or_code_cont: term,
+        level_eq: 2,
+        country_id_eq: $('#country').val(),
+        parent_id_eq: $('#region1').val(),
+        page: page,
+        per_page: 10,
+        sorts: 'name asc'
+      }
+    },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        )
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: $(element).data("id"), text: $(element).data("name")}
+    callback(data);
+  }
+}).on("change", function(e){
+  if (e && e.removed){
+    $("#city").select2("val","");
+  }
+});
+
+$('#city').select2({
+  placeholder: 'Choose',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/localities.json',
+    quietMillis: 300,
+    data: function (term, page) {
+      return {
+        name_or_code_cont: term,
+        country_id_eq: $('#country').val(),
+        primary_region_id_eq: $('#region1').val(),
+        page: page,
+        per_page: 10,
+        sorts: ['population desc', 'name asc']
+      }
+    },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        )
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: $(element).data("id"), text: $(element).data("name")}
+    callback(data);
+  }
+});
+
+$('.tag_list').tagsinput({tagClass: "label label-primary"});

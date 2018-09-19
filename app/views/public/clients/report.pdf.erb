@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <%= wicked_pdf_stylesheet_link_tag "public/report" %>
+  </head>
+  <body>
+    <%= render partial: 'public/clients/report_partials/delivered_videos', locals: {client: @client} %>
+    <%= render partial: 'public/clients/report_partials/landing_pages', locals: {client: @client} %>
+    <%= render partial: 'public/clients/report_partials/posted_videos', locals: {client: @client} %>
+    <%= render partial: 'public/clients/report_partials/google_rankings', locals: {client: @client} %>
+    <%= render partial: 'public/clients/report_partials/youtube_rankings', locals: {client: @client} %>
+    <%= render partial: 'public/clients/report_partials/youtube_video', locals: {client: @client} %>
+    <%= render partial: 'public/clients/report_partials/youtube_channel', locals: {client: @client} %>
+  </body>
+</html>

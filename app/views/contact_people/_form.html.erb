@@ -1,0 +1,96 @@
+<div class="modal modal-wide fade" id="<%= dom_id(contact_person, 'modal') %>" style="z-index: 9999 !important">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_for contact_person, url: {controller: 'contact_people',  action: (contact_person.new_record? ? 'create' : 'update')}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <% if contact_person.new_record? %>
+            <h4>New contact person</h4>
+          <% else %>
+            <h4>Contact Person #<%= contact_person.id%></h4>
+          <% end %>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px">
+          <%= f.hidden_field :id %>
+          <%= f.hidden_field :resource_id %>
+          <%= f.hidden_field :resource_type %>
+          <div class="row">
+            <div class="col-md-4 form-group <%= 'has-error' if @contact_person.errors[:first_name].present? %>" data-content="<%= contact_person.errors[:first_name].try(:join, ',') %>">
+              <%= f.label :first_name, class: 'control-label' %>
+              <%= f.text_field :first_name,  class: 'form-control', placeholder: 'First Name' %>
+            </div>
+            <div class="col-md-4 form-group">
+              <%= f.label :mid_name, class: 'control-label' %>
+              <%= f.text_field :mid_name,  class: 'form-control', placeholder: 'Mid Name' %>
+            </div>
+            <div class="col-md-4 form-group">
+              <%= f.label :last_name, class: 'control-label' %>
+              <%= f.text_field :last_name,  class: 'form-control', placeholder: 'Last Name' %>
+            </div>
+          </div>
+          <div class="form-group">
+            <%= f.label :title, class: 'control-label' %>
+            <%= f.text_field :title,  class: 'form-control', placeholder: 'Title' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :email, class: 'control-label' %>
+            <%= f.text_field :email,  class: 'form-control', placeholder: 'Email' %>
+          </div>
+          <div class="form-group">
+              <%= f.label :phones, class: 'control-label' %>
+              <%= f.hidden_field :phones_csv %>
+              <div id="phones_block" class="form-group">
+                <div class="phone-types-example" style="display: none;">
+                  <%= select_tag('phone_type', options_for_select(ContactPerson::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, nil), { include_blank: false, class: 'form-control phone-type phone-type-example' }) %>
+                </div>
+                <% unless contact_person.phones.empty? %>
+                  <% contact_person.phones.each do |phone| %>
+                    <div class="input-group phone-row">
+                      <span class="input-group-addon" style="background-color: #43B51F; border: 1px solid #43B51F;"><i class="fa fa-phone"></i></span>
+                      <%= select_tag('phone_type', options_for_select(ContactPerson::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type'}) %>
+                      <input type="text" class="form-control phone" placeholder="Phone Number" value="<%= phone.gsub(/[^0-9]/, '') %>"/>
+                      <span class="input-group-btn"><a href="javascript://" class="btn btn-default delete-link" title="Delete"><i class="fa fa-times"></i></a></span>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+              <a id="phones_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus-circle"></i> Add</a>
+          </div>
+          <div class="form-group">
+            <%= f.label :fax, class: 'control-label' %>
+            <%= f.text_field :fax,  class: 'form-control fax', placeholder: 'Fax' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :skype, class: 'control-label' %>
+            <%= f.text_field :skype,  class: 'form-control', placeholder: 'Skype' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :notes, class: 'control-label' %>
+            <%= f.text_area :notes,  class: 'form-control', placeholder: 'Notes', rows: 3 %>
+          </div>
+          <% unless contact_person.new_record? %>
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <%= f.label :updated_at, class: 'control-label' %>
+                <p><%= local_time(contact_person.updated_at, format: '%m/%d/%y %I:%M %p', title: contact_person.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %> by <b><%= contact_person.versions.last.try(:whodunnit)%></b></p>
+              </div>
+              <div class="col-md-6 form-group">
+                <%= f.label :created_at, class: 'control-label' %>
+                <p><%= local_time(contact_person.created_at, format: '%m/%d/%y %I:%M %p', title: contact_person.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %> by <b><%= contact_person.versions.first.try(:whodunnit)%></b></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (contact_person.new_record? ? t(:create) : t(:update)), class: 'btn btn-primary', data: {disable_with: (contact_person.new_record? ? t(:creating) : t(:updating)) } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= javascript_include_tag('contact_people.js') %>
+<%= stylesheet_link_tag('contact_people.css') %>

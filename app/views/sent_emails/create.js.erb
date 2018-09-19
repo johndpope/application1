@@ -1,0 +1,8 @@
+<%
+  new_row = render partial: 'sent_email_row', locals: {sent_email: @sent_email, resource_id: @resource_id, resource_type: @resource_type}
+%>
+
+$('#modal_sent_email').modal('hide')
+$('#no_sent_emails_tr').hide();
+// $('#sent_emails_table tbody').prepend('<%= escape_javascript(new_row) %>');
+$('#sent_emails_table').prepend('<%= escape_javascript(new_row) %>');

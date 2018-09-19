@@ -1,0 +1,187 @@
+// Place all the styles related to the public/clients controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+/*--- Progress bar ---*/
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  padding: 4px !important;
+  vertical-align: middle !important;
+}
+.posting-table > tbody > tr {
+  height: 50px;
+}
+$height_progressBar: 30px;
+
+.progress {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+    background-color: #b5b5b5;
+    height: $height_progressBar;
+    position: relative;
+    box-shadow: 0 0 30px #f9f9f9 inset;
+  span.progress-bar-span {
+      width: 100%;
+      color: #fff;
+      text-align: center;
+      line-height: $height_progressBar;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-shadow: 0 0 15px #000;
+  }
+}
+
+.progress-bar {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+    min-width: 1%;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: $height_progressBar;
+    overflow: hidden;
+    span {
+        width: 100%;
+        color: #fff;
+        text-align: center;
+        line-height: $height_progressBar;
+        font-weight: bold;
+        text-shadow: 0 0 15px #000;
+    }
+}
+
+.progress-bar.active {
+  -webkit-animation: progress-bar-stripes 2s linear infinite;
+  -moz-animation: progress-bar-stripes 2s linear infinite;
+  -o-animation: progress-bar-stripes 2s linear infinite;
+  animation: progress-bar-stripes 2s linear infinite;
+  -webkit-animation-direction: reverse;
+  -moz-animation-direction: reverse;
+  -ms-animation-direction: reverse;
+  -o-animation-direction: reverse;
+  animation-direction: reverse;
+}
+
+#assets_table{
+  .explanation {
+    font-size: smaller;
+    font-style: italic;
+  }
+  .small-caps > th {
+    font-weight: initial !important;
+    font-variant: small-caps;
+  }
+  tbody > tr > td {
+    background-color: #ffffff;
+  }
+  tbody > tr > th {
+    background-color: #f9f9f9;
+  }
+  thead>tr>th, tbody>tr>th, tfoot>tr>th, thead>tr>td, tbody>tr>td, tfoot>tr>td {
+    border: 1px solid #dedddd;
+  }
+}
+
+#toolbar-toggle {
+  position: fixed;
+  top: 70px;
+  right: 0;
+  background: #fff;
+  border-radius: 5px 0px 0px 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  z-index: 9998;
+  cursor: pointer;
+  color: #3c8dbc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &.open {
+    right: 250px;
+  }
+}
+
+#toolbar {
+  padding: 10px;
+  position: fixed;
+  top: 70px;
+  right: -250px;
+  background: #fff;
+  border: 0px solid #ddd;
+  width: 250px;
+  z-index: 9998;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &.open {
+    right: 0px;
+  }
+}
+
+.main-header {
+  position: fixed;
+  width: 100%;
+}
+
+.content-wrapper {
+  margin-top: 50px;
+}
+
+.navbar-nav > li.active {background-color: #009650}
+
+#loading {
+  display: block;
+  background-color: #fff;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 999998;
+  opacity: 0.7;
+}
+
+.loading-image {
+  position: absolute;
+  top: 40%;
+  left: 45%;
+}
+
+#loading-image {
+  position: absolute;
+  top: 40%;
+  left: 45%;
+  z-index: 999999;
+}
+
+.highcharts-title > tspan {
+  font-variant: small-caps !important;
+  font-weight: bold !important;
+}
+
+.info-box-icon {
+  border-top-left-radius: 2px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 2px;
+  display: block;
+  float: left;
+  height: 80px;
+  width: 35%;
+  text-align: center;
+  font-size: 35px;
+  line-height: 80px;
+  background: rgba(0,0,0,0.2);
+}
+
+.info-box {
+  display: block;
+  min-height: 80px;
+  background: #fff;
+  width: 100%;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  border-radius: 2px;
+  margin-bottom: 15px;
+}
+
+.info-box-content {
+  padding: 15px 10px;
+  margin-left: 0px;
+}

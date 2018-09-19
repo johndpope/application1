@@ -1,0 +1,182 @@
+- header 'Image Storage'
+- breadcrumb :artifacts_image_storage, theme: "bootstrap"
+- content_for :top_nav do
+  - data = { toggle: 'modal', target: '#import-dialog' }
+  %li
+    %a#import-dialog-toggle{ href: 'javascript:', style: 'display: none', data: data }
+      = fa_icon 'cloud-download'
+      Import
+  %li
+    %a#show_gravity_mask{href: 'javascript:'}
+      = fa_icon 'anchor'
+      = t('artifacts.gravity_layer')
+
+= form_tag artifacts_images_path, method: 'get', id: 'search' do
+  - unless @api.present?
+    - is_open = params[:ransack] && params[:ransack].values.select(&:present?).any?
+    #toolbar-toggle{ class: ('open' if is_open).to_s }
+      = fa_icon 'gear'
+    #toolbar{ class: ('open' if is_open).to_s }
+      %h4 Advanced Search
+      - criteria = params[:ransack] || {}
+      .form-group
+        = label_tag "ransack_id_eq", "ID", class: 'control-label'
+        = text_field_tag "ransack[id_eq]", criteria[:"id_eq"], class: 'form-control'
+      - %w(title country region1 region2 city tags_name source_tags_name).each do |field|
+        .form-group
+          = label_tag "ransack_#{field}_cont", t(".by_#{field}"), class: 'control-label'
+          - id = nil
+          - if field == 'country'
+            - id = Geobase::Country.find_by_name(criteria[:"#{field}_cont"]).id unless criteria[:"#{field}_cont"].blank?
+          - if field == 'region1' || field == 'region2'
+            - id = Geobase::Region.find_by_name(criteria[:"#{field}_cont"]).id unless criteria[:"#{field}_cont"].blank?
+          - if field == 'city'
+            - id = Geobase::Locality.find_by_name(criteria[:"#{field}_cont"]).id unless criteria[:"#{field}_cont"].blank?
+          = text_field_tag "ransack[#{field}_cont]", criteria[:"#{field}_cont"], data: {id: id}, class: 'form-control'
+      .form-group
+        = label_tag "ransack_dynamic_image_id_present", "By #{t('artifacts.dynamic_image.type')}", class: 'control-label'
+        - options = [["All images", false],["Blended Images", true]]
+        = select_tag "ransack[dynamic_image_id_present]", options_for_select(options, selected: criteria[:dynamic_image_id_present]), include_blank: true, class: 'form-control'
+
+      .form-group
+        = label_tag "ransack_type_eq", "By icon and images", class: 'control-label'
+        - options = [["All images", ""], ["Icons only", "Artifacts::IconImage"]]
+        = select_tag "ransack[type_eq]", options_for_select(options, selected: criteria[:type_eq]), include_blank: true, class: 'form-control'
+
+      .form-group
+        = label_tag "ransack_type_cont", "By Api", class: 'control-label'
+        - options_api = Artifacts::Image::API_SOURCES_LIST.map{|a| [a,"Artifacts::#{a}Image"]}
+        = select_tag "ransack[type_cont]", options_for_select(options_api, criteria[:type_cont]), include_blank: true, class: 'form-control'
+
+      .form-group
+        = label_tag "ransack_industry_id_eq", "By Industry id", class: 'control-label'
+        = text_field_tag "ransack[industry_id_eq]", criteria[:"industry_id_eq"], class: 'form-control'
+
+      %button.btn.btn-primary.search-btn{ type: 'button' }
+        Search
+        = fa_icon 'search'
+  = hidden_field_tag :api, @api
+  .box.box-primary
+    .box-body
+      .input-group.input-group-lg
+        = text_field_tag :q, params[:q], :class => 'form-control input-lg'
+        .input-group-btn#api-switch
+          %button.btn.btn-warning.dropdown-toggle#api-switch-btn{ type: 'button', data: { toggle: 'dropdown' } }
+            = @api.present? ? @api : 'Local'
+            &nbsp;
+            = fa_icon 'caret-down'
+          %ul.dropdown-menu
+            - Artifacts::Image::API_SOURCES_LIST.each do |e|
+              %li{ :class => ('active' if @api == e) }
+                = link_to e, 'javascript:'
+            %li{ :class => ('active' if @api.blank?) }
+              = link_to 'Local', 'javascript:'
+          %button.btn.btn-primary.search-btn#search-btn{ type: 'button' }
+            Search
+            = fa_icon 'search'
+      - filters_template = "#{@api.try(:underscore)}_image_filters"
+      - if lookup_context.exists?("artifacts/images/_#{filters_template}")
+        %button.btn.btn-box-tool.advanced-toggle{ type: 'button' }
+          = fa_icon 'plus'
+          &nbsp;
+          Advanced Options
+        .advanced{ style: 'display: none' }= render partial: filters_template
+
+  = render partial: 'index_search_filter'
+
+  - if @total_count.present? && @total_count > 0
+    - unless %w(Unsplash).include?(@api)
+      .row
+        .col-md-12
+          %h4
+            %span{class: "label label-success"}= @total_count
+            items totally
+    - if @images.any?
+      .row
+        .col-lg-6.col-md-6
+          - unless %w(Unsplash).include?(@api)
+            .pull-left= paginate @images, theme: 'bootstrap'
+          - else
+            .pull-left= paginate @images, theme: 'bootstrap_without_last'
+        .col-lg-6.col-md-6
+          .btn-group#select-toggle
+            %button.btn.btn-default#all{ type: 'button' }
+              = fa_icon 'check-square-o'
+              All
+            %button.btn.btn-default#none{ type: 'button' }
+              = fa_icon 'square-o'
+              None
+.modal.fade#import-dialog
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{ type: 'button', 'aria-label' => 'Close', data: { dismiss: 'modal' } }
+          %span{ 'aria-hidden' => true }
+            &times;
+        %h4.modal-title Import Images
+      .modal-body
+        %form
+          .form-group
+            = label_tag 'client_id', 'Client'
+            = select_tag 'client_id', options_from_collection_for_select(Client.order("is_active DESC NULLS LAST, name ASC"), :id, :name), include_blank: true, class: 'form-control'
+          .form-group
+            = label_tag 'country', 'Country'
+            - default_country = Geobase::Country.find_by_code("US")
+            - unless default_country == nil
+              = hidden_field_tag('country_default', nil, data: {id: default_country.id, name: default_country.name})
+              = hidden_field_tag 'country'
+          .form-group
+            = label_tag 'region1', 'State'
+            = hidden_field_tag 'region1'
+          .form-group
+            = label_tag 'region2', 'County'
+            = hidden_field_tag 'region2'
+          .form-group
+            = label_tag 'city', 'City'
+            = hidden_field_tag 'city'
+          .form-group
+            = label_tag 'tag_list', 'Tags'
+            = text_area_tag 'tag_list', nil, :class => 'form-control', placeholder: 'Tags'
+          .form-group
+            = label_tag 'industry_id', 'Industry'
+            = hidden_field_tag 'industry_id', nil, :class => 'form-control'
+          .row
+            .col-md-6
+              .form-group
+                = label_tag :reusable, "Is Reusable", class: "control-label"
+                %p.help-block Image can be used for any clients if image is reusable
+                %div
+                  = label_tag :reusable, "Yes", value: "true"
+                  = radio_button_tag :reusable, true
+                  = label_tag :reusable, "No", value: "false"
+                  = radio_button_tag :reusable, false
+            .col-md-6
+              .form-group
+                = label_tag :reusable, "Use for landing pages", class: "control-label"
+                %p.help-block Image can be used for landing pages automatic creation process
+                %div
+                  = label_tag :use_for_landing_pages, "Yes", value: "true"
+                  = radio_button_tag :use_for_landing_pages, true
+                  = label_tag :use_for_landing_pages, "No", value: "false"
+                  = radio_button_tag :use_for_landing_pages, false
+      .modal-footer
+        %button.btn.btn-primary#import{ type: 'button', data: { loading_text: 'Loading...' } } Continue
+- if @total_count.present? && @total_count > 0
+  - if !@images.any?
+    .row
+      .col-lg-12.col-md-12
+        .alert.alert-info All images on this page are already imported or rejected, please go to the next page
+  .row
+    - @images.each do |image|
+      - url_o = image.url_o
+      - source_tag_list = image.source_tag_list
+      - image = image.becomes(Artifacts::Image)
+      - image.url_o = url_o
+      - image.source_tag_list = source_tag_list
+      = render 'image', image: image
+  .row
+    .col-lg-6.col-md-6
+      - unless %w(Unsplash).include?(@api)
+        .pull-left= paginate @images, theme: 'bootstrap'
+      - else
+        .pull-left= paginate @images, theme: 'bootstrap_without_last'

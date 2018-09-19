@@ -1,0 +1,321 @@
+<% title 'Phones Usages' %>
+<% if flash[:notice] %>
+  <div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4>
+      <i class="icon fa fa-exclamation-circle"></i>
+      <%= flash[:notice] %>
+    </h4>
+  </div>
+<% end %>
+<div class="nav-tabs custom-tabs">
+  <ul class="nav nav-tabs">
+    <li class="tab-url active"><a href="#phone_usages_list" data-toggle="tab">Items</a></li>
+    <li class="tab-url"><a href="#statistics" data-toggle="tab">Statistics</a></li>
+  </ul>
+</div>
+<div class="tab-content">
+  <div class="tab-pane active" id="phone_usages_list">
+    <div class="row">
+      <div class="col-md-5">
+      </div>
+      <div class="col-md-7">
+        <div class="form-group">
+          <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+          <span class="badge bg-blue">
+            <%= @phone_usages.total_count.to_s(:delimited)%>
+          </span>
+        </div>
+      </div>
+    </div>
+    <% unless @phone_usages.to_a.empty? %>
+      <table id="phone_usages_table" class="table table-bordered table-striped dataTable">
+        <thead>
+          <tr>
+            <th class="sort text-center" style="min-width: 50px;" id="id-th" data-field="id">ID</th>
+            <th class="sort text-center" style="min-width: 50px;" id="transaction_id-th" data-field="transaction_id" title="Transaction ID">Tr. ID</th>
+            <th class="sort text-center" id="session_id-th" data-field="session_id" title="Session ID">Session ID</th>
+            <th class="sort text-center" id="phone-th" data-field="phone">Phone</th>
+            <th class="text-center" title="Unique accounts usage">Google Usage</th>
+            <th class="text-center" title="Unique channels usage">Youtube Usage</th>
+            <th class="sort text-center" id="sms_code-th" data-field="sms_code">SMS Code</th>
+            <th class="sort text-center" id="source_type-th" data-field="source_type">Source Type</th>
+            <th style="width: 50px;" class="text-center">Call File</th>
+            <th class="sort text-center" id="phone_provider-th" data-field="phone_provider">Phone Provider</th>
+            <th class="sort text-center" id="phone_service-th" data-field="phone_service">Phone Service</th>
+            <th class="sort text-center" style="min-width: 60px;" id="country-th" data-field="country">Country</th>
+            <th class="sort text-center" id="error_type-th" data-field="error_type">Error Type</th>
+            <th class="sort text-center" id="action_type-th" data-field="action_type">Action Type</th>
+            <th class="sort text-center" id="web_service_type-th" data-field="web_service_type">Web Service Type</th>
+            <th class="sort text-center" id="phone_usageable_id-th" data-field="phone_usageable_id">Usageable ID</th>
+            <th class="sort text-center" style="min-width: 55px;" id="amount-th" data-field="amount">Amount</th>
+            <th class="sort text-center" style="width: 60px;" id="created_at-th" data-field="created_at">Created At</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @phone_usages.each do |phone_usage| %>
+            <tr>
+              <td class="text-center"><%=phone_usage.id %></td>
+              <td class="text-center"><%=phone_usage.transaction_id %></td>
+              <td class="text-center"><%=phone_usage.session_id %></td>
+              <td class="text-center"><%=link_to_if phone_usage.phone.present?, phone_usage.phone.try(:value), phones_path(value: phone_usage.phone.try(:value)), target: '_blank' %></td>
+              <td class="text-center" title="Unique accounts usage"><%= phone_usage.phone_id.present? ? PhoneUsage.distinct.select(:phone_usageable_id).where(phone_id: phone_usage.phone_id, phone_usageable_type: "GoogleAccountActivity").pluck(:phone_usageable_id).size : "-" %></td>
+              <td class="text-center" title="Unique channels usage"><%= phone_usage.phone_id.present? ? PhoneUsage.distinct.select(:phone_usageable_id).where(phone_id: phone_usage.phone_id, phone_usageable_type: "YoutubeChannel").pluck(:phone_usageable_id).size : "-" %></td>
+              <td class="text-center"><%=phone_usage.sms_code %></td>
+              <td class="text-center"><%=phone_usage.source_type.try(:upcase) %></td>
+              <td class="text-center">
+                <% if phone_usage.call_file_url.present? %>
+                  <div data-code="<%= phone_usage.sms_code.to_s %>">
+                    <audio id="audio_<%= phone_usage.id %>" controls="controls" preload="none" style="display: none; width: 495px;">
+                      <source src="<%= phone_usage.call_file_url.gsub('https://', 'http://') %>" type="audio/wav">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                <% end %>
+              </td>
+              <td class="text-center"><%=link_to_if phone_usage.phone_provider.present?, phone_usage.phone_provider.try(:name), edit_phone_provider_path(phone_usage.phone_provider), target: '_blank' %></td>
+              <td class="text-center"><%=link_to_if phone_usage.phone_service.present?, phone_usage.phone_service.try(:name), edit_phone_service_path(phone_usage.phone_service), target: '_blank' %></td>
+              <td class="text-center"><%=phone_usage.phone.try(:country).try(:name) %></td>
+              <td class="text-center"><%=phone_usage.error_type %></td>
+              <td class="text-center"><%=phone_usage.action_type %></td>
+              <td class="text-center"><%=phone_usage.web_service_type.try(:titleize) %></td>
+              <td class="text-center" title="<%=phone_usage.phone_usageable_type.tableize.humanize.titleize.singularize if phone_usage.phone_usageable_type.present?%>">
+                <% if phone_usage.phone_usageable.present? %>
+                <% if phone_usage.phone_usageable_type == 'GoogleAccountActivity' %>
+                <%= link_to phone_usage.phone_usageable_id, edit_email_account_path(phone_usage.phone_usageable.google_account.email_account), target: '_blank' %>
+                <% else %>
+                <%= link_to phone_usage.phone_usageable_id, send("edit_#{phone_usage.phone_usageable.class.name.underscore}_path", phone_usage.phone_usageable), target: '_blank' %>
+                <% end %>
+                <% end %>
+              </td>
+              <td class="text-center"><%=phone_usage.amount %></td>
+              <td class="text-center"><%= local_time(phone_usage.created_at, format: '%m/%d/%y %I:%M %p', title: phone_usage.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if phone_usage.created_at.present?%></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+
+    <div><%= paginate @phone_usages, theme: 'bootstrap' %></div>
+
+    <% if @phone_usages.to_a.empty? %>
+      <div class="row col-md-12">
+        <br>
+        <div class="alert alert-info">
+          No items available
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="tab-pane" id="statistics">
+    <div class="row">
+      <div class="col-md-12">
+        <%= form_tag('/phone_usages#statistics', {method: :get, id: 'dates_range_form'}) do |f| %>
+          <div class="filter-label text-center">
+            <span class="subtitle">Select dates range:</span>
+            <div class="date-range-filter">
+              <%= text_field_tag 'date_from', params[:date_from].try(:strftime, '%m/%d/%Y'), class: 'form-control', placeholder: 'mm/dd/yyyy' %>
+              -
+              <%= text_field_tag 'date_to', params[:date_to].try(:strftime, '%m/%d/%Y'), class: 'form-control', placeholder: 'mm/dd/yyyy' %>
+              <button id="filter-statistics-apply" type="submit" class="btn btn-primary">Apply</button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="col-md-6">
+        <div class="box">
+      		<div class="box-header with-border">
+          	<h3 class="box-title box-title-center">Unsuccess attempts <span class="badge bg-red"><%= @unsuccess_attempts_size %></span></h3>
+      		</div>
+      		<div class="box-body">
+      			<div class="row">
+      				<div class="col-md-6">
+      					<span class="subtitle">Error Types:</span>
+                <table class="table table-bordered table-striped">
+        					<thead>
+        						<tr>
+        							<th>Error Type</th>
+        							<th style="width: 30px;">Count</th>
+        						</tr>
+        					</thead>
+        					<tbody role="alert" aria-live="polite" aria-relevant="all">
+        						<% @error_types.each do |row| %>
+        							<% if row['count'].present? %>
+        								<tr>
+        									<td><%= PhoneUsage::ERROR_TYPES.key(row['error_type'].to_i) %></td>
+                          <td class="text-center"><%= row['count'].to_i.to_s(:delimited) %></td>
+        								</tr>
+        							<% end %>
+        						<% end %>
+        					</tbody>
+        				</table>
+      				</div>
+              <div class="col-md-6">
+      					<span class="subtitle">Providers:</span>
+                <table class="table table-bordered table-striped">
+        					<thead>
+        						<tr>
+        							<th>Name</th>
+        							<th style="width: 30px;">Count</th>
+        						</tr>
+        					</thead>
+        					<tbody role="alert" aria-live="polite" aria-relevant="all">
+        						<% @unsuccess_providers.each do |row| %>
+        							<% if row['count'].present? %>
+        								<tr>
+        									<td>
+                            <% if row['name'].present? %>
+                              <%= row['name'] %>
+                            <% else %>
+                              SMS-REG (unknown)
+                            <% end %>
+                          </td>
+                          <td class="text-center"><%= row['count'].to_i.to_s(:delimited) %></td>
+        								</tr>
+        							<% end %>
+        						<% end %>
+        					</tbody>
+        				</table>
+      				</div>
+              <div class="col-md-12">
+      					<span class="subtitle">Providers and Errors:</span>
+                <table class="table table-bordered table-striped">
+        					<thead>
+        						<tr>
+                      <th>Provider</th>
+        							<th>Error Type</th>
+        							<th style="width: 30px;">Count</th>
+        						</tr>
+        					</thead>
+        					<tbody role="alert" aria-live="polite" aria-relevant="all">
+        						<% @unsuccess_providers_and_errors.each do |row| %>
+        							<% if row['count'].present? %>
+        								<tr>
+        									<td>
+                            <% if row['provider'].present? %>
+                              <%= row['provider'] %>
+                            <% else %>
+                              SMS-REG (unknown)
+                            <% end %>
+                          </td>
+                          <td><%= PhoneUsage::ERROR_TYPES.key(row['error_type'].to_i) %></td>
+                          <td class="text-center"><%= row['count'].to_i.to_s(:delimited) %></td>
+        								</tr>
+        							<% end %>
+        						<% end %>
+        					</tbody>
+        				</table>
+      				</div>
+      			</div>
+      		</div>
+    		</div>
+      </div>
+      <div class="col-md-6">
+        <div class="box">
+      		<div class="box-header with-border">
+          	<h3 class="box-title box-title-center">Success attempts <span class="badge bg-green"><%= @success_attempts_size %></span></h3>
+      		</div>
+      		<div class="box-body">
+      			<div class="row">
+      				<div class="col-md-6">
+      					<span class="subtitle">Providers:</span>
+                <table class="table table-bordered table-striped">
+        					<thead>
+        						<tr>
+        							<th>Name</th>
+        							<th style="width: 30px;">Count</th>
+        						</tr>
+        					</thead>
+        					<tbody role="alert" aria-live="polite" aria-relevant="all">
+        						<% @success_providers.each do |row| %>
+        							<% if row['count'].present? %>
+        								<tr>
+        									<td>
+                            <% if row['name'].present? %>
+                              <%= row['name'] %>
+                            <% else %>
+                              SMS-REG (unknown)
+                            <% end %>
+                          </td>
+                          <td class="text-center"><%= row['count'].to_i.to_s(:delimited) %></td>
+        								</tr>
+        							<% end %>
+        						<% end %>
+        					</tbody>
+        				</table>
+      				</div>
+      			</div>
+      		</div>
+    		</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+  <h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+  <%
+      order = [:id, :transaction_id, :session_id, :phone, :sms_code, :phone_provider, :country, :phone_service, :phone_service_account, :error_type, :action_type,
+        :web_service_type, :source_type, :amount, :phone_usageable_id, :phone_usageable_type, :created_at]
+      order_type = [["Ascending", "asc"], ["Descending", "desc"]]
+      order_value = params[:order]
+      order_value = :created_at unless order_value
+    %>
+    <div id="search_params">
+      <%= form_tag('/phone_usages', {method: :get, id: 'filters_form'}) do |f| %>
+        <div class="filter-label">ID:</div>
+        <%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+        <div class="filter-label">Transaction ID:</div>
+        <%= search_field_tag :transaction_id, params[:transaction_id], class: 'form-control numeric' %>
+        <div class="filter-label">Session ID:</div>
+        <%= search_field_tag :session_id, params[:session_id], class: 'form-control' %>
+        <div class="filter-label">Phone:</div>
+        <%= search_field_tag :phone, params[:phone], class: 'form-control numeric' %>
+        <div class="filter-label">SMS Code:</div>
+        <%= search_field_tag :sms_code, params[:sms_code], class: 'form-control' %>
+        <div class="form-group">
+          <%= check_box_tag :sms_code_presence, true, params[:sms_code_presence], class: "iCheck-helper" %>
+          <%= label_tag :sms_code_presence, nil, class: 'control-label' %>
+  			</div>
+        <div class="filter-label">Phone Provider:</div>
+        <%= select_tag(:phone_provider_id, options_from_collection_for_select(PhoneProvider.order(:name), :id, :name, params[:phone_provider_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Country:</div>
+        <%= select_tag(:country_id, options_from_collection_for_select(Geobase::Country.order(:name), :id, :name, params[:country_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Phone Service:</div>
+        <%= select_tag(:phone_service_id, options_from_collection_for_select(PhoneService.order(:name), :id, :name, params[:phone_service_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Phone Service Account:</div>
+        <%= select_tag(:phone_service_account_id, options_from_collection_for_select(PhoneServiceAccount.includes(:api_account).order("api_accounts.username"), :id, :username, params[:phone_service_account_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Error Type:</div>
+        <%
+          error_types = {'-' => 0}
+          error_types.merge!(PhoneUsage::ERROR_TYPES.sort.to_h)
+        %>
+        <%= select_tag(:error_type, options_for_select(error_types.collect{ |key, value| [key.to_s.humanize, value] }, params[:error_type]), { include_blank: true, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Action Type:</div>
+        <%= select_tag(:action_type, options_for_select(PhoneUsage::ACTION_TYPES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:action_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Web Service Type:</div>
+        <%= select_tag(:web_service_type, options_for_select(PhoneUsage::WEB_SERVICE_TYPES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:web_service_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Source Type:</div>
+        <%= select_tag(:source_type, options_for_select(PhoneUsage::SOURCE_TYPES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:source_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Usageable ID:</div>
+        <%= search_field_tag :phone_usageable_id, params[:phone_usageable_id], class: 'form-control numeric' %>
+        <div class="filter-label">Usageable Type:</div>
+        <%= select_tag(:phone_usageable_type, options_for_select(@phone_usageable_types, params[:phone_usageable_type]), { include_blank: true, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Last period of time:</div>
+        <%= select_tag(:last_days, options_for_select([['Last 24 hours', 1], ['Last 48 hours', 2], ['Last week', 7], ['Last 2 week', 14], ['Last month', 30], ['Last 3 months', 60], ['Last 6 months', 180], ['Last year', 365]], params[:last_days]), { include_blank: true, class: "dropdown-toggle select-box form-control"}) %>
+        <div class="filter-label">Order by:</div>
+        <%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Order type:</div>
+        <%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Items on page:</div>
+        <%= select_tag(:limit, options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500 ], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+        <div class="filter-label text-center">
+          <div class="col-md-12">
+            <button id="filter-apply-main" type="submit" class="btn btn-primary pull-right">Apply</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<% title 'Order Email Accounts' %>
+<%= content_for(:javascripts){javascript_include_tag 'email_accounts_order'} %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+<%
+  Setting.get_value_by_name("EmailAccount::LAST_ORDER_ACCOUNTS_NUMBER")
+  accounts_number_setting = Setting.find_by_name("EmailAccount::LAST_ORDER_ACCOUNTS_NUMBER")
+  accounts_created = EmailAccount.where("created_at > ?", accounts_number_setting.updated_at).size
+%>
+<% if accounts_number_setting.value.to_i > accounts_created && accounts_number_setting.value.to_i > 0 %>
+  <% persantage = accounts_created * 100 / accounts_number_setting.value.to_i %>
+  <div class="form-group">
+    <label class="control-label">Account creation progress</label>
+    <div id="prgs">
+      <div class="progress">
+        <span class="progress-bar-span">Process is running now: <%= accounts_created %> / <%= accounts_number_setting.value.to_i %> (<%=persantage%>% Done)</span>
+        <div class="progress-bar progress-bar-primary" style="width: <%= persantage %>%;"></div>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <%= form_tag(execute_accounts_order_path, method: "post", id: "order_email_accounts_form") do %>
+    <div class="form-group" style="<%= 'display: none;' if flash[:alert] %>">
+      <label class="control-label">Account Type</label>
+      <%= select_tag(:account_type, options_for_select(EmailAccount::ACCOUNT_TYPES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:account_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Number of accounts</label>
+      <div class="input-group">
+        <%= number_field_tag('accounts_number', 0, placeholder: "Enter number of accounts", class: "numeric form-control") %>
+        <span class="input-group-btn">
+          <%= submit_tag('Order', id: "order", class: "btn btn-primary pull-right") %>
+        </span>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,70 @@
+<div class="modal modal-wide fade" id="<%= dom_id(youtube_video_search_phrase, 'modal') %>" style="z-index: 9999 !important;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_for youtube_video_search_phrase, url: {controller: params[:controller], action: (youtube_video_search_phrase.new_record? ? 'create' : 'update')}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <h4>
+            <% if youtube_video_search_phrase.new_record? %>
+              New search phrase
+            <% else %>
+              Search phrase <%= youtube_video_search_phrase.id %>
+            <% end %>
+          </h4>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px;">
+          <%= f.hidden_field :id %>
+          <%= f.hidden_field :youtube_video_id %>
+          <div class="form-group <%= 'has-error' if youtube_video_search_phrase.errors[:phrase].present? %>" data-content="<%= youtube_video_search_phrase.errors[:phrase].try(:join, ',') %>">
+            <%= f.label :phrase, class: 'control-label' %>
+            <%= f.text_field :phrase, { class: 'form-control', placeholder: 'Phrase' } %>
+          </div>
+          <% if youtube_video_search_phrase.persisted? %>
+            <hr/>
+            <div class="row">
+              <div class="col-md-5">
+              </div>
+              <div class="col-md-7">
+                <div class="form-group">
+                  <label class="control-label"><i class="fa fa-database"></i> Search ranks history:</label>
+                  <span class="badge bg-blue">
+                    <%= youtube_video_search_phrase.youtube_video_search_ranks.size %>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <% youtube_video_search_phrase.youtube_video_search_ranks.each do |youtube_video_search_rank| %>
+              <div class="col-md-4">
+                <div class="info-box">
+                  <span class="info-box-icon">
+                    <% screenshot = youtube_video_search_rank.screenshot %>
+                    <% screenshot_updated_at = youtube_video_search_rank.screenshot_updated_at %>
+                    <%= link_to (image_tag URI::escape(screenshot.url(:thumb), '[]') || '/misssing.png', {style: "width: 90px; height: 90px; vertical-align: baseline; border: 1px solid #ebebeb;", class: 'livepreview', title: screenshot_updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), data: {src: screenshot.url(:original)}}), URI::escape(screenshot.url(:original), '[]'), {target: '_blank'} %>
+                  </span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Rank</span>
+                    <span class="info-box-number"><%= youtube_video_search_rank.rank %></span>
+                    <span class="info-box-text"><%= local_time(youtube_video_search_rank.created_at, format: '%m/%d/%y %I:%M %p', title: youtube_video_search_rank.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %></span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+            <% unless youtube_video_search_phrase.youtube_video_search_ranks.present? %>
+              <div class="col-md-12">
+                <div class="alert alert-info">
+                  No items available
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (youtube_video_search_phrase.new_record? ? t(:create) : t(:update)), class: 'btn btn-primary', data: {disable_with: (youtube_video_search_phrase.new_record? ? t(:creating) : t(:updating)) } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

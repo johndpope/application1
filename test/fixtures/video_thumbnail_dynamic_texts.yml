@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  text_type: 1
+  value: MyString
+  client_id: 1
+  subject_video_id: 1
+
+two:
+  text_type: 1
+  value: MyString
+  client_id: 1
+  subject_video_id: 1

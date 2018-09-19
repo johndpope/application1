@@ -1,0 +1,13 @@
+<% @dynamic_texts.each do |dt|
+		new_row = render partial: 'templates/aae_project_dynamic_texts/index_table_row', locals: {dynamic_text: dt} %>
+		$('#<%=text_type%>_index_table tbody.tbody').append('<%= escape_javascript(new_row) %>')
+    $('.text-counter', '#<%= dom_id(dt, "row") %>').textcounter({
+      type: "character",
+      countSpaces: true,
+      stopInputAtMaximum: false,
+      counterText: "Characters Count: "
+    })
+<% end %>
+
+$('#<%=text_type%>_index_table').find('tbody.tfoot').show().end().closest('.box').find('.items-count').html('<%=items_count%>');
+$('.dynamic-text-form-modal').modal('hide');

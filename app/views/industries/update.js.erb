@@ -1,0 +1,10 @@
+<%
+  modal_dom_id = dom_id(@industry, 'modal')
+  row_id = dom_id(@industry, 'row')
+  new_row = render partial: 'industry_row', locals: {industry: @industry}
+%>
+
+$('#<%= modal_dom_id %>').modal('hide')
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')
+$('#<%= row_id %>').effect('highlight', 1500)
+$('.animationload').hide();

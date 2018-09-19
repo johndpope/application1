@@ -1,0 +1,110 @@
+<% title 'Social accounts' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<div id="social_accounts_list">
+	<div class="row">
+		<div class="col-md-5"></div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @social_accounts.total_count %></span>
+			</div>
+		</div>
+	</div>
+
+	<% unless @social_accounts.to_a.empty? %>
+		<table id="social_accounts_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+					<th>Social item type</th>
+					<th>Social item id</th>
+					<th>Password</th>
+					<th>Email account</th>
+          <th style="width: 50px;" class="text-center sort" id="account_type-th" data-field="account_type">Type</th>
+					<th class="sort" id="updated_at-th" data-field="updated_at">Updated at</th>
+					<th class="sort" id="created_at-th" data-field="created_at">Created at</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @social_accounts.each do |social_account| %>
+					<tr>
+						<td class="text-center"><%= social_account.id %></td>
+						<td><%= social_account.social_item_type.titleize.humanize %></td>
+						<td><%= social_account.social_item_id %></td>
+						<td><%= social_account.password %></td>
+						<td>
+							<% if social_account.social_item.try(:google_account).try(:email_account).try(:email).present? %>
+								<%= link_to social_account.social_item.try(:google_account).try(:email_account).try(:email), edit_email_account_path(social_account.social_item.try(:google_account).try(:email_account).try(:id)), {target: '_blank'} %>
+							<% end %>
+						</td>
+            <td class="text-center">
+              <% if social_account.account_type == SocialAccount.account_type.find_value(:business) %>
+                <%= link_to "B", { controller: "social_accounts", channel_type: SocialAccount.account_type.find_value(:business).value, limit: params[:limit]}, {class: "btn btn-info btn-xs sort_link", title: "Business"} %>
+              <% else %>
+                <%= link_to "P", { controller: "social_accounts", channel_type: SocialAccount.account_type.find_value(:personal).value, limit: params[:limit]}, {class: "btn btn-warning btn-xs sort_link", title: "Personal"} %>
+              <% end %>
+            </td>
+						<td><%= local_time(social_account.updated_at, format: '%m/%d/%y %I:%M %p', title: social_account.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if social_account.updated_at.present?%></td>
+						<td><%= local_time(social_account.created_at, format: '%m/%d/%y %I:%M %p', title: social_account.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if social_account.created_at.present?%></td>
+						<td class="text-center actions">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_social_account_path(social_account), { class: 'btn btn-xs btn-primary disabled' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, social_account, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<div><%= paginate @social_accounts, theme: 'bootstrap' %></div>
+
+	<% if @social_accounts.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :social_item_type, :social_item_id, :account_type, :updated_at, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :updated_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({  action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+			<div class="filter-label">Social item type:</div>
+			<%= select_tag(:social_item_type, options_for_select(SocialAccount.select(:social_item_type).distinct.where('social_item_type IS NOT NULL').pluck(:social_item_type), params[:social_item_type]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Social item ID:</div>
+			<%= search_field_tag :social_item_id, params[:social_item_id], class: 'form-control numeric' %>
+      <div class="filter-label">Type:</div>
+      <%= select_tag(:account_type, options_for_select(SocialAccount::ACCOUNT_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, params[:account_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

@@ -1,0 +1,22 @@
+<div id="comments_list">
+  <div class="box box-warning direct-chat direct-chat-warning">
+    <div class="box-header with-border">
+      <h3 class="box-title"><i class="fa fa-commenting"></i> <b>Comments</b></h3>
+      <div class="box-tools pull-right">
+        <%= link_to '<i class="fa fa-plus-circle"></i> Add'.html_safe, new_comment_path(resource_id: @resource_id, resource_type: @resource_type), remote: true , class: 'btn btn-sm btn-primary', style: "margin-right: 10px;", title: "Add comment" %>
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body">
+      <div id="comments_table" class="direct-chat-messages" style="height: auto;">
+        <% unless comments.to_a.empty? %>
+  				<% comments.each do |comment| %>
+  					<%= render partial: 'comments/comment_row', locals: {comment: comment} %>
+  				<% end %>
+      	<% end %>
+        <p id="no_items_tr" class="text-center" style="<%= 'display: none' unless comments.to_a.empty? %>">No items available</p>
+      </div>
+    </div>
+  </div>
+</div>

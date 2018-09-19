@@ -1,0 +1,31 @@
+//= require jquery
+//= require overlay_spinner
+//= require jquery.ui.all
+//= require twitter/bootstrap
+//= require aLTE/app.min.js
+//= require aLTE/icheck.min.js
+//= require aLTE/jquery.dataTables.min.js
+//= require shared.js
+//= require select2
+//= require jquery_ujs
+//= require best_in_place
+//= require best_in_place.jquery-ui
+//= require jquery.inputmask
+//= require jquery.inputmask.extensions
+//= require jquery.inputmask.numeric.extensions
+//= require jquery.inputmask.date.extensions
+//= require bootstrap-toggle
+//= require init_bootstrap_toggle
+
+//= require common
+//= require video
+//= require holderr.min
+//= require bootstrap-tagsinput
+//= require local_time
+
+//= require jquery-live-preview
+//= require highcharts
+//= require lib/pusher.min
+//= require moment
+//= require bootstrap-daterangepicker
+//= require bootstrap-wysihtml5

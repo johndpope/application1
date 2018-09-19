@@ -1,0 +1,3 @@
+- centered_columns = %w(logo background_image subject_image is_active)
+- %w(id client_id client_category_id logo background_image subject_image is_active).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("sandbox.client.#{c}")

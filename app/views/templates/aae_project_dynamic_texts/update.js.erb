@@ -1,0 +1,9 @@
+<% updated_row = render partial: 'templates/aae_project_dynamic_texts/index_table_row', locals: {dynamic_text: @dynamic_text} %>
+$('#<%= dom_id(@dynamic_text, "row") %>').replaceWith('<%= escape_javascript(updated_row) %>')
+$('.dynamic-text-form-modal').modal('hide')
+$('.text-counter', '#<%= dom_id(@dynamic_text, "row") %>').textcounter({
+  type: "character",
+  countSpaces: true,
+  stopInputAtMaximum: false,
+  counterText: "Characters Count: "
+})

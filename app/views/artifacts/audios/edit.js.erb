@@ -1,0 +1,21 @@
+<%
+  modal = render partial: 'form', locals: {item: @audio}
+  modal_dom_id = dom_id(@audio.becomes(Artifacts::Audio), 'modal')
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove();
+})
+
+$('#artifacts_audio_tag_list, #artifacts_youtube_audio_tag_list').tagsinput({
+  tagClass: "label label-success",
+  placeholder: "Enter tags..."
+});
+
+$('#artifacts_audio_genres, #artifacts_youtube_audio_genres').select2({
+  tagClass: "label label-success",
+  placeholder: "Enter genres..."
+}).select2('val', function(){
+  return $(this).data('collection');
+});

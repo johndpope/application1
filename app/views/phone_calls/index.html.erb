@@ -1,0 +1,87 @@
+<% title 'Phone Calls' %>
+<div id="phone_calls_list">
+  <div class="row">
+    <div class="col-md-5">
+
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+        <span class="badge bg-blue">
+          <%= @phone_calls.total_count%>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @phone_calls.to_a.empty? %>
+    <table id="phone_calls_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th class="text-center" style="width: 75px;">ID</th>
+          <th class="text-center" style="width: 120px;">Phone</th>
+          <th class="text-center">Session ID</th>
+          <th class="text-center" style="width: 300px;">Call file</th>
+          <th class="text-center" style="width: 150px;" >SMS code</th>
+          <th class="text-center" style="width: 170px;">Assigned to</th>
+          <th class="text-center">Updated at</th>
+          <th class="text-center">Created at</th>
+          <!-- <th style="width: 115px;" class="text-center">Actions</th> -->
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @phone_calls.each do |phone_call| %>
+          <tr>
+            <td class="text-center"><%= phone_call.id %></td>
+            <td class="text-center"><%= phone_call.phone.try(:value) %></td>
+            <td class="text-center"><%= phone_call.session_id %></td>
+            <td class="text-center">
+              <% if phone_call.call_file_url.present? %>
+                <div data-code="<%= phone_call.sms_code.to_s %>">
+                  <audio id="audio_<%= phone_call.id %>" controls="controls" preload="none">
+                    <source src="<%= phone_call.call_file_url %>" type="audio/wav">
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% if phone_call.sms_code.present? %>
+                <%= phone_call.sms_code %>
+              <% else %>
+                <% if phone_call.admin_user.nil? || phone_call.admin_user.try(:id) == current_admin_user.id %>
+                  <%= best_in_place phone_call, :sms_code, as: :input, place_holder: "Click here to enter code" %>
+                <% else %>
+                  <%= link_to '<i class="fa fa-lock"></i>'.html_safe, phone_calls_path(id: phone_call.id, unlock: true),  data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-primary', title: "Locked to #{phone_call.admin_user.try(:email)}. Click to usurp." %>
+                <% end %>
+              <% end %>
+            </td>
+            <td class="text-center"><%= phone_call.admin_user.try(:email) %></td>
+            <td class="text-center">
+              <%= local_time(phone_call.updated_at, format: '%m/%d/%y %I:%M %p', title: phone_call.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+            </td>
+            <td class="text-center">
+              <%= local_time(phone_call.created_at, format: '%m/%d/%y %I:%M %p', title: phone_call.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+            </td>
+            <!-- <td class="text-center actions">
+              <div class="btn-group btn-group-custom">
+                <%#= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, phone_call, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+              </div>
+            </td> -->
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <div><%= paginate @phone_calls, theme: 'bootstrap' %></div>
+
+  <% if @phone_calls.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% end %>
+</div>

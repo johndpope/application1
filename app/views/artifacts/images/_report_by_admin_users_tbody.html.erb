@@ -1,0 +1,12 @@
+<% report.each_pair do |key, value| %>
+  <tr>
+    <td><%= key %></td>
+    <td><%= value.to_s(:delimited) %></td>
+  </tr>
+<% end %>
+
+<% unless report.present? %>
+  <tr>
+    <td colspan="2" class="text-center"><i>No items available</i></td>
+  </tr>
+<% end %>

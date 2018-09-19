@@ -1,0 +1,79 @@
+<%= content_for(:javascripts){javascript_include_tag 'order_dids_phone_service_accounts'} %>
+<% title 'Order DIDs' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-check-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+		No available rate centers in these regions
+	</div>
+<% end %>
+<%= form_for @phone_service_account, url: {action: "finish_order_dids"}, method: :post do |f| %>
+	<div class="row">
+		<div class="col-md-6">
+			<div id="create_order_inputs" class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label class="control-label">Choose method</label>
+						<div class="radio">
+							<label>
+								<input type="radio" class="iCheck-helper" name="optionsRadios" id="can_radio" value="CA" checked="">
+								Canada
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" class="iCheck-helper" name="optionsRadios" id="usa_radio" value="US">
+								USA
+							</label>
+						</div>
+						<div class="radio dn">
+							<label>
+								<input type="radio" class="iCheck-helper" name="optionsRadios" id="int_radio" value="INT">
+								International
+							</label>
+						</div>
+					</div>
+					<div class="form-group dn">
+						<label class="control-label">Select country</label>
+						<%= select_tag(:country_select, options_from_collection_for_select(Geobase::Country.order(:name), :code, :name, Geobase::Country.find_by_code("CA").code), { include_blank: false, class: 'form-control', placeholder: 'Select country' }) %>
+					</div>
+					<div class="form-group">
+						<div id="state_select_checkbox">
+							<input id="state_select_all" type="checkbox" class="iCheck-helper">
+							<label class="control-label" for="state_select_all">Select all provinces/states</label>
+						</div>
+						<%= select_tag(:regions_select, options_for_select(VoipmsService.get_regions(@phone_service_account, Geobase::Country.find_by_code("CA").code, "getProvinces").collect { |key, value| [key, value] }, nil), { include_blank: false, multiple: true, class: 'form-control', placeholder: 'Select regions' }) %>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Number of DIDs</label>
+						<div class="input-group">
+							<span class="input-group-btn">
+								<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, phone_service_accounts_path, class: 'btn btn-primary pull-left' %>
+							</span>
+							<input type="hidden" id="phone_service_account_id" value="<%= @phone_service_account.id %>">
+							<input type="hidden" id="perminute_monthly_price_can_limit" value="<%= Setting.get_value_by_name("VoipmsService::PERMINUTE_MONTHLY_PRICE_CAN_LIMIT") %>">
+							<input type="hidden" id="perminute_monthly_price_usa_limit" value="<%= Setting.get_value_by_name("VoipmsService::PERMINUTE_MONTHLY_PRICE_USA_LIMIT") %>">
+							<input type="hidden" id="perminute_monthly_price_int_limit" value="<%= Setting.get_value_by_name("VoipmsService::PERMINUTE_MONTHLY_PRICE_INT_LIMIT") %>">
+							<input type="hidden" id="flat_setup_price_can_limit" value="<%= Setting.get_value_by_name("VoipmsService::FLAT_SETUP_PRICE_CAN_LIMIT") %>">
+							<input type="hidden" id="flat_setup_price_usa_limit" value="<%= Setting.get_value_by_name("VoipmsService::FLAT_SETUP_PRICE_USA_LIMIT") %>">
+							<input type="hidden" id="flat_setup_price_int_limit" value="<%= Setting.get_value_by_name("VoipmsService::FLAT_SETUP_PRICE_INT_LIMIT") %>">
+							<input type="hidden" id="balance" value="<%= @phone_service_account.api_account.api_balance %>">
+							<%= text_field_tag(:dids_number, 1, {type: "number", class: "numeric form-control", placeholder:"Enter number of DIDs" }) %>
+							<span class="input-group-btn">
+								<%= button_tag(id: "order", type: 'submit', class: "btn btn-success pull-right") do %>
+									Order <i class="fa fa-shopping-cart"></i>
+								<% end %>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

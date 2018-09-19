@@ -1,0 +1,18 @@
+%tr{id: dom_id(item, "row")}
+  %td.row_nr= row_nr
+  = render partial: "#{@view_folder}/index_table_row", locals: {item: item}
+  - if @show_action_bar == true
+    %td
+      .btn-group{role: "group"}
+        - if @show_edit_button == true
+          = link_to url_for(controller: params[:controller], action: 'edit', id: item.id),
+          class: "btn btn-default btn-sm", title: t('edit'),
+          data:{toggle: "modal", target: ".#{item.class.to_s.underscore.gsub('/','_')}", remote: true} do
+            = fa_icon "pencil"
+        - if @show_delete_button == true
+          = link_to url_for(controller: params[:controller], action: :destroy, id: item.id, authenticity_token: form_authenticity_token),
+          method: :delete,
+          data: { confirm: 'Are you sure?', remote: true },
+          class: "btn btn-default btn-sm",
+          data: {confirm: "Are you sure?", remote: true} do
+            = fa_icon "trash"

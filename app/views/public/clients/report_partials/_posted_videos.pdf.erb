@@ -1,0 +1,29 @@
+<page size="A4">
+  <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+  <div class="content">
+    <section class="section4">
+      <div class="container">
+        <div class="video-dashboard-link-block pd-t-10">
+          <p><strong>Video Dashboard Link:</strong></p>
+          <% posted_videos_url = "#{Rails.configuration.routes_default_url_options[:host]}#{Rails.application.routes.url_helpers.public_client_youtube_videos_path(@client.public_profile_uuid, status: "done")}" %>
+          <%= link_to posted_videos_url, posted_videos_url, { target: '_blank' }%>
+        </div>
+        <% unless @client.screenshots.blank? %>
+          <%= wicked_pdf_image_tag @client.screenshots.last.image, class: "screen-ytb-videos" %>
+        <% else %>
+          <%= wicked_pdf_image_tag '/missing.png', class: "img-missing"%>
+        <% end %>
+        <div class="total-video-posted-block">
+          <p><strong>Total Videos Posted: <span class="total-video-posted-result">
+            <%= YoutubeVideo.joins(:client).where("clients.id = ?", @client.id).size %> <%= @client.name %> </span> Videos</strong></p>
+          <p><strong>Video Posted Date:</strong>
+            <span class="video-posted-date">
+              <% last_posted_video = YoutubeVideo.joins(:client).where("clients.id = ?", @client.id).order("youtube_videos.publication_date desc nulls last").first %>
+              <%= last_posted_video.publication_date.strftime('%m/%d/%Y') if last_posted_video.present? && last_posted_video.publication_date.present? %>
+            </span></p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+</page>

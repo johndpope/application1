@@ -1,0 +1,161 @@
+<% title 'Phones' %>
+<% if flash[:notice] %>
+  <div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4>
+      <i class="icon fa fa-exclamation-circle"></i>
+      <%= flash[:notice] %>
+    </h4>
+  </div>
+<% end %>
+<div id="phones_list">
+  <div class="row">
+    <div class="col-md-5">
+      <%= link_to 'New Phone', new_phone_path, class: 'btn btn-sm btn-primary' %>
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+        <span class="badge bg-blue">
+          <%= @phones.total_count%>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @phones.to_a.empty? %>
+    <table id="phones_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+          <th>Phone Provider</th>
+          <th class="sort" id="value-th" data-field="value">Value</th>
+          <th class="sort text-center" id="status-th" data-field="status">Status</th>
+          <th>Country</th>
+					<th>Region</th>
+					<th class="text-center">Parked</th>
+          <th class="text-center">Usable</th>
+					<th class="text-center">Active Email Accounts</th>
+          <th class="text-center">Inactive Email Accounts</th>
+          <th class="text-center">Deleted Email Accounts</th>
+					<th class="text-center">Youtube Channels</th>
+          <th class="text-center">Facebook Accounts</th>
+          <th class="text-center">Facebook Usable</th>
+          <th class="sort text-center" id="last_used_at-th" data-field="last_used_at">Last Used At</th>
+					<th class="sort text-center" id="last_assigned_at-th" data-field="last_assigned_at">Last Assigned At</th>
+          <th class="sort text-center" id="ordered_at-th" data-field="ordered_at">Ordered At</th>
+          <th class="sort text-center" id="expires_at-th" data-field="expires_at">Expires At</th>
+          <th style="width: 130px;" class="text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @phones.each do |phone| %>
+          <tr>
+            <td class="text-center"><%=phone.id %></td>
+            <td><%=link_to_if phone.phone_provider.present?, phone.phone_provider.try(:name), edit_phone_provider_path(phone.phone_provider), target: '_blank' %></td>
+            <td><%= link_to phone.value, phone_usages_path(phone: phone.value), target: "_blank" %></td>
+            <td class="text-center"><%=phone.status %></td>
+            <td><%=phone.country.try(:name) %></td>
+						<td><%=phone.region.try(:name) %></td>
+						<td class="text-center" title="<%= phone.park_answer %>">
+							<% if phone.phone_provider.try(:name) == "voip-ms" %>
+								<% if phone.parked %>
+									<%= link_to 'Y', 'javascript://', class: 'btn btn-success btn-xs' %>
+								<% else %>
+									<%= link_to 'N', 'javascript://', class: 'btn btn-danger btn-xs' %>
+								<% end %>
+							<% end %>
+						</td>
+            <td class="text-center">
+              <% if phone.usable == false %>
+                <%= link_to 'N', { controller: "phones", usable: false, limit: params[:limit]}, class: 'btn btn-danger btn-xs sort_link' %>
+              <% else %>
+                <%= link_to 'Y', { controller: "phones", usable: true, limit: params[:limit]}, class: 'btn btn-success btn-xs sort_link' %>
+              <% end %>
+            </td>
+						<td class="text-center"><%=phone.email_accounts_assigned_size("active") %></td>
+            <td class="text-center"><%=phone.email_accounts_assigned_size("inactive") %></td>
+            <td class="text-center"><%=phone.email_accounts_assigned_size("deleted") %></td>
+						<td class="text-center"><%=phone.youtube_channels_assigned_size %></td>
+            <td class="text-center"><%=phone.facebook_accounts_assigned_size %></td>
+            <td class="text-center">
+              <% if phone.facebook_usable == false %>
+                <%= link_to 'N', { controller: "phones", facebook_usable: false, limit: params[:limit]}, class: 'btn btn-danger btn-xs sort_link' %>
+              <% else %>
+                <%= link_to 'Y', { controller: "phones", facebook_usable: true, limit: params[:limit]}, class: 'btn btn-success btn-xs sort_link' %>
+              <% end %>
+            </td>
+            <td class="text-center"><%= PhoneUsage.select(:created_at).where(phone_id: phone.id).order(created_at: :desc).pluck(:created_at).first.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y') %></td>
+						<td class="text-center"><%=phone.last_assigned_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y') %></td>
+            <td class="text-center"><%=phone.ordered_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y') %></td>
+            <td class="text-center"><%=phone.expires_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y') %></td>
+            <td class="text-center actions">
+              <div class="btn-group btn-group-custom">
+                <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_phone_path(phone),  {class: 'btn btn-xs btn-primary' } %>
+								<% if phone.try(:phone_provider).try(:name) == "voip-ms" %>
+									<% if !phone.parked %>
+	                	<%= link_to '<i class="fa fa-car"></i> Park DID'.html_safe, park_did_phone_path(phone), method: :post, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-warning' %>
+									<% end %>
+                	<%= link_to '<i class="fa fa-eraser"></i> Cancel DID'.html_safe, cancel_voipms_did_phone_path(phone), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+								<% else %>
+                	<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, phone, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+								<% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <div><%= paginate @phones, theme: 'bootstrap' %></div>
+
+  <% if @phones.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :value, :status, :last_used_at, :last_assigned_at, :expires_at, :ordered_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :ordered_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({ controller: :phones, action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+			<div class="filter-label">Phone Provider:</div>
+			<%= select_tag(:phone_provider_id, options_from_collection_for_select(PhoneProvider.order(:name), :id, :name, params[:phone_provider_id]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Value:</div>
+      <%= text_area_tag :value, params[:value], rows: 3, class: 'form-control', placeholder: "Enter values comma separated" %>
+      <div class="filter-label">Usable:</div>
+      <%= select_tag(:usable, options_for_select([['YES', true], ['NO', false]], params[:usable]), { include_blank: true, class: 'form-control' } ) %>
+      <div class="filter-label">Facebook usable:</div>
+      <%= select_tag(:facebook_usable, options_for_select([['YES', true], ['NO', false]], params[:facebook_usable]), { include_blank: true, class: 'form-control' } ) %>
+			<div class="filter-label">Status:</div>
+			<%= select_tag(:status, options_for_select(Phone::STATUSES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:status]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Country:</div>
+			<%= select_tag(:country_id, options_from_collection_for_select(Geobase::Country.order(:name), :id, :name, params[:country_id]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100, 150, 200, 250, 500], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

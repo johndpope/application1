@@ -1,0 +1,3 @@
+- centered_columns = %w(id default_background_image active_background_image)
+- %w(id locality_id default_background_image active_background_image).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("sandbox.locality_details.#{c}")

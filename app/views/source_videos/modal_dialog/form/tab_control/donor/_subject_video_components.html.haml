@@ -1,0 +1,34 @@
+.form-group
+	= label_tag '', 'Subject Video Title Components'
+	%div
+		- @donor_source_video.subject_title_components_csv.split(',').each do |title_component|
+			%span.label.label-default= title_component
+#donor_subject_video_descriptions_accordion.panel-group
+	.panel.panel-default
+		.panel-heading
+			%h4.panel-title
+				= link_to "#panel_donor_source_video_descriptions", data:{toggle: "collapse", parent: "#donor_subject_video_descriptions_accordion"}, "area-expanded" => "true" do
+					.row
+						.col-md-11
+							%strong Descriptions
+						.col-md-1
+							%span{class: "pull-right label label-#{@donor_source_video.wordings.to_a.size == 0 ? 'danger' : 'primary'}"}= @donor_source_video.wordings.to_a.size
+		.panel-collapse.collapse{id: "panel_donor_source_video_descriptions"}
+			.panel-body
+				%table.table.table-bordered.table-hover.table-striped
+					%thead
+						%tr
+							%th{class: 'text-center', width: "40px;"} ID
+							%th{class: 'text-center', width: '100px;'} Type
+							%th Value
+					%tbody
+						- @donor_source_video.wordings.each do |wording|
+							%tr
+								%td{class: 'text-center'}= wording.id
+								%td= wording.name
+								%td= wording.source
+.form-group
+	= label_tag '', 'Tags'
+	%div
+		- @donor_source_video.tag_list.to_a.sort.each do |tag|
+			%span.label.label-primary= tag

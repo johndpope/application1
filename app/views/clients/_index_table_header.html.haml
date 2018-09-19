@@ -1,0 +1,10 @@
+%tr
+  %th{style: "width: 60px;"} ID
+  %th Internal title
+  %th{style: "width: 200px;"} Client
+  %th{style: "width: 200px;"} Campaign
+  %th{style: "width: 60px;"} Size
+  %th{style: "width: 60px;"} Length
+  %th{style: "width: 80px;"}
+    = link_to new_client_source_video_path(@client), remote: true, class: "btn btn-primary btn-sm", data: {toggle: 'modal', target: '.source-video-modal'} do
+      = fa_icon "plus", text: "Add"

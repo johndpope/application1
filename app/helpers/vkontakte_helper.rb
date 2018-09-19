@@ -1,0 +1,2 @@
+module VkontakteHelper
+end

@@ -1,0 +1,31 @@
+.flexible
+	.box.box-widget.widget-user-2{style: 'height: 200px;'}
+		.widget-user-header.bg-gray{style: 'padding: 10px 10px 25px 10px;'}
+			.widget-user-image{style: 'float: left;'}
+				%img{src: audio.image, style: 'width: auto; height: 80px; margin: 0 10px 0 0;'}
+			%a{href: audio.shareurl, target: '_blank', title: 'Track page on Jamendo', style: 'color: #fff'}
+				%h4.widget-user-username= audio.title[0 .. 30]
+			%h5.widget-user-desc= audio.source
+		.box-footer.no-padding
+			%ul.nav.nav-stacked
+				%li
+					.plank-blank{style: 'width: 35px'}
+						%div{data: {code: audio.title}, style: 'width: 70% !important'}
+							%audio{id: audio.client_id, controls: 'controls', preload: 'none', src: audio.file_file_name, style: 'display: none;'}
+					.plank-green= Time.at(audio.duration).utc.strftime("%M:%S")
+					- unless audio.musicinfo['lang'].blank?
+						.plank-blue{style: 'width: 25px'}= audio.musicinfo['lang']
+					- unless audio.musicinfo['vocalinstrumental'].blank?
+						.plank-blue= audio.musicinfo['vocalinstrumental']
+					- unless audio.musicinfo['gender'].blank?
+						.plank-blue{style: 'width: 55px'}= audio.musicinfo['gender']
+					- unless audio.musicinfo['acousticelectric'].blank?
+						.plank-blue{style: 'width: 65px'}= audio.musicinfo['acousticelectric']
+				- unless audio.musicinfo['tags']['genres'].empty? || audio.musicinfo['tags']['instruments'].empty? || audio.musicinfo['tags']['vartags'].empty?
+					%li{style: 'margin-left: 8px'}
+						- audio.musicinfo['tags']['genres'].each do |genre|
+							.plank-purple= genre
+						- audio.musicinfo['tags']['instruments'].each do |instrument|
+							.plank-green= instrument
+						- audio.musicinfo['tags']['vartags'].each do |tag|
+							.plank-maroon= tag

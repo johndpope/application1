@@ -1,0 +1,33 @@
+= hidden_field_tag :client_id, @client.id
+= f.hidden_field :id
+.nav-tabs-custom
+	%ul{class: "nav nav-tabs"}
+		%li.active
+			= link_to 'General Settings', "#source_video_general_settings", data: {toggle: "tab"}
+		%li
+			= link_to 'Dynamic Texts', "#source_video_aae_templates", data: {toggle: "tab"}, id: "aae_templates_tab"
+		%li
+			= link_to "Subject video components", "#source_video_components", data: {toggle: "tab"}
+		%li
+			= link_to "Notes", "#source_video_notes", data: {toggle: "tab"}
+	.tab-content{class: "no-padding"}
+		.tab-pane{class: "chart active", id: "source_video_general_settings"}
+			- if !@donor_source_video.nil?
+				= render partial: "source_videos/modal_dialog/form/tab_control/sub_tab_control", locals:{f: f, basic_tab_id: 'general_settings'}
+			- else
+				= render partial: "source_videos/modal_dialog/form/tab_control/general_settings", locals: {f: f}
+		.tab-pane{class: "chart", id: "source_video_aae_templates"}
+			- if !@donor_source_video.nil?
+				= render partial: "source_videos/modal_dialog/form/tab_control/sub_tab_control", locals:{f: f, basic_tab_id: 'dynamic_texts'}
+			- else
+				= render partial: "source_videos/modal_dialog/form/tab_control/dynamic_texts", locals: {f: f}
+		.tab-pane{class: "chart", id: "source_video_components"}
+			- if !@donor_source_video.nil?
+				= render partial: "source_videos/modal_dialog/form/tab_control/sub_tab_control", locals:{f: f, basic_tab_id: 'subject_video_components'}
+			- else
+				= render partial: "source_videos/modal_dialog/form/tab_control/subject_video_components", locals: {f: f}
+		.tab-pane{class: "chart", id: "source_video_notes"}
+			- if !@donor_source_video.nil?
+				= render partial: "source_videos/modal_dialog/form/tab_control/sub_tab_control", locals:{f: f, basic_tab_id: 'notes'}
+			- else
+				= render partial: "source_videos/modal_dialog/form/tab_control/notes", locals: {f: f}

@@ -1,0 +1,176 @@
+.box
+  .box-header{class: "with-border"}
+    %h3{class: "box-title"} AAE dynamic templates & Subjects videos text strings report
+  .box-body
+    - is_private = current_admin_user.present? ? true : false
+    - if params[:action] != "assets"
+      .row
+        .col-md-12
+          = form_tag templates_aae_project_dynamic_texts_report_path, {method: "get", id: "report"} do |f|
+            - clients = @clients.collect{|c| [c.name, c.id]}
+            .row
+              .col-md-12
+                .form-group{class: 'control-box'}
+                  = label_tag :client_id, "Client", class: 'control-label'
+                  = select_tag 'client_id', options_from_collection_for_select(@clients, "id", "name", @client.id), {include_blank: true, class: "form-control"}
+    %div{class: "box-group", id: "accordion"}
+      .panel.box.box-primary
+        .box-header.with-border
+          %h4{class: "box-title"}
+            %a{data: {toggle: "collapse", parent: "#accordion"}, href: "#dynamic_texts", class: "collapsed", aria: {expanded: "true"}} Specific for Client
+          .pull-right
+            %strong Total items:
+            %small{class:"bg-primary items-count label"}= @dynamic_texts_report.try(:values).to_a.map(&:values).flatten.inject(0, :+)
+        %div{id: "dynamic_texts", class: "panel-collapse collapse in", aria: {expanded: "true"}}
+          .box-body
+            %ul
+              - @client_aae_template_types.each do |project_type|
+                .col-md-12
+                  - key = Templates::AaeProjectDynamicText.project_type.find_value(project_type.to_sym)
+                  - value = @dynamic_texts_report[key.value]
+                  %li
+                    %span{style: "font-weight: bold;"}= I18n.t("templates.aae_project_text.groupes.#{key}")
+                    - dynamic_texts_count = @dynamic_texts_report[key.value].try(:values).to_a.inject(0, :+)
+                    - badge_color = dynamic_texts_count > 5 ? (dynamic_texts_count > 10 ? 'bg-green' : 'bg-yellow') : 'bg-red'
+                    %span{class: "badge #{badge_color}"}= dynamic_texts_count
+                    %ul
+                      - text_types = Templates::AaeProjectText::PROJECT_TEXT_TYPES[project_type.to_sym].each do |text_type|
+                        %li
+                          %div
+                            - text_type_enum = Templates::AaeProjectDynamicText.text_type.find_value(text_type)
+                            = I18n.t("templates.aae_project_text.types.#{text_type}") + ":"
+                            - if is_private
+                              = link_to value.present? ? value[text_type_enum.value] || 0 : 0, client_aae_templates_path(@client.id, project_type: key.to_s, anchor: "#{text_type.to_s}_index_table"), target: "_blank"
+                            - else
+                              %b= value.present? ? value[text_type_enum.value] || 0 : 0
+      .panel.box.box-success
+        .box-header.with-border
+          %h4{class: "box-title"}
+            %a{data: {toggle: "collapse", parent: "#accordion"}, href: "#subject_videos", class: "collapsed", aria: {expanded: "false"}} Subject Videos
+          .pull-right
+            %strong Total items:
+            %small{class:"bg-primary items-count label"}= @source_videos_report.size
+        %div{id:"subject_videos", class: "panel-collapse collapse", aria: {expanded:"false"}, style:"height: 0px;"}
+          .box-body
+            - index = 0
+            - @source_videos_report.each_key do |subject_video_id|
+              - index += 1
+              - source_video = SourceVideo.find(subject_video_id)
+              %table.table{class: "table-bordered table-hover table-striped", style: "margin-bottom: 10px;"}
+                %tbody
+                  %tr
+                    %th{style: "width: 60px;", class: "text-center"} #
+                    %th{style: "width: 60px;", class: "text-center"} ID
+                    %th Internal title
+                    %th{style: "width: 40px;"}
+                    %th{style: "width: 200px;"} Client
+                    %th{style: "width: 200px;"} Product
+                    %th{style: "width: 70px;", class: "text-center"} Size
+                    %th{style: "width: 60px;", class: "text-center"} Duration (mm:ss)
+                    %th{style: "width: 60px;", class: "text-center"} Tags
+                    %th{style: "width: 80px;", class: "text-center"}= t("source_video.is_virtual")
+                    %th{style: "width: 100px", class: "text-center"} Ready for production
+                    %th{style: "width: 55px;", class: "text-center"} Notes
+                    %th{style: "width: 130px", class: "text-center"} Updated by
+                    %th{style: "width: 130px", class: "text-center"} Updated at
+                  %tr{id: dom_id(source_video, 'row')}
+                    %td{class: "text-center"}= index
+                    %td{class: "text-center"}
+                      - if is_private
+                        = link_to source_video.id, client_subject_videos_path(@client.id.to_i, anchor: "row_source_video_#{subject_video_id}"), target: "_blank"
+                      - else
+                        = source_video.id
+                    %td
+                      - if is_private
+                        = link_to source_video.custom_title, client_subject_videos_path(@client.id.to_i, anchor: "row_source_video_#{subject_video_id}"), target: "_blank"
+                      - else
+                        = source_video.custom_title
+                    %td{class: "text-center"}
+                      - unless source_video.try(:video).try(:blank?)
+                        = link_to source_video.video.url, title: source_video.custom_title, class: "preview-video" do
+                          = fa_icon 'youtube-play lg'
+                    %td= source_video.try(:product).try(:client).try(:name)
+                    %td= source_video.try(:product).try(:name)
+                    %td{class: "text-center"}= number_to_human_size(source_video.video_file_size) unless source_video.blank?
+                    %td{class: "text-center"}= Time.at(source_video.video_duration).utc.strftime("%M:%S") unless source_video.video_duration.blank?
+                    %td{class: "text-center"}
+                      - unless source_video.tag_list.to_a.blank?
+                        = link_to 'javascript://', data: {tags: source_video.tag_list.to_a.join(',')}, class: "source-video-tags" do
+                          = fa_icon 'tags'
+                    %td{class: "text-center"}
+                      - label_text = source_video.is_virtual? ? t('yes') : t('no')
+                      - label_class = source_video.is_virtual? ? 'success' : 'danger'
+                      .label{class: "label-#{label_class}"}= label_text
+                    %td{class: "text-center"}
+                      - label_text = source_video.ready_for_production? ? t('yes') : t('no')
+                      - label_class = source_video.ready_for_production? ? 'success' : 'danger'
+                      .label{class: "label-#{label_class}"}= label_text
+                    %td{class: "text-center"}
+                      - if source_video.notes.present?
+                        = link_to 'javascript:',
+                          class: 'btn btn-default btn-sm',
+                          :disabled => ("disabled" if source_video.notes.blank?),
+                          data: {container: "body", toggle: "popover", placement: "top", content: source_video.notes, trigger: "hover"} do
+                          = fa_icon 'exclamation', :class => ('text-danger' unless source_video.notes.blank?)
+                    %td{class: "text-center"}
+                      = source_video.versions.last.try(:whodunnit)
+                    %td{class: "text-center"}
+                      = local_time(source_video.updated_at, format: '%m/%d/%y %I:%M %p', title: source_video.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if source_video.updated_at.present?
+                %tfoot
+                  %tr
+                    %td{colspan: 14}
+                      .box.box-default{class: "collapsed-box", style: "margin-bottom: 0px;"}
+                        .box-header.with-border
+                          %h3.box-title Text strings
+                          .box-tools.pull-right
+                            = button_tag type: "button", class: "btn btn-box-tool", data: {widget: :collapse} do
+                              = fa_icon 'plus'
+                        .box-body{style: "display: none"}
+                          %ul
+                            - @project_text_types.each do |project_type|
+                              .col-md-3
+                                - key = Templates::AaeProjectText::PROJECT_TYPES[project_type]
+                                - value = @source_videos_report[subject_video_id][key]
+                                %li
+                                  %span{style: "font-weight: bold;"}= I18n.t("templates.aae_project_text.groupes.#{project_type}")
+                                  - dynamic_texts_count = value.try(:values).to_a.inject(0, :+)
+                                  - badge_color = dynamic_texts_count > 5 ? (dynamic_texts_count > 10 ? 'bg-green' : 'bg-yellow') : 'bg-red'
+                                  %span{class: "badge #{badge_color}"}= dynamic_texts_count
+                                  %ul
+                                    - text_types = Templates::AaeProjectText::TEXT_GROUPES[project_type].each do |text_type|
+                                      %li
+                                        %div
+                                          - text_type_enum = Templates::AaeProjectText.text_type.find_value(text_type)
+                                          = I18n.t("templates.aae_project_text.types.#{text_type}") + ":"
+                                          %b= value.present? ? value[text_type_enum.value] || 0 : 0
+- content_for(:stylesheets) do
+  = stylesheet_link_tag 'fancybox'
+- content_for(:javascripts) do
+  = javascript_include_tag 'fancybox'
+  :javascript
+    var ready = function () {
+      $('#client_id').select2({allowClear: false})
+      $('#client_id').on('change', function(){
+        $('#report').submit();
+      });
+      $('body').popover({
+        selector: 'a.source-video-tags',
+        content: function (){
+          labels = $.map($(this).data('tags').toString().split(','), function (e) {
+            return "<span class='label label-primary label-tags'>" + e + "</span>"
+          })
+          return labels.join(' ');
+        },
+        html: true,
+        placement: 'top',
+        trigger: 'hover'
+      })
+      $('a[data-toggle="popover"]').popover();
+      $(".preview-video").each(function(){
+        src = $(this).attr("href");
+        content = '<video src="' + src + '" autoplay="true" type="video/mp4" controls="true" style="height: 540px; width: 960px" onloadstart="this.volume=0.35"></video>';
+        $(this).fancybox({content: content, minHeight: 540, minWidth: 960});
+      })
+    }
+    $(document).ready(ready)
+    $(document).on('page:load', ready)

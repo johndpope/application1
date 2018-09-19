@@ -1,0 +1,7 @@
+%tr
+	%th{style: "width: 60px;"} ID
+	%th Value
+	%th{style: "width: 200px;"} Campaign
+	%th{style: "width: 80px;"}
+		= link_to new_templates_aae_project_dynamic_text_path(client_id: client.try(:id), video_marketing_campaign_form_id: video_marketing_campaign_form.try(:id), project_type: project_type, text_type: text_type), remote: true, class: "btn btn-primary btn-sm", data: {toggle: 'modal', target: '.dynamic-text-form-modal'} do
+			= fa_icon 'plus', text: "Add"

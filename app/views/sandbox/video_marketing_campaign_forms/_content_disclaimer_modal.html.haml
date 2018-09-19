@@ -1,0 +1,55 @@
+.modal.fade{id:"content_disclaimer_modal", role:"dialog", "aria-labelledby"=>"see_content_disclaimer_btn"}
+	.modal-dialog{role:"document"}
+		.modal-content
+			.modal-header
+				= link_to class:"close", data:{dismiss:"modal"}, "aria-label"=>"Close" do
+					%span{"aria-hidden"=>"true"}
+						&times;
+				%h4.modal-title{id:"myModalLabel"}Youtube Content Disclaimer
+			.modal-body
+				Since we are not Google, there are some things we are not able to be responsible for:
+				%ul
+					%li
+						Channel strikes on your Youtube Account
+					%li
+						Video Strikes for our uploaded videos on your Youtube Account
+					%li
+						Haters of your company or unprincipled competitors which can specially complain on your Youtube Channel or particular video on Youtube Channel. Google provides special tools to do this
+						= link_to 'See details', 'https://www.youtube.com/yt/about/policies/#reporting-and-enforcement', target:'_BLANK'
+				From our side we take responsibility to follow rules from Youtube Content Policy:
+				%ul
+					%li
+						Not to violate Nudity or sexual Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2802002?hl=en', target:'_BLANK'
+					%li
+						Not to violate Harmful or dangerous Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801964?hl=en', target:'_BLANK'
+					%li
+						Not to violate Hateful Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801939?hl=en', target:'_BLANK'
+					%li
+						Not to violate Violent or graphic Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801939?hl=en', target:'_BLANK'
+					%li
+						Not to violate Harassment and cyberbullying Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2802268?visit_id=1-636215053151010017-1930197662&rd=1&hl=en', target:'_BLANK'
+					%li
+						Not to violate Spam, misleading metadata, and scams Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801973?hl=en', target:'_BLANK'
+					%li
+						Not to violate Threats Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801927?hl=en', target:'_BLANK'
+					%li
+						Not to violate Copyright Content Policy
+						= link_to 'See details', 'https://www.youtube.com/yt/about/copyright/', target:'_BLANK'
+					%li
+						Not to violate Privacy Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801895?hl=en', target:'_BLANK'
+					%li
+						Not to violate Impersonation Content Policy
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801947?hl=en', target:'_BLANK'
+					%li
+						Not to violate additional Content Policies described separately
+						= link_to 'See details', 'https://support.google.com/youtube/answer/2801981?hl=en', target:'_BLANK'
+			.modal-footer
+				= link_to 'Close', 'javascript://', class:"btn btn-primary", data:{dismiss:"modal"}

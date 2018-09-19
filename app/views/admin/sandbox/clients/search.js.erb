@@ -1,0 +1,4 @@
+<%
+  results = render partial: "search", locals: {images: @images, total_count: @total_count}
+%>
+$('#search_results').replaceWith('<%= escape_javascript(results) %>');

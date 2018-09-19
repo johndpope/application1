@@ -1,0 +1,21 @@
+.admin_sandbox_videos{
+	&.index{
+		#sandbox_video_items{
+			.id{width: 40px;}
+			.thumb{width: 80px;}
+			.video{width: 80px;}
+			.is_active {width: 80px;}
+      .is_approved {width: 80px;}
+      .has_notes {width: 80px;}
+			.source_video_id{width: 150px;}
+			.sandbox_video_set_id{width: 150px;}
+			.templates_aae_project_id{width: 150px;}
+			.video_type{width: 150px;}
+			.duration{width: 80px;}
+			.client{width: 200px;}
+      .updated_by{min-width: 90px;}
+      .updated_at{width: 90px;}
+			.created_at{width: 90px;}
+		}
+	}
+}

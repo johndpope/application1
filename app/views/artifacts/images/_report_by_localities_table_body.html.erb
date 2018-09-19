@@ -1,0 +1,118 @@
+<% short_description_warning = Setting.get_value_by_name("Wording::SHORT_DESCRIPTION_WARNING").to_i %>
+<% long_description_warning = Setting.get_value_by_name("Wording::LONG_DESCRIPTION_WARNING").to_i %>
+<% images_warning = Setting.get_value_by_name("Artifacts::Image::MINIMUM_WARNING").to_i %>
+
+<div id="report_by_localities_list">
+  <% if current_admin_user.present? && params[:controller] == 'artifacts/images' %>
+    <div><%= paginate localities, theme: 'bootstrap' %></div>
+  <% end %>
+	<% unless localities.to_a.empty? %>
+    <% page = params[:page].present? ? params[:page].to_i - 1 : 0 %>
+		<table id="cities_table" class="table table-bordered table-striped dataTable">
+			<thead>
+        <%= render 'artifacts/images/report_by_localities_table_header' %>
+			</thead>
+			<tbody>
+				<% localities.each_with_index do |city, index| %>
+					<tr>
+            <% parent = city.primary_region.try(:parent) %>
+            <% state_name = parent.present? ? parent.name : city.primary_region.name %>
+            <% country_name = city.primary_region.country.name %>
+            <% high_res_images_count = city.high_res_images_count %>
+            <% images_count = city.images_count %>
+            <% short_descriptions_count = city.description_count('short_description') %>
+            <% long_descriptions_count = city.description_count('long_description') %>
+            <td class="text-center"><%= page * params[:limit].to_i + index + 1 %></td>
+						<td class="text-center"><%= city.id %></td>
+						<td><%= city.name %></td>
+            <td class="text-center">
+              <% if current_admin_user.present? && params[:controller] == 'artifacts/images' %>
+                <%= form_for city, as: :post, url: geobase_locality_path(city), method: :patch, html: { class: "edit_locality", id: "edit_locality_#{city.id}" }, remote: "true", authenticity_token: form_authenticity_token do |f| %>
+                  <%= select_tag(:locality_type, options_for_select(Geobase::Locality::TYPES.collect{ |key, value| [key, value.to_i] }, city.locality_type.try(:value).to_i), { include_blank: false, class: 'dropdown-toggle form-control locality-type-select' }) %>
+                <% end %>
+              <% else %>
+                <%= city.locality_type %>
+              <% end %>
+            </td>
+            <td><%= city.county.try(:name) %></td>
+            <td><%= state_name %></td>
+            <td><%= city.primary_region.country.name %></td>
+						<td class="text-center CDR"><%= city.population.to_s(:delimited) unless city.population.blank? %></td>
+            <td class="text-center <%= 'attention' if short_descriptions_count < short_description_warning %>"><%= link_to short_descriptions_count.to_s(:delimited), wordings_path(resource_id: city.id, resource_type: city.class.name, name: 'short_description'), target: "_blank" %></td>
+            <td class="text-center <%= 'attention' if long_descriptions_count < long_description_warning %>"><%= link_to long_descriptions_count.to_s(:delimited), wordings_path(resource_id: city.id, resource_type: city.class.name, name: 'long_description'), target: "_blank" %></td>
+            <% wording_id = Wording.select(:id).where(resource_id: city.id, resource_type: city.class.name).first.try(:id) %>
+            <% if wording_id.present? %>
+              <td class="text-center"><%= link_to city.nickname_array.size.to_s(:delimited), edit_wording_path(wording_id), target: "_blank" %></td>
+              <td class="text-center"><%= link_to city.landmarks.size.to_s(:delimited), edit_wording_path(wording_id), target: "_blank" %></td>
+            <% else %>
+              <td class="text-center"><%= city.nickname_array.size.to_s(:delimited) %></td>
+              <td class="text-center"><%= city.landmarks.size.to_s(:delimited) %></td>
+            <% end %>
+            <td class="text-center"><%= link_to high_res_images_count.to_s(:delimited), artifacts_images_path(ransack: {country_cont: country_name, region1_cont: state_name, city_cont: city.name}, by_resolution: "high"), target: "_blank" %></td>
+            <td class="text-center"><%= link_to (images_count - high_res_images_count).to_s(:delimited), artifacts_images_path(ransack: {country_cont: country_name, region1_cont: state_name, city_cont: city.name}, by_resolution: "low"), target: "_blank" %></td>
+						<td class="text-center <%= 'attention' if images_count < images_warning %>"><%= link_to images_count.to_s(:delimited), artifacts_images_path(ransack: {country_cont: country_name, region1_cont: state_name, city_cont: city.name}, by_resolution: "all"), target: "_blank" %></td>
+					</tr>
+				<% end %>
+			</tbody>
+      <% if localities.size > 25 %>
+        <tfoot>
+          <%= render 'artifacts/images/report_by_localities_table_header' %>
+        </tfoot>
+      <% end %>
+		</table>
+	<% end %>
+  <% if current_admin_user.present? && params[:controller] == 'artifacts/images' %>
+	 <div><%= paginate localities, theme: 'bootstrap' %></div>
+  <% end %>
+
+	<% if localities.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>
+
+<% if current_admin_user.present? && params[:controller] == 'artifacts/images' %>
+  <div id="toolbar-toggle" class="no-print"><i class="fa fa-gear"></i></div>
+  <div id="toolbar" class="no-print">
+  	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+  	<%
+  		order = [:population, :images_count]
+  		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+  		order_value = params[:order]
+  		order_value = :population unless order_value
+  	%>
+  	<div id="search_params">
+  		<%= form_tag({action: :report_by_localities }, { method: :post, id: 'filters_form' }) do |f| %>
+        <% country_name = params[:country].present? ? Geobase::Country.find(params[:country].to_i).try(:name) : Geobase::Country.find_by_code("US").try(:name) %>
+        <% region1_name = params[:region1].present? ? Geobase::Region.find(params[:region1].to_i).try(:name) : '' %>
+        <% region2_name = params[:region2].present? ? Geobase::Region.find(params[:region2].to_i).try(:name) : '' %>
+        <% locality_name = params[:city].present? ? Geobase::Locality.find(params[:city].to_i).try(:name) : '' %>
+        <div class="filter-label">Country</div>
+        <%= hidden_field_tag 'country', params[:country], data: {name: country_name} %>
+        <div class="filter-label">State</div>
+        <%= hidden_field_tag 'region1', params[:region1], data: {name: region1_name} %>
+        <div class="filter-label">Locality</div>
+        <%= hidden_field_tag 'city', params[:city], data: {name: locality_name} %>
+        <div class="filter-label">Locality type</div>
+        <%= select_tag(:locality_type, options_for_select(Geobase::Locality::TYPES.collect{ |key, value| [key, value.to_i] }, params[:locality_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Locality IDs</div>
+        <%= text_area_tag :locality_ids, params[:locality_ids], rows: 3, class: 'form-control', placeholder: "Enter locality ids comma separated" %>
+        <div class="filter-label">Images count less than (inclusive)</div>
+        <%= search_field_tag :images_count_limit, params[:images_count_limit], class: 'form-control numeric' %>
+  			<div class="filter-label">Order by</div>
+  			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+  			<div class="filter-label">Order type</div>
+  			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+  			<div class="filter-label">Items on page</div>
+  			<%= search_field_tag :limit, params[:limit], class: 'form-control numeric' %>
+  			<div class="filter-label text-center">
+  				<div class="col-md-12">
+  					<button id="filter-apply" type="submit" class="btn btn-primary pull-right" style="margin-top: 5px;">Apply</button>
+  				</div>
+  			</div>
+  		<% end %>
+  	</div>
+  </div>
+<% end %>

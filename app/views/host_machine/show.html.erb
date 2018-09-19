@@ -1,0 +1,54 @@
+<% title 'Host Machine Details' %>
+<% breadcrumb :show_host_machine, @host_machine %>
+<div class="row">
+	<div class="col-md-2">ID</div>
+	<div class="col-md-10"><%= @host_machine.id %></div>
+</div>
+<div class="row">
+	<div class="col-md-2">IP Address</div>
+	<div class="col-md-10"><%= @host_machine.ip_address %></div>
+</div>
+<div class="row">
+	<div class="col-md-2">URL</div>
+	<div class="col-md-10"><%= link_to @host_machine.url, @host_machine.normalized_url, target: '_blank' %></div>
+</div>
+<div class="row">
+	<div class="col-md-2">Root Name</div>
+	<div class="col-md-10"><%= @host_machine.root_name %></div>
+</div>
+<div class="row">
+	<div class="col-md-2">Root Password</div>
+	<div class="col-md-10"><%= @host_machine.root_password %></div>
+</div>
+<div class="row">
+	<div class="col-md-2">Creation Date</div>
+	<div class="col-md-10"><%= @host_machine.created_at.strftime('%m/%d/%Y %R') %></div>
+</div>
+<h3>Connected API Applications</h3>
+<% if @api_applications.to_a.empty? %>	
+		<div class="alert alert-info">No items available</div>
+	<% else %>
+		<table class="table table-bordered">
+			<tr>
+				<th>ID</th>
+				<th>Client</th>
+				<th>Client Secret</th>
+				<th>Callback URL</th>
+				<th>App item</th>
+				<th>App item type</th>
+				<th class="text-center">Creation Date</th>
+			</tr>
+		<% @api_applications.each do |api_ap| %>		
+				<tr>
+					<td><%= api_ap.id %></td>
+					<td><%= api_ap.client_id %></td>
+					<td><%= api_ap.client_secret %></td>
+					<td><%= api_ap.callback_url %></td>
+					<td><%= api_ap.app_item_id %></td>
+					<td><%= api_ap.app_item_type %></td>
+					<td class="text-center"><%= api_ap.created_at.strftime('%m/%d/%Y %R') %></td>
+				</tr>
+		<% end %>
+		</table>
+<% end %>
+

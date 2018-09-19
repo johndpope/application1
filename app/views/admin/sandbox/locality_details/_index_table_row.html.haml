@@ -1,0 +1,4 @@
+%td{class: "text-center"}= item.id
+%td= item.try(:locality).try(:name)
+%td{class: "text-center"}= image_tag item.default_background_image.url(:square_32)	unless item.default_background_image.blank?
+%td{class: "text-center"}= image_tag item.active_background_image.url(:square_32)	unless item.active_background_image.blank?

@@ -1,0 +1,94 @@
+<% %w(id brand_id).each do |e| %>
+  <div class="form-group <%= 'has-success' if dealer[:"#{e}"].present? && target[:"#{e}"].present? && dealer[:"#{e}"].to_s.gsub(/[^a-zA-Z0-9]/, "").strip == target[:"#{e}"].to_s.gsub(/[^a-zA-Z0-9]/, "").strip %>">
+    <%= label_tag :"#{e}", nil, class: 'control-label' %>
+    <input class="form-control" type="text" value="<%= dealer[:"#{e}"]%>" style="pointer-events: none;">
+  </div>
+<% end %>
+<% %w(name).each do |e| %>
+  <%
+    equal = ''
+    if dealer[:"#{e}"].present? && target[:"#{e}"].present?
+      target_field = dealer[:"#{e}"].to_s.downcase.gsub('&', 'and').gsub(/,inc| incorporated| inc|&|[^a-zA-Z0-9]/, '').gsub("airconditioning", 'ac').gsub('airconditioing', 'ac').strip
+      dealer_field = target[:"#{e}"].to_s.downcase.gsub('&', 'and').gsub(/,inc| incorporated| inc|&|[^a-zA-Z0-9]/, '').gsub("airconditioning", 'ac').gsub('airconditioing', 'ac').strip
+      equal = 'has-success' if dealer_field == target_field
+      unless equal.present?
+        equal = 'has-warning' if dealer_field.include?(target_field) || target_field.include?(dealer_field)
+        unless equal.present?
+          target_field = dealer[:"#{e}"].to_s.downcase.gsub('&', 'and').gsub(/,inc| incorporated| inc|&|[^a-zA-Z0-9]/, ' ').gsub("airconditioning", 'ac').gsub('airconditioing', 'ac').gsub(" llc", "").squeeze(" ").strip
+          dealer_field = target[:"#{e}"].to_s.downcase.gsub('&', 'and').gsub(/,inc| incorporated| inc|&|[^a-zA-Z0-9]/, ' ').gsub("airconditioning", 'ac').gsub('airconditioing', 'ac').gsub(" llc", "").squeeze(" ").strip
+          target_words = target_field.split(" ")
+          dealer_words = dealer_field.split(" ")
+          intersection = target_words & dealer_words
+          equal = 'has-warning' if intersection.size / dealer_words.size.to_f * 100 >= 50 || intersection.size / target_words.size.to_f * 100 >= 50
+        end
+      end
+    end
+  %>
+  <div class="form-group <%= equal %>">
+    <%= label_tag :"#{e}", nil, class: 'control-label' %>
+    <input class="form-control" type="text" value="<%= dealer[:"#{e}"]%>" style="pointer-events: none;">
+  </div>
+<% end %>
+<% %w(target_phone phone1 phone2 phone3 permalease_phone fax).each do |e| %>
+  <%
+    equal = ''
+    %w(target_phone phone1 phone2 phone3 permalease_phone fax).each do |a|
+      equal = 'has-success' if dealer[:"#{e}"].present? && target[:"#{a}"].present? && dealer[:"#{e}"].to_s.gsub(/[^a-zA-Z0-9]/, "").strip == target[:"#{a}"].to_s.gsub(/[^a-zA-Z0-9]/, "").strip
+    end
+  %>
+  <div class="form-group <%= equal %>">
+    <%= label_tag :"#{e}", nil, class: 'control-label' %>
+    <input class="form-control" type="text" value="<%= dealer[:"#{e}"]%>" style="pointer-events: none;">
+  </div>
+<% end %>
+<% %w(email website).each do |e| %>
+  <%
+    equal = ''
+    if dealer[:"#{e}"].present? && target[:"#{e}"].present?
+      equal = 'has-success' if dealer[:"#{e}"].to_s.downcase.gsub(/www|https|http/, "").gsub(/[^a-zA-Z0-9]/, "").strip == target[:"#{e}"].to_s.downcase.gsub(/www|https|http/, "").gsub(/[^a-zA-Z0-9]/, "").strip
+      unless equal.present?
+        equal = 'has-warning' if dealer[:"#{e}"].to_s.downcase.split('@').last.gsub(/www|https|http/, "").gsub(/[^a-zA-Z0-9]/, "").strip == target[:"#{e}"].to_s.downcase.split('@').last.gsub(/www|https|http/, "").gsub(/[^a-zA-Z0-9]/, "").strip
+      end
+    end
+  %>
+  <div class="form-group <%= equal %>">
+    <%= label_tag :"#{e}", nil, class: 'control-label' %>
+    <input class="form-control" type="text" value="<%= dealer[:"#{e}"]%>" style="pointer-events: none;">
+  </div>
+<% end %>
+<% %w(address_line1 address_line2).each do |e| %>
+  <%
+    equal = ''
+    if dealer[:"#{e}"].present? && target[:"#{e}"].present?
+      equal = 'has-success' if dealer[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '') == target[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '')
+      unless equal.present?
+        equal = 'has-warning' if dealer[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '').include?(target[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '')) || target[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '').include?(dealer[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, ''))
+        unless equal.present?
+          target_words = dealer[:"#{e}"].to_s.downcase.gsub(",", " ").split("-").map{|e| e.split(" ")}.flatten.map(&:strip).reject(&:empty?)
+          dealer_words = target[:"#{e}"].to_s.downcase.gsub(",", " ").split("-").map{|e| e.split(" ")}.flatten.map(&:strip).reject(&:empty?)
+          intersection = target_words & dealer_words
+          equal = 'has-warning' if intersection.size / dealer_words.size.to_f * 100 >= 50 || intersection.size / target_words.size.to_f * 100 >= 50
+        end
+      end
+    end
+  %>
+  <div class="form-group <%= equal %>">
+    <%= label_tag :"#{e}", nil, class: 'control-label' %>
+    <input class="form-control" type="text" value="<%= dealer[:"#{e}"]%>" style="pointer-events: none;">
+  </div>
+<% end %>
+<% %w(zipcode city state country).each do |e| %>
+  <%
+    equal = ''
+    if e != 'country' && dealer[:"#{e}"].present? && target[:"#{e}"].present?
+      equal = 'has-success' if dealer[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '') == target[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '')
+      unless equal.present?
+        equal = 'has-warning' if dealer[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '').include?(target[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '')) || target[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, '').include?(dealer[:"#{e}"].to_s.strip.downcase.gsub(/[^a-zA-Z0-9]/, ''))
+      end
+    end
+  %>
+  <div class="form-group <%= equal %>">
+    <%= label_tag :"#{e}", nil, class: 'control-label' %>
+    <input class="form-control" type="text" value="<%= dealer[:"#{e}"]%>" style="pointer-events: none;">
+  </div>
+<% end %>

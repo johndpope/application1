@@ -1,0 +1,8 @@
+<%
+  new_row = render partial: 'source_videos/index_table_row', locals: {source_video: @source_video, client: @client}
+  row_id = dom_id(@source_video, 'row')
+%>
+
+$('#source_videos tbody').append('<%= escape_javascript(new_row) %>')
+$("#<%= row_id %>").effect('highlight', { color: '#00a65a' }, 3000)
+$('.source-video-modal').modal('hide')

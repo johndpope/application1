@@ -1,0 +1,116 @@
+.title-block
+  %h2
+    %b YouTube
+    %span.font_red_no-weight Video
+.row.header
+  .col-md-2
+    = link_to 'javascript://', class: "menu-toggle-link" do
+      = fa_icon 'align-justify'
+    = link_to 'javascript://' do
+      = image_tag "/sandbox/icons/youtube_icon1.png", id: "youtube_icon1"
+  .col-md-8
+    .input-group.input-group-sm.input-search
+      = text_field_tag :q, "", :class => 'form-control input-sm'
+      .input-group-btn
+        %button.btn.btn-default{ type: 'button' }
+          = fa_icon 'search'
+  .col-md-2.buttons
+    - %w(th upload bell).each do |i|
+      = link_to 'javascript://' do
+        = fa_icon i
+    = link_to 'javascript://' do
+      = image_tag @sandbox_client.logo.url(:square_256), class: "channel_icon_img_small"
+.row
+  .col-md-2
+  .col-md-7
+    .ytb_content
+      .video_content
+        - unless @video_thumbnails.blank?
+          - thumbnail_path = @video_thumbnails.first.file.url
+        - else
+          - thumbnail_path = ""
+        %video.video-js.vjs-default-skin#video2{controls: "controls", preload: "auto", data:{setup: "{}"}, width: "100%", height: "92%", poster: thumbnail_path, style: "height: 368px;"}
+          %source{src: @blended_video_src, type: "video/mp4"}
+      .ytd-video-primary-info
+        %h1.title.yt_video_title=@video_title
+        %span.view-count="#{rand(10000..100000) / 1000},#{rand(10000..100000) % 1000} views"
+        .ytd_menu_sub_video
+          .sv_block
+            = link_to 'javascript://' do
+              = image_tag '/sandbox/icons/like_icon.png', class: "ytb_icon", id: "ytb_like", data: {mouseover: '/sandbox/icons/like_icon_dark.png', mouseout: '/sandbox/icons/like_icon.png'}
+              = rand(1000..10000)
+            = link_to 'javascript://' do
+              = image_tag '/sandbox/icons/dislike_icon.png', class: "ytb_icon", id: "ytb_dislike", data: {mouseover: '/sandbox/icons/dislike_icon_dark.png', mouseout: '/sandbox/icons/dislike_icon.png'}
+              = rand(100..1000)
+
+          = link_to 'javascript://' do
+            = image_tag '/sandbox/icons/share_icon.png', class: "ytb_icon", id: "ytb_share", data: {mouseover: '/sandbox/icons/share_icon_dark.png', mouseout: '/sandbox/icons/share_icon.png'}
+            = "SHARE"
+          = link_to 'javascript://' do
+            = image_tag '/sandbox/icons/add_icon.png', class: "ytb_icon", id: "ytb_add", data: {mouseover: '/sandbox/icons/add_icon_dark.png', mouseout: '/sandbox/icons/add_icon.png'}
+          = link_to 'javascript://' do
+            = image_tag '/sandbox/icons/dots_icon.png', class: "ytb_icon", id: "ytb_more", data: {mouseover: '/sandbox/icons/dots_icon_dark.png', mouseout: '/sandbox/icons/dots_icon.png'}
+
+      .inner-header-container
+        = link_to 'javascript://'do
+          = image_tag "/sandbox/icons/alt_image_channe_name.png", class: "channel_icon_img channel_icon_img_middle"
+        %h3.channel_name=@channel_name
+      = link_to 'javascript://', class: "subscribe-button" do
+        %span.text="SUBSCRIBE"
+        %span.count="#{rand(1..10)}.#{rand(1..10)}m."
+      = link_to 'javascript://', class: "ytb-bell-icon" do
+        = fa_icon 'bell'
+      .description
+        .show-hide-text
+          = link_to '#show-less', id: 'show-more', class: 'show-less' do
+            = "SHOW LESS"
+          = link_to '#show-more', id: 'show-less', class: 'show-more' do
+            = "SHOW MORE"
+          %p=@video_description
+      .clear
+  .col-md-3.aside
+    #upnext="Up next"
+    #autoplay="Autoplay"
+    %label.switch
+      %input{type: "checkbox"}
+      %span.slider.round
+    - @video_thumbnails.slice!(0)
+    - @video_thumbnails.first(3).each_with_index do |item, index|
+      .ytb_video_item
+        = link_to 'javascript://' do
+          = image_tag URI::escape(item.file.url(:thumb)), class: "ytb_video_img"
+          = image_tag '/sandbox/icons/ytb_video_item_side.png'
+          .time_block=(rand(24.hours.ago..Time.now).strftime "%M:%S").gsub(/^\d/,'')
+
+      - if index == 0
+        - (1..3).to_a.shuffle.each do |i|
+          .ytb_video_item
+            = link_to 'javascript://' do
+              = image_tag "/sandbox/icons/channel_images/#{i}.png", class: "ytb_video_img"
+              = image_tag '/sandbox/icons/ytb_video_item_side.png'
+              .time_block=(rand(24.hours.ago..Time.now).strftime "%M:%S").gsub(/^\d/,'')
+
+      - if index == 1
+        - (4..6).to_a.shuffle.each do |i|
+          .ytb_video_item
+            = link_to 'javascript://' do
+              = image_tag "/sandbox/icons/channel_images/#{i}.png", class: "ytb_video_img"
+              = image_tag '/sandbox/icons/ytb_video_item_side.png'
+              .time_block=(rand(24.hours.ago..Time.now).strftime "%M:%S").gsub(/^\d/,'')
+
+      - if index == 2
+        - (7..9).to_a.shuffle.each do |i|
+          .ytb_video_item
+            = link_to 'javascript://' do
+              = image_tag "/sandbox/icons/channel_images/#{i}.png", class: "ytb_video_img"
+              = image_tag '/sandbox/icons/ytb_video_item_side.png'
+              .time_block=(rand(24.hours.ago..Time.now).strftime "%M:%S").gsub(/^\d/,'')
+
+
+.row
+  .col-md-12
+    .buttons-panel
+      = link_to regenerate_youtube_video_sandbox_client_video_blenders_path(params[:client_uuid], params[:id]), class: "btn btn-different btn-lime", data: { "disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i> <span><b>Change All</b></span>', remote: true, toggle: "popover", content: "Change channel and youtube setup automatic"} do
+        = fa_icon 'refresh'
+        %span
+          %b="Change All"

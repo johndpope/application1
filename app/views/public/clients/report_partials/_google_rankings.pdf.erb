@@ -1,0 +1,45 @@
+<% if !@youtube_video_search_ranks_by_google.blank? %>
+  <% @youtube_video_search_ranks_by_google.first(4).to_a.each_with_index do |google_item, index| %>
+    <page size="A4">
+      <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+        <div class="content">
+          <section class="section5">
+            <div class="container">
+              <div class="col-xs-12">
+                <p><b>Google Ranks of Posted Videos: Search Results</b></p>
+              </div>
+
+              <div class="col-xs-12">
+                <p class="mg-0"><b>Keywords Searched:</b> <%=google_item.youtube_video_search_phrase.phrase%></p>
+                <p class="mg-0">
+                  <b>Page:</b> <%=google_item.page%>, <b>Position:</b> <%=google_item.position%>
+                  <% if google_item.in_box_position.present? %>
+                    , <b>Position in video box:</b> <%=google_item.in_box_position %>
+                  <% end %>
+                </p>
+                <p class="mg-0"><b>Screenshot Capture:</b> <%=google_item.screenshot_updated_at%></p>
+                <div class="google-screen-crop">
+                  <%= wicked_pdf_image_tag google_item.screenshot, class: "google-screen-img" %>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+      <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+    </page>
+  <% end %>
+<% elsif @youtube_video_search_ranks_by_youtube.blank?%>
+  <page size="A4">
+    <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+      <div class="content">
+        <section class="section5">
+          <div class="container">
+            <div class="col-xs-12"><p><b>Google Ranks of Posted Videos: Search Results</b></p></div>
+            <div class="col-xs-12"><%= wicked_pdf_image_tag '/missing.png', class: "img-missing" %></div>
+          </div>
+        </section>
+      </div>
+    <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+  </page>
+<% end %>

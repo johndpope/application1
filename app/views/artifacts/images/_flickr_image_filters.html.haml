@@ -1,0 +1,16 @@
+.row
+  - checked = params[:license] || Artifacts::FlickrImage::DEFAULTS[:license]
+  - Artifacts::FlickrImage.licenses.sort_by { |l| l['id'].to_i }.each_slice(4) do |slice|
+    .col-md-4
+      - slice.each do |l|
+        .form-group
+          = check_box_tag 'license[]', l['id'], checked.include?(l['id']), id: "license_#{l['id']}"
+          = label_tag "license_#{l['id']}", l['name'].gsub('License', '')
+.row
+  .col-md-6
+    = label_tag "User ID"
+    = text_field_tag :user_id, params[:user_id], class: 'form-control', placeholder: 'User ID'
+.row
+  .col-md-6
+    = label_tag :tags
+    = text_area_tag :tags, params[:tags], class: 'form-control', placeholder: 'Tags'

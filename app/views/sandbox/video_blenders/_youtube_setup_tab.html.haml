@@ -1,0 +1,26 @@
+.youtube_setup_collapse_widget.panel-group
+  .panel.panel-default
+    .panel-heading
+      .title-block
+        %h2
+          %b Channel
+          %span.font_red_no-weight Setup
+      #collapseOne.panel-collapse.collapse
+        = render partial: "sandbox/video_blenders/youtube_setup/channel_setup_details"
+      .row.collapsed_row
+        = render partial: "sandbox/video_blenders/youtube_setup/channel_setup"
+      .panel-title
+        = link_to '', '#collapseOne', class: "collapse_link arrow-down", :data => {:parent => "#accordion", :toggle => "collapse"}
+
+  .panel.panel-default
+    .panel-heading
+      .title-block
+        %h2
+          %b Video
+          %span.font_red_no-weight Setup
+      #collapseTwo.panel-collapse.collapse
+        = render partial: "sandbox/video_blenders/youtube_setup/video_setup_details"
+      .row.collapsed_row
+        = render partial: "sandbox/video_blenders/youtube_setup/video_setup"
+      .panel-title
+        = link_to '', '#collapseTwo', class: "collapse_link arrow-down", :data => {:parent => "#accordion", :toggle => "collapse"}

@@ -1,0 +1,90 @@
+<div>
+  <% statuses = case params[:name]
+    when 'sales'
+      Job::SALES_CALLS_STATUSES
+    when 'dealer_check'
+      Job::DEALER_CHECK_STATUSES
+    else
+      {}
+    end
+  %>
+  <% statuses.each do |k, v| %>
+    <% el = by_status_stat.select {|e| e["status"] == v.to_s}.first.to_h %>
+    <% cnt = el["count"].to_i || 0 %>
+    <div class="box collapsed-box">
+      <div class="box-header with-border">
+        <h3 class="box-title">
+          <i style="font-variant: small-caps;">
+            <% unless readonly %>
+              <% statuses = case params[:name] %>
+              <% when 'dealer_check', 'sales' %>
+                <% if cnt > 0 %>
+                  <%= link_to k, index_queue_path(name: params[:name], job_status: el["status"], job_days_ago: params[:days_ago], admin_user_id: el["id"], anchor: "history_tab"), target: "_blank" %>
+                <% else %>
+                  <%= k %>
+                <% end %>
+              <% else %>
+                <%= k %>
+              <% end %>
+            <% else %>
+              <%= k %>
+            <% end %>
+          </i>
+        </h3>
+        <div class="box-tools pull-right">
+          <span title="Total spent time"><b><%= Utils.seconds_to_time(el["sum"].to_i, true) %></b>&nbsp;·</span>
+          <% unless readonly %>
+            <% statuses = case params[:name] %>
+            <% when 'dealer_check', 'sales' %>
+              <% if cnt > 0 %>
+                <span class="badge badge bg-green" data-original-title=""><%= link_to cnt.to_s(:delimited), index_queue_path(name: params[:name], job_days_ago: params[:days_ago], admin_user_id: el["id"], anchor: "history_tab"), target: "_blank", style: "color: white;" %></span>
+              <% else %>
+                <span class="badge badge" data-original-title=""><%= cnt.to_s(:delimited) %></span>
+              <% end %>
+            <% else %>
+              <span class="badge badge <%= 'bg-green' if cnt > 0 %>" data-original-title=""><%= cnt.to_s(:delimited) %></span>
+            <% end %>
+          <% else %>
+            <span class="badge badge <%= 'bg-green' if cnt > 0 %>" data-original-title=""><%= cnt.to_s(:delimited) %></span>
+          <% end %>
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+        </div>
+      </div>
+      <!-- /.box-header -->
+      <div class="box-body" style="">
+        <ul class="nav nav-stacked">
+          <li><a href="#">Minimum spent time <span class="pull-right"><b><%= Utils.seconds_to_time(el["min"].to_i, true) %></b></span></a></li>
+          <li><a href="#">Maximum spent time <span class="pull-right"><b><%= Utils.seconds_to_time(el["max"].to_i, true) %></b></span></a></li>
+          <li><a href="#">Average spent time <span class="pull-right"><b><%= Utils.seconds_to_time(el["avg"].to_i, true) %></b></span></a></li>
+        </ul>
+      </div>
+      <!-- /.box-body -->
+    </div>
+  <% end %>
+  <div class="box">
+    <div class="box-header with-border">
+      <% unless readonly %>
+        <% statuses = case params[:name] %>
+        <% when 'dealer_check', 'sales' %>
+          <h3 class="box-title"><b style="font-variant: small-caps;"><%= link_to "Total", index_queue_path(name: params[:name], job_days_ago: params[:days_ago], admin_user_id: by_status_stat.first.to_h["id"], anchor: "history_tab"), target: "_blank" %></b></h3>
+          <div class="box-tools pull-right" style="top: 8px; right: 34px;">
+            <span><b><%= Utils.seconds_to_time(by_status_stat.map{|e| e["sum"].to_i}.inject(&:+).to_i || 0, true) %></b>&nbsp;·</span>
+            <span class="badge badge bg-blue" data-original-title=""><%= link_to by_status_stat.map{|e| e["count"].to_i}.inject(&:+).to_i.to_s(:delimited), index_queue_path(name: params[:name], job_days_ago: params[:days_ago], admin_user_id: by_status_stat.first.to_h["id"], anchor: "history_tab"), target: "_blank", style: "color: white;" %></span>
+          </div>
+        <% else %>
+          <h3 class="box-title"><b style="font-variant: small-caps;">Total</b></h3>
+          <div class="box-tools pull-right" style="top: 8px; right: 34px;">
+            <span><b><%= Utils.seconds_to_time(by_status_stat.map{|e| e["sum"].to_i}.inject(&:+).to_i || 0, true) %></b>&nbsp;·</span>
+            <span class="badge badge bg-blue"><%= by_status_stat.map{|e| e["count"].to_i}.inject(&:+).to_i.to_s(:delimited) %></span>
+          </div>
+        <% end %>
+      <% else %>
+        <h3 class="box-title"><b style="font-variant: small-caps;">Total</b></h3>
+        <div class="box-tools pull-right" style="top: 8px; right: 34px;">
+          <span><b><%= Utils.seconds_to_time(by_status_stat.map{|e| e["sum"].to_i}.inject(&:+).to_i || 0, true) %></b>&nbsp;·</span>
+          <span class="badge badge bg-blue"><%= by_status_stat.map{|e| e["count"].to_i}.inject(&:+).to_i.to_s(:delimited) %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

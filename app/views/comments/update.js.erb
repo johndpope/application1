@@ -1,0 +1,9 @@
+<%
+  modal_dom_id = dom_id(@comment, 'modal')
+  row_id = dom_id(@comment, 'row')
+  new_row = render partial: 'comment_row', locals: {comment: @comment}
+%>
+
+$('#<%= modal_dom_id %>').modal('hide')
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')
+$('#<%= row_id %>').effect('highlight', 1500)

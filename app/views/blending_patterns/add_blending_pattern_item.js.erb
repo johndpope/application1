@@ -1,0 +1,4 @@
+<%
+	blending_pattern_item = render partial: "blending_pattern_item", locals: {video_type: nil}
+%>
+$('.blending_pattern_modal #blending_pattern_items').append('<%= escape_javascript(blending_pattern_item)%>')

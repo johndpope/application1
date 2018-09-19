@@ -1,0 +1,5 @@
+<%
+  blended_image_wrapper = render partial: "blend", locals: {template: @templates}
+%>
+
+$('#blended_image_wrapper').replaceWith('<%= escape_javascript(blended_image_wrapper) %>');

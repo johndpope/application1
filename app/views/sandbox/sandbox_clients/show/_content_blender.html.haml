@@ -1,0 +1,56 @@
+.title-block
+	%h1
+		%b Content
+		%span.font_red_no-weight Blender
+.filte
+	.row
+		.col-md-4
+			.f-box.city
+				%i.big-icons
+				%h2
+					%b Choose
+					A
+					%span City
+				%p.description Select the city you would like your video to be blended for.
+				- options = @client_campaign_localities.map{|l|[l.name,
+					l.id, {"data-url" => url_for(controller: "sandbox_clients",
+						action: "content_blender_video_campaign_options",
+						client_uuid: @sandbox_client.uuid,
+						locality_id: l.id)}]}
+				= select_tag('campaign_localities', options_for_select(options))
+		.col-md-4
+			.f-box.video
+				%i.big-icons
+				%h2
+					%b Choose
+					Blended
+				%p.description
+					Select the subject of the blended video from the given list.
+					%span Video
+				%select{id: "locality_campaign_video_sets"}
+					= render partial: 'sandbox/sandbox_clients/show/video_campaign_options', locals: {locality_id: @def_locality_id}
+		.col-md-4
+			.f-box.conect
+				%i.big-icons
+				%h2
+					%b Spin
+					A
+					%span Content
+				%p.description
+					Click the
+					%b Spin It
+					button to see the complete campaign view by month.
+				= link_to "javascript://", class: "btn btn-different btn-red", id: "btn_spin" do
+					%i.glyphicon.glyphicon-retweet
+					%b Spin
+					It
+
+- content_for(:javascripts) do
+	:javascript
+		$(function(){
+			$('#campaign_localities').on('change', function(){
+				$.get($('option:selected', $(this)).attr('data-url'), function(response){
+					$('#locality_campaign_video_sets').html(response);
+				})
+			})
+		})

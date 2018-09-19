@@ -1,0 +1,8 @@
+<%
+  image_blender_search_results = render partial: "search_results", locals: {images: @images, total_count: @total_count}
+%>
+$('#image_blender_search_results').replaceWith('<%= escape_javascript(image_blender_search_results) %>');
+
+var img_type = $("#search_image_form").data("image-trigger");
+$(".found-image").attr("data-type", img_type);
+$('.info').popover();

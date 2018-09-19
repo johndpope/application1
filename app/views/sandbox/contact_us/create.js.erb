@@ -1,0 +1,34 @@
+var form = $('form#new_sandbox_contact_us');
+
+$('.alert').remove();
+
+<% if @reCaptchaResponse %>
+	<% if @contact_us.errors.any? %>
+      form.find('input:not(#sandbox_contact_us_sandbox_client_id), textarea').each(function (index) {
+        $(this).removeClass('error');
+      });
+	    error_messages = JSON.parse('<%= escape_javascript(@contact_us.errors.messages.select{ | k, v | k unless v.blank? }.to_json.html_safe) %>');
+
+		  alert = '';
+
+	    for (k in error_messages) {
+        n = k.charAt(0).toUpperCase() + k.slice(1);
+        if (n == 'Text') { n = 'Message' }
+  			$('#sandbox_contact_us_' + k).addClass('error');
+        alert += '<p><i class=\"icon fa fa-exclamation-circle\"></i>&nbsp;&nbsp;<b>' + n + '</b>&nbsp;' + error_messages[k][0] + '</p>';
+	    }
+
+		alert = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + alert + '</div>';
+	<% else %>
+		form.find('input:not(#sandbox_contact_us_sandbox_client_id), textarea').each(function (index) {
+			$(this).removeClass('error').val('');
+		});
+
+		alert = '<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="glyphicon glyphicon-ok-sign"></i>&nbsp;&nbsp;Message sent successfully.</div>';
+	<% end %>
+<% else %>
+	alert = '<div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><i class="icon fa fa-exclamation-circle"></i>&nbsp;&nbsp;Fail reCAPTCHA.</div>';
+<% end %>
+
+form.prepend(alert);
+grecaptcha.reset();

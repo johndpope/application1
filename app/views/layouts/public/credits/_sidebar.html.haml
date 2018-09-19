@@ -1,0 +1,15 @@
+%aside.main-sidebar
+  %section.sidebar
+    %ul.sidebar-menu
+      - action_icons = {youtube_videos: "youtube"}
+      - controllers = {youtube_videos: "public/credits/youtube/videos"}
+      - %w(youtube_videos).each do |a|
+        %li{class: ('active' if params[:controller] == controllers[a.to_sym] && params[:action] == 'index')}
+          = link_to eval("#{controllers[a.to_sym].gsub('/','_')}_path") do
+            = fa_icon action_icons[a.to_sym]
+            %span= t(a)
+      - if params[:controller] = "public/credits/youtube/videos" && params[:action]	== "show"
+        %li.active
+          = link_to public_credits_youtube_video_path(@youtube_video) do
+            = fa_icon "youtube"
+            %span= "Youtube Video # #{@youtube_video.id}"

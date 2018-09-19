@@ -1,0 +1,28 @@
+- unless f.object.new_record?
+  .form-group
+    = f.label :id, t('id')
+    = text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+
+.form-group
+  .select2-tags-wrapper
+    = f.label :sandbox_client_id, class: 'control-label'
+  .input-group
+    = f.select :sandbox_client_id, options_for_select(Sandbox::Client.order(:id).collect{|it| [it.client.name, it.id]}, f.object.sandbox_client_id), include_blank: true, class: 'form-control'
+
+.form-group
+  .select2-tags-wrapper
+    = f.label :title_subject_components, class: 'control-label'
+    %span#sandbox_youtube_channel_title_subject_components_csv_count.badge 0
+    = f.hidden_field :title_subject_components_csv, data: {placeholder: 'subject components'.titleize}
+
+.form-group
+  .select2-tags-wrapper
+    = f.label :title_entity_components, class: 'control-label'
+    %span#sandbox_youtube_channel_title_entity_components_csv_count.badge 0
+    = f.hidden_field :title_entity_components_csv, data: {placeholder: 'entity components'.titleize}
+
+.form-group
+  .select2-tags-wrapper
+    = f.label :title_descriptor_components, class: 'control-label'
+    %span#sandbox_youtube_channel_title_descriptor_components_csv_count.badge 0
+    = f.hidden_field :title_descriptor_components_csv, data: {placeholder: 'descriptor components'.titleize}

@@ -1,0 +1,25 @@
+.form-group#youtube_setup_other_busines_channel_tag_list_block
+  = f.label :tags
+  %span#sandbox_youtube_channel_tag_list_count.badge 0
+  = f.text_field :tags, class: 'form-control tags-field', placeholder: 'Enter tags'
+
+.form-group
+  .row{style: "margin:0px;"}
+    = f.hidden_field :location_id, class: "form-control"
+    = f.hidden_field :location_type, class: "form-control"
+    .col-md-3{style: "padding:0px;"}
+      = label_tag 'Country'
+      - default_country = Geobase::Country.find_by_code("US")
+      - unless default_country == nil
+        = text_field_tag('country', default_country.id, class: "form-control", data: {name: default_country.name})
+    .col-md-3
+      = label_tag 'State'
+      = text_field_tag('region1', '', class: "form-control")
+    .col-md-3
+      = label_tag 'County'
+      = text_field_tag('region2', '', class: "form-control")
+    .col-md-3
+      = label_tag 'City'
+      = text_field_tag('city', '', class: "form-control")
+      - if @location_json
+        = hidden_field_tag '', @location_json.to_json, id: 'location_json', class: "form-control"

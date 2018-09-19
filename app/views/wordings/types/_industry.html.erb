@@ -1,0 +1,18 @@
+<div class="col-md-4">
+	<label class="control-label" for="industry_id">Industry</label>
+	<input type="hidden" id="industry_id" class="ajax form-control" data-source="<%= industries_json_list_path %>" data-insert-resource="Industry">
+</div>
+<br/>
+<div class="col-md-12 m-th">
+  <div class="form-group" id="wording_industry_tag_list_block">
+    <div>
+      <label class="control-label" for="wording_industry_tag_list">Tags</label>
+      <%= tooltip_by_field({tooltip_text: t("tooltips.common.tags", :default => "")}) %>
+      <span id="wording_industry_tag_list_count" class="badge">0</span>
+    </div>
+    <input class="form-control tags-field data-input tagsinput" id="wording_industry_tag_list" name="wording_industry_tag_list" placeholder="Enter tags" type="text" value="<%= @search_industry.try(:tag_list).to_a.sort.join(",") %>" >
+  </div>
+</div>
+<script type="text/javascript">
+  $('.popover-box').popover({placement: 'top', trigger: 'hover'});
+</script>

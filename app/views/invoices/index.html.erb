@@ -1,0 +1,138 @@
+<% title 'Invoices' %>
+<% if flash[:notice] %>
+  <div id="notice_explanation" class="alert alert-success alert-dismissable col-md-11">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4>
+      <i class="icon fa fa-exclamation-circle"></i>
+      <%= flash[:notice] %>
+    </h4>
+  </div>
+<% end %>
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable col-md-11">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+<div id="invoices_list">
+  <div class="row">
+    <div class="col-md-5">
+      <% if @invoices.total_count > 0 %>
+        <%= link_to '<i class="fa fa-refresh"></i> Update invoices info'.html_safe, update_invoices_info_invoices_path, class: 'btn btn-sm btn-primary', data: {confirm: "Are you sure?"} %>
+      <% end %>
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+        <span class="badge bg-blue">
+          <%= @invoices.total_count %>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @invoices.to_a.empty? %>
+    <table id="invoices_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+          <th style="width: 60px;" class="sort text-center" id="invoice_number-th" data-field="invoice_number" title="Invoice number">Number</th>
+          <th class="sort" id="invoice_id-th" data-field="invoice_id">PayPal invoice ID</th>
+          <th class="sort text-center" id="status-th" data-field="status">Status</th>
+          <th class="sort text-center" id="payment_terms-th" data-field="payment_terms">Payment terms</th>
+          <th class="sort text-center" id="total_amount-th" data-field="total_amount">Total Amount</th>
+          <th class="sort" id="client-th" data-field="client">Client</th>
+          <th class="sort text-center" id="last_updated_date-th" data-field="last_updated_date">Last updated</th>
+          <th class="sort text-center" id="created_at-th" data-field="created_at">Created</th>
+          <th style="width: 115px;" class="text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @invoices.each do |invoice| %>
+          <tr>
+            <td class="text-center" title="Details"><%= link_to invoice.id, 'javascript://', data: { legend_url: legend_invoice_path(invoice) } %></td>
+            <td class="text-center"><%= invoice.invoice_number %></td>
+            <td><%= invoice.invoice_id %></td>
+            <td class="text-center"><%= invoice.status %></td>
+            <td class="text-center"><%= invoice.payment_terms.titleize.humanize %></td>
+            <td class="text-center">
+              <% if invoice.total_amount.present? %>
+                <%= invoice.total_amount.to_s(:delimited) %> <%= invoice.currency_code %>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to invoice.client.name, client_contracts_path(invoice.client), target: "_blank" %>
+            </td>
+            <td class="text-center">
+              <%= local_time(invoice.last_updated_date, format: '%m/%d/%y %I:%M %p', title: invoice.last_updated_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if invoice.last_updated_date.present? %>
+            </td>
+            <td class="text-center">
+              <%= local_time(invoice.created_at, format: '%m/%d/%y %I:%M %p', title: invoice.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+            </td>
+            <td class="text-center actions">
+              <div class="btn-group btn-group-custom">
+                <% if invoice.status.present? && invoice.status == 'Draft' %>
+                  <%= link_to 'Send', send_invoice_invoice_path(invoice), data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-success' %>
+                <% end %>
+                <% if invoice.status.present? && ['Sent', 'Draft'].include?(invoice.status) %>
+                  <%= link_to 'Cancel', cancel_invoice_invoice_path(invoice), data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <div><%= paginate @invoices, theme: 'bootstrap' %></div>
+
+  <% if @invoices.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div class="modal modal-wide fade" id="invoice_legend" style="z-index: 999999;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+  <h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+  <%
+      order = [:id, :invoice_number, :invoice_id, :status, :payment_terms, :total_amount, :client, :last_updated_date, :created_at]
+      order_type = [["Ascending", "asc"], ["Descending", "desc"]]
+      order_value = params[:order]
+      order_value = :updated_at unless order_value
+    %>
+    <div id="search_params">
+      <%= form_tag({ controller: :invoices, action: :index}, {method: :get, id: 'filters_form'}) do |f| %>
+        <div class="filter-label">ID:</div>
+        <%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+        <div class="filter-label">Number:</div>
+        <%= search_field_tag :invoice_number, params[:invoice_number], class: 'form-control numeric' %>
+        <div class="filter-label">PayPal invoice ID:</div>
+        <%= search_field_tag :invoice_id, params[:invoice_id], class: 'form-control' %>
+        <div class="filter-label">Status:</div>
+  			<%= select_tag('status', options_for_select(Invoice.all.group(:status).order(:status).pluck(:status), params[:status]), { include_blank: true, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Payment terms:</div>
+  			<%= select_tag('payment_terms', options_for_select(Invoice.all.group(:payment_terms).order(:payment_terms).pluck(:payment_terms).map {|value| [value.titleize.humanize, value]}, params[:payment_terms]), { include_blank: true, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Client:</div>
+        <%= select_tag(:client_id, options_from_collection_for_select(Client.all.order(:name), :id, :name, params[:client_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Order by:</div>
+        <%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.gsub("_", " ").humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Order type:</div>
+        <%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Items on page:</div>
+        <%= select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500 ], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+        <div class="filter-label text-center">
+          <div class="col-md-12">
+            <button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+- title 'General Image Tags'
+- content_for(:small_header){@client.name}
+
+= render partial: "navigation"
+.nav-tabs-custom
+  = render partial: "clients/image_tags/tab_control_header", locals: {client: @client}
+  .tab-content
+    .chart.tab-pane.active
+      = form_for @client, url: {controller: 'clients', action: 'update_general_image_tags'}, method: 'patch', authenticity_token: true do |f|
+        = f.hidden_field :id
+        .form-group
+          = f.label :client_name_tag_list, "Client Name Tags"
+          = f.text_area :client_name_tag_list, class: "form-control"
+        .form-group
+          = f.label :tag_list, "General Tags"
+          = f.text_area :tag_list, class: "form-control"
+        = f.submit "Save", data: {disable_with: "Saving ..."}, class: "btn btn-primary"

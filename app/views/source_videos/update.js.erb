@@ -1,0 +1,3 @@
+<% updated_row = render partial: 'source_videos/index_table_row', locals: {source_video: @source_video, client: @client} %>
+$('#<%= dom_id(@source_video, "row") %>').replaceWith('<%= escape_javascript(updated_row) %>')
+$('.source-video-modal').modal('hide')

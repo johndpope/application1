@@ -1,0 +1,66 @@
+.box-header.with-border
+  %i.fa.fa-picture-o
+  %span.total_uploaded_img
+  .box-tools.pull-right
+    %button.btn.btn-box-tool{:type => "button", :data => {:widget => 'collapse'}}
+      %i.fa.fa-minus
+.box-body.no-padding
+  %table.table.table-striped.images
+    %tbody#image_description
+      %thead
+        %th.id="id"
+        %th.preview
+          %i.fa.fa-file-image-o{:title => "Image preview"}
+          ="preview"
+        %th.location
+          %i.fa.fa-location-arrow{:title => "Image location"}
+          ="Title & Location"
+        %th.tags_notes
+          %i.fa.fa-tags{:title => "Tags and Notes"}
+          ="Tags & notes"
+      %script{:id => "tmpl-image-description", :type => "text/x-tmpl"}
+        {%= image=o.files[0] %}
+        %tr{class: "row_image_{%=image.id%}"}
+          %td="{%=image.id%}"
+          %td
+            {% if(image.url){ %}
+            %span.preview.img-thumbnail{:style => "width: initial;"}
+              %a{:href => '#', :title => "{%=image.name%}", :class => "image_thumbnail"}
+                %img{:src => "{%=image.url%}", :height => "60px", :width => "60px"}
+            {% } %}
+          %td
+            .form-group
+              = label_tag "title", "Title"
+              = text_field_tag "images[{%=image.id%}][title]", "{%=image.title %}", class: "form-control", placeholder: "Image title"
+            .row.location_data
+              .col-md-6
+                .form-group
+                  = label_tag "country", "Country"
+                  = text_field_tag "images[{%=image.id%}][country]", "{%=image.country.id%}", data: {id: "{%= image.country.id %}", name: "{%= image.country.name %}"}, class: "form-control image_country", id: 'image_country'
+              .col-md-6
+                .form-group
+                  = label_tag "state", "State"
+                  = text_field_tag "images[{%=image.id%}][region1]", "{%=image.region1.id%}", data: {id: "{%=image.region1.id%}", name: "{%=image.region1.name%}"}, class: "form-control image_region1"
+              .col-md-6
+                .form-group
+                  = label_tag "county", "County"
+                  = text_field_tag "images[{%=image.id%}][region2]", "{%=image.region2.id%}", data: {id: "{%=image.region2.id%}", name: "{%=image.region2.name%}"}, class: "form-control image_region2"
+              .col-md-6
+                .form-group
+                  = label_tag "city", "City"
+                  = text_field_tag "images[{%=image.id%}][city]", "{%=image.city.id%}", data: {id: "{%=image.city.id%}", name: "{%=image.city.name%}"}, class: "form-control image_city"
+          %td
+            .form-group
+              %div
+                = label_tag "tags", "tags"
+                %span#tag_list_count.badge.tags_count
+              .input-group
+                %span.input-group-addon{:style => "background-color: #3c8dbc; border: 1px solid #3c8dbc;"}
+                  %i.fa.fa-tags{:style => "color: #ffffff"}
+                = text_field_tag "images[{%=image.id%}][tags]", "{%=image.tag_list %}", class: "form-control tags", id: "tags", placeholder: "Enter tags"
+            .form-group
+              = label_tag "Notes"
+              .input-group
+                %span.input-group-addon{:style => "background-color: silver; border: 1px solid silvet;"}
+                  %i.fa.fa-thumb-tack{:style => "color: white"}
+                = text_area_tag "images[{%=image.id%}][notes]", "{%=image.notes%}", class: 'form-control notes', rows: 2, placeholder: 'Notes'

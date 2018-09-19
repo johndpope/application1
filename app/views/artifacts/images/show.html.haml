@@ -1,0 +1,44 @@
+- content_for :stylesheets do
+  :css
+    .wrapper {
+      background: url(#{@image.file.url}) !important
+    }
+- content_for :top_nav do
+  %li
+    %a{ href: @image.file.url, target: '_blank', title: 'View' }
+      = fa_icon 'eye'
+  %li
+    %a{ href: @image.url, target: '_blank', title: 'Source URL' }
+      = fa_icon 'share'
+  %li
+    %a{ href: @image.page_url, target: '_blank', title: 'Page URL' }
+      = fa_icon 'link'
+%section.content-header
+  - title = truncate(@image.title, length: 80, separator: ' ').presence || 'NO TITLE'
+  %h1= title
+  %ol.breadcrumb
+    %li
+      = link_to artifacts_root_path do
+        = fa_icon 'dashboard'
+        Home
+    %li
+      = link_to artifacts_images_path(type: 'Image') do
+        = fa_icon 'picture-o'
+        &nbsp;
+        Images
+    %li.active= title
+%section.content
+  = image_tag @image.file.url(:thumb)
+  %br
+  %br
+  - connotations = %w(default primary success info warning danger).shuffle
+  - @image.tag_list.each_with_index do |tag, i|
+    %span.label{ :class => "label-#{cycle(*connotations)}" }= tag
+    - if (i+1) % 3 == 0
+      %br
+  #info
+    %h3
+      - if @image.license_url
+        = link_to @image.license_name, @image.license_url
+      - else
+        = @image.license_name

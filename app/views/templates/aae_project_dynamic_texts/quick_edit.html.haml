@@ -1,0 +1,69 @@
+- content_for(:javascripts){javascript_include_tag 'jquery.textcounter'}
+- title "Quick Review of AAE templates dynamic texts"
+.box
+  .box-header{class: "with-border"}
+    %h3{class: "box-title"} Dynamic Texts
+  .box-body
+    .row
+      .col-md-12
+        = form_tag templates_aae_project_dynamic_texts_quick_edit_path, {method: "get", id: "quick_edit"} do |f|
+          - clients = @clients.collect{|c| [c.name, c.id]}
+          .row
+            .col-md-2
+              .form-group{class: 'control-box'}
+                = label_tag :client_id, "Client", class: 'control-label'
+                = select_tag 'client_id', options_from_collection_for_select(@clients, "id", "name", params[:client_id]), {include_blank: true, class: "form-control"}
+            .col-md-2
+              .form-group{class: "control-box"}
+                = label_tag :aae_project_type, "AAE Project Type", class: 'control-label'
+                - types = Templates::AaeProjectText::PROJECT_TYPES
+                = select_tag 'project_type', options_for_select(types, params[:project_type]), {include_blank: true, class: "form-control"}
+    %table.table{class: "table-bordered table-hover table-striped", id: "source_videos"}
+      %tbody
+        %tr
+          %th{style: "width: 60px;"} ID
+          %th Text Value
+          %th{style: "width: 32px"}
+          %th{style: "width: 150px;"} Text Type
+          %th{style: "width: 150px;"} AAE Project Type
+          %th{style: "width: 32px;"}
+          %th{style: "width: 200px;"} Client
+          %th{style: "width: 200px;"} Campaign
+      - @dynamic_texts.each do |dt|
+        %tr
+          %td= dt.id
+          %td
+            = form_for dt, remote: "true" do |f|
+              = f.text_field :value, class: "form-control text-counter #{'has-error' if f.object.value.to_s.size > f.object.text_type_limit}", maxlength: "#{f.object.text_type_limit}", placeholder: "Enter #{t("templates_aae_projects.project_text_types.#{f.object.text_type}")} (character limit: #{f.object.text_type_limit})", data: {content: "#{'Too long! Limit is ' + f.object.text_type_limit.to_s + ' characters.' if f.object.value.to_s.size > f.object.text_type_limit}" }
+          %td.status
+          %td= dt.text_type
+          %td= dt.project_type
+          %td
+          %td= dt.try(:client).try(:name)
+          %td= dt.try(:product).try(:name)
+    .row
+      .col-md-12
+        = paginate @dynamic_texts, :theme => 'bootstrap'
+
+- content_for(:javascripts) do
+  :javascript
+    $('select').select2({
+      placeholder: 'Choose ...',
+      allowClear: true
+    });
+    $('.form-control').on('change', function(){
+      if($(this).val().length <= $(this).attr("maxlength")) {
+        $(this).popover('disable');
+        $(this).removeClass("has-error");
+      }
+      $(this).closest('form').submit();
+    })
+    $('#quick_edit .form-control').on('change', function(){
+      $(this).submit();
+    })
+    $('.text-counter', '.edit_templates_aae_project_dynamic_text').textcounter({
+      type: "character",
+      countSpaces: true,
+      stopInputAtMaximum: false,
+      counterText: "Characters Count: "
+    })

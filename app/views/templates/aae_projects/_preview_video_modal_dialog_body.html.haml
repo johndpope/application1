@@ -1,0 +1,9 @@
+.row
+	.col-md-2= label_tag '', 'Project ID'
+	.col-md-10= label_tag '', @item.id
+.row
+	.col-md-2= label_tag '', 'Project Name'
+	.col-md-10= label_tag '', @item.name
+
+%p{style: "margin-top: 10px;"} AAE Project Video
+= video_tag @item.video.url, style: 'max-height: 1280px; max-width: 720px;', controls: true, autobuffer: false

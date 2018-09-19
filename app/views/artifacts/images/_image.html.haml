@@ -1,0 +1,47 @@
+- update_url = image.persisted? ? artifacts_image_gravity_path(image, authenticity_token: form_authenticity_token) : ''
+= div_for(image, :class => 'col-lg-3 col-md-4 col-sm-6 col-xs-12', data: {'source-id' => image.source_id, 'update-url' => update_url }) do
+  .box.box-solid.box-primary.artifacts_image
+    .box-header
+      %h3.box-title{title: image.title}
+        = truncate(image.title, length: 30, separator: ' ').presence || 'NO TITLE'
+      .box-tools.pull-right
+        - if image.is_local? && !image.is_dynamic?
+          %span.label.label-success LOCALLY UPLOADED
+        - elsif image.is_local? && image.is_dynamic?
+          %span.label.label-warning DYNAMIC BLENDED
+        - elsif image.exists? && image.file.exists?
+          %span.label.label-success IMPORTED
+        - elsif image.persisted? && !image.file.exists?
+          %span.label.label-success IMPORTING...
+        - elsif @rejected_images_ids.to_a.include?(image.source_id)
+          %span.label.label-danger REJECTED
+          - id = "images_source_id_#{image.source_id}"
+          .check{style: 'display:none;'}
+            = check_box_tag 'images[source_id][]', image.source_id, false, id: id, disabled: 'disabled'
+        - else
+          - id = "images_source_id_#{image.source_id}"
+          .check
+            = check_box_tag 'images[source_id][]', image.source_id, false, id: id
+        = hidden_field_tag 'images[gravity][]', image.gravity.try(:val).to_s
+    .box-body{data: {persisted: (image.persisted?.to_s)}}
+      .parent
+        - src = image.file.exists? ? image.file.url(:thumb) : image.url
+        - src_original = image.file.exists? ? image.file.url(:original) : image.url_o
+        - gravity_class_prefixes = {n: {name: t('artifacts.images.gravities.n'),value: '1'},
+          s: {name: t('artifacts.images.gravities.s'), value:'5'},
+          w: {name: t('artifacts.images.gravities.w'), value: '31'},
+          e: {name: t('artifacts.images.gravities.e'), value:'33'},
+          c: {name: t('artifacts.images.gravities.c'), value: '32'},
+          nw: {name: t('artifacts.images.gravities.nw'), value: '21'},
+          ne: {name: t('artifacts.images.gravities.ne'), value: '22'},
+          sw: {name: t('artifacts.images.gravities.sw'), value: '41'},
+          se: {name: t('artifacts.images.gravities.se'), value: '42'}}
+        = link_to(src_original, class: "image-preview", target: "_blank", title: image.title) do
+          = image_tag src, class: "img-thumbnail"
+        - gravity_class_prefixes.each do |k, v|
+          %i.dot{class: "dot-#{v[:value]}#{' active' if image.gravity.to_s == k.to_s}", data: {gravity: k, 'gravity-name' => v[:name]}, title: t("artifacts.images.gravities.#{k}"), style: "display: none" }
+    = render partial: 'artifacts/images/image_footer', locals: {image: image}
+    - if image.persisted? && !image.file.exists?
+      .overlay= fa_icon 'refresh spin'
+    - if @rejected_images_ids.to_a.include?(image.source_id)
+      .overlay

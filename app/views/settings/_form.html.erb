@@ -1,0 +1,33 @@
+<div class="modal modal-wide fade" id="<%= dom_id(setting, 'modal') %>" style="z-index: 9999 !important">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_for setting, url: {controller: params[:controller],  action: (setting.new_record? ? 'create' : 'update')}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <% if setting.new_record? %>
+            <h4>New setting</h4>
+          <% else %>
+            <h4>Setting #<%= setting.id%></h4>
+          <% end %>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px">
+          <%= f.hidden_field :id %>
+          <div class="form-group <%= 'has-error' if @setting.errors[:name].present? %>" data-content="<%= @setting.errors[:name].try(:join, ',') %>">
+            <%= f.label :name, class: 'control-label' %>
+            <%= f.text_area :name , class: 'form-control', placeholder: 'Name' %>
+          </div>
+          <div class="form-group <%= 'has-error' if @setting.errors[:value].present? %>" data-content="<%= @setting.errors[:value].try(:join, ',') %>">
+            <%= f.label :value, class: 'control-label' %>
+            <%= f.text_area :value,  class: 'form-control', placeholder: 'Value' %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (setting.new_record? ? t(:create) : t(:update)), class: 'btn btn-primary', data: {disable_with: (setting.new_record? ? t(:creating) : t(:updating)) } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

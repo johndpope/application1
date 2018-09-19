@@ -1,0 +1,8 @@
+<%
+  modal_dom_id = dom_id(dealer, 'modal')
+  row_id = dom_id(dealer, 'row')
+  new_row = render partial: 'dealer_row', locals: {dealer: dealer}
+%>
+
+$('#dealers_table tbody').prepend('<%= escape_javascript(new_row) %>');
+$('#modal_dealer').modal('hide')

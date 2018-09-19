@@ -1,0 +1,90 @@
+!!!
+%html
+  %head
+    = stylesheet_link_tag 'bootstrap_and_overrides'
+    = stylesheet_link_tag "admin_lte"
+    = stylesheet_link_tag "/assets/shared_media/images.css"
+  %body.shared_media_images.login_page{:style => "background: #d2d6de", :data => {:page => 'shared_media_images_login_page'}}
+    .container{:style => 'margin-top: 40px; box-shadow: 0 0 10px black;'}
+      .row
+        - img1 = '/images/volunteer_network/slide1.jpg'
+        - img2 = '/images/volunteer_network/slide2.jpg'
+        - img3 = '/images/volunteer_network/slide3.jpg'
+        #myCarousel.carousel.slide{:style => "height: 500px;"}
+          %ol.carousel-indicators
+            %li.active{"data-slide-to" => "0", "data-target" => "#myCarousel"}
+            %li{"data-slide-to" => "1", "data-target" => "#myCarousel"}
+            %li{"data-slide-to" => "2", "data-target" => "#myCarousel"}
+          .carousel-inner
+            .item.active
+              .fill{:style => "background-image:url(#{img1});"}
+              .carousel-caption
+                %h2=""
+            .item
+              .fill{:style => "background-image:url(#{img2});"}
+              .carousel-caption
+                %h2=""
+            .item
+              .fill{:style => "background-image:url(#{img3});"}
+              .carousel-caption
+                %h2=""
+          %a.left.carousel-control{"data-slide" => "prev", :href => "https://blackrockdigital.github.io/startbootstrap-half-slider/#myCarousel"}
+            %span.icon-prev
+          %a.right.carousel-control{"data-slide" => "next", :href => "https://blackrockdigital.github.io/startbootstrap-half-slider/#myCarousel"}
+            %span.icon-next
+      %hr
+      .row.row_block{:style => "background-image:url('/images/volunteer_network/fon.jpg')"}
+        %a#hidden_link{:href => ""}
+        .col-md-6
+          %h1{:style => "font-weight: bold;"}
+            ="How it works"
+          %br
+          %p="Donation does not necessarily mean giving large amounts of money. You can help for ABSOLUTELY free. In order to make a donation upload your content on Volunteer Media Network. You should sign in on this page through one of the social networks. Your content can be images, video or audio files. We will use this content for making various videos. By doing this, a lot of people will see your content and consequently you will become famous. To upload the content on this page follow the next three steps."
+          %br
+          %a.btn.btn-primary.btn-lg{:href => '#', :style => 'border-radius: 30px;'} GET STARTED
+        .col-md-6{:style => "padding:50px;"}
+          = video_tag('/images/volunteer_network/video_for_login_page.mp4', :width => "100%", :controls => true, :autobuffer => true, :autoplay => false, :loop => true, :id => "hero-video")
+
+      %hr
+      .row.row_block
+        .col-md-4{:style => "border-right: 1px solid silver;"}
+          %h4 FIRST STEP
+          %p
+            %b="Upload files."
+            = "Choose your content type; choose image, audio or video files; choose a client; choose client's product; agree with terms of use; upload your content; press the button 'next'."
+        .col-md-4{:style => "border-right: 1px solid silver;"}
+          %h4 SECOND STEP
+          %p
+            %b="Description."
+            = "For the uploading of the image: give the name of the image; select country; choose state; choose county; choose city; press the button 'next'. For the uploading of the audio file: give the name to your audio file; press the button 'next'."
+        .col-md-4
+          %h4 THIRD STEP
+          %p
+            %b="Uploaded files."
+            = "Now you see all content that you have uploaded ."
+      %hr
+      .row.login-page
+        .login-box
+          .login-logo
+            %b="Volunteer media network"
+          .login-box-body
+            %p{:class => "login-box-msg"}
+              = "Sign in using one of your Social Networks"
+            .social-auth-links{:class => "text-center"}
+              = link_to user_omniauth_authorize_path(:facebook), :class => 'btn btn-block btn-social btn-facebook btn-flat' do
+                = fa_icon 'facebook', text: ' Sign in using Facebook'
+
+              = link_to user_omniauth_authorize_path(:google_oauth2), :class => 'btn btn-block btn-social btn-google btn-flat' do
+                = fa_icon 'google', text: 'Sign in using Google+'
+
+              = link_to user_omniauth_authorize_path(:twitter), :class => 'btn btn-block btn-social btn-twitter btn-flat' do
+                = fa_icon 'twitter', text: 'Sign in using Twitter'
+      %hr
+      %footer
+        .container.text-center
+          %p='Copyright © Your Website 2017'
+
+    = javascript_include_tag 'https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'
+    = javascript_include_tag 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
+    = javascript_include_tag 'shared_media/login'
+    :javascript

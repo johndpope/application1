@@ -1,0 +1,17 @@
+- header @client.name
+- small_header 'Product Specific Image Selection Tags'
+- title 'Producst Specific Image Selection Tags'
+- breadcrumb :client_select_product_specific_image_tags, @client
+= render layout: 'client/setup/image_tag_selection', locals:{client: @client, active_tab: 'products'} do
+	%p.help-block
+		Product specific tags from Media Storage. For example:
+		%strong Oregon Heating Daikin,
+		%strong Oregon Heating Trane
+	= form_for @client, url: products_client_image_tag_selection_path(@client), method: :post do |f|
+		= f.fields_for :products do |product|
+			.form-group
+				= product.label :artifacts_image_tag_list, product.object.name
+				= tooltip_by_field({tooltip_text: t("tooltips.image_tag_selection.#{product.object.name}", :default => "")})
+				%div
+					= product.text_field :artifacts_image_tag_list, class: 'form-control', placeholder: 'Enter comma separated tags ...', data:{taggable: true}
+		= submit_tag 'Update', class: "btn btn-primary", data:{disable_with: "Updating ..."}

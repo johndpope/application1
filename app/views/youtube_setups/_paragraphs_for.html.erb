@@ -1,0 +1,31 @@
+<%
+	description_errors = @youtube_setup.errors.messages["#{type}_#{target}_description".to_sym]
+	limit = YoutubeSetup.const_get("#{target.to_s.upcase}_DESCRIPTION_LIMIT")
+%>
+<div class="<%= 'panel panel-default' + (' has-error' if description_errors).to_s %>" data-limit="<%= YoutubeSetup.const_get("#{target.to_s.upcase}_DESCRIPTION_LIMIT") %>">
+	 <div id="<%= type %>_<%= target %>_description_heading" class="panel-heading">
+		<h4 class="panel-title">
+			<a role="button" data-toggle="collapse" data-parent="#<%= type %>-description-accordion" href="#<%= type %>_<%= target %>_description" aria-expanded="true" aria-controls="<%= type %>_<%= target %>_description"><%= type.to_s.titleize %> <%= target.to_s.titleize %> Description <small class="text-warning">(<%= limit %> ch)</small> <span class="right label label-primary calc">0</span></a>
+			<% if description_errors %>
+				<small class="text-danger"><%= description_errors.first %></small>
+			<% end %>
+		</h4>
+	</div>
+	<div id="<%= type %>_<%= target %>_description" class="panel-collapse collapse" aria-labelledby="<%= type %>_<%= target %>_description">
+		<div class="panel-body">
+			<% accessor = "#{type}_#{target}_description_paragraphs".to_sym %>
+			<div class="form-group">
+				<% @youtube_setup.send(accessor).build(position: 1) if @youtube_setup.send(accessor).empty? %>
+				<%= f.fields_for accessor do |builder| %>
+					<%= builder.text_field :title, class: 'form-control', placeholder: 'Group Title' %>
+					<br>
+					<%= builder.text_area :body, class: 'form-control', placeholder: 'Group Body' %>
+					<small class="right m-th label label-default calc-one">0</small>
+					<%= builder.hidden_field :position, class: 'paragraph_position' %>
+					<p><br><%= builder.link_to_remove 'Remove Section' %> &nbsp; <%= link_to 'Swap', 'javascript:', class: 'swap' %></p>
+				<% end %>
+				<%= f.link_to_add 'Add Section', accessor %>
+			</div>
+		</div>
+	</div>
+</div>

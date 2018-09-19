@@ -1,0 +1,55 @@
+<div class="modal modal-wide fade" id="test_titles" style="z-index: 9999 !important">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal" type="button">
+          <span>×</span>
+        </button>
+        <h4><b>Test video titles</b></h4>
+        <div class="text-center">
+          <span><b>SHUFFLE ENABLED:</b></span> <span class="label bg-<%= @youtube_setup.business_video_title_components_shuffle ? 'green' : 'red' %>"><%= @youtube_setup.business_video_title_components_shuffle ? "YES" : "NO" %></span>
+        </div>
+      </div>
+      <div class="modal-body" style="padding-bottom: 35px">
+        <% colors = %w(olive orange purple teal fuchsia aqua yellow maroon olive blue navy lime ) %>
+        <% titles.each do |e| %>
+          <% patterns_arr = e[:title_pattern].split(",") %>
+          <div>
+            <div>
+              <div>
+                <h4 class="text-center">
+                  <span><b><%= e[:title]%></b></span>
+                  <span class="badge bg-blue" title="Characters count"><%= e[:title].size %></span>
+                </h4>
+                <h4 class="text-center">
+                  <% patterns_arr.each_with_index do |pattern, index| %>
+                    <span class="label bg-<%= colors[index] %>"><%= YoutubeComponentPattern::PATTERN_COMPONENTS[pattern] %></span>
+                    <% if index + 1 < patterns_arr.size %>
+                      <span><b>+</b></span>
+                    <% end %>
+                  <% end %>
+                </h4>
+              </div>
+            </div>
+            <ul>
+              <% patterns_arr.each_with_index do |pattern, index| %>
+              <li><h4>
+                <span class="label bg-<%= colors[index] %>"><%= YoutubeComponentPattern::PATTERN_COMPONENTS[pattern] %></span> :
+                <% if e[:title_hash][pattern].present? %>
+                  <span><%= e[:title_hash][pattern] %></span>
+                <% else %>
+                  <span class="text-red blink"><b>MISSING</b></span>
+                <% end %></h4>
+              </li>
+              <% end %>
+            </ul>
+          </div>
+          <hr style="border-top: 1px solid #525355;"/>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+      </div>
+    </div>
+  </div>
+</div>

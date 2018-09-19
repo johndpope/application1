@@ -1,0 +1,14 @@
+<%
+	block_id = dom_id(@blended_video, 'block')
+	block = render partial: "clients/video_workflow/video_set_block/video_segments_block/video_segments_table_body", locals: {blended_video: @blended_video}
+	blended_video_table_id = dom_id(@blended_video)
+	blended_video_table_status_col = render partial: 'clients/video_workflow/video_set_block/video_set_table_row_status_col', locals: {blended_video: @blended_video}
+%>
+$('#<%=block_id%> .video-chunks tbody').replaceWith('<%= escape_javascript(block)%>');
+$('#<%= blended_video_table_id%> td.status').replaceWith('<%= escape_javascript(blended_video_table_status_col)%>')
+$('#<%=block_id%> .video-chunks tbody .livepreview').livePreview({position: 'right'});
+$("#<%=block_id%> .video-chunks tbody .preview-video").each(function(){
+	src = $(this).attr("href");
+	content = '<video src="' + src + '" autoplay="true" type="video/mp4" controls="true" style="height: 540px; width: 960px" onloadstart="this.volume=0.35"></video>';
+	$(this).fancybox({content: content, minHeight: 540, minWidth: 960});
+})

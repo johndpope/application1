@@ -1,0 +1,14 @@
+- %w(id period at).each do |f|
+	%td{class: "#{f}#{' text-center' if f == 'id'}"}= item.send(f)
+%td.job_group_id
+	- unless item.job_group_id.nil?
+		= item.job_group.name
+%td.job_type
+	- unless item.job_type.blank?
+		= I18n.t("whenever_cron_job.job_types.#{item.job_type}")
+%td.job_value= item.job_value
+%td.description= item.description
+%td.is_active{class: 'text-center'}
+	- label_text = item.is_active? ? t('yes') : t('no')
+	- label_class = item.is_active? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text

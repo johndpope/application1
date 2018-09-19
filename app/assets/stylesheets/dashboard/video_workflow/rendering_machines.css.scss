@@ -1,0 +1,12 @@
+.dashboard_video_workflow_rendering_machines{
+	&.index{
+		#rendering_machine_items{
+			.id{width: 40px;}
+			.in_watch_folder,.in_watch_folder_output,.is_accessible,.in_queue,.is_active,.number_of_generating_dynamic_projects{width: 40px;}
+			.today_video_sets,.total_video_sets,.today_video_chunks,.total_video_chunks{width: 130px;}
+			.time_of_last_created_project{width: 120px;}
+			.ip, .is_active, .is_test{width: 100px;}
+			.disk_space{width: 100px;}
+		}
+	}
+}

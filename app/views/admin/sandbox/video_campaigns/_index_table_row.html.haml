@@ -1,0 +1,15 @@
+%td= item.id
+%td
+	- if !item.sandbox_client.blank? && !item.client.blank?
+		= link_to item.try(:client).try(:name), admin_sandbox_video_campaigns_path(:'q[client_id_eq]' => item.client.id)
+		%div
+			= link_to sandbox_client_path(item.sandbox_client.uuid), title: t('admin.sandbox.preview_sandbox'), target: "_BLANK" do
+				= fa_icon 'search', text: 'preview'
+
+%td= item.try(:source_video).try(:custom_title)
+%td= item.title
+%td{class: "text-center"}= item.order_nr
+%td{class: "text-center"}
+	- label_text = item.is_active? ? t('yes') : t('no')
+	- label_class = item.is_active? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text

@@ -1,0 +1,5 @@
+<% modal_dom_id = dom_id(@dealer, 'modal') %>
+$('#duplicate_dealer_<%= @dealer_id %>').addClass("disabled-block");
+$("#carousel_right").trigger("click");
+$("#<%= modal_dom_id %>").animate({scrollTop:0}, 1500, 'swing', function() {
+});

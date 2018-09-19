@@ -1,0 +1,16 @@
+#succeeded_refresh_token_block
+	%strong
+		%span.text-success
+			= fa_icon 'thumbs-up', text:'Congratulations, you have successfully bound your Youtube Channel to Basic Package'
+	#bound_youtube_channel_details_block
+		.media
+			.media-left
+				= link_to YoutubeApiService.get_youtube_channel_url(@video_marketing_campaign_form.youtube_channel_id), target:"_BLANK", title:'Channel Profile Picture' do
+					= image_tag @video_marketing_campaign_form.youtube_channel_profile_image_url, class:'media-object'
+			.media-body
+				#youtube_channel_title
+					= link_to @video_marketing_campaign_form.youtube_channel_title, YoutubeApiService.get_youtube_channel_url(@video_marketing_campaign_form.youtube_channel_id), target:"_BLANK", title:'Channel Titile'
+				#youtube_channel_id
+					= link_to @video_marketing_campaign_form.youtube_channel_id, YoutubeApiService.get_youtube_channel_url(@video_marketing_campaign_form.youtube_channel_id), target:"_BLANK", title:'Channel Id'
+	= link_to url_for(controller: 'sandbox/video_marketing_campaign_forms', action:'unbind_youtube_channel', id:@video_marketing_campaign_form.id), method: 'post', class:'btn btn-danger', data:{remote:'true', disable_with:"<i class='fa fa-chain-broken'>Unbinding ...</i>"} do
+		= fa_icon 'chain-broken', text:'Unbind Channel'

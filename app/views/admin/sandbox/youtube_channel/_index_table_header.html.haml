@@ -1,0 +1,3 @@
+- centered_columns = %w(title_subject_components title_entity_components title_descriptor_components)
+- %w(id client title_subject_components title_entity_components title_descriptor_components title_tags location location_type).each do |c|
+  %th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}=c.to_s.humanize

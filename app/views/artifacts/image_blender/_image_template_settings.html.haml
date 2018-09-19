@@ -1,0 +1,75 @@
+#templates_settings
+  - id = @template.id
+  - txt = @template.texts
+  - img = @template.images
+  - path = @template.svg.path
+  - svg_check = @template.svg.exists?
+
+  .row
+    .col-md-12
+      .panel-group{id: "accordion"}
+        .panel{class: "panel-default"}
+          .panel-heading
+            %h4{class: "panel-title"}
+              %a{data: {toggle: "collapse"}, href: "#collapseOne"}
+                = fa_icon 'file-image-o'
+                = "show Sample example"
+          #collapseOne{class: "panel-collapse collapse"}
+            .panel-body
+              = image_tag @template.sample.url, id: "sample_image_example", class: "img-responsive thumbnail", alt: "samle image example"
+  .row
+    .col-md-12
+      - clients = Client.order(:name)
+      = label_tag '', t("artifacts.dynamic_image.client_id")
+      = select :image_blender, :client_id,
+        options_from_collection_for_select(clients, 'id', 'name', allow_blank: true),
+        {include_blank: true}, {class:'form-control'}
+    .col-md-12
+      = label_tag t("artifacts.dynamic_image.title")
+      = text_field :image_blender, "title", class: "form-control", placeholder: "Title"
+    .col-md-12
+      = label_tag t("artifacts.dynamic_image.tags")
+      = text_field :image_blender, "tags", class: "form-control", placeholder: "Tags"
+      %p.help-block Tags should be separated by commas
+  - unless txt.blank?
+    %hr
+    %h3 Texts
+    .row
+      - txt.each do |t|
+        .col-md-6
+          .form-group
+            = label_tag t.name, t.name.humanize
+            = text_field :image_blender, "texts[#{t.name}]", class: "form-control", placeholder: "#{t.name}"
+  - else
+    %p.help-block
+      = "No texts for template: #{@template.name}"
+  - unless img.blank?
+    %hr
+    - unless svg_check
+      .alert{class: "alert-danger", role: "alert"}
+        %strong SVG Template's file not exist
+    %h3 Images
+    .row
+      - img.each_slice(2) do |img_group|
+        .col-md-12
+          - img_group.each do |t|
+            .col-md-6
+              .form-group{height: "150px"}
+                = label_tag t.name, t.name.humanize
+                = "(#{t.width}x#{t.height})"
+                = hidden_field :image_blender, "images[#{t.name}]", id: "image_blender_#{t.name}"
+                = hidden_field :image_blender, "image_ids[#{t.name}]", id: "image_blender_#{t.name}_id"
+                = hidden_field :image_blender, "image_type", id: "image_blender_#{t.name}_type", value: "", class: "type"
+                %br
+                = link_to artifacts_select_image_path(t.name), class: "btn btn-success", data: { remote:true, disable_with: "browsing..." } do
+                  = fa_icon 'search'
+                  = t('browse')
+                %br
+                %br
+                .img_container
+                  = link_to("#", class: "preview", target: "_blank") do
+                    = image_tag "", id:"image_tag_show", class:"img-responsive thumbnail", width: "250px", alt: "#{t.name}"
+                .img_dimensions
+  - else
+    %p.help-block
+      = "No images for template: #{@template.name}"

@@ -1,0 +1,52 @@
+- content_for(:title) { 'Campaign Video Details' }
+.container.main-body
+	.title-block
+		%h1
+			%b Content
+			%span.font_red_no-weight Blender
+- @campaign_video_stages.each do |cvs|
+	= render partial: 'monthly_view', locals: {campaign_video_stage: cvs}
+.container.main-body
+	.cvd-statistics
+		.stat-panel
+			.counterNum
+				Total visitors
+				%span#counter
+			.views
+				.margins.likes
+					%span
+						%i.glyphicon.glyphicon-thumbs-up
+						%u#likes 11
+					%span
+						%i.glyphicon.glyphicon-thumbs-down
+						%u#dislikes 0
+				%hr.re
+				.margins
+					Comments
+					%i.glyphicon.glyphicon-comment
+					%u#comments 7
+				%hr.re
+				.margins
+					Share
+					%i.glyphicon.glyphicon-share-alt
+					%u#share 2
+				%hr.re
+				.margins.lt
+					Top position
+					%i.glyphicon.glyphicon-stats
+					%u#position 42
+					#ltp.life-title= image_tag "sandbox/browser/01.png"
+				%hr.re
+		- if @campaign_video_stages.size > 1
+			.line-position
+				- @campaign_video_stages.each_with_index do |cv, index|
+					- json = JSON::parse(cv.to_json(only: [:likes, :dislikes, :comments, :shares, :views, :position])).merge(browser: "/assets/sandbox/browser/0#{cv.month_nr}.png").to_json
+					= link_to "#eq-#{cv.month_nr.to_i - 1}", class: (index == 0 ? 'active' : ''), data: {json: json} do
+						%span= cv.month_nr
+				.lp-active
+				%h4.htitle Months
+		%button#cvd-next.btn.btn-different.btn-red
+			%i.glyphicon.glyphicon-refresh
+			%b Spin
+			It
+		%i.glyphicon.glyphicon-share-alt

@@ -1,0 +1,27 @@
+= render partial: 'clients/navigation'
+- header @client.name
+- small_header 'Blending Settings'
+- title 'Client Blending Settings'
+- breadcrumb :client_blending_settings, @client
+= form_for(@client, url: {controller: "clients/blending_settings", action: "update"}, method: "put") do |f|
+	= f.fields_for :blending_settings do |builder|
+		%fieldset
+			%legend Dynamic Video Soundtrack Settings
+			.row
+				.col-md-3
+					.form-group
+						= builder.check_box :use_instrumental_soundtrack_only, data:{toggle: 'toggle'}, style: "display: none"
+						%span= t('client_blending_settings.use_instrumental_soundtrack_only')
+			.row
+				.col-md-12
+					.form-group
+						%h4 Manage Soundtracks by Genres
+						= builder.hidden_field :soundtrack_genre_blacklist
+						%ul#genres_blacklist{class: "list-unstyled"}
+							- Genre.order(:name).each do |g|
+								%li{style: "margin-bottom: 5px;"}
+									= check_box_tag '', g.id, (!@client.blending_settings.soundtrack_genre_blacklist.include?(g.id)), data: {toggle: 'toggle'}, style: "display: none"
+									%span= g.name
+		.row
+			.col-md-12
+				= submit_tag t('update'), class: "btn btn-primary", data: {disable_with: t('updating')}

@@ -1,0 +1,22 @@
+- header @client.name
+- small_header 'Select Subject Video Specific Image Tags'
+- title 'Select Subject Video Specific Image Tags'
+- breadcrumb :client_select_subject_video_specific_image_tags, @client
+= render layout: 'client/setup/image_tag_selection', locals:{client: @client, active_tab: 'source_videos'} do
+	.box
+		.box-header
+			%h3.box-title Source Videos
+			.box-tools
+				%strong= @source_videos.total_count
+				items totally
+		.box-body
+			%table.table{class: "table-bordered table-hover table-striped", id: "source_videos_items"}
+				%tbody.thead
+					= render partial: "index_table_header"
+				%tbody.tbody
+					- @source_videos.to_a.each_with_index do |item, index|
+						= render partial: "index_table_row", locals: {item: item, row_nr: (index + 1)}
+				- if @source_videos.to_a.any?
+					%tbody.tfoot
+						= render partial: "index_table_header"
+		= paginate @source_videos, theme: 'bootstrap'

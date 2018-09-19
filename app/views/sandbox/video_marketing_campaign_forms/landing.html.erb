@@ -1,0 +1,48 @@
+<div class="container main-body step-<%= params[:step] %>">
+  <%
+    images = ["item1.png", "item2.png", "item3.png", "item4.png"];
+    landing_titles = ["Grow with Us"];
+    call_to_actions = ["Looking for Local Customers?"];
+  %>
+  <% if @video_marketing_campaign_form.present? && @video_marketing_campaign_form.is_email_registration || params[:is_email_registration] == 'true' %>
+    <%= render partial: 'sandbox/video_marketing_campaign_forms/steps_after_email' %>
+  <% else %>
+    <%= render partial: 'sandbox/video_marketing_campaign_forms/steps' %>
+  <% end %>
+  <div id="landing_wrap" class="wrap">
+    <section id="section0">
+      <div class="header_box1">
+        <div class="col1">
+          <span><%=landing_titles.sample%></span>
+        </div>
+        <div class="col2">
+          <!-- <span><b>Echo</b> <span class="marker1">Video</span> Blender</span> -->
+        </div>
+      </div>
+      <div class="image_box">
+        <div class="dynamic_text_box">
+          <div class="dynamic_string"><%=call_to_actions.sample%></div>
+          <%= link_to 'Watch Video <i class="fa fa-play-circle"></i>'.html_safe, "/system/sandbox/landing/landing.mp4", id: "btn_watch", class: 'btn btn-primary btn_watch', data: {play: @play_video} %>
+        </div>
+        <%= image_tag "/system/sandbox/landing/#{images.sample}", class: "main_img" %>
+      </div>
+    </section>
+
+    <section id="section1">
+      <div class="col3">
+        <ul>
+          <li>Confirm <b>Company information</b></li>
+          <li>Select <b>Advertising Package</b></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="section2">
+      <% if @video_marketing_campaign_form_public_profile_uuid.present? && @video_marketing_campaign_form_id.present? %>
+        <%= link_to "Go to Profile", edit_sandbox_video_marketing_campaign_form_path(id: @video_marketing_campaign_form_id, public_profile_uuid: @video_marketing_campaign_form_public_profile_uuid, step: 2), class: "btn btn-primary btn_start" %>
+      <% else %>
+        <%= link_to "Get Started", new_sandbox_video_marketing_campaign_form_path(@query_params), class: "btn btn-primary btn_start" %>
+      <% end %>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+- content_for(:header){'Youtube Videos'}
+- content_for(:small_header){@client.name}
+- page = params[:page].present? ? params[:page].to_i - 1 : 0
+
+.box
+  .box-header.with-border
+    %h3.box-title Uploaded Youtube Videos
+    .box-tools
+      %strong= @youtube_videos.total_count
+      items totally
+  .box-body
+    %table.table.table-bordered.table-hover.table-striped
+      %tbody
+        %tr
+          %th{style: "width: 40px;"} #
+          %th{style: "width: 40px;"} ID
+          %th{style: "width: 50px;"} Video Thumb
+          %th{style: "width: 50px;"} Video Screenshot
+          %th{style: "width: 40px;"} Preview Video
+          %th{style: "width: 40px;"} Desc.
+          %th{style: "width: 40px;"} Tags
+          %th Video Title
+          %th{style: "width: 150px;"} Youtube Channel
+          %th{style: "width: 200px;"} GMail
+          %th{style: "width: 150px;"} Location
+          %th{class: "text-center", style: "width: 70px;"} Posted at
+          %th{style: "width: 45px;", class: "text-center", title: "Views"}
+            %i{class: "fa fa-eye"}
+            %br
+            = YoutubeVideo.yt_statistics_data("sum", "view_count", @client.id).to_s(:delimited)
+          %th{style: "width: 45px;", class: "text-center", title: "Likes"}
+            %i{class: "fa fa-thumbs-o-up"}
+            %br
+            = YoutubeVideo.yt_statistics_data("sum", "like_count", @client.id).to_s(:delimited)
+          %th{style: "width: 45px;", class: "text-center", title: "Dislikes"}
+            %i{class: "fa fa-thumbs-o-down"}
+            %br
+            = YoutubeVideo.yt_statistics_data("sum", "dislike_count", @client.id).to_s(:delimited)
+          %th{style: "width: 45px;", class: "text-center", title: "Favorites"}
+            %i{class: "fa fa-star-o"}
+            %br
+            = YoutubeVideo.yt_statistics_data("sum", "favorite_count", @client.id).to_s(:delimited)
+          %th{style: "width: 45px;", class: "text-center", title: "Comments"}
+            %i{class: "fa fa-comments-o"}
+            %br
+            = YoutubeVideo.yt_statistics_data("sum", "comment_count", @client.id).to_s(:delimited)
+          %th{class: "text-center", style: "width: 85px;"} Yt statistics updated at
+        - @youtube_videos.each_with_index do |item, index|
+          = render partial: "youtube_videos_table_row", locals: {index: index, item: item, page: page}
+    = paginate @youtube_videos, theme: 'bootstrap'
+
+= form_tag public_client_youtube_videos_path(@client.public_profile_uuid), method: 'get', id: 'search' do
+  - is_open = [params[:status]].reject(&:blank?).any?
+  #toolbar-toggle{ class: ('open' if is_open).to_s }
+    = fa_icon 'gear'
+  #toolbar{ class: ('open' if is_open).to_s }
+    %h4 Filters
+    .form-group
+      = label_tag :status, nil, class: 'control-label'
+      = select_tag(:status, options_for_select([['Done', 'done'], ['Pending', 'pending']], params[:status]), { include_blank: true, class: 'form-control' } )
+    .form-group
+      = label_tag 'Posted on Google+', nil, class: 'control-label'
+      = select_tag(:posted_on_google_plus, options_for_select([['YES', true], ['NO', false]], params[:posted_on_google_plus]), { include_blank: true, class: 'form-control' } )
+    .form-group
+      = label_tag :limit, 'Limit'
+      = select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500], params[:limit]), class: 'form-control')
+    %button.btn.btn-primary.search-btn{ type: 'button' }
+      Search
+      = fa_icon 'search'
+
+- content_for(:javascripts) do
+  :javascript
+    $(".blended-video").each(function(){
+      src = $(this).attr("href");
+      content = '<video src="' + src + '" autoplay="true" type="video/mp4" controls="true" style="height: 540px; width: 960px" onloadstart="this.volume=0.35"></video>';
+      $(this).fancybox({content: content, minHeight: 540, minWidth: 960});
+    })

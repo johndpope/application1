@@ -1,0 +1,7 @@
+<%
+  row_id = dom_id(dealer, 'row')
+  new_row = render partial: 'dealer_row', locals: {dealer: dealer}
+%>
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')
+$('.animationload').hide();
+alert("You have successfully sent email to delaer #<%= dealer.id %>");

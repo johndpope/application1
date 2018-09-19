@@ -1,0 +1,278 @@
+<% source_video ||= SourceVideo.new %>
+
+<div role="tabpanel">
+	<%= form_tag eval("#{source_video.new_record? ? 'create' : 'update'}_source_video_path"), method: (source_video.new_record? ? :post : :put), id: 'source_video_form', multipart: true do |f| %>
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">General Info</a></li>
+			<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Titles</a></li>
+			<li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Introduction 1 Videos</a></li>
+			<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Introduction 2 Videos</a></li>
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="home">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Internal Title</label>
+						<div class="col-sm-10">
+							<%= text_field :source_video, :custom_title, value: source_video.custom_title, class: 'form-control' %>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Video file</label>
+						<div class="col-sm-10">
+							<input placeholder="Choose File" disabled="disabled" class="upload-bar" value="<%= source_video.video_file_name %>" />
+							<div class="file-upload btn btn-primary btn-sm">
+									<i class="fa fa-upload"></i>
+									<%= file_field :source_video, :video, value: source_video.video_file_name, class: 'upload' %>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Video script</label>
+						<div class="col-sm-10">
+							<div class="row">
+								<div class="col-md-6">
+									<%= collection_select(:source_video, :video_script_id, VideoScript.order(:title), :id, :title, { include_blank: true, selected: source_video.video_script_id}, {class: 'form-control '} ) %>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Language</label>
+						<div class="col-sm-10">
+							<div class="row">
+								<div class="col-md-3">
+									<%= collection_select(:source_video, :language_id, Language.order(:name), :id, :name, { include_blank: true, selected: source_video.persisted? ? source_video.language_id : Language.where("LOWER(name) = 'english'").first.try(:id)}, {class: 'form-control' }) %>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Video type</label>
+						<div class="col-sm-10">
+							<div class="row">
+								<div class="col-md-3">
+									<%= select(:source_video, :video_type, SourceVideo::TYPE, { include_blank: true, selected: source_video.video_type_value}, {class: 'form-control' } ) %>
+								</div>
+								</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Creative type</label>
+						<div class="col-sm-10">
+							<div class="row">
+								<div class="col-md-3">
+									<%= select(:source_video, :creative_type, SourceVideo::CREATIVE_TYPE, { include_blank: true, selected: source_video.creative_type_value}, {class: 'form-control' } ) %>
+									</div>
+									</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Jurisdiction</label>
+						<div class="col-sm-10">
+						<div class="row">
+								<div class="col-md-3">
+									<%= select(:source_video, :jurisdiction, SourceVideo::JURISDICTION, { include_blank: true, selected: source_video.jurisdiction_value}, {class: 'form-control' } ) %>
+									</div>
+									</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Target audience</label>
+						<div class="col-sm-10">
+							<div class="row">
+								<div class="col-md-3">
+									<%= select(:source_video, :target_audience, SourceVideo::TARGET_AUDIENCE, { include_blank: true, selected: source_video.target_audience_value}, {class: 'form-control' } ) %>
+									</div>
+									</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label">Case type</label>
+						<div class="col-sm-10">
+							<div class="row">
+								<div class="col-md-6">
+									<%= collection_select(:source_video, :case_type_id, CaseType.order(:name), :id, :name, { include_blank: true, selected: source_video.case_type_id}, {class: 'form-control' } ) %>
+								</div>
+								</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label"></label>
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="<%= (source_video.has_music == true) %>" name="source_video[has_music]" <%= (source_video.has_narration == true ? 'checked="checked"' : '') %>> Has music
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label"></label>
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="<%= (source_video.has_narration == true) %>" <%= (source_video.has_narration == true ? 'checked="checked"' : '') %>  name="source_video[has_narration]"> Has narration
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="profile">
+				<div id="placeholders_hint">
+					<p>Placeholders</p>
+					<ul>
+						<li>
+							<code><%= '<ct parent-name="true|false" />' %></code>
+							<a href="javascript://" class="btn btn-primary btn-xs">Insert</a>
+						</li>
+						<li>
+							<code><%= '<le/>' %></code>
+							<a href="javascript://" class="btn btn-primary btn-xs">Insert</a>
+						</li>
+						<li>
+							<code><%= '<loc state-abbr="true|false" city-nickname="true|false" />' %></code>
+							<a href="javascript://" class="btn btn-primary btn-xs">Insert</a>
+						</li>
+						<li>
+							<code><%= '<state abbr="true|false"/>' %></code>
+							<a href="javascript://" class="btn btn-primary btn-xs">Insert</a>
+						</li>
+						<li>
+							<code><%= '<city nickname="true|false"/>' %></code>
+							<a href="javascript://" class="btn btn-primary btn-xs">Insert</a>
+						</li>
+					</ul>
+				</div>
+				<hr>
+				<div id="titles_block">
+					<%= hidden_field :source_video, :titles, value: source_video.titles %>
+					<%= render partial: "/source_videos/title_block", locals: {first: true, title: source_video.title_array.first} %>
+					<div class="titles">
+						<% 1.upto source_video.title_array.size-1 do |i| %>
+							<%= render partial: "/source_videos/title_block", locals: {first: false, title: source_video.title_array[i]} %>
+						<% end if source_video.title_array.size > 1 %>
+					</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="messages">
+				<%= render partial: "/source_videos/introduction_block", locals: {first: true, introduction: nil} %>
+				<div class="introductions">
+
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="settings">
+				<%= render partial: "/source_videos/introduction_block", locals: {first: true, introduction: nil} %>
+				<div class="introductions">
+					<% unless source_video.nil? %>
+
+					<% end %>
+				</div>
+			</div>
+		</div>
+	<% end %>
+</div>
+
+<script>
+
+$(function(){
+		titles_block = $('#titles_block');
+		source_video_titles = $('#source_video_titles');
+		source_video_form = $('#source_video_form');
+
+		$('select').select2({
+			allowClear: true,
+			dropdownAutoWidth: true
+		});
+
+		//source video titles
+		$('.btn-add-title').on('click', function(){
+				btn = $(this)
+				btn_icon = $('i',btn)
+				btn.addClass('disabled')
+				btn_icon.addClass('fa-spin')
+
+				title_block = btn.closest('.title-block').siblings('.titles')
+
+				$.get("<%= title_block_url %>", {}, function(response){
+						title_block.append(response)
+				}).fail(function(){
+
+				}).always(function(){
+					btn_icon.removeClass('fa-spin')
+					btn.removeClass('disabled')
+				});
+		});
+		$('.tab-pane').on('click', '.btn-remove-title', function(){
+			$(this).closest('.title-block').remove()
+		});
+
+		//source video introduction videos
+		$('.tab-pane').on('click', '.btn-remove-introduction', function(){$(this).closest('.introduction-block').remove()});
+		$('.tab-pane').on('change','input.upload', function(){
+			$(this).closest('.file-upload').siblings('input.upload-bar').val($(this).val())
+		});
+		$('.tab-pane').on('click', '.btn-add-introduction', function(){
+				btn = $(this)
+				btn_icon = $('i',btn)
+				btn.addClass('disabled')
+				btn_icon.addClass('fa-spin')
+
+				introduction_block = btn.closest('.introduction-block').siblings('.introductions')
+
+				$.get("<%= introduction_block_url %>", {}, function(response){
+						introduction_block.append(response)
+				}).fail(function(){
+
+				}).always(function(){
+					btn_icon.removeClass('fa-spin')
+					btn.removeClass('disabled')
+				});
+		});
+
+
+
+		$('#save_source_video').on('click', function(){
+			btn = $(this)
+			btn.attr('disabled', 'disabled')
+
+			title = jQuery.map( $('.source-video-title-array',titles_block), function( n, i ) {
+				if(!$.isBlank($(n).val())){
+					return ( $(n).val() );
+				}
+			}).join($('<div/>').html('<%= source_video_title_separator %>').text());
+
+			source_video_titles.val(title)
+
+			var isSuccess = false;
+
+			source_video_form.ajaxSubmit({
+					url: source_video_form.attr("action"),
+					type: 'POST',
+					dataType: 'json',
+					success:function(msg) {
+							//set the variable to true
+							isSuccess = true;
+
+							$('#source_video_modal').modal('hide')
+								location.reload();
+					},
+					complete: function () {
+							if (isSuccess === false) {
+									btn.removeClass('btn-primary').addClass('btn-danger')
+							}
+							btn.removeAttr('disabled')
+					}
+			});
+		});
+
+		$('input[type="checkbox"]').on('change', function(){
+			$(this).val($(this).is(':checked'))
+		});
+
+})
+</script>

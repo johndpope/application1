@@ -1,0 +1,59 @@
+<label class="control-label" style="display: block; text-align: center;"><i class="fa fa-database"></i> Total search results: <span class="badge bg-blue"><%= controller.action_name == 'index' ? @wordings.total_count : @wordings.count %></span></label>
+<hr class="m-vh">
+<% unless @wordings.to_a.empty? %>
+	<table id="wordings_table" class="table table-bordered table-striped dataTable">
+		<thead>
+			<tr>
+				<th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+				<th>Source</th>
+        <th style="width: 50px;" class="sort text-center" id="chars-th" data-field="chars">Chars</th>
+				<th class="sort" id="name-th" data-field="name">Name</th>
+				<th>URL</th>
+				<th class="sort" id="resource_id-th" data-field="resource_id">Resource ID</th>
+				<th class="sort" id="resource_type-th" data-field="resource_type">Resource Type</th>
+				<th>Resource Name</th>
+				<th class="sort" id="admin_user_id-th" data-field="admin_user_id">Admin user</th>
+				<th class="sort" id="updated_by-th" data-field="updated_by">Updated by</th>
+				<th class="sort" id="updated_at-th" data-field="updated_at">Updated at</th>
+				<th class="sort" id="created_at-th" data-field="created_at">Created at</th>
+				<th style="width: 130px;" class="text-center">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @wordings.each do |wording| %>
+				<tr>
+					<td class="text-center"><%= link_to wording.id, 'javascript://', data: { legend_url: legend_wording_path(wording) } %></td>
+					<td title="<%= wording.source %>"><%= truncate(wording.source, length: 150) %></td>
+          <td class="text-center"><%= wording.source.size %></td>
+					<td><%= link_to wording.name.try(:humanize), wordings_path(resource_id: wording.resource_id, resource_type: wording.resource_type, name: wording.name), class: "wording-name-link" %></td>
+					<td><%= link_to truncate(wording.url, length: 50), wording.normalized_url, title: wording.url, target: '_blank' %></td>
+					<td><%= wording.resource_id %></td>
+					<td><%= wording.resource_type %></td>
+					<td>
+						<%=
+							if wording.resource_type == 'Geobase::Locality'
+								[wording.resource.try(:name), wording.resource.try(:primary_region).try(:name), wording.resource.try(:primary_region).try(:country).try(:code)].join(' · ')
+							else
+								wording.resource.try(:name)
+							end
+						%>
+					</td>
+					<td><%= wording.admin_user.try(:email) %></td>
+					<td><%= wording.updated_by.try(:email) %></td>
+					<td><%= local_time(wording.updated_at, format: '%m/%d/%y %I:%M %p', title: wording.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if wording.updated_at.present?%></td>
+					<td><%= local_time( wording.created_at, format: '%m/%d/%y %I:%M %p', title:  wording.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if  wording.created_at.present?%></td>
+					<td class="text-center actions">
+						<div class="btn-group btn-group-custom">
+							<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_wording_path(wording), { class: 'btn btn-xs btn-primary' } %>
+							<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, wording, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+						</div>
+					</td>
+				</tr>
+			<% end %>
+		</tbody>
+	</table>
+<% else %>
+	<div class="row col-md-12">
+		<div class="alert alert-danger">No items available</div>
+	</div>
+<% end %>

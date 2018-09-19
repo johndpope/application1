@@ -1,0 +1,29 @@
+<%
+  image = @image.becomes(Artifacts::Image)
+  modal_dom_id = dom_id(image, 'modal')
+  box_id = dom_id(image)
+  new_box = render image
+%>
+
+$('#<%= modal_dom_id %>').modal('hide')
+$('#<%= box_id %>').replaceWith('<%= escape_javascript(new_box) %>')
+$('#<%= box_id %>').effect('highlight', 720)
+
+
+$('.img_rating').on('click', function(e){
+  var data_index = $(this).index();
+  var image_id = $(this).data('id');
+  $(this).closest('.rating_block').find('i').removeClass('fa-star').addClass('fa-star-o');
+  for(var i = 0; i <= data_index; i++){
+    $(this).closest('.rating_block').find('i').eq(i).removeClass('fa-star-o').addClass('fa-star');
+  }
+  var rating = $(this).closest('.rating_block').find('.fa-star').length;
+  $.ajax({ type: 'GET', url: "/artifacts/images/" + image_id + "/set_rating/" + rating + ""});
+});
+
+$('.img_rating').on('dblclick', function(e){
+  $(this).find('i').removeClass('fa-star').addClass('fa-star-o');
+  var rating = $(this).closest('.rating_block').find('.fa-star').length;
+  var image_id = $(this).data('id');
+  $.ajax({ type: 'GET', url: "/artifacts/images/" + image_id + "/set_rating/" + rating + ""});
+});

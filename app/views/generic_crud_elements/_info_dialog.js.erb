@@ -1,0 +1,8 @@
+<%
+	modal = render partial: "/generic_crud_elements/info", locals: {modal_name: modal_name,
+		modal_body_partial: modal_body_partial, modal_title: modal_title}
+%>
+$('body').remove(".<%=modal_name%>_modal").append('<%= escape_javascript(modal) %>');
+$('.<%=modal_name%>_modal').modal({show: true}).on('hidden.bs.modal', function(e){
+		$(this).remove()
+})

@@ -1,0 +1,13 @@
+%ul.nav.nav-pills.nav-stacked{id: "template_type_sidebar_body"}
+	- @types.sort.each do |type|
+		- unless @opt_out_statistics[type[1]].blank?
+			%li{class: "#{@current_type == type[1] ? 'active' : ''}"}
+				= link_to client_exclude_aae_templates_path(@client, project_type: type[1]) do
+					= type[0]
+					%span.pull-right
+						%span.included.text-success
+							= fa_icon 'thumbs-o-up'
+							= @opt_out_statistics[type[1]]['included_count']
+						%span.excluded.text-danger
+							= fa_icon 'thumbs-o-down'
+							= @opt_out_statistics[type[1]]['excluded_count']

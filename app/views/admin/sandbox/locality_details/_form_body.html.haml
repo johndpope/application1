@@ -1,0 +1,19 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+
+= render	partial: "admin/sandbox/common/form_locality", locals: {locality_field: "locality", f: f}
+
+.row
+	- %w(default_background_image active_background_image).each do |img|
+		.col-md-4
+			.form-group{class: 'control-box'}
+				= f.label img, t("sandbox.locality_details.#{img}")
+				= f.file_field img, accept: 'image/png,image/gif,image/jpeg'
+				%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+				%p{class: 'help-block'} May need to be processed in photoshop before uploading
+				- unless f.object.send(img).blank?
+					.form-group
+						= label_tag nil, 'Current Image'
+						%div= image_tag f.object.send(img).url(:square_256)

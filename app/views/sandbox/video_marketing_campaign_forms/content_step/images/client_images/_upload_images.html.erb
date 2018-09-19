@@ -1,0 +1,126 @@
+<% content_for(:javascripts){javascript_include_tag 'jquery.textcounter'} %>
+<section class="q1">
+  <ul class="nav nav-tabs campaign_forms_tab">
+    <li class="active">
+      <a data-toggle="tab" href="#clients_images_tab">
+        CLIENT IMAGES
+        <span class="badge badge-pill badge-primary"></span>
+      </a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#product_images_tab">PRODUCT IMAGES</a>
+      <%= image_tag "/assets/sandbox/home_page/icon_coming_soon.png", class: "label-coming-soon" %>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#locality_images_tab">LOCALITY IMAGES</a>
+      <%= image_tag "/assets/sandbox/home_page/icon_coming_soon.png", class: "label-coming-soon" %>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="clients_images_tab" class="tab-pane fade in active">
+      <p class="center pt1">Upload your images and/or use stock</p>
+      <div class="row">
+        <div class="col-md-12">
+
+          <div class = "col-md-4">
+            <div class="ps_header">
+              <img alt="" class="ps_img" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/icon17.png">
+              People
+            </div>
+            <div class="ps_body">
+              <img alt="" class="img-thumbnail" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/image1.png">
+            </div>
+          </div>
+
+          <div class = "col-md-4">
+            <div class="ps_header">
+              <img alt="" class="ps_img" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/icon18.png">
+              Cars
+            </div>
+            <div class="ps_body">
+              <img alt="" class="img-thumbnail" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/image2.png">
+            </div>
+          </div>
+
+          <div class = "col-md-4">
+            <div class="ps_header">
+              <img alt="" class="ps_img" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/icon19.png">
+              Buildings
+            </div>
+            <div class="ps_body">
+              <img alt="" class="img-thumbnail" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/image3.png">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <p class="center pt1">Uploaded photos (Total: <%= @uploaded_images.total_count %>)</p>
+          <div class="uploaded-photo-container">
+            <%= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/client_images/client_images_results", locals: { uploaded_images: @uploaded_images} %>
+          </div>
+          <div class="text-center">
+            <%= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/client_images/client_images_paginate", locals: { uploaded_images: @uploaded_images } %>
+          </div>
+          <a href='javascript://' class="btn btn-primary modal_for_upload_link" data-toggle="modal" data-target="#modal_for_upload" data-backdrop="static" title="Add new images"><b>Upload new files</b></a>
+
+          <div class="modal modal-wide fade" id="modal_for_upload" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h5 class="modal-title" id="exampleModalLabel">Add files</h5>
+                </div>
+                <div class="modal-body">
+
+                  <div id="fileupload", data-remote='true', data-step="4">
+                    <%= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/client_images/local_import_templates" %>
+                    <div id="dropzone">
+                      <img alt="" class="" src="/assets/sandbox/video_marketing_campaign_forms/steps/step5/drag_here_icon.png">
+                      Drag here to add photo
+                    </div>
+
+                    <div class="col-md-2">
+                      <input accept="image/png,image/gif,image/jpeg, image/jpg, image/svg" class="upload_new_file_field hidden" multiple="multiple" name="video_marketing_campaign_form[file][]" type="file">
+                      <a href='javascript://' class='btn btn-primary upload_new_file_link' title='Upload new file'><i class="fa fa-cloud-upload"></i><b>Choose new files</b></a>
+                    </div>
+                    <div class="col-md-4">
+                      <p class="help_txt"><strong>Drag images</strong> here or click <strong>"Upload new files"</strong></p>
+                      <p class="help_txt"> File Size: up to 2 megabytes </p>
+                      <p class="help_txt"> Minimal resolution: 720x720 px., 1280x720 px. </p>
+                    </div>
+                    <div class = "col-md-3">
+                      <p class= "help_txt"><strong>*Please specify the license of your images</strong></p>
+                      <% items = ['bought these images', 'I am owner', 'Other sources'] %>
+                      <%= select_tag('contract[parent_id]', options_for_select(items), { include_blank: true, class: 'form-control select2', data: {placeholder: "Select license"} }) %>
+                    </div>
+                    <div style="clear:both"></div>
+                  </div>
+
+                  <div id="licenseupload">
+                    <p><strong>*Choose license file</strong></p>
+                    <input accept="application/pdf" class="upload_license_proof_file_field hidden" name="video_marketing_campaign_form[license_proof_file][]" type="file">
+                    <a href='javascript://' class='btn btn-primary choose_license_file_link' title='Choose file'><b>Choose file</b></a>
+                    <%= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/client_images/local_import_license_files" %>
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div id="product_images_tab" class="tab-pane fade"></div>
+    <div id="locality_images_tab" class="tab-pane fade"></div>
+  </div>
+</section>

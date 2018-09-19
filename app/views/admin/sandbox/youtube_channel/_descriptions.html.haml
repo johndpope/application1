@@ -1,0 +1,42 @@
+.nav-tabs-custom
+  %ul.nav.nav-tabs
+    - Sandbox::YoutubeChannel::CHANNEL_DESCRIPTION_TYPES.each_with_index do |(key, value), index|
+      %li{class: ('active' if index == 0).to_s}
+        = link_to key.to_s.humanize.pluralize, "##{key.to_s.pluralize}", data: {toggle: 'tab'}
+    .tab-content{class: 'no-padding'}
+      - Sandbox::YoutubeChannel::CHANNEL_DESCRIPTION_TYPES.each_with_index do |(item, key), index|
+        .tab-pane.chart{class: ('active' if index == 0), id: "#{item.pluralize}"}
+          .row
+            .col-md-12
+              - if !f.object.new_record?
+                - if f.object.send(item).blank?
+                  .form-group{class: "#{item}_block"}
+                    .row
+                      .col-md-12
+                        = f.label item, class: 'control-label'
+                        %span{class: "#{item}_count badge"} 0
+                        = text_area_tag '', '', class: "form-control #{item}", name: "sandbox_youtube_channel[#{item}_sep][]", rows: 3, placeholder: "#{item.humanize}"
+                - else
+                  - f.object.send(item).each_with_index do |description_value, index|
+                    .form-group{class: "#{item}_block"}
+                      .row
+                        .col-md-12
+                          = f.label item, class: 'control-label'
+                          %span{class: "#{item}_count badge"} 0
+                          - unless index == 0
+                            = link_to 'javascript://', class: "btn btn-xs btn-danger pull-right remove_#{item}_block remove_btn" do
+                              = fa_icon 'times'
+                              = t('remove')
+                          - else
+                            = link_to 'javascript://', class: "btn btn-xs btn-danger pull-right remove_#{item}_block clear_btn" do
+                              = fa_icon 'times'
+                              = t('remove')
+                          = text_area_tag '', description_value, class: "form-control #{item}", name: "sandbox_youtube_channel[#{item}_sep][]", rows: 3, placeholder: "#{item.humanize}"
+              - else
+                .form-group{class: "#{item}_block"}
+                  = f.label item, class: 'control-label'
+                  %span#client_short_description_count.badge 0
+                  = text_area_tag item,'', class: "form-control text-counter #{item}", name: "sandbox_youtube_channel[#{item}_sep][]", rows: 3, placeholder: "#{item.humanize}"
+              = link_to add_short_description_admin_sandbox_youtube_channel_index_path(type: item), class: "btn btn-sm btn-primary pull-right", data: {disable_with: t('adding'), remote: true} do
+                = fa_icon 'plus'
+                = t('add')

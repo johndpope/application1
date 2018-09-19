@@ -1,0 +1,6 @@
+- if options[:is_static]
+  = fa_icon 'question-circle', {class: "popover-box", :data => {:content => options[:tooltip_text], :toggle => "popover"}, :title => ""}
+- else
+  - unless options[:tooltip].nil?
+    = link_to tooltip_edit_path(options[:tooltip].id), class: 'popover-box', :data => {:remote => true, disable_with: '<i class="fa fa-refresh fa-spin"></i>', :content => options[:tooltip].value, :toggle => "popover"}, :title => "" do
+      = fa_icon 'question-circle'

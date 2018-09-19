@@ -1,0 +1,49 @@
+<div class="modal modal-wide fade" id="<%= dom_id(batch, 'modal') %>" style="z-index: 9999 !important">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_for batch, url: {controller: params[:controller],  action: (batch.new_record? ? 'create' : 'update')}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <% if batch.new_record? %>
+            <h4>New batch</h4>
+          <% else %>
+            <h4>Batch #<%= batch.id%></h4>
+          <% end %>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px">
+          <%= f.hidden_field :id %>
+          <div class="form-group <%= 'has-error' if @batch.errors[:name].present? %>" data-content="<%= @batch.errors[:name].try(:join, ',') %>">
+            <%= f.label :title, class: 'control-label' %>
+            <%= f.text_field :title , class: 'form-control', placeholder: 'Title' %>
+          </div>
+          <div class="form-group <%= 'has-error' if @batch.errors[:email_account_ids].present? %>" data-content="<%= @batch.errors[:email_account_ids].try(:join, ',') %>">
+            <%= f.label :email_account_ids, class: 'control-label' %>
+            <%= f.text_area :email_account_ids,  class: 'form-control', placeholder: 'Email Account IDs', rows: 5 %>
+          </div>
+          <div class="form-group <%= 'has-error' if @batch.errors[:query].present? %>" data-content="<%= @batch.errors[:query].try(:join, ',') %>">
+            <%= f.label :query, class: 'control-label' %>
+            <%= f.text_area :query,  class: 'form-control', placeholder: 'Query', rows: 5 %>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <div class="checkbox">
+                <label><%= f.check_box :executable_query, class: 'iCheck-helper' %> Executable query</label>
+              </div>
+            </div>
+          </div>
+          <br/>
+          <div class="form-group <%= 'has-error' if @batch.errors[:description].present? %>" data-content="<%= @batch.errors[:description].try(:join, ',') %>">
+            <%= f.label :description, class: 'control-label' %>
+            <%= f.text_area :description,  class: 'form-control', placeholder: 'Description', rows: 5 %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (batch.new_record? ? t(:create) : t(:update)), class: 'btn btn-primary', data: {disable_with: (batch.new_record? ? t(:creating) : t(:updating)) } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

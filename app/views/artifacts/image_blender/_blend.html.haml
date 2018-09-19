@@ -1,0 +1,12 @@
+#blended_image_wrapper
+  = image_tag @tmp_image.file.url, class: "img-responsive thumbnail"
+  %br
+    = link_to "#", :class => "btn btn-success btn-lg button_import", :disabled => false, :data => ({disable_with: t('uploading'), remote: true, url: artifacts_import_image_path}) do
+      = t('upload')
+      = fa_icon 'upload'
+    = link_to "#", :class => "btn btn-primary btn-lg button_save", :disabled => true, :data => ({disable_with: t('saving'), remote: true, url: "" }) do
+      = t('save')
+      = fa_icon 'cloud-download'
+    = link_to "#{@tmp_image.file.url}", :class => "btn btn-primary btn-lg btn-warning", target: "_blank" do
+      = "Show"
+      = fa_icon 'eye'

@@ -1,0 +1,37 @@
+%td.text-center= item.id
+%td.text-center= item.created_at
+%td
+	- unless item.aae_project_id.blank?
+		= link_to item.aae_project_id,
+		templates_dynamic_aae_projects_path('q[aae_project_id_eq]' => item.aae_project_id),
+		title: item.try(:aae_project).try(:title)
+%td
+	- if item.aae_project && item.aae_project.project_type
+		= link_to t("templates_aae_projects.project_types.#{item.aae_project.project_type}"),
+		templates_dynamic_aae_projects_path('q[aae_project_project_type_eq]' => item.aae_project.project_type.value)
+%td
+	- if client = item.client
+		= link_to client.try(:name), templates_dynamic_aae_projects_path('q[client_id_eq]' => client.id)
+%td
+	- if source_video = item.source_video
+		= link_to source_video.try(:custom_title), templates_dynamic_aae_projects_path('q[source_video_id_eq]' => source_video.id)
+%td= item.location.formatted_name(primary_region: true, primary_region_type: true) unless item.location.blank?
+%td= t("geobase.#{item.location_type}")
+%td
+	- if target = item.target
+		= t("templates.dynamic_aae_project.targets.#{item.target}")
+%td.tar_project.text-center
+	- unless item.tar_project.blank?
+		= link_to item.tar_project.url, download: item.tar_project.url do
+			= fa_icon 'file-archive-o'
+%td.text-center
+	- unless item.rendered_video.blank?
+		= link_to item.rendered_video.url, class: 'preview-video', rel: "fancybox-button" do
+			= fa_icon 'youtube-play'
+- @iconed_columns.each do |c, i|
+	%td.text-center{title: t("templates.dynamic_aae_project.#{c}")}
+		= link_to eval("templates_dynamic_aae_project_#{c}_path(#{item.id})"), data:{remote: true} do
+			- if c == :rendered_video
+				= image_tag item.rendered_video_thumb.url(:square_32) unless item.rendered_video_thumb.blank?
+			- else
+				= fa_icon(i)

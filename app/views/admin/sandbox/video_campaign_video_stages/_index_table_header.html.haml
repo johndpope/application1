@@ -1,0 +1,9 @@
+- centered_columns = %w(id thumbnail)
+- iconed_columns = {"views" => "eye", "position" => "line-chart",
+	"likes" => "thumbs-o-up", "dislikes" => "thumbs-o-down",
+	"comments" => "comment-o", "shares" => "share-alt", "tags" => "tag", "description" => "list-alt"}
+- %w(id title video_campaign_id locality_id month_nr thumbnail).each do |c|
+	%th{class: "#{c == 'thumbnail' ? 'thumb' : c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("sandbox.video_campaign_video_stage.#{c}")
+- iconed_columns.keys.each do |c|
+	%th{class: "iconed_column text-center", title: t("sandbox.video_campaign_video_stage.#{c}")}= fa_icon(iconed_columns[c])
+%th{class: 'is_active text-center'}= t("sandbox.video_campaign_video_stage.is_active")

@@ -1,0 +1,33 @@
+#accordion{"aria-multiselectable" => "true"}
+	- grouped_videos.each_with_index do |(type, videos), index|
+		.panel
+			- video_type = videos.try(:first).try(:video_type).try(:titleize)
+			- videoTypeId = video_type.to_s.delete(' ')
+			- media_type = videos.try(:first).try(:video_type)
+			- unless video_type.blank?
+				= link_to "#collapse#{videoTypeId}",
+				id: "heading#{videoTypeId}", class: "category-name",
+				data:{toggle: "collapse", parent: "#accordion"},
+				"aria-expanded"=>"true", "aria-controls"=>"collapse#{videoTypeId}" do
+					= t("templates.video_types.#{type}")
+					= fa_icon 'caret-right', class: 'corner'
+			.set.collapse{id: "collapse#{videoTypeId}", :class=>('in' if index == 0), "aria-labelledby"=>"heading#{videoTypeId}"}
+				- videos.each do |v|
+					- duration = Time.at(v.duration).utc.strftime('%H:%M:%S') unless v.duration.blank?
+					- data_action = url_for(controller: "sandbox/video_blenders",
+					action: "video_info",
+					client_uuid: @sandbox_client.uuid,
+					video_blender_id: @video_set.id,
+					video_id: v.id)
+					- json = {action: data_action,
+						duration: v.duration.to_i,
+						title: v.title,
+						videos: (v.video.url(:original, timestamp: false) unless v.video.blank?)}
+					- data = {location_id: ("#{v.location.class.name.to_s.underscore.gsub('/','_')}_#{v.location.id}" unless v.location.blank?),
+						location_name: (v.location.name unless v.location.blank?),
+						json: json.to_json.html_safe}
+					.media-item{class: "media-type-#{media_type}", data: data}
+						= image_tag(v.thumb.url(:w240), 'data-src' => 'holder.js/128x72')
+						%i.remove.glyphicon.glyphicon-trash
+						%h6.black-title= v.title
+						%i.plus.glyphicon.glyphicon-plus

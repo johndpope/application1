@@ -1,0 +1,20 @@
+%td.text-center
+	= item.id
+%td.text-left
+	= item.name
+%td.text-left
+	= t("templates.image_template.types.#{item.type.to_s.split("::").last}")
+%td.text-center
+	= item.try(:clients).try(:name)
+%td.text-center
+	= item.try(:products).try(:name)
+%td.text-center
+	= link_to templates_image_template_preview_sample_path(item.id), data: {remote: true}  do
+		= image_tag item.sample.url(:thumb), class: 'livepreview', data: {src: item.sample.url(:thumb)},  style: 'height: 18px; width: 32px;' unless item.sample.blank?
+%td.text-center
+	- prefix = item.is_active ? 'success' : 'danger'
+	- text = item.is_active ? t('yes') : t('no')
+	%span.label{class: ('label-' + prefix)}= text
+%td.text-center
+	= link_to templates_image_template_texts_path(item), data: {remote: true} do
+		= fa_icon "file-text"

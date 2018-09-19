@@ -1,0 +1,15 @@
+<div class="col-md-4 cvv-parent">
+	<% is_video_new = !video.blank? && video.month_nr == campaign_video_map[:months_of_new_videos][video.video_campaign_id] %>
+	<div class="cv-thumbnail-box<% if is_video_new %> new<% end %>">
+		<% unless video.nil? %>
+			<img title="<%= video.title %>" src="<%= video.thumbnail.url %>" data-toggle="tooltip" data-placement="bottom" />
+			<% if is_video_new %>
+				<div class="status" title="New video"></div>
+			<% else %>
+				<div class="status" title="Refreshed video">
+					<i class="glyphicon glyphicon-refresh"></i>
+				</div>
+			<% end %>
+		<% end %>
+	</div>
+</div>

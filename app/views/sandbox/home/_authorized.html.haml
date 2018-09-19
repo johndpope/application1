@@ -1,0 +1,233 @@
+-# #fon
+- client_id = Client.find_by_name('Trane').id
+- client_uuid = Sandbox::Client.find_by_client_id(client_id).try(:uuid)
+-# video_set_id = Sandbox::Client.find_by_client_id(client_id).video_sets.first.try(:id)
+%header
+  #sp-id.slider-pro
+    = image_tag "/assets/sandbox/home_page/floor.png", class: "sp-image-floor"
+    .video_container.hidden
+      = image_tag "/assets/sandbox/home_page/monitor.png", class: "sp-image-monitor"
+      %video.video-js.vjs-default-skin#video3{controls: "controls", data:{setup: "{}"}, poster: ""}
+        %source{src: "/system/sandbox/demo_video/echo_video_1.mp4", type: "video/mp4"}
+
+    .sp-media-block
+      .media-block.active{data: {id: 0}}
+        .part1
+          = image_tag "/assets/sandbox/home_page/icon_new.png", class: "label-new"
+          = link_to 'javascript://', class: "slide-item", data: {url: "/system/sandbox/demo_video/echo_video_1.mp4"} do
+            = image_tag "/assets/sandbox/home_page/Product_1.png", class: "sp-product-img"
+            = image_tag "/assets/sandbox/home_page/Play.png", class: "sp-play-btn"
+        .part2
+          %h5 BLENDER VIDEO
+          %ul
+            %li.q1 Find out detailed information about our video production.
+            %li.q2 ﻿Go through our interactive demo-version in order to see the results in real time.
+          .sp-footer-row
+            = link_to sandbox_client_path(client_uuid), target: 'blank', class: "sp-btn" do
+              = "TRY"
+
+      .media-block{data: {id: 1}}
+        .part1
+          = image_tag "/assets/sandbox/home_page/icon_coming_soon.png", class: "label-coming-soon"
+          = link_to 'javascript://', class: "slide-item", data: {url: "/system/sandbox/demo_video/image_blending.mp4"} do
+            = image_tag "/assets/sandbox/home_page/Product_2.png", class: "sp-product-img"
+            = image_tag "/assets/sandbox/home_page/Play.png", class: "sp-play-btn"
+        .part2
+          %h5 BLENDER IMAGES
+          %ul
+            %li.q3 Find out detailed information about our Advertising image production
+          .sp-footer-row
+            = link_to 'javascript://', class: "sp-btn", data: {url: "/system/sandbox/demo_video/coming_soon_blender_images.mp4"} do
+              = "TRY"
+
+      .media-block{data: {id: 2}}
+        .part1
+          = image_tag "/assets/sandbox/home_page/icon_coming_soon.png", class: "label-coming-soon"
+          = link_to 'javascript://', class: "slide-item", data: {url: "/system/sandbox/demo_video/coming_soon.mp4"} do
+            = image_tag "/assets/sandbox/home_page/Product_3.png", class: "sp-product-img"
+            = image_tag "/assets/sandbox/home_page/Play.png", class: "sp-play-btn"
+        .part2
+          %h5 MEDIA VOLUNTEER
+          %ul
+            %li.q4 Upload/share your content
+            %li.q5 Specify some info about uploaded content
+            %li.q6 Enjoy seeing your content in thousands or our videos on youtube & google
+          .sp-footer-row
+            = link_to 'javascript://', class: "sp-btn coming_soon_link", data: {url: "/system/sandbox/demo_video/coming_soon.mp4"} do
+              = "TRY"
+
+    .sp-slides
+      .sp-slide
+        %img{:alt => "", :src => "/assets/sandbox/home_page/Background_2.png", class: "sp-background-slide-image"}
+        .sp-background-wrap
+      .sp-slide
+        %img{:alt => "", :src => "/assets/sandbox/home_page/Background_1.png", class: "sp-background-slide-image"}
+        .sp-background-wrap
+      .sp-slide
+        %img{:alt => "", :src => "/assets/sandbox/home_page/Background_3.png", class: "sp-background-slide-image"}
+        .sp-background-wrap
+
+.content
+  = link_to "javascript://", class: "scroll-up hidden" do
+    = fa_icon 'angle-up 5x'
+  %section.section_0
+    .container-fluid
+      .col-md-12.sp-media-block
+        .col-md-4.col-sm-4.col-xs-12.media-bl.active
+          .part1
+            = link_to 'javascript://', class: "slide-item", data: {url: "/system/sandbox/demo_video/echo_video_1.mp4"} do
+              = image_tag "/assets/sandbox/home_page/Product_1.png", class: "sp-product-img"
+          .part2
+            %h5 BLENDER VIDEO
+            %ul
+              %li.q1 Find out detailed information about our video production.
+              %li.q2 ﻿Go through our interactive demo-version in order to see the results in real time.
+            .sp-footer-row
+              = link_to sandbox_client_path(client_uuid), target: 'blank', class: "sp-btn" do
+                = "TRY"
+
+        .col-md-4.col-sm-4.col-xs-12.media-bl
+          .part1
+            = link_to 'javascript://', class: "slide-item", data: {url: "/assets/sandbox/coming_soon.mp4"} do
+              = image_tag "/assets/sandbox/home_page/Background_2.png", class: "sp-product-img"
+          .part2
+            %h5 BLENDER IMAGES
+            %ul
+              %li.q3 Find out detailed information about our Advertising image production
+            .sp-footer-row
+              = link_to 'javascript://', class: "sp-btn coming_soon_link", data: {url: "/assets/sandbox/coming_soon.mp4"} do
+                = "TRY"
+
+        .col-md-4.col-sm-4.col-xs-12.media-bl
+          .part1
+            = link_to 'javascript://', class: "slide-item", data: {url: "/assets/sandbox/Image_Blending.mp4"} do
+              = image_tag "/assets/sandbox/home_page/Background_3.png", class: "sp-product-img"
+          .part2
+            %h5 MEDIA VOLUNTEER
+            %ul
+              %li.q4 Upload/share your content
+              %li.q5 Specify some info about uploaded content
+              %li.q6 Enjoy seeing your content in thousands or our videos on youtube & google
+            .sp-footer-row
+              = link_to shared_media_root_path, target: 'blank', class: "sp-btn" do
+                = "TRY"
+        %div{style: "clear: both"}
+
+  .col-md-12.top-row
+    = link_to '#client_sign_up_guide', class: "scroller go_to_section" do
+      = fa_icon "angle-down 5x"
+
+  %section#client_sign_up_guide
+    .container-fluid
+      .row
+        .col-md-12
+          %h1 Client Sign Up Guide
+      .row
+        .guid_block
+          .guid-step
+            = link_to 'javascript://' do
+              = image_tag "/assets/sandbox/home_page/step1.png", class: "rounded-circle guide_img"
+            %span.dot
+            %span.dot-line
+            %h2 Select Your industry
+          .guid-step
+            = link_to 'javascript://' do
+              = image_tag "/assets/sandbox/home_page/step2.png", class: "rounded-circle guide_img"
+            %span.dot
+            %span.dot-line
+            %h2 Search for Your record
+          .guid-step
+            = link_to 'javascript://' do
+              = image_tag "/assets/sandbox/home_page/step3.png", class: "rounded-circle guide_img"
+            %span.dot
+            %span.dot-line
+            %h2 Add/Edit Your contact information
+          .guid-step
+            = link_to 'javascript://' do
+              = image_tag "/assets/sandbox/home_page/step4.png", class: "rounded-circle guide_img"
+            %span.dot
+            %span.dot-line
+            %h2 Choose Your Service area & Package
+          .guid-step
+            = link_to 'javascript://' do
+              = image_tag "/assets/sandbox/home_page/step5.png", class: "rounded-circle guide_img"
+            %span.dot
+            %span.dot-line
+            %h2 Provide content
+      .row
+        .col-md-12
+          = link_to search_sandbox_video_marketing_campaign_forms_path, target: "blank", class: "try-btn client-sign-up-btn" do
+            = "Client Sign Up"
+        .col-md-12
+          = image_tag "/assets/sandbox/home_page/line_4.png", class: "devide-line"
+
+  %section.section_1#blender_video
+    .container-fluid
+      .col-sm-12.col-md-12.col-lg-9
+        .row
+          .col-sm-5.col-md-5= image_tag "/assets/sandbox/home_page/Image_1.png", class: "img-responsive sp-image1"
+          .col-sm-7.col-md-6.col-middle
+            %h1 BLENDER VIDEO
+            %p
+              %strong Video blender
+              is developed to offer the most effective advertising of your product in the internet. Using
+              %strong 99% automatic process
+              we offer advertising services on different nternet platforms and search engines. The main particularities are:
+            %p
+              %strong - Geo-targeting (local orienting)
+            %p
+              %strong - Dealer Tagging
+
+            %p Try interactive demo-version of our production. Choose some settings for Video blender such as: projects to use, youtube channel settings, youtube video settings. See estimated results; how videos will look like using settings choosed by you.
+            .btn_middle_block
+              = link_to sandbox_client_path(client_uuid), target: "blank", class: "try-btn" do
+                TRY BLENDER VIDEO
+      .col-sm-12.col-md-12.col-lg-3
+
+  %section.section_2#blender_images
+    .container-fluid
+      .row
+        .top-row= image_tag "/assets/sandbox/home_page/Line_1.png", class: "img-responsive line1"
+      .row
+        .col-lg-5.col-md-6.col-sm-12#blender-img-pn1
+          .ff-container.ff-responsive
+            %canvas.ff-canvas.ff-canvas-active{width: "1000", height: "562"}
+            %img.my_class_3.freezeframe-responsive.ff-setup.ff-image.ff-image-ready{src: "/assets/sandbox/home_page/image-blending.gif", data: {play: "pause"}}
+            .ff-overlay
+        .col-lg-7.col-md-6.col-sm-12#blender-img-pn2
+          .row
+            .col-md-6.col-sm-6.col-middle
+              %h1.text-center.blender-img BLENDER IMAGES
+              %p.text-right Image Blender is developed for advertising your product on social networks using professional advertising images. Whole the process is automatic, offering a fast speed of image production and distribution. By pressing the button "Try Image Blender" you will be able to test our image production. Choose liked design projects, images, icons and market messages to use and after that see the estimated result (blended image) of our production.
+              .btn_middle_block
+                = link_to 'javascript://', class: "try-btn coming_soon_popover", id: "try-blender-images", type: "button", value: "pause" do
+                  = "TRY BLENDER IMAGES"
+            .col-md-6.col-sm-6= image_tag "/assets/sandbox/home_page/Image_2.png", class: "img-responsive sp-image2"
+
+  %section.section_3#media_volunteer
+    .container-fluid
+      .col-md-12.top-row= image_tag "/assets/sandbox/home_page/Line_2.png", class: "img-responsive line2"
+      .col-lg-9.col-md-12.col-sm-12
+        .row
+          .col-lg-5.col-md-5.col-sm-5= image_tag "/assets/sandbox/home_page/Image_3.png", class: "img-responsive sp-image3"
+          .col-lg-7.col-md-6.col-sm-7.col-middle
+            %h1 MEDIA VOLUNTEER
+            %p Have your own images, photos, videos or sounds, but have problems with their distribution, in order to advertise yourself and became famous? Media Volunteer is your choice! Upload your media files to our database, we will use them and will advertise you. Don't hesitate to take advantaje from our distribution power!
+            .btn_middle_block
+              = link_to 'javascript://', target: 'blank', class: "try-btn coming_soon_popover" do
+                = "TRY MEDIA VOLUNTEER"
+              -# shared_media_root_path
+      .col-lg-3.col-md-12.col-sm-12
+      .col-md-12.bottom-row= image_tag "/assets/sandbox/home_page/st1.png", class: "st-1"
+
+  %section.section_4
+    .container-fluid
+      .col-md-12.top-row= image_tag "/assets/sandbox/home_page/st2.png", class: "st-2"
+      .col-md-3
+      .col-md-6.col-middle
+        %h1 10,000,000 Collected views for last month
+        %p Sign up for: to become the first in the search box, and to improve the performance of your company
+        .btn_middle_block
+          = link_to 'javascript://', class: "try-btn" do
+            = "Become our customer"
+      .col-md-3

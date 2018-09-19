@@ -1,0 +1,10 @@
+.admin_sandbox_video_sets{
+	&.index{
+		#sandbox_video_set_items{
+			.id{width: 40px;}
+			.order_nr{width: 80px;}
+			.thumb{width: 80px;}
+			.is_active {width: 80px;}
+		}
+	}
+}

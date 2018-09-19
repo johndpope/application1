@@ -1,0 +1,51 @@
+/*
+*= require fancybox
+*/
+
+.fancybox-skin {
+  padding: 5px 0px 0px 5px !important;
+}
+
+.fancybox-inner {
+  overflow: auto; width: 320px !important; height: 45px !important; padding-top: 5px;
+}
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  padding: 4px !important;
+  vertical-align: middle !important;
+}
+
+.actions{
+  a {
+    margin: 2px;
+  }
+}
+
+.nav-tabs a {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.filter-label {
+    margin-top: 2px;
+    font-weight: bold;
+}
+
+th, td {
+  font-size: 13px;
+}
+.overflow {
+  word-wrap: break-word;
+}
+
+.box-title-center {
+  text-align: center;
+  display: block !important;
+}
+
+span.subtitle {
+  text-align: center;
+  display: block;
+  font-weight: bold;
+  text-decoration: underline;
+}

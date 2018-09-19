@@ -1,0 +1,35 @@
+%tr{class: "template-upload fade in videos", id: dom_id(video, "row")}
+  %td= video.id
+  %td.img-rounded
+    %a{:href => "#{video.file}", :class => 'preview-video'}
+      = video_tag("#{video.file}", :controls => false, :autobuffer => true, :autoplay => false, :loop => true, :class => 'img-thumbnail')
+  %td= video.file_file_name
+  %td= video.title
+  %td= video.try(:clients).try(:name)
+  %td= video.notes
+  %td= "#{(video.file_file_size.to_f / 1000000).round(2)} Mb"
+  %td
+    = Geobase::Country.find(video.country).code unless video.country.blank?
+    = Geobase::Region.find(video.region1).code unless video.region1.blank?
+    = Geobase::Region.find(video.region2).code unless video.region2.blank?
+    = Geobase::Locality.find(video.city).name unless video.city.blank?
+  %td
+    - unless video.tags.blank?
+      = link_to 'javascript://', class: "btn btn-default btn-sm tags_for_uploaded_video",
+        data: {container: "body", tags: video.tags, placement: "top", toggle: "popover", trigger: "hover"} do
+        = fa_icon 'tags'
+
+  %td.actions
+    .btn-group
+      = link_to edit_shared_media_video_path(video, authenticity_token: form_authenticity_token),
+        :data => {remote: true},
+        :title => 'Edit',
+        :class => 'btn btn-default btn-sm edit' do
+        = fa_icon 'pencil'
+
+      = link_to shared_media_video_path(video, authenticity_token: form_authenticity_token),
+        :method => "delete",
+        :data => {confirm: 'Are you sure?', remote: true},
+        :title => 'Delete',
+        :class => 'btn btn-default btn-sm delete' do
+        = fa_icon 'times'

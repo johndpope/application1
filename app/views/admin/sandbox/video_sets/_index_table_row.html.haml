@@ -1,0 +1,12 @@
+- %w(id title).each do |f|
+	%td= link_to item.send(f), sandbox_client_video_blender_path(item.sandbox_client.try(:uuid), item.id), title: t('admin.sandbox.preview_video_set'), target: "BLANK"
+%td
+	- unless item.sandbox_client.blank?
+		= link_to item.sandbox_client.try(:client).try(:name), sandbox_client_path(item.sandbox_client.uuid), title: t('admin.sandbox.preview_sandbox'), target: "_BLANK"
+%td= item.order_nr
+%td{class: "text-center"}
+	= image_tag item.thumb.url(:w60), style: "width: 30px; height: 22px;" unless item.thumb.blank?
+%td{class: "text-center"}
+	- label_text = item.is_active? ? t('yes') : t('no')
+	- label_class = item.is_active? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text

@@ -1,0 +1,8 @@
+.admin_sandbox_locality_details{
+	&.index{
+		#sandbox_locality_details_items{
+			.id{width: 40px;}
+			.default_background_image, .active_background_image{width: 80px;}
+		}
+	}
+}

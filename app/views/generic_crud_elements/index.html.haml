@@ -1,0 +1,18 @@
+- title @index_title
+- header @index_page_header
+- small_header @index_small_header
+- breadcrumb(@breadcrumbs[:name], @breadcrumbs[:options]) unless @breadcrumbs[:name].blank?
+
+- if File.exist? Rails.root.join('app', 'views', @view_folder, '_index_search_form_body.html.haml')
+	- search_box_body_url = "#{@view_folder}/index_search_form_body"
+	- search_box_form_url = url_for(controller: params[:controller], action: :index)
+	= generic_search_box body_url: search_box_body_url, form_url: search_box_form_url, search: @search
+= render partial: "generic_crud_elements/index_table"
+- @stylesheets.to_a.each{|s| content_for(:stylesheets){stylesheet_link_tag s}}
+- @javascripts.to_a.each{|j| content_for(:javascripts){javascript_include_tag j}}
+- content_for(:javascripts) do
+	:javascript
+		$(function(){
+			$('select').select2({allowClear: "true", placeholder: "Choose ..."})
+			$('[data-remote=true]').not("[data-disable-with]").attr('data-disable-with', "<i class='fa fa-refresh fa-spin'></i>")
+		})

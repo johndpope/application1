@@ -1,0 +1,38 @@
+<% if File.exists?(Rails.root.join('app', 'views', 'queue', "_common_history_filters.html.erb")) && params[:action] == 'index' %>
+  <div class="row">
+    <div class="col-md-12">
+      <%= render partial: "queue/common_history_filters" %>
+    </div>
+  </div>
+<% end %>
+<div class="row">
+  <div class="col-md-5">
+    <% if params[:action] == 'index' %>
+      <%= render partial: "queue/paginate", locals: { jobs: jobs, paginate_class: "paginate" } %>
+    <% end %>
+  </div>
+  <div class="col-md-7">
+    <div class="form-group">
+      <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+      <span id="total_serach_results" class="badge bg-blue"><%= params[:action] == 'index' ? jobs.total_count : jobs.size %></span>
+    </div>
+  </div>
+</div>
+<table id="jobs_table" class="table table-striped dataTable">
+	<thead>
+		<tr>
+			<th style="width: 50px;">ID</th>
+      <th>Resource name</th>
+      <th style="width: 150px;" class="text-center">Status</th>
+      <th style="width: 100px;" class="text-center">Assigned to</th>
+      <th style="width: 85px;" class="text-center">Scheduled at</th>
+			<th style="width: 85px;" class="text-center">Updated at</th>
+      <th style="width: 85px;" class="text-center" title="Added in queue at">Added at</th>
+			<th style="width: 85px;" class="text-center">Running time</th>
+		</tr>
+	</thead>
+	<%= render partial: "queue/history_tbody", locals: { jobs: jobs} %>
+</table>
+<% if params[:action] == 'index' %>
+  <%= render partial: "queue/paginate", locals: { jobs: jobs, paginate_class: "paginate"  } %>
+<% end %>

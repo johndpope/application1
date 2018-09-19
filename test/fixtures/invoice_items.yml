@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  resource_id: 1
+  resource_type: MyString
+  quantity: 1.5
+  unit_price: 1.5
+  invoice_id: 1
+  description: MyText
+  name: MyString
+
+two:
+  resource_id: 1
+  resource_type: MyString
+  quantity: 1.5
+  unit_price: 1.5
+  invoice_id: 1
+  description: MyText
+  name: MyString

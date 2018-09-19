@@ -1,0 +1,17 @@
+<%
+  modal = render partial: 'form', locals: {text_chunk: text_chunk}
+  modal_dom_id = dom_id(text_chunk, 'modal')
+%>
+
+$("#<%= modal_dom_id %>").remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('#text_chunk_chunk_type').autocomplete({ source: $('#chunk_types_list').val().split('<sep/>') });
+$('.has-error').popover({
+  trigger: 'hover',
+  placement: 'bottom',
+  animation: true
+});

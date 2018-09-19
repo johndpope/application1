@@ -1,0 +1,61 @@
+<div id="dealers_table_body">
+  <% dealers.each do |dealer| %>
+    <div class="claim_option row">
+      <div class="pull-left signup-matched-photo col-md-1">
+        <div class="checkbox text-center" style="margin-top: 35px;">
+          <label><%= check_box_tag(:dealers, dealer.id, false, { class: "iCheck-helper dealers search-brand" }) %></label>
+        </div>
+      </div>
+      <div class="pull-right col-md-11" style="margin-bottom: 11px;">
+        <div class="row">
+          <div class="col-md-3 img-frame">
+            <!-- <span class="img-helper"></span> -->
+            <img class="brand-logo" src="/company_logo_missing.svg" title="Brand: <%= dealer.brand_id %>"/>
+          </div>
+          <div class="col-md-9">
+            <div class="pull-left full-width">
+              <span class="blue-label">ID:</span>
+              <span><%= dealer.id %></span>
+            </div>
+            <div class="pull-left full-width">
+              <span class="blue-label">Name:</span>
+              <span><strong><%= dealer.name %></strong></span>
+            </div>
+            <div class="pull-left full-width">
+              <span class="blue-label">Brand:</span>
+              <span class="brand-name" data-brand-name="<%=dealer.brand_id.to_s.strip.downcase.gsub(' ', '_') %>"><i><%= dealer.brand_id %></i></span>
+            </div>
+            <div class="pull-left full-width">
+              <span class="blue-label">Phones:</span>
+              <% phones = [dealer.target_phone, dealer.phone1, dealer.phone2, dealer.phone3, dealer.permalease_phone].compact.reject(&:empty?).uniq %>
+              <span>
+                <%= phones.map {|phone| number_to_phone(phone.to_s, area_code: true) }.join(", ") %>
+                <%= "-" unless phones.present?%>
+              </span>
+            </div>
+            <div class="pull-left full-width">
+              <span class="blue-label">Email:</span>
+              <span><%= dealer.email.present? ? dealer.email : "-" %></span>
+            </div>
+            <div class="pull-left full-width">
+              <span class="blue-label">Website:</span>
+              <span><%= dealer.website.present? ? dealer.website : "-" %></span>
+            </div>
+            <div class="pull-left full-width">
+              <span class="blue-label">Address:</span>
+              <span><%= [dealer.address_line1, dealer.address_line2, dealer.city, [dealer.state, dealer.zipcode].compact.reject(&:empty?).join(" ")].compact.reject(&:empty?).join(", ") %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+    </div>
+  <% end %>
+  <% if dealers.to_a.empty? %>
+    <div id="no_profile_found">
+      Sorry, no profiles matched your search,
+please create a new one by clicking 'Sign Up' button and filling up the registration form.
+Thank you.
+    </div>
+  <% end %>
+</div>

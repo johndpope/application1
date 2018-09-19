@@ -1,0 +1,35 @@
+- header 'Audio Storage'
+- breadcrumb :artifacts_audio_storage, theme: "bootstrap"
+
+= form_tag artifacts_audios_path, method: 'get', id: 'audio_search_form' do
+  = hidden_field_tag :api, @api
+  .box.box-primary
+    .box-body
+      .input-group.input-group-lg
+        = text_field_tag :q, params[:q], :class => 'form-control input-lg'
+        .input-group-btn#api-switch
+          %button.btn.btn-success.dropdown-toggle#api-switch-btn{ type: 'button', data: { toggle: 'dropdown' }, style: "border-radius: 0px" }
+            = @api.present? ? @api : 'Local'
+            &nbsp;
+            = fa_icon 'caret-down'
+          %ul.dropdown-menu
+            - Artifacts::Audio::API_SOURCES_LIST.each do |e|
+              %li{ :class => ('active' if @api == e) }
+                = link_to e, 'javascript:'
+            %li{ :class => ('active' if @api.blank?) }
+              = link_to 'Local', 'javascript:'
+          %button.btn.btn-primary.audio-search-btn#audio-search-btn{ type: 'button' }
+            Search
+            = fa_icon 'search'
+          %button.btn.btn-default.audio-clear-btn#audio-clear-btn{ type: 'button' }
+            Clear
+            = fa_icon 'eraser'
+  = render partial: 'index_search_filter'
+- if @total_count.present? && @total_count > 0
+  - if !@audios.any?
+    .row
+      .col-lg-12.col-md-12
+        .alert.alert-info There no some files
+  .row
+    .col-md-12
+      = render 'index_table', audios: @audios

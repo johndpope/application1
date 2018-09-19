@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+	</head>
+	<body>
+		<h2>New blocked youtube channel!</h2>
+    <p>All bot servers were killed and disabled daily activity.</p>
+    <p>Click
+      <% if @youtube_channel_id.present? %>
+        <a href="<%= Rails.configuration.routes_default_url_options[:host] + Rails.application.routes.url_helpers.youtube_channels_path(id: @youtube_channel_id) %>">here</a>
+      <% else %>
+        <a href="<%= Rails.configuration.routes_default_url_options[:host] + Rails.application.routes.url_helpers.youtube_channels_path(blocked: true, channel_type: 1, last_time: 24, field_name: 'updated_at', table_name: 'youtube_channels') %>">here</a>
+      <% end %>
+     to review.</p>
+    <br/>
+    <p>Thanks!</p>
+	</body>
+</html>

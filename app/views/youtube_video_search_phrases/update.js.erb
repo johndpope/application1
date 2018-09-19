@@ -1,0 +1,8 @@
+<%
+  modal_dom_id = dom_id(youtube_video_search_phrase, 'modal')
+  row_id = dom_id(youtube_video_search_phrase, 'row')
+  new_row = render partial: 'youtube_video_search_phrases/youtube_video_search_phrase_row', locals: {youtube_video_search_phrase: youtube_video_search_phrase}
+%>
+
+$('#<%= modal_dom_id %>').modal('hide')
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')

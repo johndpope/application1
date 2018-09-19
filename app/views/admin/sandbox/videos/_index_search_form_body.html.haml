@@ -1,0 +1,38 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :video_type, t('sandbox.video.video_type')
+			- video_types = Templates::VIDEO_CHUNK_TYPES.merge(Templates::GENERAL_TYPES).collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- transition_types = Templates::TRANSITION_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- grouped_options = {'Videos' => video_types,'Transitions' => transition_types}
+			= sf.select :video_type_eq, grouped_options_for_select(grouped_options, @search.video_type_eq), {include_blank: '', selected: @search.video_type_eq}, {class: 'form-control'}
+		.col-md-2
+			= sf.label :client_id, t('sandbox.video.client')
+			- options = options_from_collection_for_select(Client.order(:name), :id, :name, @search.video_set_client_id_eq)
+			= sf.select :video_set_client_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :video_set_id_eq, t('sandbox.video.video_set_id')
+			- options = options_from_collection_for_select(Sandbox::VideoSet.order(:title), :id, :title, @search.video_set_id_eq)
+			= sf.hidden_field :video_set_id_eq, class: "form-control"
+			- current_video_set = unless @search.video_set_id_eq.blank?; Sandbox::VideoSet.find_by_id(@search.video_set_id_eq) || {}; end
+			= hidden_field_tag '', current_video_set.to_json(only: [:id, :title]), id: "current_video_set_json"
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+		.col-md-2
+			= sf.label :is_active_eq, t('sandbox.video.is_active')
+			= sf.select :is_active_eq, options_for_select(yes_no_options, @search.is_active_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :is_approved_eq, t('sandbox.video.is_approved')
+			= sf.select :is_approved_eq, options_for_select(yes_no_options, @search.is_approved_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :notes_present, t('sandbox.video.has_notes')
+			= sf.select :notes_present, options_for_select(yes_no_options, @search.notes_present), {include_blank: true}, class: 'form-control'
+	.row
+		.col-md-2
+			= sf.label :id_eq, t('sandbox.video.id')
+			= sf.search_field :id_eq, class: 'form-control'
+		.col-md-2
+			= sf.label :title_cont, t('sandbox.video.title')
+			= sf.search_field :title_cont, class: "form-control"
+		.col-md-2
+			= sf.label :templates_aae_project_id, t('sandbox.video.templates_aae_project_id')
+			= sf.search_field :templates_aae_project_id_eq, class: "form-control"

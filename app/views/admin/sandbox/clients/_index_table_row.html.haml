@@ -1,0 +1,13 @@
+%td= link_to item.id, sandbox_client_path(item.uuid), title: t('admin.sandbox.preview_sandbox'), target: "_BLANK"
+%td= link_to item.client.try(:name), sandbox_client_path(item.uuid), title: t('admin.sandbox.preview_sandbox'), target: "_BLANK"
+%td
+	- unless item.client_category.blank?
+		= link_to item.client_category.name, admin_sandbox_clients_path(:'q[client_category_id_eq]' => item.client_category.id)
+- %w(logo background_image subject_image).each do |c|
+	%td{class: "text-center"}
+		- unless item.send(c).blank?
+			= image_tag item.send(c).url(:square_32)
+%td{class: "text-center"}
+	- label_text = item.is_active? ? t('yes') : t('no')
+	- label_class = item.is_active? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text

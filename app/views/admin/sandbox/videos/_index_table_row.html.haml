@@ -1,0 +1,50 @@
+%td= item.id
+%td
+	- if !item.sandbox_client.blank? && !item.client.blank?
+		= link_to item.client.try(:name), admin_sandbox_videos_path(:'q[video_set_client_id_eq]' => item.client.id)
+		%div
+			= link_to sandbox_client_path(item.sandbox_client.uuid), title: t('admin.sandbox.preview_sandbox'), target: "_BLANK" do
+				= fa_icon 'search', text: 'preview'
+%td
+	- unless item.sandbox_video_set_id.blank?
+		= link_to item.try(:video_set).try(:title), admin_sandbox_videos_path(:'q[video_set_id_eq]' => item.sandbox_video_set_id)
+		- unless item.video_set.blank?
+			%div
+				= link_to sandbox_client_video_blender_path(item.sandbox_client.uuid, item.video_set.id), title: t('admin.sandbox.preview_video_set'), target: "_BLANK" do
+					= fa_icon 'search', text: 'preview'
+%td
+	- unless item.video_type.blank?
+		= link_to t("templates.video_types.#{item.video_type}"), admin_sandbox_videos_path(:'q[video_type_eq]' => item.video_type.value)
+%td
+	- unless item.location.blank?
+		- if item.location_type != 'Geobase::Country'
+			= link_to item.location.formatted_name(primary_region: true, primary_region_code: true), admin_sandbox_videos_path('q[location_id_eq]' => item.location_id, 'q[location_type_eq]' => item.location_type)
+		- else
+			= link_to item.location.name, admin_sandbox_videos_path('q[location_id_eq]' => item.location_id, 'q[location_type_eq]' => item.location_type)
+%td
+	- unless item.location.blank?
+		= link_to t("geobase.#{item.location_type}"), admin_sandbox_videos_path('q[location_type_eq]' => item.location_type)
+%td= item.title
+%td{class: "text-center"}
+	= image_tag item.thumb.url(:w60), style: "width: 30px; height: 22px;" unless item.thumb.blank?
+%td
+	- unless item.video.blank?
+		= link_to 'javascript:', class: "btn btn-sm btn-default", title: "Preview video" do
+			= fa_icon 'play'
+%td= Time.at(item.duration).utc.strftime("%H:%M:%S") unless item.duration.blank?
+%td{class: "text-center"}
+	- label_text = item.is_active? ? t('yes') : t('no')
+	- label_class = item.is_active? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text
+%td{class: "text-center"}
+	- label_text = item.is_approved? ? t('yes') : t('no')
+	- label_class = item.is_approved? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text
+%td.text-center
+	- unless item.notes.blank?
+		= link_to 'javascript://', class: "btn btn-default btn-sm",
+		data: {container: "body", content: item.notes, placement: "top", toggle: "popover", trigger: "hover"} do
+			= fa_icon 'exclamation', class: "text-danger"
+%td{class: "updated_by"}= item.versions.last.try(:whodunnit)
+%td{class: "updated_at text-center"}= item.updated_at.try(:strftime, '%m/%d/%y %H:%M UTC')
+%td{class: "created_at text-center"}= item.created_at.try(:strftime, '%m/%d/%y %H:%M UTC')

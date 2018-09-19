@@ -1,0 +1,39 @@
+%tr
+  %td= (page * params[:limit].to_i + index + 1)
+  %td= item.id
+  %td
+    - unless item.channel_icon.blank?
+      = link_to item.channel_icon.url, rel: "fancybox-button",
+      class: "youtube-channel-icon", title: item.youtube_channel_name, target: "_blank" do
+        = image_tag item.channel_icon.url(:thumb),
+        style: "width: 40px; height: 25px;", class: "livepreview",
+        data: {src: item.channel_icon.url}
+  %td
+    - unless item.channel_art.blank?
+      = link_to item.channel_art.url, rel: "fancybox-button",
+      class: "youtube-channel-art", title: item.youtube_channel_name, target: "_blank" do
+        = image_tag item.channel_art.url(:thumb),
+        style: "width: 40px; height: 25px;", class: "livepreview",
+        data: {src: item.channel_art.url}
+  %td
+    - unless item.try(:screenshots).try(:last).try(:image).blank?
+      = link_to item.try(:screenshots).try(:last).try(:image).try(:url),
+      class: "youtube-channel-screenshot", rel: "fancybox-button",
+      title: item.youtube_channel_name, target: "_blank" do
+        = image_tag item.try(:screenshots).try(:last).try(:image).try(:url, :thumb),
+        style: "width: 40px; height: 25px;", class: "livepreview",
+        data: {src: item.try(:screenshots).try(:last).try(:image).try(:url)}
+  %td= item.channel_type.to_s.titleize
+  %td
+    - if item.url.present?
+      = link_to item.youtube_channel_name, item.url, target: "BLANK"
+    - else
+      = item.youtube_channel_name
+  %td= item.try(:email_account).try(:email)
+  %td= item.try(:email_account).try(:location).try(:formatted_name, primary_region: true, primary_region_code: true)
+  %td{class: "text-center"}= item.publication_date.present? ? local_time(item.publication_date, format: '%m/%d/%y %I:%M %p', title: item.publication_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) : "-"
+  - last_yt_statistics = item.yt_statistics.last
+  %td{class: "text-center", title: "Views"}= last_yt_statistics.try(:view_count) || "-"
+  %td{class: "text-center", title: "Subscribers"}= last_yt_statistics.try(:subscriber_count) || "-"
+  %td{class: "text-center", title: "Comments"}= last_yt_statistics.try(:comment_count) || "-"
+  %td{class: "text-center"}= last_yt_statistics.present? ? local_time(last_yt_statistics.updated_at, format: '%m/%d/%y %I:%M %p', title: last_yt_statistics.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) : "-"

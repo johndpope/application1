@@ -1,0 +1,19 @@
+.box.box-warning#client_workflow_warnings
+	.box-header
+		%h3.box-title
+			= fa_icon 'warning'
+			General Workflow Warnings
+	.box-body
+		- if !@client.is_active?
+			.callout.callout-warning
+				%h4
+					= fa_icon 'warning'
+					This client is inactive
+				%p
+					All activity related with video production (video set creation, segment generation, segment rendering, video set blending, youtube video content creation, youtube video thumbnail generation)
+					%strong is stopped
+					\.
+				%p
+					Set this client to
+					%strong active
+					in order to get him back to production

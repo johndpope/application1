@@ -1,0 +1,42 @@
+- content_for(:header){'Landing Pages'}
+- content_for(:small_header){@client.name}
+- page = params[:page].present? ? params[:page].to_i - 1 : 0
+
+.box
+  .box-header.with-border
+    %h3.box-title Landing Pages
+    .box-tools
+      %strong= @client_landing_pages.total_count
+      items totally
+  .box-body
+    %table.table.table-bordered.table-hover.table-striped
+      %tbody
+        %tr
+          %th{style: "width: 40px;", class: "text-center"} #
+          %th{style: "width: 40px;", class: "text-center"} ID
+          %th Landing URL
+          %th{style: "width: 100px;", class: "text-center", title: "Visits"} Visits
+          %th{style: "width: 100px;", class: "text-center", title: "Actions"} Actions
+          %th{style: "width: 100px;", class: "text-center", title: "Page views"} Page views
+          %th{style: "width: 40px;", class: "text-center"} Associated
+          %th{style: "width: 40px;", class: "text-center"} Pending
+          %th{style: "width: 40px;", class: "text-center"} Total
+        - @client_landing_pages.each_with_index do |item, index|
+          = render partial: "client_landing_pages_table_row", locals: {index: index, item: item, page: page}
+    = paginate @client_landing_pages, theme: 'bootstrap'
+
+= form_tag public_client_client_landing_pages_path(@client.public_profile_uuid), method: 'get', id: 'search' do
+  - is_open = [params[:status]].reject(&:blank?).any?
+  #toolbar-toggle{ class: ('open' if is_open).to_s }
+    = fa_icon 'gear'
+  #toolbar{ class: ('open' if is_open).to_s }
+    %h4 Filters
+    .form-group
+      = label_tag :status, nil, class: 'control-label'
+      = select_tag(:status, options_for_select([['Done', 'done'], ['Pending', 'pending']], params[:status]), { include_blank: true, class: 'form-control' } )
+    .form-group
+      = label_tag :limit, 'Limit'
+      = select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500], params[:limit]), class: 'form-control')
+    %button.btn.btn-primary.search-btn{ type: 'button' }
+      Search
+      = fa_icon 'search'

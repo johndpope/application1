@@ -1,0 +1,37 @@
+<% title 'Google Account Activities' %>
+<div class="row">
+	<div class="col-md-12">
+		<% unless @google_account_activities.to_a.empty? %>
+			<table id="google_account_activities_table" class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th class="text-center" style="min-width: 25px;">ID</th>
+						<th>Email Account ID</th>
+						<th>Email</th>
+						<th>Password</th>
+						<th>IP</th>
+						<th class="text-center">Actions</th>
+					</tr>
+				</thead>
+				<tbody role="alert" aria-live="polite" aria-relevant="all">
+					<% @google_account_activities.each do |gaa| %>
+						<tr>
+							<td class="text-center"><%= gaa.id %></td>
+							<td class="email_account_id"><%= gaa.google_account.email_account.id %></td>
+							<td class="email"><%= gaa.google_account.email_account.email %></td>
+							<td class="email_account_password"><%= gaa.google_account.email_account.password %></td>
+							<td class="email_account_ip"><%= gaa.google_account.email_account.ip_address.try(:address) %></td>
+							<td class="text-center actions">
+								<%= link_to 'Link', 'javascript://', id: "link_gaa_#{gaa.id}", class: 'btn btn-xs btn-info link', :data => { :id => gaa.id } %>
+							</td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		<% end %>
+
+		<% if @google_account_activities.to_a.empty? %>
+			<div class="alert alert-info">No items available</div>
+		<% end %>
+	</div>
+</div>

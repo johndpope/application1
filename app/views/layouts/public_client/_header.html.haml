@@ -1,0 +1,16 @@
+%header.main-header
+  = link_to "", class: "logo" do
+    %span.logo-mini
+      %strong= t('pc')
+    %span.logo-lg
+      %strong= t('public_client')
+  %nav.navbar.navbar-static-top{role: "navigation"}
+    %a.sidebar-toggle{href: "javascript:", data:{toggle: "offcanvas"}, role: "button"}
+      %span.sr-only Toggle Navigation
+    %ul.nav.navbar-nav
+      %li
+        %a{ href: 'javascript:', id: 'scroll-up', style: 'display: none' }
+          = fa_icon 'arrow-up', text: "Up"
+      = yield :top_nav
+    .navbar-custom-menu
+      .nav.navbar-nav

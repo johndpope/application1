@@ -1,0 +1,16 @@
+- last_month_date = (Time.now - 30.days).strftime("%Y-%m-%d 00:00:00")
+- videos_statistics_data_json = {}
+- videos_views_statistics_data_json = {}
+- videos_stat_query = @client.id == 7 ? "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(yt_statistics.view_count) as views, SUM(yt_statistics.like_count) as likes, SUM(yt_statistics.dislike_count) as dislikes, SUM(yt_statistics.favorite_count) as favorites, sum(yt_statistics.comment_count) as comments FROM yt_statistics LEFT JOIN youtube_videos ON youtube_videos.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeVideo' LEFT OUTER JOIN youtube_channels ON youtube_channels.id = youtube_videos.youtube_channel_id WHERE yt_statistics.resource_type = 'YoutubeVideo' AND yt_statistics.created_at > '#{last_month_date}' AND youtube_channels.client_id = #{@client.id} AND youtube_videos.is_active = TRUE GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC" : "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(yt_statistics.view_count) as views, SUM(yt_statistics.like_count) as likes, SUM(yt_statistics.dislike_count) as dislikes, SUM(yt_statistics.favorite_count) as favorites, sum(yt_statistics.comment_count) as comments FROM yt_statistics LEFT JOIN youtube_videos ON youtube_videos.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeVideo' LEFT OUTER JOIN youtube_channels ON youtube_channels.id = youtube_videos.youtube_channel_id LEFT OUTER JOIN google_accounts ON google_accounts.id = youtube_channels.google_account_id LEFT OUTER JOIN email_accounts ON email_accounts.email_item_id = google_accounts.id LEFT OUTER JOIN clients ON clients.id = email_accounts.client_id WHERE yt_statistics.resource_type = 'YoutubeVideo' AND yt_statistics.created_at > '#{last_month_date}' AND clients.id = #{@client.id} AND youtube_videos.is_active = TRUE GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC"
+- videos_stat_keys = %w(likes dislikes favorites comments)
+- videos_stat_result = ActiveRecord::Base.connection.execute(videos_stat_query).to_a
+- videos_stat_keys.each {|k| videos_statistics_data_json[k] = videos_stat_result.map{|x| x[k].to_i}}
+- videos_views_statistics_data_json["views"] = videos_stat_result.map{|x| x["views"].to_i}
+
+.row
+  .col-md-12
+    .row
+      .col-md-12
+        %div{id: "videos_views_statistics_chart", data: videos_views_statistics_data_json}
+      .col-md-12
+        %div{id: "videos_statistics_chart", data: videos_statistics_data_json}

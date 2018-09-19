@@ -1,0 +1,33 @@
+.box-footer
+	%div
+		.btn-group
+			- url = image.file.exists? ? image.file.url : image.url_o
+			= link_to url, :class => 'btn btn-default btn-sm', target: '_blank', title: 'URL' do
+				= fa_icon 'eye'
+
+			= link_to 'javascript:', :class => 'btn btn-default btn-sm tags-toggle',
+				data: { :tags => (image.tag_list.join(',') if image.tag_list.any?)},
+				title: "tag list",
+				:disabled => ("disabled" unless image.tag_list.any?) do
+				= fa_icon 'tags'
+
+			= link_to (image.persisted? ? edit_shared_media_image_path(image, authenticity_token: form_authenticity_token) : 'javascript:'), remote: true, title: 'Edit',
+			:class => 'btn btn-default btn-sm', :disabled => ("disabled" unless image.persisted?) do
+				= fa_icon 'pencil'
+			= link_to (image.persisted? ? shared_media_image_path(image, authenticity_token: form_authenticity_token) : 'javascript:'),
+				:method => ("delete" if image.persisted?),
+				:data => ({ confirm: 'Are you sure?', remote: true } if image.persisted?),
+				title: 'Delete', :disabled => ("disabled" unless image.persisted?),
+				:class => 'btn btn-default btn-sm' do
+				= fa_icon 'times', :class => 'text-danger'
+
+			= link_to 'javascript:', class: "btn btn-default btn-sm",
+			title: "Image ID", :disabled => ("disabled" unless image.persisted?) do
+				= fa_icon 'file-image-o', text: image.id
+			- if image.persisted? && image.file.exists? && !image.width.blank? && !image.height.blank?
+				= link_to 'javascript:', class: "btn btn-default btn-sm", style: "max-width: 85px",
+				title: "Image Dimensions" do
+					= fa_icon 'file-image-o', text: "#{image.width}x#{image.height}"
+
+			= link_to	'javascript:', class: "btn btn-default btn-sm", title: "Imported at" do
+				= fa_icon 'calendar', text: "#{image.created_at.strftime("%Y-%m-%d %H:%M:%S")}"

@@ -1,0 +1,199 @@
+- main_client = assets[:clients].first
+- assets[:clients].delete(main_client)
+.row
+  .col-sm-12
+    .box.box-widget.widget-user
+      .widget-user-header.bg-gray-active
+        %h3.widget-user-username
+          %b= link_to main_client[:name], edit_client_path(main_client[:id]), target: "_blank"
+        %h5.widget-user-desc Client
+        .widget-user-image
+          %img{src: main_client[:logo_url]}
+      .box-footer
+        .row
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to main_client[:short_descriptions], edit_client_path(main_client[:id]), target: "_blank"
+              %span.description-text SHORT DESCRIPTIONS
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to main_client[:long_descriptions], edit_client_path(main_client[:id]), target: "_blank"
+              %span.description-text LONG DESCRIPTIONS
+          .col-sm-1.border-right
+            .description-block
+              %h5.description-header= link_to main_client[:tags], edit_client_path(main_client[:id]), target: "_blank"
+              %span.description-text TAGS
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to main_client[:high_res_images], artifacts_images_path(client_id: main_client[:id], by_resolution: "high"), target: "_blank"
+              %span.description-text HIGH RESOLUTION IMAGES
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to main_client[:low_res_images], artifacts_images_path(client_id: main_client[:id], by_resolution: "low"), target: "_blank"
+              %span.description-text LOW RESOLUTION IMAGES
+          .col-sm-1.border-right
+            .description-block
+              %h5.description-header= link_to main_client[:images], artifacts_images_path(client_id: main_client[:id], by_resolution: "all"), target: "_blank"
+              %span.description-text TOTAL IMAGES
+          .col-sm-2
+            .description-block
+              %h5.description-header= link_to main_client[:total_landing_pages], client_client_landing_pages_path(main_client[:id]), target: "_blank"
+              %span.description-text TOTAL LANDING PAGES
+.row
+  - assets[:clients].each_with_index do |donor, index|
+    .col-sm-4
+      .box.box-widget.widget-user
+        .widget-user-header.bg-gray-active
+          %h3.widget-user-username
+            %b= link_to donor[:name], edit_client_path(donor[:id]), target: "_blank"
+          %h5.widget-user-desc Donor
+          .widget-user-image
+            %img{src: donor[:logo_url]}
+        .box-footer
+          .row
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to donor[:short_descriptions], edit_client_path(donor[:id]), target: "_blank"
+                %span.description-text SHORT DESCR.
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to donor[:long_descriptions], edit_client_path(donor[:id]), target: "_blank"
+                %span.description-text LONG DESCR.
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to donor[:tags], edit_client_path(donor[:id]), target: "_blank"
+                %span.description-text TAGS
+            .col-sm-2
+              .description-block
+                %h5.description-header= link_to donor[:high_res_images], artifacts_images_path(client_id: donor[:id], by_resolution: "high"), target: "_blank"
+                %span.description-text HIGH RES. IMAGES
+            .col-sm-2
+              .description-block
+                %h5.description-header= link_to donor[:low_res_images], artifacts_images_path(client_id: donor[:id], by_resolution: "low"), target: "_blank"
+                %span.description-text LOW RES. IMAGES
+            .col-sm-2
+              .description-block
+                %h5.description-header= link_to donor[:images], artifacts_images_path(client_id: donor[:id], by_resolution: "all"), target: "_blank"
+                %span.description-text TOTAL IMAGES
+%hr
+- wording_id = Wording.select(:id).where("resource_id = ? AND resource_type = 'Industry'", assets[:industry][:id]).pluck(:id).first
+.row
+  .col-sm-12
+    .box.box-widget.widget-user
+      .widget-user-header.bg-gray-active
+        %h3.widget-user-username
+          %b= link_to assets[:industry][:name], edit_wording_path(wording_id), target: "_blank"
+        %h5.widget-user-desc Industry
+      .box-footer
+        .row
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to assets[:industry][:short_descriptions], wordings_path(resource_id: assets[:industry][:id], resource_type: 'Industry', name: 'short_description'), target: "_blank"
+              %span.description-text SHORT DESCRIPTIONS
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to assets[:industry][:long_descriptions], wordings_path(resource_id: assets[:industry][:id], resource_type: 'Industry', name: 'long_description'), target: "_blank"
+              %span.description-text LONG DESCRIPTIONS
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to assets[:industry][:tags], edit_wording_path(wording_id), target: "_blank"
+              %span.description-text TAGS
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to assets[:industry][:high_res_images], artifacts_images_path(ransack:{industry_id_eq: assets[:industry][:id]}, by_resolution: "high"), target: "_blank"
+              %span.description-text HIGH RESOLUTION IMAGES
+          .col-sm-2.border-right
+            .description-block
+              %h5.description-header= link_to assets[:industry][:low_res_images], artifacts_images_path(ransack:{industry_id_eq: assets[:industry][:id]}, by_resolution: "low"), target: "_blank"
+              %span.description-text LOW RESOLUTION IMAGES
+          .col-sm-2
+            .description-block
+              %h5.description-header= link_to assets[:industry][:images], artifacts_images_path(ransack:{industry_id_eq: assets[:industry][:id]}, by_resolution: "all"), target: "_blank"
+              %span.description-text TOTAL IMAGES
+%hr
+.row
+  - assets[:products].each_with_index do |product, index|
+    %div{class: "col-sm-#{product[:parent].present? ? '6' : '12'}"}
+      .box.box-widget.widget-user
+        .widget-user-header.bg-gray-active
+          %h3.widget-user-username
+            %b= link_to product[:name], edit_client_product_path(product[:client_id], product[:id]), target: "_blank"
+          %h5.widget-user-desc Product
+          .widget-user-image
+            %img{src: product[:logo_url]}
+        .box-footer
+          .row
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to product[:short_descriptions], edit_client_product_path(product[:client_id], product[:id]), target: "_blank"
+                %span.description-text SHORT DESCRIPTION
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to product[:long_descriptions], edit_client_product_path(product[:client_id], product[:id]), target: "_blank"
+                %span.description-text LONG DESCRIPTION
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to product[:short_statements], edit_client_product_path(product[:client_id], product[:id]), target: "_blank"
+                %span.description-text SHORT STATEMENTS
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to product[:tags], edit_client_product_path(product[:client_id], product[:id]), target: "_blank"
+                %span.description-text TAGS
+            .col-sm-2.border-right
+              .description-block
+                %h5.description-header= link_to product[:total_subject_videos], client_subject_videos_path(product[:client_id], q: {product_id_eq: product[:id]}), target: "_blank"
+                %span.description-text SUBJECT VIDEOS
+            .col-sm-2
+              .description-block
+                %h5.description-header= link_to product[:landing_pages], client_client_landing_pages_path(product[:client_id]), target: "_blank"
+                %span.description-text LANDING PAGES
+    - if product[:parent].present?
+      - parent_product = product[:parent]
+      .col-sm-6
+        .box.box-widget.widget-user
+          .widget-user-header.bg-gray-active
+            %h3.widget-user-username
+              %b= link_to parent_product[:name], edit_client_product_path(parent_product[:client_id], parent_product[:id]), target: "_blank"
+            %h5.widget-user-desc Donor product
+            .widget-user-image
+              %img{src: parent_product[:logo_url]}
+          .box-footer
+            .row
+              .col-sm-2.border-right
+                .description-block
+                  %h5.description-header= link_to parent_product[:short_descriptions], edit_client_product_path(parent_product[:client_id], parent_product[:id]), target: "_blank"
+                  %span.description-text SHORT DESCRIPTION
+              .col-sm-2.border-right
+                .description-block
+                  %h5.description-header= link_to parent_product[:long_descriptions], edit_client_product_path(parent_product[:client_id], parent_product[:id]), target: "_blank"
+                  %span.description-text LONG DESCRIPTION
+              .col-sm-2.border-right
+                .description-block
+                  %h5.description-header= link_to parent_product[:short_statements], edit_client_product_path(parent_product[:client_id], parent_product[:id]), target: "_blank"
+                  %span.description-text SHORT STATEMENTS
+              .col-sm-2.border-right
+                .description-block
+                  %h5.description-header= link_to parent_product[:tags], edit_client_product_path(parent_product[:client_id], parent_product[:id]), target: "_blank"
+                  %span.description-text TAGS
+              .col-sm-2.border-right
+                .description-block
+                  %h5.description-header= link_to parent_product[:total_subject_videos], client_subject_videos_path(parent_product[:client_id], q: {product_id_eq: parent_product[:id]}), target: "_blank"
+                  %span.description-text SUBJECT VIDEOS
+              .col-sm-2
+                .description-block
+                  %h5.description-header=link_to parent_product[:landing_pages], client_client_landing_pages_path(parent_product[:client_id]), target: "_blank"
+                  %span.description-text LANDING PAGES
+
+- locality_ids = main_client[:id] == 7 ? EmailAccountsSetup.where(client_id: main_client[:id]).first.cities.map(&:to_i) : EmailAccount.distinct.select(:locality_id).where("client_id = ?", main_client[:id]).pluck(:locality_id)
+- localities = locality_ids.present? ? Geobase::Locality.joins("LEFT OUTER JOIN geobase_regions ON geobase_regions.id = geobase_localities.primary_region_id LEFT OUTER JOIN geobase_countries ON geobase_countries.id = geobase_regions.country_id").select("geobase_localities.*, locality_artifacts_images_count(geobase_localities.id, geobase_localities.name, geobase_localities.primary_region_id) AS images_count, locality_high_res_artifacts_images_count(geobase_localities.id, geobase_localities.name, geobase_localities.primary_region_id) AS high_res_images_count").where("locality_artifacts_images_count(geobase_localities.id, geobase_localities.name, geobase_localities.primary_region_id) <= 100000000000 AND geobase_localities.id in (?)", locality_ids).order("geobase_localities.population DESC NULLS LAST") : []
+
+.row
+  .col-sm-12
+    %hr
+    .text-center
+      %h4
+        %b
+          %u LOCALITIES REPORT
+    = render partial: "artifacts/images/report_by_localities_table_body", locals: {localities: localities}
+
+-# = render partial: "templates/aae_project_dynamic_texts/report"

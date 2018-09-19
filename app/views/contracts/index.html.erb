@@ -1,0 +1,73 @@
+<% title 'Contracts' %>
+<% header @client.name %>
+<% small_header 'Conracts' %>
+<% breadcrumb :contracts, @client %>
+<%= render 'clients/navigation' %>
+<div id="contracts_list" class="content-block">
+	<div class="row">
+		<div class="col-md-5">
+			<div class="btn-group btn-group-custom">
+				<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_representatives_path(@client), class: 'btn btn-primary' %>
+				<%= link_to 'New contract', new_client_contract_path(@client), class: 'btn btn-success' %>
+				<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, @email_accounts_setups_link, class: 'btn btn-primary' %>
+			</div>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+				<span class="badge bg-blue"><%= @contracts.size %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @contracts.to_a.empty? %>
+		<table id="contracts_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 75px;" id="id-th" data-field="id" class="text-center">ID</th>
+					<th>Products</th>
+          <th style="width: 150px;" class="text-center">Down payment sent date</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @contracts.each do |contract| %>
+					<tr id="tr_yc_<%= contract.id %>">
+						<td class="text-center"><%= contract.id %></td>
+            <td>
+              <% contract.products.each_with_index do |product, index| %>
+                <%= link_to product.name, edit_client_product_path(@client, id: product.id), target: '_blank' %>
+                <%= ',&nbsp;&nbsp;'.html_safe if contract.products.size - 1 != index %>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% down_payment_date = InvoiceItem.where(resource: contract, invoice_item_type: InvoiceItem.invoice_item_type.find_value(:down_payment).value).first.try(:created_at) %>
+              <% if down_payment_date.present? %>
+                <%= local_time(down_payment_date, format: '%m/%d/%y %I:%M %p', title: down_payment_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+              <% end %>
+            </td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_client_contract_path(@client, id: contract.id), { class: 'btn btn-xs btn-primary' } %>
+                <% if Setting.get_value_by_name("Invoice::DOWN_PAYMENT_INVOICING_ENABLED") == 'true' && !contract.has_down_payment_items? && contract.payment_amount.to_i > 0 && contract.down_payment.to_i > 0 %>
+                  <% if !contract.client.pay_pal_email.present? %>
+                    <%= link_to 'Send down payment invoice', 'javascript://', class: "btn btn-xs btn-success", title: "Please add PayPal email to client", onclick: "alert('Please add PayPal email to client')"  %>
+                  <% else %>
+                    <%= link_to 'Send down payment invoice', send_down_payment_invoice_client_contract_path(@client, id: contract.id), data: { confirm: 'Are you sure?' }, class: "btn btn-xs btn-success" %>
+                  <% end %>
+                <% end %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, client_contract_path(@client, id: contract), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @contracts.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

@@ -1,0 +1,60 @@
+%tr
+	%td.text-center= (index+1)
+	%td.thumb.text-center
+		- unless item.try(:resource).try(:file).blank?
+			= image_tag item.resource.file.url(:square_256), style: "height: 100px; width: 100px", data:{src: item.resource.file.url}, class: "livepreview"
+	%td
+		- unless item.try(:resource).try(:file).blank?
+			.original-image-info
+				%div
+					%strong ORIGINAL
+				- unless item.try(:component).blank?
+					%div
+						%strong Media Storage ID:
+						&nbsp;
+						= item.component.id
+					%div
+						%strong Media Storage URL:
+						&nbsp;
+						= link_to "link", item.component.file.url(:original, timestamp: false), target: "BLANK"
+					- if !item.component.width.blank? && !item.component.height.blank?
+						%div
+							%strong Dimensions:
+							&nbsp;
+							= "#{item.component.width}x#{item.component.height}"
+					- unless item.component.file_file_size.blank?
+						%div
+							%strong Size
+							&nbsp;
+							= number_to_human_size item.component.file_file_size
+					%div
+						%strong Imported At:
+						&nbsp;
+						= item.component.created_at.strftime("%m-%d-%Y %I:%M:%S %p")
+			.derived-image-info
+				%div
+					%strong DERIVATION
+					- unless item.resource.blank?
+						%div
+							%strong Derivation URL:
+							&nbsp;
+							= link_to "link", item.resource.file.url, target: "BLANK"
+						-#TODO: replace using of Paperclip::Geometry with width/height fields in the database
+						-#- geometry = Paperclip::Geometry.from_file(item.resource.file.path)
+						-# - unless geometry.blank?
+						-# 	%div
+						-# 		%strong Dimensions:
+						-# 		&nbsp;
+						-# 		= "#{geometry.width.to_i}x#{geometry.height.to_i}"
+						- unless item.resource.file_file_size.blank?
+							%div
+								%strong Size
+								&nbsp;
+								= number_to_human_size item.resource.file_file_size
+						%div
+							%strong Created At:
+							&nbsp;
+							= item.resource.created_at.strftime("%m-%d-%Y %I:%M:%S %p")
+	%td
+		- unless item.component.blank?
+			= render partial: "public/credits/youtube/videos/common/image_index_table_row_license", locals: {image: item.component}

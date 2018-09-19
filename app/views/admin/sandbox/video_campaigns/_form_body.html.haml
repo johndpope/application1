@@ -1,0 +1,31 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.row
+	.col-md-12
+		.form-group
+			= f.label :sandbox_client_id, t('sandbox.video_campaign.sandbox_client_id')
+			= f.hidden_field :sandbox_client_id, class: "form-control"
+			= hidden_field_tag 'sandbox_client_json', @sandbox_client_json
+.row
+	.col-md-12
+		.form-group
+			= f.label :source_video_id, t('sandbox.video_campaign.source_video_id')
+			= f.hidden_field :source_video_id, class: "form-control"
+			= hidden_field_tag 'source_video_json', @source_video_json
+.row
+	.col-md-3
+		.form-group
+			= f.label :order_nr, t('sandbox.video_campaign.order_nr')
+			= f.text_field :order_nr, class: "form-control"
+	.col-md-3
+		.form-group
+			= f.label :is_active, t('sandbox.video_campaign.is_active')
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= f.select(:is_active, yes_no_options, {include_blank: '', selected: f.object.is_active}, {class: 'form-control'})
+.form-group
+	= f.label :title, t('sandbox.video_campaign.title')
+	= f.text_field :title, class: "form-control"
+
+= javascript_include_tag "admin/sandbox/video_campaigns/form_body"

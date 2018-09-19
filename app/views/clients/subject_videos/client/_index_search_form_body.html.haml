@@ -1,0 +1,13 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :product_id, 'Campaign'
+			- options = options_from_collection_for_select(@client.products.order(:name), :id, :name, @search.product_id_eq)
+			= sf.select :product_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-3
+			= sf.label :custom_title, 'Internal	Title'
+			= sf.search_field :custom_title_cont, class: "form-control"
+		.col-md-2
+			= sf.label :ready_for_production, 'Ready for Production'
+			- options = [[I18n.t('yes'), 'true'], [I18n.t('no'), 'false']]
+			= sf.select :ready_for_production_eq, options, {include_blank: true}, class: "form-control"

@@ -1,0 +1,41 @@
+#timeline
+	- @timeline_videos.each do |type, videos|
+		- v = videos.first
+		- video_url = url_for(controller: "sandbox/video_blenders",
+		action: "video_info",
+		client_uuid: @sandbox_client.uuid,
+		video_blender_id: @video_set.id,
+		video_id: v.id)
+		- json = {action: video_url,
+			duration: v.duration.to_i,
+			title: v.title,
+			videos: (v.video.url(:original, timestamp: false) unless v.video.blank?)}
+		.media-item{class: ".media-type-video",
+		data: {"location-id" => (v.location_id unless v.location.blank?),
+		"location-name" => (v.location.name unless v.location.blank?),
+		"location-ype" => (v.location_type),
+		json: json.to_json.html_safe}}
+			= image_tag(v.thumb.url(:w240), 'data-src' => 'holder.js/128x72')
+			%i.remove.glyphicon.glyphicon-trash
+			%h6.black-title
+				= v.title
+			%i.plus.glyphicon.glyphicon-plus
+.buttons-panel
+	= link_to 'javascript://', id: "btn_regenerate", class: "btn btn-different btn-gray",
+		data: {toggle: "popover", content: "Replace with other video segments of the same type", pattern: pattern} do
+		= fa_icon 'refresh'
+		%span
+			%b="Regenerate"
+
+	= link_to 'javascript://', id: "btn_shuffle", class: "btn btn-different btn-gray",
+		data: {toggle: "popover", content: "Swap the order of the segments in timeline"} do
+		= fa_icon 'random'
+		%span
+			%b="Shuffle"
+
+	= link_to sandbox_client_video_blender_blend_path(@sandbox_client.id, @video_set.id), id: "btn_blend", class: "btn btn-different btn-red" do
+		.glyphicon.glyphicon-film
+		%span
+			%b Blend
+			It
+	%i.arrow-btn

@@ -1,0 +1,8 @@
+%td= item.id
+%td= item.first_name
+%td= item.last_name
+%td= item.email
+%td= t("user_roles.#{item.roles}")
+%td= item.title
+%td= item.admin_user_company.try(:name)
+%td= item.country.try(:name)

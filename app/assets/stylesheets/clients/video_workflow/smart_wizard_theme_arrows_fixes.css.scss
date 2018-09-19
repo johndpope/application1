@@ -1,0 +1,26 @@
+.sw-theme-arrows{
+	ul.step-anchor{
+		margin-top: 0px !important;
+		background: none;
+	}
+}
+
+.sw-theme-arrows > ul.step-anchor > li.failed > a {
+    border-color: #dd4b39 !important;
+    color: #fff !important;
+    background: #dd4b39 !important;
+}
+
+.sw-theme-arrows > ul.step-anchor > li.failed > a:after {
+    border-left: 30px solid #dd4b39 !important;
+}
+
+.sw-theme-arrows > ul.step-anchor > li.in_process > a {
+    border-color: #f39c12 !important;
+    color: white !important;
+    background: #f39c12 !important;
+}
+
+.sw-theme-arrows > ul.step-anchor > li.in_process > a:after {
+    border-left: 30px solid #f39c12 !important;
+}

@@ -1,0 +1,5 @@
+%ul.nav.nav-tabs
+  %li{class: ("active" if %w(general_image_tags update_general_image_tags).include?(params[:action]))}
+    = link_to "General", client_image_tags_general_path(client)
+  //%li{class: ("active" if params[:action] == "source_video_image_tags")}
+  //= link_to "Source Videos", client_image_tags_source_videos_path(client)

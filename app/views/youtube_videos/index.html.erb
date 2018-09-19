@@ -1,0 +1,276 @@
+<% title 'Youtube Videos' %>
+<% breadcrumb :youtube_videos %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<div id="youtube_videos_list">
+  <div class="row">
+    <div class="col-md-5">
+      <%= link_to 'New Youtube Video', new_youtube_video_path, class: 'btn btn-sm btn-primary' %>
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+        <span class="badge bg-blue">
+          <% unless params[:unlinked]%>
+            <%= @youtube_videos.total_count%>
+          <% else %>
+            <%=@youtube_videos.size%>
+          <% end %>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @youtube_videos.to_a.empty? %>
+    <table id="youtube_videos_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th class="sort" style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th style="width: 65px;">Thumbnail</th>
+          <th style="width: 65px;">Screenshot</th>
+          <th class="sort" id="title-th" data-field="title">Title</th>
+          <th style="min-width: 100px;" class="sort" id="youtube_channel_name-th" data-field="youtube_channel_name">Youtube Channel</th>
+          <th class="sort" id="email-th" data-field="email">Google Account</th>
+          <!-- <th style="width: 45px;" class="sort text-center" id="tier-th" data-field="tier">Tier</th> -->
+          <th class="sort" id="locality-th" data-field="locality">Locality</th>
+          <th class="sort" id="region-th" data-field="region">Region</th>
+          <th class="text-center sort" style="width: 65px;" id="country-th" data-field="country">Country</th>
+          <th style="min-width: 55px;" class="text-center sort" id="client-th" data-field="client">Client</th>
+          <th style="width: 55px;" class="text-center sort" id="is_active-th" data-field="is_active">Active</th>
+          <th style="width: 65px;" class="text-center sort" id="deleted-th" data-field="deleted">Deleted</th>
+          <th style="width: 60px;" class="text-center sort" id="linked-th" data-field="linked">Linked</th>
+					<th style="width: 55px;" class="text-center sort" id="ready-th" data-field="ready">Ready</th>
+          <th style="width: 45px;" class="text-center">Posting time</th>
+          <th style="width: 115px;" class="text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @youtube_videos.each do |youtube_video| %>
+          <tr id="tr_yv_<%=youtube_video.id%>" <%= "class=strikeout title=Deleted" if youtube_video.deleted && !youtube_video.is_active %> >
+            <td class="text-center"><%= link_to youtube_video.id, edit_youtube_video_path(youtube_video), target: "_blank" %></td>
+						<td class="text-center">
+              <% if youtube_video.thumbnail.present? %>
+                <%= link_to (image_tag URI::escape(youtube_video.thumbnail.url(:thumb), '[]'), {class: 'img-thumbnail livepreview', data: {src: youtube_video.thumbnail.url(:original)} }), URI::escape(youtube_video.thumbnail.url(:original), '[]'), {target: '_blank'} %>
+              <% end %>
+              <div>
+                <% if youtube_video.blended_video.present? && !youtube_video.deleted && youtube_video.is_active %>
+                  <%= link_to '<i class="fa fa-bolt"></i> Regenerate'.html_safe, regenerate_video_thumbnail_youtube_video_path(youtube_video), method: :post, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-info' %>
+                <% end %>
+              </div>
+            </td>
+						<td class="text-center">
+              <% if youtube_video.screenshots.last.present? && youtube_video.screenshots.last.image.present?%>
+                <div class="screenshot-div">
+                  <%= link_to (image_tag URI::escape(youtube_video.screenshots.last.image.url(:thumb), '[]'), {class: 'img-thumbnail livepreview', title: youtube_video.screenshots.last.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), data: {src: youtube_video.screenshots.last.image.url(:original)}}), URI::escape(youtube_video.screenshots.last.image.url(:original), '[]'), {target: '_blank'} %>
+                  <%= link_to edit_youtube_video_path(youtube_video) + "#screenshots-tab", {target: '_blank'} do %>
+                    <span class="badge bg-orange"><%= youtube_video.screenshots.size%></span>
+                  <% end %>
+                </div>
+              <% end %>
+            </td>
+            <td>
+              <% unless youtube_video.youtube_video_id.blank? || youtube_video.title.blank? %>
+                <%=link_to youtube_video.title, youtube_video.url, target: '_blank', data: { confirm: "Are you sure?" } %>
+              <% else %>
+                <%=youtube_video.title %>
+              <% end %>
+            </td>
+            <td>
+              <% if youtube_video.youtube_channel%>
+                <% if !youtube_video.linked && params[:unlinked].present?%>
+                  <%=link_to youtube_video.youtube_channel.youtube_channel_name, youtube_video.youtube_channel.try(:url), target: '_blank' %>
+                <% else %>
+                  <%=link_to youtube_video.youtube_channel.youtube_channel_name, edit_youtube_channel_path(youtube_video.youtube_channel), target: '_blank' %>
+                <% end %>
+              <% end %>
+            </td>
+            <td>
+              <% if youtube_video.youtube_channel && youtube_video.youtube_channel.google_account && youtube_video.youtube_channel.google_account.email_account %>
+                <%=link_to youtube_video.youtube_channel.google_account.email_account.email, edit_email_account_path(youtube_video.youtube_channel.google_account.email_account), target: '_blank' %>
+              <% end %>
+            </td>
+            <% if youtube_video.youtube_channel && youtube_video.youtube_channel.google_account && youtube_video.youtube_channel.google_account.email_account%>
+              <% ea = youtube_video.youtube_channel.google_account.email_account%>
+              <% if youtube_video.youtube_channel.google_account.email_account.locality %>
+                <!-- <td class="text-center">
+                  <%# if ea.locality.tier %>
+                    <%#= link_to ea.locality.tier, { controller: "youtube_videos", tier: ea.locality.tier, limit: params[:limit]}, class: 'sort_link' %>
+                  <%# end %>
+                </td> -->
+                <td><%= link_to ea.locality.name, { controller: "youtube_videos", locality_id: ea.locality.id, limit: params[:limit]}, class: 'sort_link' %></td>
+                <td class="overflow" style="max-width: 100px;">
+                  <%= link_to ea.locality.primary_region.name, { controller: "youtube_videos", region_id: ea.locality.primary_region.id, country_id: ea.locality.country.id, limit: params[:limit]}, class: 'sort_link' %>
+                </td>
+                <td class="text-center">
+                  <%= link_to ea.locality.country.code, { controller: "youtube_videos", country_id: ea.locality.country.id, limit: params[:limit]}, class: 'sort_link' %>
+                </td>
+              <% elsif youtube_video.youtube_channel.google_account.email_account.region %>
+                <td></td>
+                <td class="overflow" style="max-width: 100px;">
+                  <%= link_to ea.region.name, { controller: "youtube_videos", region_id: ea.region.id, country_id: ea.region.country.id, limit: params[:limit]}, class: 'sort_link' %>
+                </td>
+                <td class="text-center">
+                  <%= link_to ea.region.country.code, { controller: "youtube_videos", country_id: ea.region.country.id, limit: params[:limit]}, class: 'sort_link' %>
+                </td>
+              <% else %>
+                <!-- <td></td> -->
+                <td><%= ea.locality_name %></td>
+                <td><%= ea.region_name %></td>
+                <td><%= ea.country_name %></td>
+              <% end %>
+            <% else %>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            <% end %>
+            <td class="text-center">
+              <% if youtube_video.youtube_channel && youtube_video.youtube_channel.google_account && youtube_video.youtube_channel.google_account.email_account &&  youtube_video.youtube_channel.google_account.email_account.client%>
+                <%= link_to youtube_video.youtube_channel.google_account.email_account.client.name, { controller: "youtube_videos", client_id: youtube_video.youtube_channel.google_account.email_account.client.id, limit: params[:limit]}, class: 'sort_link' %>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% if youtube_video.is_active %>
+                <%= link_to 'YES', { controller: "youtube_videos", is_active: true, limit: params[:limit]}, class: 'btn btn-success btn-xs sort_link' %>
+              <% else %>
+                <%= link_to 'NO', { controller: "youtube_videos", is_active: false, limit: params[:limit]}, class: 'btn btn-danger btn-xs sort_link' %>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% if youtube_video.deleted %>
+                <%= link_to 'YES', { controller: "youtube_videos", deleted: true, limit: params[:limit]}, class: 'btn btn-danger btn-xs sort_link' %>
+              <% else %>
+                <%= link_to 'NO', { controller: "youtube_videos", deleted: false, limit: params[:limit]}, class: 'btn btn-success btn-xs sort_link' %>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% if youtube_video.linked %>
+                <%= link_to 'YES', { controller: "youtube_videos", linked: true, limit: params[:limit]}, class: 'btn btn-success btn-xs sort_link' %>
+              <% else %>
+                <%= link_to 'NO', { controller: "youtube_videos", linked: false, limit: params[:limit]}, class: 'btn btn-danger btn-xs sort_link' %>
+              <% end %>
+            </td>
+						<td class="text-center">
+							<% if youtube_video.ready %>
+								<%= link_to 'YES', { controller: "youtube_videos", ready: true, limit: params[:limit]}, class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', { controller: "youtube_videos", ready: false, limit: params[:limit]}, class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+            <td class="text-center">
+              <%= Utils.seconds_to_time(youtube_video.posting_time, true) %>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-custom">
+                <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_youtube_video_path(youtube_video),  class: 'btn btn-xs btn-primary' %>
+                <% if youtube_video.youtube_video_id.present? && youtube_video.blended_video.present? && !youtube_video.blended_video.file.present? %>
+                  <%= link_to 'Reblend', reblend_youtube_video_path(youtube_video), method: :post, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-warning reblend', title: 'Reblend' %>
+                <% end %>
+                <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, youtube_video, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @youtube_videos.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% else %>
+    <% unless params[:unlinked].present?%>
+      <div><%= paginate @youtube_videos, theme: 'bootstrap' %></div>
+    <% end %>
+  <% end %>
+</div>
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+  <h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+  <%
+      order = [:id, :title, :youtube_channel_name, :email, :tier, :locality, :region, :country, :client, :is_active, :linked, :deleted, :publication_date, :ready, :updated_at]
+      order_type = [["Ascending", "asc"], ["Descending", "desc"]]
+      country_id = params[:country_id]
+      order_value = params[:order]
+      #default_country_id ||= Country.where(code: 'US').first.try(:id)
+      #country_id = default_country_id unless country_id
+      order_value = :publication_date unless order_value
+    %>
+    <div id="search_params">
+      <%= hidden_field_tag :regions_url, regions_path %>
+      <%= form_tag({ controller: :youtube_videos, action: :index}, {method: :get, id: 'filters_form'}) do |f| %>
+        <%= hidden_field_tag :display_all, params[:display_all], class: 'form-control' %>
+        <div class="filter-label">ID:</div>
+        <%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+        <div class="filter-label">Title:</div>
+        <%= search_field_tag :title, params[:title], class: 'form-control' %>
+        <div class="filter-label">Video URL or Video ID:</div>
+        <%= search_field_tag :youtube_video_id, params[:youtube_video_id], class: 'form-control' %>
+        <div class="filter-label">Youtube channel ID:</div>
+        <%= search_field_tag :youtube_channel_id, params[:youtube_channel_id], class: 'form-control numeric' %>
+        <div class="filter-label">Youtube Channel Name:</div>
+        <%= search_field_tag :youtube_channel_name, params[:youtube_channel_name], class: 'form-control' %>
+        <div class="filter-label">Google Account:</div>
+        <%= search_field_tag :email, params[:email], class: 'form-control' %>
+        <div class="filter-label">Tier:</div>
+        <%= select_tag('tier', options_for_select((1..8).to_a, params[:tier]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Country:</div>
+        <%= select_tag(:country_id, options_from_collection_for_select(Geobase::Country.order(:name), :id, :name, country_id), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Region:</div>
+        <%= select_tag(:region_id, options_from_collection_for_select(Geobase::Region.where(country_id: country_id, level: 1).order(:name), :id, :name, params[:region_id]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Active:</div>
+        <%= select_tag(:is_active, options_for_select([['YES', true], ['NO', false]], params[:is_active]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Channel Active:</div>
+        <%= select_tag(:channel_is_active, options_for_select([['YES', true], ['NO', false]], params[:channel_is_active]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Channel Phone Verified:</div>
+        <%= select_tag(:channel_is_verified, options_for_select([['YES', true], ['NO', false]], params[:channel_is_verified]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Email Account Active:</div>
+        <%= select_tag(:gmail_is_active, options_for_select([['YES', true], ['NO', false]], params[:gmail_is_active]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Deleted:</div>
+        <%= select_tag(:deleted, options_for_select([['YES', true], ['NO', false]], params[:deleted]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Linked:</div>
+        <%= select_tag(:linked, options_for_select([['YES', true], ['NO', false]], params[:linked]), { include_blank: true, class: 'form-control' } ) %>
+				<div class="filter-label">Ready:</div>
+        <%= select_tag(:ready, options_for_select([['YES', true], ['NO', false]], params[:ready]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Has youtube video ID:</div>
+        <%= select_tag(:has_youtube_video_id, options_for_select([['YES', true], ['NO', false]], params[:has_youtube_video_id]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Grab stats succeded:</div>
+        <%= select_tag(:grab_statistics_succeded, options_for_select([['YES', true], ['NO', false]], params[:grab_statistics_succeded]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Grab stats error type:</div>
+        <%= select_tag(:grab_statistics_error_type, options_for_select(YtStatistic::ERROR_TYPES.collect { |key, value| [key.to_s.humanize, value] }, params[:grab_statistics_error_type]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Processed:</div>
+        <%= select_tag(:processed, options_for_select([['YES', true], ['NO', false]], params[:processed]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Annotations posted:</div>
+        <%= select_tag(:annotations_posted, options_for_select([['YES', true], ['NO', false]], params[:annotations_posted]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Cards posted:</div>
+        <%= select_tag(:cards_posted, options_for_select([['YES', true], ['NO', false]], params[:cards_posted]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Call to action overlays posted:</div>
+        <%= select_tag(:call_to_action_overlays_posted, options_for_select([['YES', true], ['NO', false]], params[:call_to_action_overlays_posted]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Posted on G+:</div>
+        <%= select_tag(:posted_on_google_plus, options_for_select([['YES', true], ['NO', false]], params[:posted_on_google_plus]), { include_blank: true, class: 'form-control' } ) %>
+        <div class="filter-label">Client:</div>
+        <%= select_tag(:client_id, options_from_collection_for_select(Client.all.order(:name), :id, :name, params[:client_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Bot server:</div>
+        <%= select_tag(:bot_server_id, options_from_collection_for_select(BotServer.where(human_emulation: true).order(:id), :id, :name, params[:bot_server_id]), { include_blank: true, class: 'form-control' }) %>
+        <div class="filter-label">Order by:</div>
+        <%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Order type:</div>
+        <%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+        <div class="filter-label">Items on page:</div>
+        <%= select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500 ], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+        <div class="filter-label text-center">
+          <div class="col-md-12">
+            <button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+</div>

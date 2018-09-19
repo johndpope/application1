@@ -1,0 +1,15 @@
+<% modal = render partial: '/templates/aae_project_dynamic_texts/form', locals: {dynamic_text: @dynamic_text} %>
+$('body').remove('.dynamic-text-form-modal').append('<%= escape_javascript(modal) %>');
+$('.dynamic-text-form-modal').modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function(e){
+		$(this).remove()
+})
+
+$('.modal').popover({
+  selector: '[data-toggle="popover"]',
+  content: $(this).data('content'),
+  title: $(this).data('title'),
+  html: true,
+  placement: 'top',
+  container:'.modal',
+  trigger: 'hover'
+});

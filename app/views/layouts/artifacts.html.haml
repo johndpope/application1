@@ -1,0 +1,66 @@
+!!!
+%html
+  %head
+    %title ARTifacts
+    %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' }
+    = stylesheet_link_tag 'artifacts/application'
+    = yield :stylesheets
+  - body_class = "#{params[:controller].gsub('/', '_')} #{params[:action]}"
+  %body.skin-green{ :class => "sidebar-open #{body_class}", data: { page: @data_page } }
+    = render partial: '/overlay_spinner'
+    .wrapper
+      %header.main-header
+        = link_to artifacts_root_path, :class => 'logo' do
+          %strong> ART
+          %small ifacts
+        %nav.navbar.navbar-static-top{ role: 'navigation' }
+          %a.sidebar-toggle{ href: 'javascript:', data: { toggle: 'offcanvas'}, role: 'button' }
+            %span.sr-only Toggle Navigation
+            - 3.times do
+              %span.icon-bar
+          %ul.nav.navbar-nav
+            = yield :top_nav
+          .navbar-custom-menu
+            %ul.nav.navbar-nav
+              %li
+                %a{ href: 'javascript:', id: 'scroll-up', title: 'Scroll up' }
+                  = fa_icon 'arrow-up'
+              %li
+                %a{ href: 'javascript:', id: 'scroll-down', title: 'Scroll down' }
+                  = fa_icon 'arrow-down'
+              %li
+                = link_to 'javascript://' do
+                  = fa_icon 'user', text: current_admin_user.username
+              %li
+                = link_to destroy_admin_user_session_url(authenticity_token: form_authenticity_token), method: :delete do
+                  = fa_icon 'sign-out', text: 'Sign Out'
+      %aside.main-sidebar
+        %section.sidebar
+          %ul.sidebar-menu
+            %li.treeview{:class => ('active' if params[:controller] == 'artifacts/images' && params[:action] == 'dashboard')}
+              = link_to root_path do
+                = fa_icon 'dashboard'
+                %span Broadcaster dashboard
+            = render partial: "layouts/artifacts_sidebar"
+      %aside.content-wrapper
+        %section.content-header
+          - if content_for? :header
+            %h1
+              = yield :header
+              - if content_for? :small_header
+                %small= yield :small_header
+          = breadcrumbs separator: ' &rsaquo; ', class: :breadcrumb
+        %section.content= yield
+      %footer.main-footer
+        %strong
+          Copyright &copy;
+          = Time.now.year
+          %a{ href: 'http://valynteen.com' } Valynteen Solutions
+        All rights reserved.
+    - if content_for?(:toolbar)
+      #toolbar-toggle.no-print
+        = fa_icon 'gear'
+      #toolbar.no-print
+        = yield :toolbar
+    = javascript_include_tag 'artifacts/application'
+    = yield :javascripts

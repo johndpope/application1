@@ -1,0 +1,31 @@
+.public_credits_youtube_videos{
+	&.index{
+		#youtube_videos_credits{
+			.youtube-video{
+				margin-bottom: 8px;
+				.title{
+					width: 192px;
+  				white-space: nowrap;
+  				overflow: hidden;
+  				text-overflow: ellipsis;
+				}
+				img.thumb{
+					width:192px;
+					height:108px;
+				}
+			}
+		}
+	}
+	&.show{
+		#youtube_video_body_images{
+			.license{display: block; width: 120px; height: 42px;}
+			th.order_nr{width: 40px;}
+			td.thumb{width: 100px;}
+			th.image_info{width: 300px;}
+
+			.original-image-info{
+				margin-bottom: 10px;
+			}
+		}
+	}
+}

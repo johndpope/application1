@@ -1,0 +1,10 @@
+.row
+	- default_country = Geobase::Country.find_by_code('US')
+	- json = !f.object.send(locality_field).blank? ? f.object.send(locality_field).to_json(only: [:id, :name], include: [primary_region: {only: [:id, :name], include: [country: {only: [:id, :name]}]}]) : {}
+	= hidden_field_tag "location_json", json
+	- %w(country region1 locality_id).each do |g|
+		.col-md-4
+			.form-group
+				= label_tag g
+				= g != 'locality_id' ? hidden_field_tag(g, '', class: "form-control") : f.hidden_field(g, id: 'locality_id', class: "form-control")
+= javascript_include_tag 'admin/sandbox/common/form_locality'

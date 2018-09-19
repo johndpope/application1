@@ -1,0 +1,85 @@
+.artifacts_common {
+  &.home {
+    #country, #region {
+      position: relative;
+      height: 640px;
+    }
+
+    .progress {
+      margin-top: 10px;
+    }
+
+    #recap {
+      ul {
+        &.nav-stacked {
+          max-height: 320px;
+          overflow-y: scroll;
+        }
+      }
+    }
+  }
+}
+
+/*--- Styles for Live Preview Window ---*/
+#livepreview_iframe {
+    box-shadow: inset 5px 5px 10px #666;
+    -moz-box-shadow: inset 5 5px 10px #666;
+    -webkit-box-shadow: inset 5 5px 10px #666;
+}
+
+#livepreview_dialog {
+  padding: 0px;
+  height: 200px;
+  width: 300px;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: absolute;
+  border: solid 5px #666;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+#livepreview_dialog:after,
+#livepreview_dialog:before {
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+#livepreview_dialog.bottom:after,
+#livepreview_dialog.bottom:before {
+    bottom: 100%;
+    left: 50%;
+}
+
+/*--- end. ---*/
+.screenshot-div {
+	position: relative;
+	max-width: 65px;
+
+	span.badge {
+		position: absolute;
+		top: 0px;
+		right: 0px;
+		font-size: 9px;
+		font-weight: 400;
+	}
+}
+
+@-webkit-keyframes blinker {
+  from {opacity: 1.0;}
+  to {opacity: 0.0;}
+}
+.blink{
+	text-decoration: blink;
+	-webkit-animation-name: blinker;
+	-webkit-animation-duration: 0.6s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-timing-function:ease-in-out;
+	-webkit-animation-direction: alternate;
+}

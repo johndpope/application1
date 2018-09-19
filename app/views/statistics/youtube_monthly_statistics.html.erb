@@ -1,0 +1,37 @@
+<% breadcrumb :youtube_monthly_statistics, params[:year], params[:month] %>
+
+<%= javascript_include_tag 'monthly_youtube_statistics' %>
+
+<input type="hidden" id="year" value="<%= params[:year] %>"/>
+<input type="hidden" value="<%= params[:month]%>" id="month"/>
+
+<% unless @time_periods.empty? %>	
+	<div>
+		<% cur_year = nil %>
+
+		<% @time_periods.each_with_index do |time_period, i| %>						
+			<% unless cur_year || cur_year == time_period['_year'] %>
+				<div class="row">
+					<div class="col-md-1"><strong><%= time_period['_year']%></strong></div>
+					<div class="col-md-11">
+			<% end %>						
+						<% if(time_period['_year'] == params[:year] && time_period['_month'] == params[:month]) %>
+							<span class="label label-primary"><%= Date::MONTHNAMES[params[:month].to_i] %></span>
+						<% else %>
+							<%= link_to "#{Date::MONTHNAMES[time_period['_month'].to_i]}", youtube_monthly_statistics_path(time_period['_year'],time_period['_month']), id:"#{time_period['_month']}_#{time_period['_year']}"%>
+						<% end %>
+
+			<% cur_year = time_period['_year'] %>
+						
+			<% if cur_year != time_period['_year'] || (i+1) == @time_periods.length %>			
+					</div>
+				</div>
+			<% end %>
+			
+		<% end %>	
+	</div>
+<% end %>
+
+<div id="video_uploads_chart">
+	
+</div>

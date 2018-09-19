@@ -1,0 +1,3 @@
+$('#<%= dom_id(@dynamic_text, "row") %>').remove();
+display = $('#<%=@dynamic_text.text_type%>_index_table tbody.tbody > tr').length == 0 ? 'display: none' : '';
+$('#<%=@dynamic_text.text_type%>_index_table').find('tbody.tfoot').attr('style', display).end().closest('.box').find('.items-count').html('<%=items_count%>');

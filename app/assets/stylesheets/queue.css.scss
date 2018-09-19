@@ -1,0 +1,47 @@
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  padding: 4px !important;
+  vertical-align: middle !important;
+}
+.box {
+  border-radius: 10px !important;
+}
+.bootstrap-tagsinput {
+  .tag {
+    font-size: 13px;
+  }
+}
+.ui-autocomplete {
+  z-index: 9999 !important;
+}
+.overflow { word-wrap: break-word; }
+.localities_list {
+  .panel-group {
+    margin-bottom: 3px;
+  }
+  .badge {
+    font-size: 14px;
+  }
+  .panel-body {
+    .label {
+      font-size: small;
+      line-height: 2;
+    }
+  }
+}
+.panel-title {
+  a {
+    color: #3c8dbc;
+  }
+  a:hover {
+    color: #72afd2;
+  }
+}
+
+.filter-label {
+	margin-top: 2px;
+	font-weight: bold;
+}
+
+.popover {
+  z-index: 99999;
+}

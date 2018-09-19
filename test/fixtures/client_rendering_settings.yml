@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  rendering_priority: 1
+  auto_approve_rendered_video_chunks: false
+  client_id: 1
+
+two:
+  rendering_priority: 1
+  auto_approve_rendered_video_chunks: false
+  client_id: 1

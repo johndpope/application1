@@ -1,0 +1,33 @@
+<%= title @training_info.name %>
+<div class="row">
+	<div class="col-md-6">
+		<div class="form-group">
+			<% if @training_info.id && @training_info.video.present? %>
+				<video width="960" height="540" controls="controls" preload="none" class="thumbnail img-thumbnail">
+					<source src="<%=URI::escape(@training_info.video.url(:original), '[]') %>" type="video/mp4">
+					Your browser does not support the info tag.
+				</video>
+			<% end %>
+			<div class="form-group">
+				<label class='control-label'><u>Description</u>:</label>
+				<span class='control-label'><%= @training_info.description %></span>
+			</div>
+			<div class="form-group">
+				<label class='control-label'><u>Group Name</u>:</label>
+				<span class='control-label'><%= @training_info.group_name %></span>
+			</div>
+			<div class="form-group">
+				<label class='control-label'><u>Version</u>:</label>
+				<span class='control-label'><%= @training_info.version %></span>
+			</div>
+			<div class="form-group">
+				<label class='control-label'><u>Recorded At</u>:</label>
+				<span class='control-label'><%= @training_info.recorded_at.try(:strftime, '%m/%d/%y') %></span>
+			</div>
+			<div class="form-group">
+				<label class='control-label'><u>Uploaded At</u>:</label>
+				<span class='control-label'><%= @training_info.created_at.try(:strftime, '%m/%d/%y') %></span>
+			</div>
+		</div>
+	</div>
+</div>

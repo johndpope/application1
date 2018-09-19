@@ -1,0 +1,27 @@
+- unless @video_marketing_campaign_form.youtube_refresh_token.blank?
+	#bind_new_yt_channel_block
+		Did you bind wrong channel?
+		&nbsp;
+		= link_to 'Bind new one', 'javascript://', id:'bind_new_yt_channel_btn'
+#refresh_token_block{style:("display:none" unless @video_marketing_campaign_form.youtube_refresh_token.blank?)}
+	#content_disclaimer_block
+		.alert.alert-warning{role:"alert"}
+			%h4
+				= fa_icon 'exclamation-triangle'
+				Content Disclaimer
+			%div
+				Please, read attentively our content disclaimer
+			%div
+				= link_to 'See disclaimer', '', class:'btn btn-sm btn-default', id: 'see_content_disclaimer_btn', data:{toggle:"modal",target:"#content_disclaimer_modal"}
+		= render partial: 'content_disclaimer_modal'
+	%div
+		= link_to	'javascript://', data:{toggle:"popover", title:'What is Refresh Token?'}, id:'btn_refresh_token_explanation' do
+			= fa_icon 'question-circle', text:'What is Refresh Token?'
+	%div
+		= link_to	'javascript://', id: 'how_obtain_refresh_token_btn', data:{toggle:"modal",target:"#how_to_obtain_refresh_token_modal"} do
+			= fa_icon 'question-circle', text:'How to get Refresh Token?'
+		= render partial: 'how_to_obtain_refresh_token_modal'
+	#refresh_token_btn_block
+		- request_url = YoutubeApiService.genetate_google_plus_and_youtube_oauth_request_link(sandbox_youtube_oauth_callback_url())
+		= link_to request_url, class:'btn btn-primary' do
+			= fa_icon 'key', text:'Get Refresh Token'

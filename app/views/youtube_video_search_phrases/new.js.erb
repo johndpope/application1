@@ -1,0 +1,16 @@
+<%
+  modal = render partial: 'youtube_video_search_phrases/form', locals: {youtube_video_search_phrase: youtube_video_search_phrase}
+%>
+
+$("#modal_youtube_video_search_phrase").remove()
+$(".modal-backdrop").remove()
+$("#modal_youtube_video_search_phrase").modal('destroy').remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#modal_youtube_video_search_phrase").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('.has-error').popover({
+  trigger: 'hover',
+  placement: 'bottom',
+  animation: true
+});

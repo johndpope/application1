@@ -1,0 +1,39 @@
+<%= nested_form_for @phone_service_account do |f| %>
+	<div class="row">
+		<% if @phone_service_account.errors.any? %>
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@phone_service_account.errors.count, 'error') %> prohibited this phone service account from being saved</h4>
+				</div>
+			</div>
+		<% end %>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group <%= 'has-error' if @phone_service_account.errors[:phone_service].present? %>" data-content="<%= @phone_service_account.errors[:phone_service].try(:join, ',') %>">
+								<%= f.label :phone_service, class: 'control-label' %>
+								<%= f.select(:phone_service_id, options_from_collection_for_select(PhoneService.all.order(name: :asc), :id, :name, @phone_service_account.phone_service_id), { include_blank: true, class: 'form-control', placeholder: 'Select phone service' }) %>
+							</div>
+              <div class="form-group">
+                <%= f.label :current_bid, class: 'control-label' %>
+                <%= f.number_field :current_bid, min: 0, step: 0.01, class: 'form-control', placeholder: 'Current bid' %>
+              </div>
+              <%= f.fields_for :api_account do |builder| %>
+                <%= render "api_accounts/form_fields", {:@api_account => @phone_service_account.api_account, :f => builder } %>
+              <% end %>
+							<div class="form-group col-md-12">
+								<div class="actions pull-right">
+									<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, phone_service_accounts_path, class: 'btn btn-sm btn-primary' %>
+									<%= f.submit :class => 'btn btn-sm btn-success', :id => 'phone_service_account_submit' %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

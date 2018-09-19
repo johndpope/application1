@@ -1,0 +1,499 @@
+<%= content_for(:javascripts){javascript_include_tag 'youtube_setups_form'} %>
+<%= nested_form_for @youtube_setup, url: client_youtube_setup_path(@client, @youtube_setup), html: { multipart: true } do |f| %>
+	<%= f.hidden_field :client_id %>
+	<% if @youtube_setup.errors.any? %>
+		<div id="error_explanation" class="alert alert-danger alert-dismissable">
+			<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+			<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@youtube_setup.errors.count, 'error') %> prohibited this youtube setup from being saved</h4>
+		</div>
+	<% end %>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="form-group <%= 'has-error' if @youtube_setup.errors[:email_accounts_setup].present? || @youtube_setup.errors[:email_accounts_setup_id].present? %>" data-content="<%= (@youtube_setup.errors[:email_accounts_setup].to_a + @youtube_setup.errors[:email_accounts_setup_id].to_a).try(:join, ',') %>">
+				<%= f.label :email_accounts_setup, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "youtube_setups", table_column: "email_accounts_setup_id"}) %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #A85D13; border: 1px solid #A85D13;"><i class="fa fa-file-text-o"></i></span>
+					<%
+						email_accounts_setups_array = EmailAccountsSetup.where('client_id = ?', @client.id).map do |eas|
+							[eas.display_name, eas.id]
+						end
+					%>
+					<%= f.select :email_accounts_setup_id, options_for_select(email_accounts_setups_array, @youtube_setup.email_accounts_setup_id), { include_blank: false }, { class: 'select2 form-control' } %>
+				</div>
+			</div>
+			<!-- <div class="form-group">
+				<%#= f.label :protected_words, class: 'control-label' %>
+				<div class="input-group">
+					<span class="input-group-addon" style="background-color: #5F7077; border: 1px solid #5F7077;"><i class="fa fa-lock"></i></span>
+					<%#= f.text_field :protected_words, { placeholder: "Protected Words"} %>
+				</div>
+			</div> -->
+		</div>
+	</div>
+
+	<% %w(business personal).each do |type| %>
+    <div class="panel panel-default">
+      <div id="<% type %>_part_heading" class="panel-heading">
+        <h4 class="panel-title">
+          <% if type == 'business'%>
+            <a role="button" data-toggle="collapse" data-parent="<%= type %>_part_descriptions-accordion" href="#<%= type %>_part" aria-expanded="true" aria-controls="#<%= type %>_part" style="font-size: larger;"><b><u><%= type.titleize.upcase %> SECTION</u></b></a>
+          <% else %>
+            <a style="font-size: larger;" title="Disabled"><b><u><%= type.titleize.upcase %> SECTION</u></b></a>
+          <% end %>
+        </h4>
+      </div>
+      <div id="<%= type %>_part" class="panel-collapse collapse <%= 'in' if type == 'business' %>" aria-labelledby="<%= type %>_part">
+        <div class="panel-body">
+          <div class="nav-tabs custom-tabs">
+            <ul class="nav nav-tabs">
+              <% %w(channel video).each_with_index do |target, index| %>
+                <li class="tab-url <%= 'active' if index == 0 %>"><a href="#<%= type %>_<%= target %>_tab" data-toggle="tab" style="font-variant: small-caps;"><%= target.titleize.pluralize %> part</a></li>
+              <% end %>
+            </ul>
+            <div class="tab-content">
+              <% %w(channel video).each_with_index do |target, index| %>
+                <div class="tab-pane <%= 'active' if index == 0 %>" id="<%= type %>_<%= target %>_tab">
+                  <% if target == 'channel' %>
+                    <div class="row">
+                      <div class="form-group col-md-3">
+                        <%= f.check_box :use_youtube_channel_art, class: 'iCheck-helper' %>
+                        <%= f.label :use_youtube_channel_art, class: 'control-label' %>
+                        <%= tooltip_by_field({table_name: "youtube_setups", table_column: "use_youtube_channel_art"}) %>
+                      </div>
+                      <div class="form-group col-md-3">
+                        <%= f.check_box :use_youtube_channel_icon, class: 'iCheck-helper' %>
+                        <%= f.label :use_youtube_channel_icon, class: 'control-label' %>
+                        <%= tooltip_by_field({table_name: "youtube_setups", table_column: "use_youtube_channel_icon"}) %>
+                      </div>
+                        <!-- <div class="form-group col-md-3">
+                          <%#= f.check_box :use_google_plus_cover_photo, class: 'iCheck-helper' %>
+                          <%#= f.label :use_google_plus_cover_photo, class: 'control-label' %>
+                          <%#= tooltip_by_field({table_name: "youtube_setups", table_column: "use_google_plus_cover_photo"}) %>
+                        </div>
+                        <div class="form-group col-md-3 check-group" id="use_youtube_channel_art_text_div">
+                          <input id="use_youtube_channel_art_text" class="iCheck-helper" <%# if @youtube_setup.youtube_channel_art_text.present? %>checked="checked"<%# end %> type="checkbox">
+                          <label class="control-label" for="use_youtube_channel_art_text">Use youtube channel art text</label>
+                          <%#= tooltip_by_field({table_name: "youtube_setups", table_column: "youtube_channel_art_text"}) %>
+                        </div> -->
+                      <!-- <div id="youtube_channel_art_text_block" class="form-group" <%# unless @youtube_setup.youtube_channel_art_text.present? %>style="display: none;"<%# end %>>
+                        <%#= f.label :youtube_channel_art_text, class: 'control-label' %>
+                        <div class="input-group">
+                          <span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+                          <%#= f.text_area :youtube_channel_art_text, size: '40x3', class: 'form-control', placeholder: 'Enter youtube channel art text variants separated by;' %>
+                        </div>
+                      </div> -->
+                    </div>
+                    <div class="form-group">
+                      <%= f.label "#{type}_inquiries_email" %>
+                      <%= tooltip_by_field({table_name: "youtube_setups", table_column: "business_inquiries_email"}) %>
+                      <%= f.text_field "#{type}_inquiries_email", class: 'form-control', placeholder: "#{type.titleize} Inquiries Email" %>
+                    </div>
+                    <%= f.label "#{type}_channel_art_reference_links"  %>
+                    <%= tooltip_by_field({tooltip_text: t('tooltips.youtube_setups.add_reference_link', :default => "")}) %>
+                    <% accessor = :"#{type}_channel_art_references" %>
+                    <div class="form-group" id="<%= accessor %>">
+                      <%= f.fields_for accessor do |builder| %>
+                        <div class="row">
+                          <div class="col-md-5">
+                            <%= builder.text_field :url, class: 'form-control', placeholder: 'URL' %>
+                          </div>
+                          <div class="col-md-5">
+                            <%= builder.text_field :description, class: 'form-control', placeholder: 'Description', maxlength: 30 %>
+                          </div>
+                          <div class="col-md-2">
+                            <%= builder.link_to_remove 'Delete' %>
+                          </div>
+                        </div>
+                        <br>
+                      <% end %>
+                      <%= f.link_to_add 'Add Reference Link', accessor %>
+                    </div>
+                  <% else %>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <%= f.check_box :use_youtube_video_thumbnail, class: 'iCheck-helper' %>
+                          <%= f.label :use_youtube_video_thumbnail, class: 'control-label' %>
+                          <%= tooltip_by_field({table_name: "youtube_setups", table_column: "use_youtube_video_thumbnail"}) %>
+                        </div>
+                      </div>
+                      <!-- <div class="col-md-3">
+                        <div class="form-group">
+                          <%#= f.check_box :use_call_to_action_overlays, class: 'iCheck-helper' %>
+                          <%#= f.label :use_call_to_action_overlays, class: 'control-label' %>
+                          <%#= tooltip_by_field({table_name: "youtube_setups", table_column: "use_call_to_action_overlays"}) %>
+                        </div>
+                      </div> -->
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <%= f.check_box :use_youtube_video_cards, class: 'iCheck-helper' %>
+                          <%= f.label :use_youtube_video_cards, class: 'control-label' %>
+                          <%= tooltip_by_field({table_name: "youtube_setups", table_column: "use_youtube_video_cards"}) %>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                  <% title_limit = Setting.get_value_by_name("Youtube#{target.titleize}::#{target.upcase}_NAME_LIMIT")%>
+                  <% if target == 'channel' %>
+                    <div class="box-header with-border text-center">
+                      <h4 class="box-title"><span class="label label-default label-round label-main" title="Youtube <%= target %> title limit: <%= title_limit %>"><%= target.upcase %> TITLE<br/><span class="limit-span">Limit <b><%= title_limit %></b> ch.</span></span>
+                      </h4>
+                    </div>
+                  <% else %>
+                    <% if type == 'business' %>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <%= f.label :rotate_content_frequency, class: 'control-label' %>
+                            <%= tooltip_by_field({table_name: "youtube_setups", table_column: "rotate_content_frequency"}) %>
+                            <%= f.select :rotate_content_frequency, options_for_select([['Every week', 7], ['Every month', 30], ['Every quarter', 90], ['Every 6 months', 180], ['Every year', 365]], @youtube_setup.rotate_content_frequency), {include_blank: true}, {class: "select2 form-control"} %>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <%= f.check_box :rotate_youtube_video_thumbnail, class: 'iCheck-helper' %>
+                            <%= f.label :rotate_youtube_video_thumbnail, class: 'control-label' %>
+                            <%= tooltip_by_field({table_name: "youtube_setups", table_column: "rotate_youtube_video_thumbnail"}) %>
+                          </div>
+                        </div>
+                      </div>
+                    <% end %>
+                    <div class="box-header with-border text-center">
+                      <h4 class="box-title"><span class="label label-default label-round label-main" title="Youtube <%= target %> title limit: <%= title_limit %>"><%= target.upcase %> TITLE<br/><span class="limit-span">Limit <b><%= title_limit %></b> ch.</span></span>
+                      </h4>
+                    </div>
+                  <% end %>
+                  <div class="form-group <%= 'has-error' if @youtube_setup.errors[:"#{type}_#{target}_title_patterns"].present? %>" data-content="<%= @youtube_setup.errors[:"#{type}_#{target}_title_patterns"].try(:join, ',') %>">
+    								<%= f.label :"#{type}_#{target}_title_patterns", "#{type.titleize} #{target.titleize} Title Patterns *", class: 'control-label', title: "Required field" %>
+  									<%= tooltip_by_field({table_name: "youtube_setups", table_column: "#{type}_#{target}_title_patterns"}) %>
+    								<div class="input-group">
+    									<%= f.select "#{type}_#{target}_title_patterns", options_from_collection_for_select(YoutubeComponentPattern.where(component_type: YoutubeComponentPattern.component_type.find_value("#{target}_title").value), :components, :name, @youtube_setup[:"#{type}_#{target}_title_patterns"]), { include_blank: true }, { placeholder: "Select #{target} title patterns", class: 'select2 form-control', multiple: "multiple" } %>
+                      <span id="<%= type %>_<%= target %>_title_patterns_arrow_down" class="select-span-arrow"><i class="fa fa-caret-down"></i></span>
+    								</div>
+    							</div>
+                  <div class="form-group">
+                    <%= f.check_box :"#{type}_#{target}_title_components_shuffle", class: 'iCheck-helper' %>
+                    <%= f.label :"#{type}_#{target}_title_components_shuffle", class: 'control-label' %>
+  									<%= tooltip_by_field({table_name: "youtube_setups", table_column: "#{type}_#{target}_title_components_shuffle"}) %>
+                  </div>
+                  <% %w(descriptor entity subject).each do |field| %>
+                    <div class="form-group <%= 'has-error' if @youtube_setup.errors[:"#{type}_#{target}_#{field}"].present? %>" data-content="<%= @youtube_setup.errors[:"#{type}_#{target}_#{field}"].try(:join, ',') %>">
+                      <div class="select2-tags-wrapper">
+                        <%= f.label "#{type}_#{target}_#{field}_csv", "#{field} Components".titleize, class: "control-label" %>
+  											<%= tooltip_by_field({table_name: "youtube_setups", table_column: "#{type}_#{target}_#{field}"}) %>
+  											<span id="youtube_setup_<%= type %>_<%= target %>_<%= field %>_csv_count" class="badge">0</span>
+                      </div>
+                      <%= f.hidden_field "#{type}_#{target}_#{field}_csv", data: { placeholder: "#{type} #{target} #{field} components".titleize } %>
+                    </div>
+                  <% end %>
+                  <% if target == "video" && @youtube_setup.client.present? %>
+                    <% products = @youtube_setup.email_accounts_setup.try(:contract).try(:products).present? ? @youtube_setup.email_accounts_setup.contract.products : @youtube_setup.client.products %>
+                    <% products.each do |product| %>
+                      <div class="form-group" style="">
+                        <div class="select2-tags-wrapper">
+                          <label class="control-label">Product <%= link_to "##{product.id}", edit_client_product_path(@youtube_setup.client, id: product.id), title: product.name, target: "_blank" %> Components</label>
+    											<span class="badge"><%= product.subject_title_components.to_a.size %></span>
+                        </div>
+                        <%= hidden_field_tag "#{type}_#{target}_product_#{product.id}_csv", product.subject_title_components.to_a.join(","), class: "subject_title_components" %>
+                      </div>
+                    <% end %>
+                    <% industry = @youtube_setup.client.industry %>
+                    <% if industry.present? %>
+                    <% industry_components = ([industry.nickname] + industry.industry_title_components.to_a).compact.reject(&:blank?) %>
+                      <div class="form-group" style="">
+                        <div class="select2-tags-wrapper">
+                          <label class="control-label">Industry <%= link_to industry.nickname || industry.name, industries_path(id: industry.id), title: industry.name, target: "_blank" %> Components</label>
+                          <span class="badge"><%= industry_components.size %></span>
+                        </div>
+                        <%= hidden_field_tag "industry_title_components_csv", industry_components.join(","), class: "subject_title_components" %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                  <div id="<%= type %>-<%= target %>-tags-accordion">
+                    <%= render 'tags_for', f: f, target: target, type: type %>
+                  </div>
+                  <div class="box-header with-border text-center">
+                    <% if target == 'channel' %>
+                      <h4>
+                        <% channel_description_limit = Setting.get_value_by_name("YoutubeChannel::CHANNEL_DESCRIPTION_LIMIT") %>
+                        <span class="label label-default label-round label-main" title="Youtube channel description limit: <%= channel_description_limit %>"><%= link_to "CHANNEL DESCRIPTION", 'javascript://', {remote: true, data: {target: target, source: 'descriptions_overview'}, class: "descriptions-overview"} %><br/><span class="limit-span">Limit <b><%= channel_description_limit %></b> ch.</span></span> = <span class="label label-default label-round">Client short d.</span> + <span class="label label-default label-round">Industry short d.</span> + <span class="label label-default label-round">Location short d.</span> + <span class="label bg-aqua label-round">Other short d.(optional)</span>
+                      </h4>
+                    <% else %>
+                      <h4>
+                        <% video_description_limit = Setting.get_value_by_name("YoutubeVideo::VIDEO_DESCRIPTION_LIMIT") %>
+                        <span class="label label-default label-round label-main" title="Youtube video description limit: <%= video_description_limit %>"><%= link_to "VIDEO DESCRIPTION", 'javascript://', {remote: true, data: {target: target, source: 'descriptions_overview'}, class: "descriptions-overview"} %><br/><span class="limit-span">Limit <b><%= video_description_limit %></b> ch.</span></span> = <span class="label label-default label-round">Landing page link(optional)</span> + <span class="label label-default label-round">Credits</span> + <span class="label label-default label-round">Client short/long d.</span> + <span class="label label-default label-round">Donor Client short/long d.</span> + <span class="label label-default label-round">Product with donor short/long d.</span> + <span class="label label-default label-round">Industry short/long d.</span> + <span class="label label-default label-round">Location long d.</span> + <span class="label label-default label-round">Subject or donor video d.</span> + <span class="label bg-aqua label-round">Other long d.(optional)</span> + <span class="label label-default label-round">Social links(optional)</span>
+                      </h4>
+                    <% end %>
+                  </div>
+                  <!-- Do not forget to separate business and personal as right now it is common-->
+                  <% if target == 'video' && type == 'business'%>
+                    <div class="form-group">
+                      <%= f.label :number_of_social_links_in_youtube_video_description, class: 'control-label' %>
+                      <%= tooltip_by_field({table_name: "youtube_setups", table_column: "social_links_in_youtube_video_description"}) %>
+                      <%= f.number_field :social_links_in_youtube_video_description, class: 'numeric form-control', placeholder: 'Number of social links in youtube video description', style: "width: 320px;" %>
+                    </div>
+                    <div class="form-group">
+                      <%= f.check_box :use_landing_page_link_in_youtube_video_description, class: 'iCheck-helper' %>
+                      <%= f.label :use_landing_page_link_in_youtube_video_description, class: 'control-label' %>
+                      <%= tooltip_by_field({table_name: "youtube_setups", table_column: "use_landing_page_link_in_youtube_video_description"}) %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+              <% if type == 'business' %>
+                  <%
+                    wording_errors = []
+                    if @youtube_setup.errors.messages[:"wordings.source"].present? || @youtube_setup.errors.messages[:"wordings.name"].present? || @youtube_setup.errors.messages[:wordings].present?
+                      wording_errors << "One of the fields is blank" if @youtube_setup.errors.messages[:"wordings.source"].present? || @youtube_setup.errors.messages[:"wordings.name"].present?
+                      wording_errors << @youtube_setup.errors.messages[:wordings]
+                    end
+                    short_description_characters_limit = Setting.get_value_by_name("YoutubeSetup::SHORT_DESCRIPTION_CHARACTERS_LIMIT").to_i
+                    long_description_characters_limit = Setting.get_value_by_name("YoutubeSetup::LONG_DESCRIPTION_CHARACTERS_LIMIT").to_i
+                  %>
+                  <div class="panel-group" id="descriptions-accordion" role="tablist" aria-multiselectable="true">
+  									<div class="panel panel-default" style="<%='border-color: #ebccd1;' if wording_errors.present? %>">
+  										<div id="descriptions_heading" class="panel-heading" style="<%='background-color: rgba(204, 39, 55, 0.24);' if wording_errors.present? %>">
+                      <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="descriptions-accordion" href="#descriptions" aria-expanded="true" aria-controls="descriptions"><b>Other Descriptions</b> <%= tooltip_by_field({tooltip_text: t("tooltips.youtube_setups.other_descriptions", :default => "Write additional channel short and video long descriptions that are not included previously. Channel short descriptions should have no more than #{short_description_characters_limit} characters, video long descriptions - no more than #{long_description_characters_limit}.")}) %> <span class="badge calc"><%= @youtube_setup.wordings.size%></span></a>
+                        <small class="text-danger">
+                          <%= wording_errors.flatten.compact.join(", ") %>
+                        </small>
+                      </h4>
+                    </div>
+
+                    <div id="descriptions" class="panel-collapse collapse" aria-labelledby="descriptions">
+                      <div class="panel-body">
+                        <div class="form-group">
+                          <%= f.fields_for :wordings do |builder| %>
+                            <%= builder.hidden_field :resource_id, value: @youtube_setup.id %>
+                            <%= builder.hidden_field :resource_type, value: 'YoutubeSetup' %>
+                            <fieldset class="form">
+                              <legend>
+                                <%= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i> Remove'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger btn-flat' %>
+                              </legend>
+                              <div class="row">
+                                <div class="col-md-4">
+                                  <label class="control-label">Name</label>
+                                  <%= builder.select(:name, {'short_description'=>{'data-text-type-limit' => short_description_characters_limit}, 'long_description'=>{'data-text-type-limit' => long_description_characters_limit}}, {include_blank: true}, class: 'form-control description-name-select m-b') %>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="control-label">Description</label>
+                                <div class="counter-characters pull-right">Characters count: <span class="badge calc-one">0</span></div>
+                                <% if builder.object.name.present? %>
+                                  <% limits = {'short_description'=>short_description_characters_limit, 'long_description'=>long_description_characters_limit}%>
+                                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits[builder.object.name]})", maxlength: limits[builder.object.name] %>
+                                <% else %>
+                                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: 'Enter text' %>
+                                <% end %>
+                              </div>
+                            </fieldset>
+                          <% end %>
+                          <%= f.link_to_add '<i class="fa fa-plus"></i> Add description'.html_safe, :wordings, class: "btn btn-sm btn-primary" %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+          <!-- <div class="panel-group read-characters" id="<%#= type %>-description-accordion" role="tablist" aria-multiselectable="true">
+            <%# %w(channel video).each do |target| %>
+              <%#= render 'paragraphs_for', f: f, target: target, type: type %>
+            <%# end %>
+          </div> -->
+        </div>
+      </div>
+    </div>
+	<% end %>
+
+	<label style="display:none;" class="m-b"><%= f.check_box :use_call_to_action_overlay, class: 'iCheck-helper' %> Use call to action overlay</label>
+
+	<div style="display:none;" id="use_call_to_action_overlay_block" class="row" <% if !@youtube_setup.use_call_to_action_overlay %>style="display: none;"<% end %>>
+		<div class="col-md-6">
+			<div class="box box-default">
+				<div class="box-header with-border">
+					<div class="box-header with-border">
+						<h4 class="box-title">Adwords Campaign</h4>
+					</div>
+					<div class="form-group">
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_account_name].present? %>" data-content="<%= @youtube_setup.errors[:adwords_account_name].try(:join, ',') %>">
+							<%= f.label :adwords_account_name, class: 'control-label' %>
+							<%= f.hidden_field :adwords_account_name, class: 'form-control multi', data: { placeholder: 'Account name' } %>
+						</div>
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_name].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_name].try(:join, ',') %>">
+							<%= f.label :adwords_campaign_name, class: 'control-label' %>
+							<%= f.hidden_field :adwords_campaign_name, class: 'form-control multi', data: { placeholder: 'Campaign name' } %>
+						</div>
+						<div class="m-th row">
+							<div class="col-md-6">
+								<%= f.label :adwords_campaign_type, class: 'control-label' %>
+								<%= f.select(:adwords_campaign_type, options_for_select(AdwordsCampaign::TYPES.collect{ | key, value | [key.to_s.humanize, value] }, @youtube_setup.adwords_campaign_type.try(:value)), { include_blank: false }, { class: 'form-control' }) %>
+							</div>
+							<div id="subtype_block" class="col-md-6" <% if @youtube_setup.adwords_campaign_type != YoutubeSetup.adwords_campaign_type.find_value('Video') %>style="display: none;"<% end %>>
+								<%= f.label :adwords_campaign_subtype, class: 'control-label' %>
+								<%= f.select(:adwords_campaign_subtype, options_for_select(AdwordsCampaign::SUBTYPES.collect{ | key, value | [key.to_s.humanize, value] }, @youtube_setup.adwords_campaign_subtype.try(:value)), { include_blank: false }, { class: 'form-control' }) %>
+							</div>
+						</div>
+						<%= f.label :networks, class: 'control-label m-th' %>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="checkbox networks-checkbox">
+									<label><%= f.check_box :adwords_campaign_networks_youtube_search, class: 'iCheck-helper' %> Youtube Search</label>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="checkbox networks-checkbox">
+									<label><%= f.check_box :adwords_campaign_networks_youtube_videos, class: 'iCheck-helper' %> Youtube Videos</label>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="checkbox networks-checkbox">
+									<label><%= f.check_box :adwords_campaign_networks_include_video_partners, class: 'iCheck-helper' %> Include video partners</label>
+								</div>
+							</div>
+						</div>
+						<div class="<%= 'has-error' if @youtube_setup.errors[:adwords_campaign_languages].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_languages].try(:join, ',') %>">
+							<%= f.label :adwords_campaign_languages, class: 'control-label' %>
+							<%= f.select(:adwords_campaign_languages, options_for_select(AdwordsCampaign::LANGUAGES.collect{ | key, value | [value, key] }, @youtube_setup.adwords_campaign_languages.try(:split, ',')), {}, { multiple: true, class: 'select2 form-control multi', placeholder: 'Languages' }) %>
+						</div>
+						<div class="row m-th">
+							<div class="col-md-6 <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_start_date].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_start_date].try(:join, ',') %>">
+								<%= f.label :adwords_campaign_start_date, class: 'control-label' %>
+								<%= f.text_field :adwords_campaign_start_date, class: 'form-control datepicker', value: @youtube_setup.adwords_campaign_start_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+							</div>
+							<div class="col-md-6">
+								<%= f.label :adwords_campaign_end_date, class: 'control-label' %>
+								<%= f.text_field :adwords_campaign_end_date, class: 'form-control datepicker', value: @youtube_setup.adwords_campaign_end_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="box box-default">
+				<div class="box-header with-border">
+					<div class="box-header with-border">
+						<h4 class="box-title">Adwords Campaign Group</h4>
+					</div>
+					<div class="form-group">
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_name].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_name].try(:join, ',') %>">
+							<%= f.label :adwords_campaign_group_name, class: 'control-label' %>
+							<%= f.hidden_field :adwords_campaign_group_name, class: 'form-control multi', data: { placeholder: 'Name' } %>
+						</div>
+						<%= f.label :adwords_campaign_group_video_ad_format, class: 'control-label m-th' %>
+						<div class="row">
+							<div class="col-md-4">
+								<%= f.select(:adwords_campaign_group_video_ad_format, options_for_select(AdwordsCampaignGroup::VIDEO_AD_FORMATS.collect{ | key, value | [key.to_s.humanize, value] }, @youtube_setup.adwords_campaign_group_video_ad_format.try(:value)), { include_blank: false }, { class: 'form-control' }) %>
+							</div>
+						</div>
+						<div id="in_stream_ad_block" <% if @youtube_setup.adwords_campaign_group_video_ad_format == YoutubeSetup.adwords_campaign_group_video_ad_format.find_value('In-display ad') %> style="display: none;"<% end %>>
+							<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_display_url].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_display_url].try(:join, ',') %>">
+								<%= f.label :adwords_campaign_group_display_url, class: 'control-label' %>
+								<%= f.hidden_field :adwords_campaign_group_display_url, class: 'form-control multi', data: { placeholder: 'Display url' } %>
+							</div>
+							<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_final_url].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_final_url].try(:join, ',') %>">
+								<%= f.label :adwords_campaign_group_final_url, class: 'control-label' %>
+								<%= f.hidden_field :adwords_campaign_group_final_url, class: 'form-control multi', data: { placeholder: 'Final url' } %>
+							</div>
+						</div>
+						<div id="in_display_ad_block" <% if @youtube_setup.adwords_campaign_group_video_ad_format != YoutubeSetup.adwords_campaign_group_video_ad_format.find_value('In-display ad') %> style="display: none;"<% end %>>
+							<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_headline].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_headline].try(:join, ',') %>">
+								<%= f.label :adwords_campaign_group_headline, class: 'control-label' %>
+								<%= f.hidden_field :adwords_campaign_group_headline, class: 'form-control multi', data: { placeholder: 'Headline' } %>
+							</div>
+							<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_description_1].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_description_1].try(:join, ',') %>">
+								<%= f.label :adwords_campaign_group_description_1, class: 'control-label' %>
+								<%= f.hidden_field :adwords_campaign_group_description_1, class: 'form-control multi', data: { placeholder: 'Description 1' } %>
+							</div>
+							<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_description_2].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_description_2].try(:join, ',') %>">
+								<%= f.label :adwords_campaign_group_description_2, class: 'control-label' %>
+								<%= f.hidden_field :adwords_campaign_group_description_2, class: 'form-control multi', data: { placeholder: 'Description 2' } %>
+							</div>
+						</div>
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:adwords_campaign_group_ad_name].present? %>" data-content="<%= @youtube_setup.errors[:adwords_campaign_group_ad_name].try(:join, ',') %>">
+							<%= f.label :adwords_campaign_group_ad_name, class: 'control-label' %>
+							<%= f.hidden_field :adwords_campaign_group_ad_name, class: 'form-control multi', data: { placeholder: 'Ad name' } %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="box box-default">
+				<div class="box-header with-border">
+					<div class="box-header with-border">
+						<h4 class="box-title">Call To Action Overlay</h4>
+					</div>
+					<div class="form-group">
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:call_to_action_overlay_headline].present? %>" data-content="<%= @youtube_setup.errors[:call_to_action_overlay_headline].try(:join, ',') %>">
+							<%= f.label :call_to_action_overlay_headline, class: 'control-label' %>
+							<%= f.hidden_field :call_to_action_overlay_headline, class: 'form-control multi', data: { placeholder: 'Headline' } %>
+						</div>
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:call_to_action_overlay_display_url].present? %>" data-content="<%= @youtube_setup.errors[:call_to_action_overlay_display_url].try(:join, ',') %>">
+							<%= f.label :call_to_action_overlay_display_url, class: 'control-label' %>
+							<%= f.hidden_field :call_to_action_overlay_display_url, class: 'form-control multi', data: { placeholder: 'Display url' } %>
+						</div>
+						<div class="m-th <%= 'has-error' if @youtube_setup.errors[:call_to_action_overlay_destination_url].present? %>" data-content="<%= @youtube_setup.errors[:call_to_action_overlay_destination_url].try(:join, ',') %>">
+							<%= f.label :call_to_action_overlay_destination_url, class: 'control-label' %>
+							<%= f.hidden_field :call_to_action_overlay_destination_url, class: 'form-control multi', data: { placeholder: 'Destination url' } %>
+						</div>
+						<label class="m-th"><%= f.check_box :call_to_action_overlay_enabled_on_mobile, class: 'iCheck-helper' %> Enabled on mobile</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div style="display:none;" class="row">
+		<% ['annotation', 'card'].each do | type | %>
+			<div class="col-md-6">
+				<div class="box box-defult">
+					<div class="box-header with-border">
+						<h3 class="box-title">YouTube video <%= type %> templates</h3>
+					</div>
+					<div class="box-body">
+						<div id="partial_<%= type %>_template" class="table-responsive">
+							<%= render partial: "youtube_setups/#{type}/list", locals: { item: @youtube_setup.send("youtube_video_#{type}_templates") } %>
+						</div>
+					</div>
+					<div class="box-footer clearfix">
+						<button id="add_<%= type %>" class="getModal btn btn-sm btn-primary btn-flat pull-right" data-type="<%= type %>" type="button"><i class="glyphicon glyphicon-plus mr"></i> Add <%= type %> template</button>
+						<input name="youtube_setup[youtube_video_<%= type %>_templates_attributes]" type="hidden" value="{}">
+					</div>
+				</div>
+			</div>
+		<% end %>
+	</div>
+
+	<div class="center">
+		<div class="btn-group btn-group-custom">
+			<%= link_to client_youtube_setups_path(@client), class: 'btn btn-lg btn-primary' do %>
+				<%= fa_icon 'arrow-left' %> Back
+			<% end %>
+			<%= f.submit class: 'btn btn-lg btn-success', id: 'youtube_setup_submit' %>
+		</div>
+	</div>
+<% end %>
+
+<div id="modalYVT" class="modal fade" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title"></h4>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button class="btn btn-default" type="button" data-dismiss="modal"><i class="glyphicon glyphicon-remove mr"></i> Close</button>
+				<button id="create_or_save" class="btn btn-success" type="submit"><i class="glyphicon glyphicon-floppy-disk mr"></i> Create or Save</button>
+			</div>
+		</div>
+	</div>
+</div>

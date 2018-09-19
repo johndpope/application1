@@ -1,0 +1,45 @@
+<header>
+  <div class="row header-row1">
+    <div class="col-xs-3 header-col">
+      <%= wicked_pdf_image_tag @client.logo.url, class: "header-logo1" %>
+    </div>
+    <div class="col-xs-3 header-col">
+      <% unless @client.donors.blank? %>
+        <%= wicked_pdf_image_tag @client.donors.first.logo.url, class: "header-logo2" %>
+      <% else %>
+        <%= wicked_pdf_image_tag '/missing.png', class: "header-logo2" %>
+      <% end %>
+    </div>
+    <div class="col-xs-6 header-col">
+      <h1 class="header-title"><%=@client.name.upcase%> VIDEO MARKETING PROGRAM SUMMARY REPORT </h1>
+    </div>
+  </div>
+
+  <div class="row header-row2">
+    <div class="col-xs-6">
+      <p class="header-str"><%= @client.name %></p>
+      <p class="header-str">
+        <span class="adress1"><%= @client.address1.blank? ? @client.address2 : @client.address1 %></span>
+        <span class="locality"><%= @client.locality %></span>,
+        <span class="region"><%= @client.region %></span>
+        <span class="zipcode"><%= @client.zipcode %></span>
+      </p>
+      <p class="header-str">
+        <% unless @client.phones.blank? %>
+          Phone: <span class="client-phone"><%= @client.phones.first.split(':').last%></span>
+        <% end %>
+        <% unless @client.website.blank? %>
+          <span class="client-website"><%= @client.website.split('//').last%></span>
+        <% end %>
+      </p>
+    </div>
+    <div class="col-xs-6 header-box">
+      <% if @client.contracts.present? && @client.contracts.last.payment_amount.to_i > 0 %>
+        <p class="str">
+          <b>Video Package Total Price:</b>
+          <%="$ #{@client.contracts.last.payment_amount.to_i.to_s(:delimited)}" %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+</header>

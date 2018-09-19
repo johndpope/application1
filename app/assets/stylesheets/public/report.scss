@@ -1,0 +1,287 @@
+page[size="A4"] {
+  // background: #ef4723;
+  // width: 210mm;
+  // height: 297mm; // standart A4 size
+
+  width: 100%;
+  height: 1096px;
+
+  float: left;
+  display: block;
+  border: 5mm solid #ef4723;
+  position: relative;
+}
+header{
+  width: 100%;
+  height: 200px;
+  display: block;
+  float: left;
+  position: absolute;
+  border-bottom: 1px solid;
+}
+.content{
+  width: 100%;
+  height: 207mm;
+  display: block;
+  float: left;
+  position: absolute;
+  top: 200px;
+}
+footer{
+  background: #f7f7f9;
+  padding: 10px 0px;
+  border-top: 3px solid;
+  width: 100%;
+  height: 20mm;
+  display: block;
+  float: left;
+  position: absolute;
+  bottom: 0px;
+}
+.footer-logo{
+  float: right;
+}
+.footer-row{
+  line-height: 1;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px 0px;
+}
+.header-row1{
+  height: 140px;
+  margin: 0px;
+  padding-top: 20px;
+}
+.header-logo1{
+  display: block;
+  margin: auto;
+  // height: auto;
+  max-height: 110px;
+  width: 100%;
+}
+.header-logo2{
+  display: block;
+  margin: auto;
+  // width: auto;
+  // height: 100%;
+
+  width: 100%;
+  height: auto;
+}
+
+.header-title{
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 22px;
+}
+.header-col{
+  height: 100%;
+  padding: 0px 10px;
+}
+
+.as-table{
+  display: table;
+  height: 100%;
+}
+.as-table-cell-bt{
+  display: table-cell;
+  vertical-align: bottom;
+}
+.as-table-cell-md{
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.header-row2{
+  height: 60px;
+  margin: 0px;
+
+  .header-str{
+    margin: 0px;
+    line-height: 1.25;
+  }
+  .header-box{
+    display: table;
+    height: 100%;
+    .str{
+      display: table-cell;
+      vertical-align: middle;
+      text-align: right;
+    }
+  }
+}
+.video-dashboard-link-block{
+  a{
+    color: black;
+    font-size: 12px;
+  }
+  .p1{
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0px;
+  }
+  .video-dashboard-link{
+    font-size: 13px;
+  }
+}
+ul{
+  padding: 0px;
+  margin: 0px;
+}
+.screen1{
+  width: 100%;
+  height: 350px;
+}
+.section1{
+  display: table;
+  height: 80px;
+  width: 100%;
+  .container{
+    margin: 10px;
+    padding: 5px;
+    border: 1px solid;
+  }
+}
+
+.section3{
+  height: 750px;
+  .crop-screen{
+    float: left;
+    width: 100%;
+    height: 740px;
+    border: 1px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .video-lp-screen{
+    width: 100%;
+    height: auto;
+    position: absolute;
+  }
+}
+
+.section2{
+  height: auto;
+  .ol-wrap{
+    display: block;
+    float: left;
+    padding-left: 10px;
+  }
+  .container{
+    border: 1px solid;
+    margin: 10px;
+    padding: 5px;
+  }
+}
+.section2-first{
+  max-height: 690px;
+  .container{
+    border: 1px solid;
+    margin: 10px;
+    padding: 0px 10px;
+  }
+  .ol-wrap{
+    padding-left: 10px;
+  }
+}
+
+.fs16{
+  font-weight: bold;
+  font-size: 16px;
+}
+.screen-ytb-videos{
+  width: 100%;
+  float: left;
+}
+.total-video-posted-block{
+  height: 100px;
+  width: 100%;
+  float: left;
+  padding-top: 25px;
+  p{ margin: 0px;}
+}
+.total-video-posted{
+  color: red;
+}
+.google-search-str1, .google-search-str2{
+  border: 3px solid black;
+  width: 100%;
+  display: block;
+  float: left;
+}
+
+.google-search-result1, .google-search-result2{
+  width: 100%;
+  height: 500px;
+  display: block;
+  float: left;
+}
+
+.content-col{
+  width: 50%;
+  float: left;
+  padding-right: 10px;
+}
+.key-word-str{
+  padding: 20px 0px;
+  display: block;
+  float: left;
+}
+.google-capture{
+  padding: 20px 0px;
+  margin: 0px;
+}
+.crop{
+  float: left;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 5px;
+  height: 700px;
+}
+
+.ytb-video-screen{
+  width: 100%;
+  height: auto;
+  display: block;
+  float: left;
+}
+.ytb-channel-screen{
+  width: 100%;
+  max-height: 650px;
+  display: block;
+  float: left;
+  border: 1px solid;
+}
+.pd-0{ padding: 0px;}
+.pd-t-10{ padding-top: 10px;}
+.marker{color: red;}
+
+.ytb-screen-crop, .google-screen-crop{
+  float: left;
+  width: 100%;
+  height: 650px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  border: 1px solid;
+}
+.ytb-screen-img{
+  width: 100%;
+  height: auto;
+  position: absolute;
+}
+.google-screen-img{
+  width: 100%;
+  height: auto;
+  position: absolute;
+}
+
+.img-missing{
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+}
+.mg-0{
+  margin: 0px;
+}

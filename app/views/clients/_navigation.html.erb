@@ -1,0 +1,135 @@
+<%
+	@edit_client_link = '#'
+	@client_landing_pages_link = '#'
+	@representatives_link = '#'
+	@products_link = '#'
+	@contracts_link = '#'
+	@email_accounts_setups_link = '#'
+	@youtube_setups_link = '#'
+	@aae_templates_link = '#'
+	@source_videos_link = '#'
+	@image_tags_link = '#'
+	@source_video_image_tags_link = '#'
+	@exclude_aae_templates_link = '#'
+	@donors_link = '#'
+	@recipients_link = '#'
+  @assets_link = '#'
+  @assets_client_images_link = '#'
+  @assets_donors_images_link = '#'
+  @assets_industry_images_link = '#'
+
+	if @client.id
+		@edit_client_link = edit_client_path(@client)
+		@client_landing_pages_link = client_client_landing_pages_path(@client)
+		@representatives_link = client_representatives_path(@client)
+		@products_link = client_products_path(@client)
+		@contracts_link = client_contracts_path(@client)
+		@email_accounts_setups_link = client_email_accounts_setups_path(client_id: @client.id)
+		@youtube_setups_link = client_youtube_setups_path(@client)
+		@aae_templates_link = client_aae_templates_path(@client)
+		@subject_videos_link = client_subject_videos_path(@client)
+		@image_tags_link = client_client_image_tag_selection_path(@client)
+		@exclude_aae_templates_link = client_exclude_aae_templates_path(@client)
+		@rendering_settings_link = client_rendering_settings_path(@client)
+		@blending_settings_link = client_blending_settings_path(@client)
+		@recipients_link = client_recipients_path(@client)
+		@donors_link = client_donors_path(@client)
+    @assets_link = assets_client_path(@client)
+    @assets_client_images_link = assets_images_client_path(@client, target: 'client')
+    @assets_donors_images_link = assets_images_client_path(@client, target: 'donors') if @client.donors.present?
+    @assets_industry_images_link = assets_images_client_path(@client, target: 'industry')
+		@video_workflow_link = client_video_workflow_path(@client)
+	end
+%>
+
+<div class="nav-tabs client-tabs">
+	<ul class="nav nav-tabs">
+		<li class="tab-url <% if 'clients' == params[:controller] && %w(new edit create update).include?(params[:action]) %>active<% end %>"><a href="<%= @edit_client_link%>">Client</a></li>
+		<% unless @client.new_record? %>
+			<li class="tab-url <% if 'clients/donors' == params[:controller] %>active<% end %>"><%= link_to 'Donors', @donors_link %></li>
+			<li class="tab-url <% if 'products' == params[:controller] %>active<% end %>"><a href="<%= @products_link %>">Products</a></li>
+      <% unless @client.ignore_landing_pages %>
+			   <li class="tab-url <% if 'client_landing_pages' == params[:controller] %>active<% end %>"><a href="<%= @client_landing_pages_link %>">Land. Pages</a></li>
+      <% end %>
+			<li class="tab-url <% if 'representatives' == params[:controller] %>active<% end %>"><a href="<%= @representatives_link %>">Representatives</a></li>
+			<li class="tab-url <% if 'contracts' == params[:controller] %>active<% end %>"><a href="<%= @contracts_link %>">Contracts</a></li>
+			<li class="tab-url <% if 'email_accounts_setups' == params[:controller] %>active<% end %>"><a href="<%= @email_accounts_setups_link %>">Accounts Setup</a></li>
+			<li class="tab-url <% if 'youtube_setups' == params[:controller] %>active<% end %>"><a href="<%= @youtube_setups_link %>">Youtube Setup</a></li>
+			<%= render 'clients/navigation/video_production' %>
+      <%= render 'clients/navigation/assets' %>
+		<% end %>
+	</ul>
+</div>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+
+<%
+  @warnings_array = []
+  if @client.id
+    if @client.wordings.present?
+      @warnings_array << (link_to "Client short descriptions", edit_client_path(@client, anchor: 'dealer_certification'), target: "_blank") if Wording.by_name('short_description').by_resource_type('Client').by_resource_id(@client.id.to_s).size == 0
+      @warnings_array << (link_to "Client long descriptions", edit_client_path(@client, anchor: 'dealer_certification'), target: "_blank") if Wording.by_name('long_description').by_resource_type('Client').by_resource_id(@client.id.to_s).size == 0
+    else
+      @warnings_array << (link_to "Client descriptions", edit_client_path(@client, anchor: 'dealer_certification'), target: "_blank")
+    end
+    @warnings_array << (link_to "Client phones", edit_client_path(@client), target: "_blank") unless @client.phones.present?
+    @warnings_array << (link_to "Client website", edit_client_path(@client, anchor: 'client_website'), target: "_blank") unless @client.website.present?
+    #social networks
+    @warnings_array << (link_to "At least one client social network url", edit_client_path(@client, anchor: 'client_blog_url'), target: "_blank") unless [@client.youtube_url, @client.google_plus_url, @client.facebook_url, @client.twitter_url, @client.linkedin_url].reject { |c| c.blank? }.present?
+    @client.contracts.each do |contract|
+
+      @warnings_array << (link_to "Contract ##{contract.id} should have at least one product", edit_client_contract_path(@client, contract), target: "_blank") if contract.products.size == 0
+    end
+    if @client.products.present?
+      @client.products.each do |product|
+        if !product.parent_id.present?
+          if product.wordings.present?
+            # @warnings_array << "Product ##{product.id} short descriptions" if Wording.by_name('short_description').by_resource_type('Product').by_resource_id(product.id.to_s).size == 0
+            @warnings_array << (link_to "Product ##{product.id} long descriptions", edit_client_product_path(@client, product), target: "_blank") if Wording.by_name('long_description').by_resource_type('Product').by_resource_id(product.id.to_s).size == 0
+            @warnings_array << (link_to "Product ##{product.id} short statements", edit_client_product_path(@client, product), target: "_blank") if Wording.by_name('short_statement').by_resource_type('Product').by_resource_id(product.id.to_s).size == 0
+          else
+            @warnings_array << (link_to "Product ##{product.id} descriptions & short statements", edit_client_product_path(@client, product), target: "_blank")
+          end
+          @warnings_array << (link_to "There are no subject videos for product ##{product.id}", client_subject_videos_path(@client), target: "_blank") if product.source_videos.size == 0
+        end
+      end
+      @warnings_array << (link_to "Short statements for source videos (optional)", client_subject_videos_path(@client), target: "_blank") if !@client.products.map(&:parent_id).compact.present? && SourceVideo.select(["source_videos.id", "count(wordings.id) as cnt"]).joins("LEFT JOIN wordings ON wordings.resource_id = source_videos.id AND wordings.resource_type = 'SourceVideo' and wordings.name = 'short_statement'").where("source_videos.product_id in (?)", @client.products.map(&:id)).group("source_videos.id").map(&:cnt).count(0) > 0
+    else
+      @warnings_array << (link_to "Product", client_products_path(@client), target: "_blank")
+    end
+    @warnings_array << (link_to "Landing pages", client_client_landing_pages_path(@client), target: "_blank") if !@client.client_landing_pages.present? && !@client.ignore_landing_pages
+    without_content_clps = ClientLandingPage.where("client_id = ? AND (parked IS NOT TRUE OR hosted IS NOT TRUE) AND domain IS NULL", @client.id)
+    without_content_clps.each do |clp|
+      @warnings_array << (link_to "Landing page ##{clp.id}", edit_client_client_landing_page_path(@client, clp), target: "_blank")
+    end
+    not_posted_clps = ClientLandingPage.where("client_id = ? AND (parked IS NOT TRUE OR hosted IS NOT TRUE) AND domain IS NOT NULL", @client.id)
+    not_posted_clps.each do |clp|
+      @warnings_array << (link_to "Landing page ##{clp.id} is not parked and/or hosted, try to update it", edit_client_client_landing_page_path(@client, clp), target: "_blank")
+    end
+  end
+%>
+
+<% if @client.id && @warnings_array.present? %>
+	<div id="error_explanation" class="alert alert-warning">
+		<h4><i class="icon fa fa-exclamation-circle"></i> Attention! You didn't fill:</h4>
+    <div class="row" style="margin-top: 5px;">
+      <ul>
+        <% @warnings_array.each do |warning| %>
+          <li class="col-md-3 warning-link" style="padding-left: 0px; !important;"><%= warning %></li>
+        <% end %>
+      </ul>
+    </div>
+	</div>
+<% end %>

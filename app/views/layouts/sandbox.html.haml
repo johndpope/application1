@@ -1,0 +1,28 @@
+!!!
+%html
+	%head
+		%meta{charset: "UTF-8"}
+		%title= yield :title
+		= stylesheet_link_tag 'sandbox/application', media: 'all'
+		= stylesheet_link_tag params[:controller]
+		= yield :stylesheets
+		= stylesheet_link_tag 'sandbox/freezeframe.min.css'
+		= csrf_meta_tags
+	%body{class: "layout-top-nav #{@body_class}", data: {page: @data_page}}
+		= render partial: '/overlay_spinner'
+		= yield :body_head
+		= render partial: 'layouts/sandbox/header'
+		- if content_for?(:header)
+			%h1
+				= yield :header
+				- if content_for?(:small_header)
+					%small= yield :small_header
+			= breadcrumbs style: :bootstrap
+		= yield
+		= render partial: 'layouts/sandbox/footer'
+		= yield :body_foot
+		= javascript_include_tag 'sandbox/application'
+		= javascript_include_tag params[:controller]
+		= javascript_include_tag 'https://www.google.com/recaptcha/api.js' if params[:controller] == 'sandbox/contact_us'
+		= yield :javascripts
+		= javascript_include_tag 'sandbox/freezeframe.pkgd.js'

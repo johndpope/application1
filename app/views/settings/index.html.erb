@@ -1,0 +1,45 @@
+<% title 'Settings' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i><%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<div id="settings_list">
+	<div class="row">
+		<div class="col-md-5">
+			<%= link_to 'New setting'.html_safe, new_setting_path, remote: true , class: 'btn btn-sm btn-primary' %>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @settings.size%></span>
+			</div>
+		</div>
+	</div>
+	<% unless @settings.to_a.empty? %>
+		<table id="settings_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="text-center" id="id-th" data-field="id">ID</th>
+					<th>Name</th>
+					<th>Value</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @settings.each do |setting| %>
+					<%= render partial: 'setting_row', locals: {setting: setting} %>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+	<% if @settings.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

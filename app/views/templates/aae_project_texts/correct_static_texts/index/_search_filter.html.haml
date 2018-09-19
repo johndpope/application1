@@ -1,0 +1,26 @@
+.box.box-default.box-solid{id: 'search_conditions'}
+	.box-header.with-border
+		%h3.box-title= fa_icon 'search', text: t('search_conditions')
+	.box-body
+		= search_form_for @search, url: templates_correct_static_texts_path, method: 'get', class: "search-form" do |sf|
+			.row
+				.col-md-2
+					.form-group
+						= sf.label :aae_project_project_type_eq, 'Template Type'
+						- video_types = Templates::VIDEO_CHUNK_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+						- transition_types = Templates::TRANSITION_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+						- grouped_options = {'Videos' => video_types,'Transitions' => transition_types}
+						= sf.select :aae_project_project_type_eq, grouped_options_for_select(grouped_options, @search.aae_project_project_type_eq), {include_blank: '', selected: @search.aae_project_project_type_eq}, {class: 'form-control'}
+				.col-md-2
+					.form-group
+						= sf.label :aae_project_id_eq, 'Template ID'
+						= sf.text_field :aae_project_id_eq, {class: 'form-control'}
+				.col-md-2
+					.form-group
+						= sf.label :id_eq, 'Static Text ID'
+						= sf.text_field :id_eq, {class: 'form-control'}
+			.actions
+				= sf.button "", class: "btn btn-primary", type: "submit", data: {disable_with: "<i class='fa fa-search'></i> #{t("searching")}"} do
+					= fa_icon 'search', text: t("search")
+				= link_to 'javascript:', class: "btn btn-danger", id: 'clear_search_conditions', style: 'margin-left: 3px;' do
+					= fa_icon 'eraser', text: 'Clear conditions'

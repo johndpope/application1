@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  client_landing_page_id: 1
+  nb_visits: 1
+  nb_actions: 1
+  nb_pageviews: 1
+
+two:
+  client_landing_page_id: 1
+  nb_visits: 1
+  nb_actions: 1
+  nb_pageviews: 1

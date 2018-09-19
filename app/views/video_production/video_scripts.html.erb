@@ -1,0 +1,59 @@
+<%= title 'Video Scripts' %>
+
+<% breadcrumb :video_scripts %>
+
+<%= javascript_include_tag 'video_scripts/index.js'%>
+
+<div><%= paginate @video_scripts, theme: 'bootstrap' %></div>
+
+<p><button id="add_video_script" class="btn btn-primary">Add</button></p>
+
+<table class="table table-bordered">
+	<tr>
+		<th>ID</th>
+		<th>Title</th>
+		<th class="text-center">Preview</th>
+		<th class="text-center">Notes</th>
+		<th>Status</th>
+		<th>Actions</th>
+		<th>Created at</th>		
+	</tr>
+	<% for video_script in @video_scripts%>
+		<tr>
+			<td><%= video_script.id %></td>
+			<td><%= video_script.title %></td>
+			<td class=" text-center">
+				<a href="#" title="Preview script body" data-toggle="modal"><span class="glyphicon glyphicon-search preview-script"></span></a>
+			</td>
+			<td class="text-center">
+				<% unless video_script.notes.to_s == '' %>
+					<a href="javascript://" title="Notes"><span class="glyphicon glyphicon-list-alt preview-script-notes"></span></a>
+				<% end %>
+			</td>
+			<td></td>
+			<td><%= link_to 'Edit', edit_admin_video_script_path(video_script), target: '_BLANK' %></td>
+			<td><%= video_script.created_at.strftime('%m-%d-%Y %R') %></td>			
+		</tr>
+	<% end %>
+</table>
+
+<div><%= paginate @video_scripts, theme: 'bootstrap' %></div>
+
+<input type="hidden" value="<%= video_script_path(video_script, format: 'json') %>" id="video_script_path" />
+
+<div class="modal fade" id="preview_modal" tabindex="-1" role="dialog" aria-labelledby="preview_modal_label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>        
+      </div>
+    </div>
+  </div>
+</div>

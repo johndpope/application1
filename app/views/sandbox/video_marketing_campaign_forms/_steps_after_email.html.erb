@@ -1,0 +1,31 @@
+<% params[:step] = "2" if %w(new edit create).include?(params[:action]) && !params[:step].present? %>
+<% steps = ["Select Industry", "Find Record", "Contact Info", "Packages", "Content"] %>
+<div class="steps_header">
+  <div class="image-container step-<%= params[:step] %>">
+    <% if params[:step] == "3" %>
+      <video poster="/assets/sandbox/video_marketing_campaign_forms/steps/step_3_1.png" autoplay muted loop style="width: 100%;">
+        <source src="/assets/sandbox/video_marketing_campaign_forms/steps/step_3_1.mp4" type="video/mp4">
+      </video>
+    <% end %>
+  </div>
+  <div class="steps">
+    <% (2..4).to_a.each do |step| %>
+      <% success = (step < 2 && params[:step].to_i >= 2 && %w(new edit create update landing content_landing).include?(params[:action])) || ( params[:step].to_i != 2 && step == 2 && %w(edit content_landing).include?(params[:action])) %>
+      <% success = true if step == 3 && params[:step].to_i != 3 && @video_marketing_campaign_form.present? && @video_marketing_campaign_form.packages_passed %>
+      <% success = true if step == 4 && params[:step].to_i != 4 && @video_marketing_campaign_form.present? && @video_marketing_campaign_form.content_passed %>
+      <% active = params[:step].to_s == step.to_s %>
+      <div id="step_<%= step %>" class="step <%= 'success' if success %> <%= 'active' if active %>" style="<%= 'margin-left: 20%;' if step == 2 %>">
+        <div class="circle">
+          <% if step > 1 && %w(edit update landing content_landing).include?(params[:action]) && @video_marketing_campaign_form.present? %>
+            <%= link_to steps[step].upcase, edit_sandbox_video_marketing_campaign_form_path(@video_marketing_campaign_form.id, step: step, public_profile_uuid: @video_marketing_campaign_form.client.public_profile_uuid), style: "font-weight: bold; #{ success || active ? 'color: white;' : 'color: #707070;'}" %>
+          <% else %>
+            <span><%= steps[step].upcase %></span>
+          <% end %>
+          <div class="connecting-steps-line"></div>
+          <img src="/assets/sandbox/home_page/industry_images/icon_success.svg", class="_success">
+          <img src="/assets/sandbox/home_page/industry_images/icon_warning.svg", class="_warning">
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

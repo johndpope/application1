@@ -1,0 +1,30 @@
+<div class="col-md-4">
+	<label class="control-label" for="country_id">Country</label>
+	<%= select_tag(:country_id, options_from_collection_for_select(@countries, :id, :name, @country_by_id), { include_blank: true, class: 'form-control', placeholder: 'Select country', data: { insert_resource: 'Geobase::Country' } }) %>
+</div>
+<hr class="cb m-vh">
+<br>
+<% if params[:country_id].present? %>
+  <div class="col-md-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Landmarks <span class="badge bg-blue"><%= @search_country.try(:landmarks).try(:size) %></span></h3>
+      </div>
+      <div class="box-body">
+        <%
+          landmarks_hash = {}
+          @search_country.landmarks.pluck(:category, :name).map{ |k, v| landmarks_hash[k] = [] unless landmarks_hash[k].present?; landmarks_hash[k] << v} if @search_country.present?
+        %>
+        <% landmarks_hash.each do |k, v| %>
+          <div class="col-md-6">
+            <label class="control-label"><%= k.present? ? k : "No category" %> <span class="badge bg-grey"><%= v.size %></span></label>
+            <textarea rows="2" style="width: 100%;" readonly="true"><%= v.shuffle.join(", ") %></textarea>
+          </div>
+        <% end %>
+        <% unless landmarks_hash.present? %>
+          <p class="text-muted well well-sm no-shadow" style="margin-bottom: 0px !important;">No items available</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

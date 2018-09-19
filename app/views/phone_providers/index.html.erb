@@ -1,0 +1,53 @@
+<% title 'Phone Providers' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<div id="phone_providers_list">
+	<div class="row">
+		<div class="col-md-5">
+			<%= link_to 'New Phone Provider', new_phone_provider_path, class: 'btn btn-sm btn-primary' %>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @phone_providers.size %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @phone_providers.to_a.empty? %>
+		<table id="phone_providers_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="text-center">ID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @phone_providers.each do |phone_provider| %>
+					<tr>
+						<td class="text-center"><%=phone_provider.id %></td>
+						<td><%=phone_provider.name %></td>
+						<td><%=phone_provider.description %></td>
+						<td class="text-center actions">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_phone_provider_path(phone_provider),  { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, phone_provider, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+	<% if @phone_providers.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

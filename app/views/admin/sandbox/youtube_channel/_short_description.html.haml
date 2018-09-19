@@ -1,0 +1,9 @@
+.form-group{class: "#{@type}_block"}
+  .row
+    .col-md-12
+      = label_tag "", @type.humanize, class: 'control-label'
+      %span.client_short_description_count.badge 0
+      = link_to 'javascript://', class: "btn btn-xs btn-danger pull-right remove_#{@type}_block remove_btn" do
+        = fa_icon 'times'
+        = t('remove')
+      = text_area_tag "", "", name: "sandbox_youtube_channel[#{@type}_sep][]", class: "form-control #{@type}", rows: 3, placeholder: "#{@type.humanize}"

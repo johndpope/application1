@@ -1,0 +1,56 @@
+- title 'Video Workflow'
+- header @client.name
+- small_header 'Video Workflow'
+- content_for(:stylesheets) do
+	= stylesheet_link_tag 'progress-bar'
+	= stylesheet_link_tag 'fancybox'
+	= stylesheet_link_tag 'clients/video_workflow/smart_wizard_theme_arrows'
+	= stylesheet_link_tag 'clients/video_workflow/smart_wizard_theme_arrows_fixes'
+- content_for(:javascripts) do
+	= javascript_include_tag 'jquery-live-preview'
+	= javascript_include_tag 'fancybox'
+	= javascript_include_tag 'jquery.readmore.min'
+
+= render partial: 'clients/navigation'
+
+.box
+	.box-header
+		%h3.box-title
+			= fa_icon 'bar-chart'
+			General Workflow Progress
+			- if @client_workflow_progress.any?
+				%strong
+					= (@client_workflow_progress.map{|k,v|v.to_f}.sum/@client_workflow_progress.size.to_f).round(1)
+					\%
+	.box-body
+		.row#client_workflow_progress
+			- @client_workflow_progress.each do |k,v|
+				.col-md-2
+					.progress-group
+						%span.progress-text= k.to_s.titleize
+						%span.progress-number
+							%strong
+								= v.round(1)
+								\%
+						.progress.sm
+							.progress-bar{class: "progress-bar-#{v<100 ? 'yellow' : 'green'}", style: "width: #{v}%"}
+= render(partial: 'clients/video_workflow/warning_block') if !@client.is_active?
+= render(partial: 'clients/video_workflow/error_block') if @has_failed_delayed_jobs
+.box
+	.box-header
+		%h3.box-title
+			= fa_icon 'file-video-o'
+			Video Sets
+			%strong= @blended_videos.total_count
+			items totally
+	.box-body
+		%div{style: "margin-bottom: 5px;"}
+			.btn-group{role: "group", "aria-label" => "..."}
+				- workflow_status_classes = {'rejected' => 'danger', 'rendering' => 'warning', 'rendered_unreviewed' => 'info'}
+				- workflow_statuses = %w(rejected rendering rendered_unreviewed)
+				- workflow_statuses.each do |status|
+					= link_to status.titleize, client_video_workflow_path(@client.id, workflow_status_name: status), class: "btn btn-#{workflow_status_classes[status]} #{'active disabled' if status == params[:workflow_status_name]}"
+				= link_to "All", client_video_workflow_path(@client.id), class: "btn btn-default #{'active disabled' if(params[:workflow_status_name].blank? || !workflow_statuses.include?(params[:workflow_status_name]))}"
+		- @blended_videos.each_with_index do |bv, index|
+			= render partial: 'clients/video_workflow/video_set_block', locals: {blended_video: bv, progress: @rendering_progresses[bv.id.to_s].to_i}
+		= paginate @blended_videos, theme: 'bootstrap'

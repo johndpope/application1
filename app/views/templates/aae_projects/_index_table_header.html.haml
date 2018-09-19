@@ -1,0 +1,9 @@
+- iconed_columns = {'sample_video_thumbnail' => 'image', 'sample_video' => 'play', 'test_video' => 'film', 'sample_video_duration' => 'clock-o', 'content_lock' => 'lock'}
+- centered_columns = %w(id has_texts has_images is_special sample_video_thumbnail sample_video test_video sample_video_duration has_notes is_approved is_active content_lock content_validation)
+- %w(id project_type title content_validation content_lock has_texts has_images is_special sample_video_thumbnail sample_video test_video sample_video_duration has_notes is_approved is_active).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}
+		- text = t("templates.aae_project.#{c}")
+		- if iconed_columns.key? c
+			= fa_icon iconed_columns[c], title: text
+		- else
+			= text

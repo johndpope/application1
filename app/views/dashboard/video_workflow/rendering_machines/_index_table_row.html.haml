@@ -1,0 +1,21 @@
+%td.text-center= item.id
+%td{class: 'hidden-xs hidden-sm'}= item.ip
+%td= item.name
+- hidden_in_xs_sm = %w(in_watch_folder_output total_video_sets total_video_chunks time_of_last_created_project is_test occupied_disk_space_percentage)
+- %w(in_watch_folder in_queue number_of_generating_dynamic_projects in_watch_folder_output occupied_disk_space_percentage time_of_last_created_project today_video_sets total_video_sets today_video_chunks total_video_chunks is_accessible is_test is_active).each do |c|
+	%td.text-center{class: "#{c} #{hidden_in_xs_sm.include?(c) ? 'hidden-xs hidden-sm' : ''}"}
+		- if(%w(is_accessible is_active is_test)).include? c
+			- label_text = item.send("#{c}?") ? t('yes') : t('no')
+			- label_class = item.send("#{c}?") ? 'success' : 'danger'
+			.label{class: "label-#{label_class}"}= label_text
+		- elsif c == 'occupied_disk_space_percentage'
+			- can_calculate = item.available_disk_space.to_i != 0 && item.total_disk_space.to_i != 0
+			.progress
+				.progress-bar.progress-bar-danger{style:"width: #{item.occupied_disk_space_percentage}%"}
+					%span.progress-bar-span
+						- if can_calculate
+							= "#{item.occupied_disk_space_percentage.round(1)}%"
+						- else
+							?
+		- else
+			= item.send(c).blank? ? '?' : item.send(c)

@@ -1,0 +1,40 @@
+<div class="city_select_bg active"
+	data-json='{"background": ["<%= campaign_video_map[:locality_details].try(:default_background_image).try(:url) %>", "<%= campaign_video_map[:locality_details].try(:active_background_image).try(:url) %>"]}'
+	style="background-image: url('<%= campaign_video_map[:locality_details].try(:active_background_image).try(:url) %>');">
+	<div class="swing">
+		<div class="cv-header">
+			<h3><%= campaign_video_map[:locality].name %></h3>
+		</div>
+		<table class="cv-timeline">
+			<tr class="start">
+				<td><b>Time</b>Line<br />(month)</td>
+				<td></td>
+			</tr>
+
+			<% 1.upto(campaign_video_map[:months_count]) do |m| %>
+				<tr>
+					<td class="time">
+						<span class="num"><%= m %></span>
+					</td>
+					<td class="content">
+						<div class="row cv-videoblocks">
+							<% 1.upto(campaign_video_map[:video_campaigns].size) do |s| %>
+								<%= render partial: 'sandbox/sandbox_clients/show/campaign_view_block_item',
+									locals: { video: campaign_video_map[:timeline][m-1][s-1],
+										client_id: @client_id,
+										campaign_video_map: campaign_video_map } %>
+							<% end %>
+						</div>
+					</td>
+				</tr>
+			<% end %>
+
+			<tr class="end">
+				<td colspan="2"></td>
+			</tr>
+		</table>
+	</div>
+	<div class="default">		
+		<h2><%= campaign_video_map[:locality].name %></h2>
+	</div>
+</div>

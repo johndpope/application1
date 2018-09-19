@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  password: MyString
+  social_item_id: 1
+  social_item_type: MyString
+
+two:
+  password: MyString
+  social_item_id: 1
+  social_item_type: MyString

@@ -1,0 +1,43 @@
+<% report.each do |row| %>
+  <% by_status_stat = row["by_status_stat"] %>
+  <% by_status_stat_calls = row["by_status_stat_calls"]%>
+  <div class="col-md-<%= params[:name] == 'sales' ? '6' : '4' %>">
+    <div class="box box-widget widget-user-2">
+      <div class="widget-user-header bg-aqua-active">
+        <div class="widget-user-image">
+          <img class="img-circle" src="/user.png" alt="User Avatar" style="border: 3px solid #fff;">
+        </div>
+        <h4 class="widget-user-username"><%= [row["first_name"], row["last_name"]].join(" ") %></h4>
+        <h5 class="widget-user-desc"><%= row["email"]%></h5>
+      </div>
+      <div class="box-footer">
+        <% statuses = case params[:name]
+        when 'sales'%>
+          <div class="col-md-6">
+            <div class="text-center">
+              <label>PROCESSED RECORDS</label>
+            </div>
+            <%= render partial: "report_stats_body", locals: {by_status_stat: by_status_stat, readonly: false} %>
+          </div>
+          <div class="col-md-6">
+            <div class="text-center">
+              <label>ONLY CALLS</label>
+            </div>
+            <%= render partial: "report_stats_body", locals: {by_status_stat: by_status_stat_calls, readonly: true} %>
+          </div>
+        <% else %>
+          <div class="text-center">
+            <label>PROCESSED RECORDS</label>
+          </div>
+          <%= render partial: "report_stats_body", locals: {by_status_stat: by_status_stat, readonly: false} %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% unless report.present? %>
+  <div class="col-md-12">
+    <div class="alert alert-info">No items available</div>
+  </div>
+<% end %>

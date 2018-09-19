@@ -1,0 +1,54 @@
+<div class="col-md-3">
+	<label class="control-label" for="country_id">Country</label>
+	<%= select_tag(:country_id, options_from_collection_for_select(@countries, :id, :name, @country_by_id), { include_blank: true, class: 'form-control select-template', placeholder: 'Select country' }) %>
+</div>
+<div class="col-md-3">
+	<label class="control-label" for="state_id">State</label>
+	<%= select_tag(:state_id, options_from_collection_for_select(@state, :id, :name, @search_state.try(:id)), { include_blank: true, class: 'form-control select-template', placeholder: 'Select state' }) %>
+</div>
+<% if params[:state_id].present? %>
+	<div class="col-md-3">
+		<label class="control-label" for="locality_id">Locality</label>
+		<%= select_tag(:locality_id, options_from_collection_for_select(@localities, :id, :full_name, @search_locality.try(:id)), { include_blank: true, class: 'form-control select-template', data: { insert_resource: 'Geobase::Locality' }, placeholder: 'Select locality' }) %>
+	</div>
+<% end %>
+<% if params[:locality_id].present? && @search_locality.present? && @search_locality.population.present?%>
+  <div class="col-md-3">
+    <label class="control-label">Population</label>
+    <br>
+    <span><%= @search_locality.population.to_i.to_s(:delimited) %></span>
+  </div>
+<% end %>
+<hr class="cb m-v">
+<% if params[:locality_id].present? %>
+	<div class="col-md-6">
+		<label class="control-label" for="wording_code">Abbreviation</label>
+		<textarea id="wording_code" name="code" class="data-input" rows="2" style="width: 100%;" placeholder="Abbreviation"><%= @search_locality.try(:code).try('split', '<sep/>').try('join', ', ') %></textarea>
+	</div>
+	<div class="col-md-6">
+		<label class="control-label" for="wording_nicknames">Nicknames</label>
+    <textarea id="wording_nicknames" name="nicknames" class="data-input" rows="2" style="width: 100%;" placeholder="Nicknames"><%= @search_locality.try(:nicknames).try('split', '<sep/>').try('join', ', ') %></textarea>
+	</div>
+  <div class="col-md-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Landmarks <span class="badge bg-blue"><%= @search_locality.try(:landmarks).try(:size) %></span></h3>
+      </div>
+      <div class="box-body">
+        <%
+          landmarks_hash = {}
+          @search_locality.landmarks.pluck(:category, :name).map{ |k, v| landmarks_hash[k] = [] unless landmarks_hash[k].present?; landmarks_hash[k] << v} if @search_locality.present?
+        %>
+        <% landmarks_hash.each do |k, v| %>
+          <div class="col-md-6">
+            <label class="control-label"><%= k.present? ? k : "No category" %> <span class="badge bg-grey"><%= v.size %></span></label>
+            <textarea rows="2" style="width: 100%;" readonly="true"><%= v.shuffle.join(", ") %></textarea>
+          </div>
+        <% end %>
+        <% unless landmarks_hash.present? %>
+          <p class="text-muted well well-sm no-shadow" style="margin-bottom: 0px !important;">No items available</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

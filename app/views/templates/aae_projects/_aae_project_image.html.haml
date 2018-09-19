@@ -1,0 +1,28 @@
+- aaep_form.object.guid = SecureRandom.uuid if aaep_form.object.new_record?
+- image_types = Templates::AaeProjectImage::IMAGE_TYPES.map{|k,v| [I18n.t("templates_aae_projects.templates_aae_project_images.image_types.#{k}"), v]}
+- is_valid = (aaep_form.object.name_presents == true || aaep_form.object.name_presents.nil?)
+- tr_class = is_valid ? '' : 'danger'
+%tr{id: dom_id(aaep_form.object, 'image_row'), class: tr_class}
+  %td
+    = aaep_form.object.id
+    = aaep_form.hidden_field :id
+  %td= aaep_form.text_field :file_name, class: 'form-control'
+  %td= aaep_form.text_field :width, class: 'form-control'
+  %td= aaep_form.text_field :height, class: 'form-control'
+  %td= aaep_form.select :image_type, options_for_select(image_types, aaep_form.object.image_type.try(:value)), {include_blank: true}, {class: 'form-control'}
+  %td.text-center
+    - prefix = is_valid ? 'success' : 'danger'
+    - text = is_valid ? t('yes') : t('no')
+    %span.label{class: ('label-' + prefix)}= text
+  %td
+    - if aaep_form.object.new_record?
+      = link_to "javascript:", class: "btn-danger btn btn-sm btn-remove-new-image" do
+        = fa_icon 'trash', text: t('remove')
+    - elsif
+      - url = templates_aae_project_image_path(aaep_form.object, authenticity_token: form_authenticity_token)
+      = link_to url,
+        method: :delete,
+        data: { confirm: 'Are you sure?', remote: true, disable_with: t('removing') },
+        title: 'Delete',
+        class: 'btn btn-danger btn-sm btn-remove-existing-text' do
+        = fa_icon 'trash', text: t('remove')

@@ -1,0 +1,139 @@
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#info-tab" data-toggle="tab">Info</a></li>
+	<li><a href="#adwords-campaign-groups-tab" data-toggle="tab">Adwords Campaign Groups</a></li>
+</ul>
+<div class="tab-content">
+	<div class="tab-pane active" id="info-tab">
+		<%= form_for @adwords_campaign, url: email_account_adwords_campaign_path(@email_account, @adwords_campaign), :html => { :multipart => true } do |f| %>
+			<%= f.hidden_field :google_account_id %>
+			<div class="row">
+				<% if @adwords_campaign.errors.any? %>
+					<div class="col-md-12">
+						<div id="error_explanation" class="alert alert-danger alert-dismissable">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@adwords_campaign.errors.count, 'error') %> prohibited this adwords campaign from being saved</h4>
+						</div>
+					</div>
+				<% end %>
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group <%= 'has-error' if @adwords_campaign.errors[:name].present? %>" data-content="<%= @adwords_campaign.errors[:name].try(:join, ',') %>">
+										<%= f.label :name, class: 'control-label' %>
+										<%= f.text_field :name, class: 'form-control', placeholder: 'Name', maxlength: "#{AdwordsCampaign::NAME_LIMIT}" %>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="row">
+										<div class="form-group col-md-6">
+											<%= f.label :type, class: 'control-label' %>
+											<%= f.select(:campaign_type, options_for_select(AdwordsCampaign::TYPES.collect{ |key, value| [key.to_s.humanize, value] }, @adwords_campaign.campaign_type.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select type' }) %>
+										</div>
+										<div id="subtype_block" class="form-group col-md-6" <% if @adwords_campaign.campaign_type != AdwordsCampaign.campaign_type.find_value("Video")%>style="display:none;"<% end %>>
+											<%= f.label :subtype, class: 'control-label' %>
+											<%= f.select(:campaign_subtype, options_for_select(AdwordsCampaign::SUBTYPES.collect{ |key, value| [key.to_s.humanize, value] }, @adwords_campaign.campaign_subtype.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select subtype' }) %>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<%= f.label :networks, class: 'control-label' %>
+									<div class="row">
+										<div class="form-group col-md-4">
+											<div class="checkbox networks-checkbox">
+												<label><%= f.check_box :networks_youtube_search, class: 'iCheck-helper' %> Youtube Search</label>
+											</div>
+										</div>
+										<div class="form-group col-md-4">
+											<div class="checkbox networks-checkbox">
+												<label><%= f.check_box :networks_youtube_videos, class: 'iCheck-helper' %> Youtube Videos</label>
+											</div>
+										</div>
+										<div class="form-group col-md-4">
+											<div class="checkbox networks-checkbox">
+												<label><%= f.check_box :networks_include_video_partners, class: 'iCheck-helper' %> Include video partners</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group col-md-6">
+									<%= f.label :locations, class: 'control-label' %>
+									<%= f.text_field :locations, class: 'form-control', placeholder: 'Locations' %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-6 <%= 'has-error' if @adwords_campaign.errors[:languages].present? %>" data-content="<%= @adwords_campaign.errors[:languages].try(:join, ',') %>">
+									<%= f.label :languages, class: 'control-label' %>
+									<%= f.select(:languages, options_for_select(AdwordsCampaign::LANGUAGES.collect{ |key, value| [value, key] }, @adwords_campaign.languages.try(:split, ',')), {}, { :multiple => true, class: 'select2 form-control' }) %>
+								</div>
+								<div class="form-group col-md-6">
+									<div class="row">
+										<div class="form-group col-md-6">
+											<%= f.label :start_date, class: 'control-label' %>
+											<%= f.text_field :start_date, class: 'form-control datepicker', value: @adwords_campaign.start_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+										</div>
+										<div class="form-group col-md-6">
+											<%= f.label :end_date, class: 'control-label' %>
+											<%= f.text_field :end_date, class: 'form-control datepicker', value: @adwords_campaign.end_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+
+								</div>
+								<div class="col-md-6">
+									<div class="row">
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+											</div>
+										</div>
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-6">
+						</div>
+						<div class="col-md-6">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="row">
+										<div class="form-group col-md-12">
+											<div class="actions pull-right">
+												<%= link_to 'Back', edit_email_account_path(@email_account, :anchor => "adwords-campaigns-tab"), class: 'btn btn-sm btn-primary' %>
+												<%= f.submit :class => 'btn btn-sm btn-success', :id => 'adwords_campaign_submit' %>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<% end %>
+	</div>
+	<div class="tab-pane" id="adwords-campaign-groups-tab">
+		<%= render 'adwords_campaign_groups/index' %>
+	</div>
+</div>

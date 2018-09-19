@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  text_type: 1
+  image_template_text_id: 1
+  value: MyText
+  dynamic_image_id: 1
+
+two:
+  text_type: 1
+  image_template_text_id: 1
+  value: MyText
+  dynamic_image_id: 1

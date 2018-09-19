@@ -1,0 +1,125 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  hello: "Hello world"
+  broadcaster: 'Broadcaster'
+  root_home: Broadcaster Home
+  admin_tools: Admin Tools
+  dashboard: Dashboard
+  actions: Actions
+  id: ID
+  guid: GUID
+  processing: Processing ...
+  start: Start
+  start_all: Start all
+  cancel_all: Cancel all
+  browse: Browse ...
+  cancel: Cancel
+  choose: Choose ...
+  blend: Blend
+  blending: Blending ...
+  save: Save
+  send: Send
+  sending: Sending ...
+  saving: Saving...
+  upload: Upload
+  uploading: Uploading...
+  search: Search
+  searching: Searching...
+  row_nr: '#'
+  content_types:
+    jpeg: 'image/JPEG'
+    jpg: 'image/JPG'
+    png: 'image/PNG'
+    gif: 'image/GIF'
+  "yes": 'YES'
+  "no": 'NO'
+  active: Active
+  inactive: Inactive
+  items_totally: items totally
+  copyright: Copyright
+  valynteen_solutions: Valynteen Solutions
+  videos: Videos
+  transitions: Transitions
+  active_admin:
+    devise:
+      email:
+        title: Username
+  clients_list: List Of Clients
+  client_priority: Client's Priority
+  rendering_machines: Rendering Machines
+  rendering_machines_list: List of Rendering Machines
+  vmware_servers: VMWare Servers
+  vmware_servers_list: List of VMWare Servers
+  vmware_virtual_machines: VMWare Virtual Machines
+  vmware_virtual_machines_list: List of VMWare Virtual Machines
+  video_thumbnail_dynamic_texts: Video Thumbnail Dynamic Texts
+  video_thumbnail_dynamic_texts_list: List of Video Thumbnail Dynamic Texts
+  cron_jobs: Cron Jobs
+  cron_job_groups: Cron Job Groups
+  sidebar:
+    sandbox: Sandbox
+    sales_portal: Sales Portal
+    sales_portal_client_signup: Client Signup
+  admin:
+    root_name: Admin
+    root_abbr: A
+    sandbox_section: Sandbox
+    users_section: User Management
+    user_companies_section: User Companies
+    rendering_facilities_section: Rendering Facilities
+    cron_jobs_section: Cron Jobs
+    users: Users
+    users_list: List of Users
+    user_companies: User Companies
+    user_companies_list: List of User Companies
+    sandbox:
+      dashboard: Sandbox Dashboard
+      client_categories: Client Categories
+      client_categories_list: List of Client Categories
+      clients: Sandbox Clients
+      clients_list: List of Sandbox Clients
+      video_sets: Video Sets
+      video_sets_list: List of Video Sets
+      videos: Videos
+      videos_list: List of Videos
+      video_campaigns: Video Campaigns
+      video_campaigns_list: List of Video Campaigns
+      video_campaign_video_stages: Video Campaign Video Stages
+      video_campaign_video_stages_list: List of Video Campaign Video Stages
+      locality_details: Video Campaign Loc. Details
+      locality_details_list: List of Video Campaign Locality Details
+      preview_sandbox: Preview Sandbox
+      preview_video_set: Preview Video Blender
+      preview_content_blender: Preview Content Blender
+      videos_upload: Upload Video
+    whenever_cron_job_groups: Cron Job Groups
+    whenever_cron_job_groups_list: List of Cron Job Groups
+    whenever_cron_jobs: Cron Jobs
+    whenever_cron_jobs_list: List of Cron Jobs
+    product_categories: Product Categories
+    product_categories_list: List of Product Categories
+    makes: Makes
+    makes_list: List of Makes
+    models: Models
+    models_list: List of Models
+    makes_and_models: Makes & Models

@@ -1,0 +1,413 @@
+<%= content_for(:javascripts){javascript_include_tag 'clients_form'} %>
+<% content_for(:javascripts){javascript_include_tag 'clients/form/association_with_donors'} %>
+<% content_for(:javascripts){javascript_include_tag 'jquery.checked-list-group'} %>
+<% content_for(:javascripts){javascript_include_tag 'common/form/logo_block'} %>
+<% content_for(:stylesheets){stylesheet_link_tag 'jquery.checked-list-group'} %>
+<% content_for(:stylesheets){stylesheet_link_tag 'common/form/logo_block'} %>
+
+<%= nested_form_for @client, html: { multipart: true } do |f| %>
+	<%= hidden_field_tag :is_client_general_section, :true %>
+	<% if @client.errors.any? %>
+		<div class="row">
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@client.errors.count, 'error') %> prohibited this client from being saved</h4>
+				</div>
+			</div>
+		</div>
+	<% end %>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-group">
+				<%= f.check_box :is_active, class: 'iCheck-helper' %>
+				<%= f.label :is_active, class: 'control-label' %>
+				<%= tooltip_by_field({tooltip_text: t("tooltips.client.is_active", :default => "")}) %>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-group">
+				<%= f.check_box :is_content_donor, class: 'iCheck-helper' %>
+				<%= f.label :is_content_donor, class: 'control-label' %>
+				<%= tooltip_by_field({table_name: "clients", table_column: "is_content_donor"}) %>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-3">
+			<div class="form-group">
+				<%= f.label :business_type %>
+				<%= tooltip_by_field({table_name: "clients", table_column: "business_type"}) %>
+				<%= f.select :business_type, options_for_select(client_business_type_options, selected: f.object.business_type.try(:value)), {include_blank: true}, class: 'form-control', placeholder: 'Choose ...' %>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-6">
+							<%= render partial: 'common/form/logo_block', locals: {f: f,
+								logo_field: 'logo', logo_field_label: t('client.logo'),
+								remove_logo_attr_field: 'remove_logo',
+								display_info_block: (!f.object.new_record? && f.object.logo.present?),
+								thumb_url: f.object.logo.url(:thumb), original_url: f.object.logo.url(:original)}%>
+						</div>
+						<div class="col-md-6">
+							<%= render partial: 'common/form/logo_block', locals: {f: f,
+								logo_field: 'badge_logo', logo_field_label: t("client.badge_logo"),
+								remove_logo_attr_field: 'remove_badge_logo',
+								display_info_block: (!f.object.new_record? && f.object.badge_logo.present?),
+								thumb_url: f.object.badge_logo.url(:thumb), original_url: f.object.badge_logo.url(:original)}%>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<%= f.label :parent, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "parent_id"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgb(54, 127, 169); border: 1px solid rgb(54, 127, 169);"><i class="fa fa-sitemap"></i></span>
+									<%= select_tag('client[parent_id]', options_from_collection_for_select(@clients, :id, :name, @client.parent_id), { include_blank: true, class: 'form-control select2' }) %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:name].present? %>" data-content="<%= @client.errors[:name].try(:join, ',') %>">
+								<%= f.label :name, 'Name *', class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "name"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+									<%= f.text_field :name, class: 'form-control', placeholder: 'Name' %>
+								</div>
+							</div>
+              <div class="form-group <%= 'has-error' if @client.errors[:nickname].present? %>" data-content="<%= @client.errors[:nickname].try(:join, ',') %>">
+								<%= f.label :nickname, 'Nickname / Shortened Name *', class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "nickname"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #f39c12; border: 1px solid #f39c12;"><i class="fa fa-quote-left"></i></span>
+									<%= f.text_field :nickname, class: 'form-control', placeholder: 'Nickname / Shortened Name' %>
+								</div>
+							</div>
+	            <div class="box box-default">
+	              <div class="box-header with-border">
+	                <h3 class="box-title">Industry</h3>
+                  <div class="box-tools">
+                    <%= tooltip_by_field({tooltip_text: t("tooltips.client.industry", :default => "")}) %>
+                  </div>
+	              </div>
+	              <div class="box-body">
+	                <div class="form-group">
+	                  <div class="input-group" style="margin-bottom: 10px;">
+	                    <span class="input-group-addon" style="background-color: #E66B3E; border: 1px solid #E66B3E;"><i class="fa fa-building"></i></span>
+	                    <%= f.hidden_field :industry_id, class: 'ajax form-control', data: { source: industries_json_list_path, industry_association_with_donors_path: industry_association_with_donors_path } %>
+	                  </div>
+	                  <div id="industry_details" style="<%= 'display: none;' unless @client.industry.present? %>">
+	                    <% industry_json = @client.industry.try(:json) || {} %>
+	                    <div class="row">
+	                      <div class="col-md-6">
+	                        <label class="control-label" for="client_tags">Industry short descriptions</label>
+	                        <span id="industry_short_descriptions_count" class="badge"><%= industry_json['short_descriptions_count'] %></span>
+	                      </div>
+	                      <div class="col-md-6">
+	                        <label class="control-label" for="client_tags">Industry tags</label>
+	                        <span id="industry_tags_count" class="badge"><%= industry_json['tag_list_count'] %></span>
+	                      </div>
+	                      <div class="col-md-6">
+	                        <label class="control-label" for="client_tags">Industry long descriptions</label>
+	                        <span id="industry_long_descriptions_count" class="badge"><%= industry_json['long_descriptions_count'] %></span>
+	                      </div>
+	                      <div class="col-md-6">
+	                        <a id="industry_wordings_url" target="_blank" href="<%= wordings_path(resource_type: "Industry", resource_id: @client.industry.try(:id)) %>" title="Add / Edit industry descriptions or tags">Add / Edit industry descriptions or tags</a>
+	                      </div>
+	                    </div>
+	                  </div>
+	                </div>
+
+									<div id="association_to_donors">
+										<% if @client.industry_id %>
+											<%= render partial: 'clients/form/association_with_donors', locals:{industry_id: @client.industry_id} %>
+										<% end %>
+									</div>
+
+	              </div>
+	            </div>
+
+							<%= render partial: 'clients/form/dealer_certifications', locals: {industry_id: @client.industry_id} %>
+
+							<div class="form-group">
+                <%
+                  wording_errors = []
+                  if @client.errors.messages[:"wordings.source"].present? || @client.errors.messages[:"wordings.name"].present? || @client.errors.messages[:wordings].present?
+                    wording_errors << "One of the fields is blank" if @client.errors.messages[:"wordings.source"].present? || @client.errors.messages[:"wordings.name"].present?
+                    wording_errors << @client.errors.messages[:wordings]
+                  end
+                %>
+								<%= f.label :descriptions, class: 'control-label' %>
+								<%= tooltip_by_field({tooltip_text: t("tooltips.client.descriptions", :default => "")}) %>
+								<div class="panel-group" id="descriptions-accordion" role="tablist" aria-multiselectable="true">
+									<div class="panel panel-default" style="<%='border-color: #ebccd1;' if wording_errors.present? %>">
+										<div id="descriptions_heading" class="panel-heading" style="<%='background-color: rgba(204, 39, 55, 0.24);' if wording_errors.present? %>">
+											<h4 class="panel-title">
+												<a role="button" data-toggle="collapse" data-parent="descriptions-accordion" href="#descriptions" aria-expanded="true" aria-controls="descriptions">Descriptions <span class="badge calc"><%= @client.wordings.size%></span></a>
+                        <small class="text-danger">
+                          <%= wording_errors.flatten.compact.join(", ") %>
+                        </small>
+											</h4>
+										</div>
+										<div id="descriptions" class="panel-collapse collapse in <%= 'panel-danger' if wording_errors.present? %>" aria-labelledby="descriptions">
+											<div class="panel-body">
+												<div class="form-group">
+													<%= f.fields_for :wordings do |builder| %>
+														<%= builder.hidden_field :resource_id, value: @client.id %>
+														<%= builder.hidden_field :resource_type, value: 'Client' %>
+														<fieldset class="form">
+															<legend>
+																<%= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i> Remove'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger btn-flat' %>
+															</legend>
+															<div class="row">
+																<div class="col-md-4">
+																	<label class="control-label">Name</label>
+																	<%= tooltip_by_field({tooltip_text: t("tooltips.client.description_name", :default => "")}) %>
+																	<%= builder.select(:name, {'short_description'=>{'data-text-type-limit' => 300}, 'long_description'=>{'data-text-type-limit' => 1000}}, {include_blank: false}, class: 'form-control description-name-select m-b') %>
+																</div>
+															</div>
+															<div class="form-group">
+																<label class="control-label">Description</label>
+																<%= tooltip_by_field({tooltip_text: t("tooltips.client.description", :default => "")}) %>
+																<div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+                                <% limits = {'short_description'=>300, 'long_description'=>1000}%>
+	                              <% if builder.object.name.present?%>
+                                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits[builder.object.name]})", maxlength: limits[builder.object.name] %>
+	                              <% else %>
+                                  <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits['short_description']})", maxlength: limits['short_description'] %>
+	                              <% end %>
+															</div>
+														</fieldset>
+													<% end %>
+													<%= f.link_to_add '<i class="fa fa-plus"></i> Add description'.html_safe, :wordings, class: "btn btn-sm btn-primary" %>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+	            <div class="form-group <%= 'has-error' if @client.errors[:tag_list].present? %>" data-content="<%= @client.errors[:tag_list].try(:join, ',') %>" id="tag_list_block">
+	              <div>
+	                <%= f.label :tags, 'Tags *', class: 'control-label' %>
+									<%= tooltip_by_field({tooltip_text: t("tooltips.common.tags", :default => "")}) %>
+	                <span id="tag_list_count" class="badge">0</span>
+	              </div>
+	              <div class="input-group">
+	                <span class="input-group-addon" style="background-color: #3c8dbc; border: 1px solid #3c8dbc;"><i class="fa fa-tags" style="color: #ffffff"></i></span>
+	                <%= f.text_field :tag_list, class: 'form-control', placeholder: 'Enter tags', value: @client.tag_list.to_a.sort.join(",") %>
+	              </div>
+	            </div>
+							<div class="form-group">
+								<%= f.label :email, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "email"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #DA4338; border: 1px solid #DA4338;"><i class="fa fa-envelope"></i></span>
+									<%= f.email_field :email, class: 'form-control', placeholder: 'Email' %>
+								</div>
+							</div>
+	            <div class="form-group <%= 'has-error' if @client.errors[:pay_pal_email].present? %>" data-content="<%= @client.errors[:pay_pal_email].try(:join, ',') %>">
+	              <label class="control-label">PayPal email</label>
+								<%= tooltip_by_field({table_name: "clients", table_column: "pay_pal_email"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #003085; border: 1px solid #003085;"><i class="fa fa-paypal"></i></span>
+									<%= f.email_field :pay_pal_email, class: 'form-control', placeholder: 'PayPal email' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:website].present? %>" data-content="<%= @client.errors[:website].try(:join, ',') %>">
+								<%= f.label :website, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "website"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #00ABDC; border: 1px solid #00ABDC;"><i class="fa fa-globe"></i></span>
+									<%= f.text_field :website, class: 'form-control', placeholder: 'Website' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:blog_url].present? %>" data-content="<%= @client.errors[:blog_url].try(:join, ',') %>">
+								<%= f.label :blog_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "blog_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgb(26, 136, 187); border: 1px solid rgb(26, 136, 187);"><i class="fa fa-wordpress"></i></span>
+									<%= f.text_field :blog_url, class: 'form-control', placeholder: 'Blog URL' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:google_plus_url].present? %>" data-content="<%= @client.errors[:google_plus_url].try(:join, ',') %>">
+								<%= f.label :google_plus_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "google_plus_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #dd4b39; border: 1px solid #dd4b39;"><i class="fa fa-google-plus"></i></span>
+									<%= f.text_field :google_plus_url, class: 'form-control', placeholder: 'Google+ URL' %>
+								</div>
+							</div>
+	            <div class="form-group <%= 'has-error' if @client.errors[:youtube_url].present? %>" data-content="<%= @client.errors[:youtube_url].try(:join, ',') %>">
+	              <%= f.label :youtube_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "youtube_url"}) %>
+	              <div class="input-group">
+	                <span class="input-group-addon" style="background-color: #E62117; border: 1px solid #E62117;"><i class="fa fa-youtube-square"></i></span>
+	                <%= f.text_field :youtube_url, class: 'form-control', placeholder: 'Youtube URL' %>
+	              </div>
+	            </div>
+							<div class="form-group <%= 'has-error' if @client.errors[:facebook_url].present? %>" data-content="<%= @client.errors[:facebook_url].try(:join, ',') %>">
+								<%= f.label :facebook_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "facebook_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #3b5998; border: 1px solid #3b5998;"><i class="fa fa-facebook"></i></span>
+									<%= f.text_field :facebook_url, class: 'form-control', placeholder: 'Facebook URL' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:twitter_url].present? %>" data-content="<%= @client.errors[:twitter_url].try(:join, ',') %>">
+								<%= f.label :twitter_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "twitter_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #41ABE1; border: 1px solid #41ABE1;"><i class="fa fa-twitter"></i></span>
+									<%= f.text_field :twitter_url, class: 'form-control', placeholder: 'Twitter URL' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:linkedin_url].present? %>" data-content="<%= @client.errors[:linkedin_url].try(:join, ',') %>">
+								<%= f.label :linkedin_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "linkedin_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #005983; border: 1px solid #005983;"><i class="fa fa-linkedin"></i></span>
+									<%= f.text_field :linkedin_url, class: 'form-control', placeholder: 'Linkedin URL' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:pinterest_url].present? %>" data-content="<%= @client.errors[:pinterest_url].try(:join, ',') %>">
+								<%= f.label :pinterest_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "pinterest_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #BD2227; border: 1px solid #BD2227;"><i class="fa fa-pinterest"></i></span>
+									<%= f.text_field :pinterest_url, class: 'form-control', placeholder: 'Pinterest URL' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:instagram_url].present? %>" data-content="<%= @client.errors[:instagram_url].try(:join, ',') %>">
+								<%= f.label :instagram_url, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "instagram_url"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #305777; border: 1px solid #305777;"><i class="fa fa-instagram"></i></span>
+									<%= f.text_field :instagram_url, class: 'form-control', placeholder: 'Instagram URL' %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group <%= 'has-error' if @client.errors[:phones].present? %>" data-content="<%= @client.errors[:phones].try(:join, ',') %>">
+								<%= f.label :phones, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "phones"}) %>
+								<%= f.hidden_field :phones_csv %>
+								<div id="phones_block" class="form-group">
+									<div class="phone-types-example" style="display: none;">
+										<%= select_tag('phone_type', options_for_select(Client::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, nil), { include_blank: false, class: 'form-control phone-type phone-type-example' }) %>
+									</div>
+									<%unless @client.phones.empty? %>
+										<% @client.phones.each do |phone| %>
+											<div class="input-group phone-row">
+												<span class="input-group-addon" style="background-color: #43B51F; border: 1px solid #43B51F;"><i class="fa fa-phone"></i></span>
+												<%= select_tag('phone_type', options_for_select(Representative::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type' }) %>
+												<input type="text" class="form-control phone" placeholder="Phone Number" value="<%= phone.gsub(/[^0-9]/, '') %>">
+												<span class="input-group-btn"><a href="javascript://" class="btn btn-default delete-link" title="Delete"><i class="fa fa-times"></i></a></span>
+											</div>
+										<% end %>
+									<% end %>
+								</div>
+								<a id="phones_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus-circle"></i> Add</a>
+							</div>
+							<div class="form-group">
+								<%= f.label :fax, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "fax"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #F1941D; border: 1px solid #F1941D;"><i class="fa fa-fax"></i></span>
+									<%= f.text_field :fax, class: 'form-control', placeholder: 'Fax Number', data: { inputmask: "'mask': '(999)-999-9999'", mask: '' } %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:address1].present? %>" data-content="<%= @client.errors[:address1].try(:join, ',') %>">
+								<%= f.label 'Address 1', class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "address1"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #008DD0; border: 1px solid #008DD0;"><i class="fa fa-send"></i></span>
+									<%= f.text_field :address1, class: 'form-control', placeholder: 'Address 1' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:address2].present? %>" data-content="<%= @client.errors[:address2].try(:join, ',') %>">
+								<%= f.label "Address 2", class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "address2"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #008DD0; border: 1px solid #008DD0;"><i class="fa fa-send-o"></i></span>
+									<%= f.text_field :address2, class: 'form-control', placeholder: 'Address 2' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:zipcode].present? %>" data-content="<%= @client.errors[:zipcode].try(:join, ',') %>">
+								<%= f.label 'Zip Code', class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "zipcode"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgba(35, 164, 99, 1); border: 1px solid rgba(35, 164, 99, 1);"><i class="fa fa-map-marker" style="color: white;"></i></span>
+									<%= f.text_field :zipcode, class: 'form-control', placeholder: 'Zip Code' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:locality].present? %>" data-content="<%= @client.errors[:locality].try(:join, ',') %>">
+								<%= f.label :locality, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "locality"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgba(35, 164, 99, 1); border: 1px solid rgba(35, 164, 99, 1);"><i class="fa fa-dot-circle-o" style="color: white;"></i></span>
+									<%= f.text_field :locality, class: 'form-control', placeholder: 'Locality' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:region].present? %>" data-content="<%= @client.errors[:region].try(:join, ',') %>">
+								<%= f.label :region, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "region"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgba(35, 164, 99, 1); border: 1px solid rgba(35, 164, 99, 1);"><i class="fa fa-bullseye" style="color: white;"></i></span>
+									<%= f.text_field :region, class: 'form-control', placeholder: 'Region' %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @client.errors[:country].present? %>" data-content="<%= @client.errors[:country].try(:join, ',') %>">
+								<%= f.label :country, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "country"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgba(35, 164, 99, 1); border: 1px solid rgba(35, 164, 99, 1);"><i class="fa fa-flag" style="color: white;"></i></span>
+									<%= f.text_field :country, class: 'form-control', placeholder: 'Country' %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :notes, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "clients", table_column: "notes"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #FEEE74; border: 1px solid #FEEE74;"><i class="fa fa-thumb-tack" style="color: #F80203"></i></span>
+									<%= f.text_area :notes, size: '40x10', class: 'form-control', placeholder: 'Notes' %>
+								</div>
+							</div>
+              <div class="form-group">
+                <%= f.check_box :ignore_landing_pages, class: 'iCheck-helper' %>
+                <%= f.label :ignore_landing_pages, class: 'control-label' %>
+                <%= tooltip_by_field({tooltip_text: t("tooltips.client.ignore_landing_pages", :default => "")}) %>
+              </div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row center">
+						<div class="btn-group btn-group-custom">
+							<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, clients_path, class: 'btn btn-lg btn-primary' %>
+							<%= f.submit :class => 'btn btn-lg btn-success', :id => 'client_submit' %>
+							<% if params[:action] != 'new' %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, @products_link, class: 'btn btn-lg btn-primary' %>
+							<% end %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

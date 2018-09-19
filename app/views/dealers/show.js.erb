@@ -1,0 +1,8 @@
+<%
+  modal_dom_id = dom_id(dealer, 'modal')
+  row_id = dom_id(dealer, 'row')
+  new_row = render partial: 'dealer_queue_row', locals: {dealer: dealer}
+%>
+
+$('#<%= modal_dom_id %>').modal('hide')
+$('#queue_<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')

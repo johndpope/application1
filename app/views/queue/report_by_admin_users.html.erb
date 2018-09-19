@@ -1,0 +1,12 @@
+<%= header params[:name].titleize + ' Queue · Report by admin users' %>
+<!-- <%# breadcrumb :artifacts_images_report_by_admin_users, theme: "bootstrap" %> -->
+
+<div id="report_by_admin_users_list" style="margin-bottom: 10px;">
+  <%= hidden_field_tag :queue_name, params[:name] %>
+  <div>
+    <%= select_tag(:days_ago, options_for_select([['Last day', 1], ['Last 2 days', 2], ['Last week', 7], ['Last 2 weeks', 14], ['Last month', 30], ['Last 3 months', 60], ['Last 6 months', 180], ['Last year', 365], ['All the time', -1]], params[:days_ago]), { include_blank: false, class: "form-control", style: "width: 250px;"}) %>
+  </div>
+</div>
+<div class="row" id="report_by_admin_users_tbody">
+  <%= render partial: "report_by_admin_users_tbody", locals: {report: @report} %>
+</div>

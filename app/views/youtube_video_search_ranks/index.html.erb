@@ -1,0 +1,124 @@
+<% title 'Youtube video search rank' %>
+
+<div id="youtube_video_search_ranks_list">
+  <div class="row">
+  	<div class="col-md-5"></div>
+  	<div class="col-md-7">
+  		<div class="form-group">
+  			<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+  			<span class="badge bg-blue"><%= @youtube_video_search_ranks.total_count %></span>
+  		</div>
+  	</div>
+  </div>
+
+  <% unless @youtube_video_search_ranks.to_a.empty? %>
+    <table id="youtube_video_search_ranks_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th class="sort text-center" style="width: 10px;" id="id-th" data-field="id">ID</th>
+          <th class="text-center" style="width: 20px;">Screenshot</th>
+          <th class="text-center" style="width: 65px;">Account</th>
+          <th class="text-center" style="width: 65px;">Youtube video</th>
+          <th class="text-center" style="width: 65px;">Search phrase</th>
+          <th class="text-center" style="width: 65px;">Search type</th>
+          <th class="text-center" style="width: 65px;">Result type</th>
+          <th class="text-center" style="width: 20px;" id="page_number-th" data-field="page_number">Page</th>
+          <th class="text-center" style="width: 20px;">Per page</th>
+          <th class="text-center" style="width: 20px;">Position</th>
+          <th class="text-center" style="width: 20px;">In Box Position</th>
+          <th class="text-center" style="width: 20px;" id="rank-th" data-field="rank">Rank</th>
+          <th class="text-center" style="width: 45px;">Created At</th>
+        </tr>
+      </thead>
+      <tbody role="alert" aria-live="polite" aria-relevant="all">
+        <% @youtube_video_search_ranks.each_with_index do |youtube_video_search_rank, index| %>
+          <tr>
+            <td class="text-center">
+              <% unless youtube_video_search_rank.screenshot.blank?%>
+                <a href="<%=youtube_video_search_rank.screenshot(:original)%>" target="_blank">
+                  <%=youtube_video_search_rank.id%>
+                </a>
+              <% else %>
+                <%=youtube_video_search_rank.id%>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% unless youtube_video_search_rank.screenshot.blank?%>
+                <div class="screenshot-div">
+                  <a class="image-preview" href="<%=youtube_video_search_rank.screenshot(:original)%>" target="_blank">
+                    <img class="img-thumbnail livepreview" data-src="<%=youtube_video_search_rank.screenshot(:original)%>"
+                    src="<%=youtube_video_search_rank.screenshot(:thumb)%>"
+                    title="">
+                  </a>
+                </div>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% ea = youtube_video_search_rank.youtube_video_search_phrase.try(:youtube_video).try(:youtube_channel).try(:google_account).try(:email_account) || youtube_video_search_rank.youtube_video_search_phrase.email_account  %>
+              <%= link_to ea.email.gsub("@gmail.com", ""), edit_email_account_path(ea), target: '_blank' if ea.present? %>
+            </td>
+            <td class="text-center"><%= link_to youtube_video_search_rank.youtube_video_search_phrase.youtube_video.title, edit_youtube_video_path(youtube_video_search_rank.youtube_video_search_phrase.youtube_video), target: '_blank' if youtube_video_search_rank.youtube_video_search_phrase.present? && youtube_video_search_rank.youtube_video_search_phrase.youtube_video.present? %></td>
+            <td class="text-center"><%=youtube_video_search_rank.youtube_video_search_phrase.phrase%></td>
+            <td class="text-center"><%=youtube_video_search_rank.search_type%></td>
+            <td class="text-center"><%=youtube_video_search_rank.result_type%></td>
+            <td class="text-center"><%=youtube_video_search_rank.page%></td>
+            <td class="text-center"><%=youtube_video_search_rank.per_page%></td>
+            <td class="text-center"><%=youtube_video_search_rank.position%></td>
+            <td class="text-center"><%=youtube_video_search_rank.in_box_position%></td>
+            <td class="text-center"><%=youtube_video_search_rank.rank.present? ? youtube_video_search_rank.rank : "-" %></td>
+            <td class="text-center"><%= local_time(youtube_video_search_rank.created_at, format: '%m/%d/%y %I:%M %p', title: youtube_video_search_rank.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @youtube_video_search_ranks.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% else %>
+      <div><%= paginate @youtube_video_search_ranks, theme: 'bootstrap' %></div>
+  <% end %>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :rank, :page_number, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :updated_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({  action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+      <div class="filter-label">Email Account:</div>
+      <%= select_tag(:email_account_id, options_from_collection_for_select(EmailAccount.by_display_all(nil), :id, :email, params[:email_account_id]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Video URL or Video ID:</div>
+      <%= search_field_tag :youtube_video_id, params[:youtube_video_id], class: 'form-control' %>
+      <div class="filter-label">Page Number:</div>
+			<%= search_field_tag :page_number, params[:page_number], class: 'form-control numeric' %>
+      <div class="filter-label">Search Type:</div>
+      <%= select_tag(:search_type, options_for_select(YoutubeVideoSearchRank::SEARCH_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, params[:search_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label">Result Type:</div>
+      <%= select_tag(:result_type, options_for_select(YoutubeVideoSearchRank::RESULT_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, params[:result_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

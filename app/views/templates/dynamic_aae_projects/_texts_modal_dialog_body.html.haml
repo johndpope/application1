@@ -1,0 +1,17 @@
+= render partial: "modal_dialog_body_project_info"
+- if @dynamic_aae_project.dynamic_aae_project_texts.to_a.any?
+	%h4 List of Texts used in dynamic project
+	%table.table.table-bordered.table-hover.table-striped
+		%thead
+			= render partial: "templates/dynamic_aae_projects/texts_table_header"
+		%tbody
+			- @dynamic_aae_project.dynamic_aae_project_texts.each_with_index do |text, i|
+				%tr
+					%td= (i+1)
+					%td= t("templates.aae_project_text.types.#{text.try(:aae_project_text).try(:text_type)}") unless text.try(:aae_project_text).try(:text_type).blank?
+					%td= text.value
+		%tfoot
+			= render partial: "templates/dynamic_aae_projects/texts_table_header"
+- else
+	.alert.alert-info
+		%span Project doesn't contain any dynamic texts

@@ -1,0 +1,5 @@
+<%
+	text_block = render partial: 'templates/image_templates/image_template_texts',
+	locals: { image_form: ActionView::Helpers::FormBuilder.new( "templates_image_template[texts_attributes][#{Time.now.to_f.to_s.gsub('.','')}]", Templates::AaeProjectText.new, self, {}, proc {}) }
+%>
+$('#image_template_texts tbody').append('<%= escape_javascript(text_block) %>');

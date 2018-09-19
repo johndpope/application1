@@ -1,0 +1,20 @@
+- associated_manufacturer_ids = @client.dealer_certifications.pluck(:manufacturer_id)
+- unassociated_industry_manufacturers = industry_id.nil? ? [] : Client.with_business_type(:manufacturer).where.not(id: associated_manufacturer_ids).where(industry_id: industry_id).order(:name)
+- other_manufacturers = Client.with_business_type(:manufacturer).where.not(id: associated_manufacturer_ids).where.not(id: unassociated_industry_manufacturers).order(:name)
+.box.box-default.collapsed-box{id: "dealer_certification"}
+	.box-header.with-border
+		%h3.box-title Dealer Certification
+		.box-tools.pull-right
+			= tooltip_by_field({tooltip_text: t("tooltips.client.dealer_certifications", :default => "")})
+			%span{data: {toggle: "tooltip", "original-title" => "#{associated_manufacturer_ids.size} manufacturers associated"}, class: "badge bg-light-blue"}= associated_manufacturer_ids.size
+			= button_tag '', class: "btn btn-box-tool", data:{widget: 'collapse'} do
+				= fa_icon 'plus'
+	.box-body
+		.row
+			.col-md-12
+				- unless associated_manufacturer_ids.empty?
+					= render partial: 'clients/form/dealer_certification_table', locals: {manufacturers: @client.certifying_manufacturers, associated_manufacturer_ids:associated_manufacturer_ids, title: 'Associated Manufacturers'}
+				- unless unassociated_industry_manufacturers.empty?
+					= render partial: 'clients/form/dealer_certification_table', locals: {manufacturers: unassociated_industry_manufacturers, associated_manufacturer_ids:associated_manufacturer_ids, title: 'Industry Manufacturers'}
+				- unless other_manufacturers.empty?
+					= render partial: 'clients/form/dealer_certification_table', locals: {manufacturers: other_manufacturers, associated_manufacturer_ids:associated_manufacturer_ids, title: 'Other Manufacturers'}

@@ -1,0 +1,4 @@
+<%
+  channel_description_part = render partial: "sandbox/video_blenders/youtube_setup/channel_setup/channel_description_part", locals: {channel_description: @channel_description}
+%>
+$('.yt_channel_description').html('<%= escape_javascript(channel_description_part) %>').animate({opacity:0},200).animate({opacity:1},200);

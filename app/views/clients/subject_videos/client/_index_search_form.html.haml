@@ -1,0 +1,23 @@
+.box.box-default.box-solid{id: 'search_conditions'}
+	.box-header.with-border
+		%h3.box-title
+			= fa_icon 'search', text: t('search_conditions')
+	.box-body
+		- url = url_for(controller: params[:controller], action: "subject_videos")
+		= search_form_for @search, url: url, method: :get, class: "search-form", style: "margin-bottom: 0px !important;" do |sf|
+			= render partial: "clients/subject_videos/client/index_search_form_body", locals: {sf: sf}
+			.actions
+				= sf.button "", class: "btn btn-primary", type: "submit", data: {disable_with: "<i class='fa fa-search'></i> #{t("searching")}"} do
+					= fa_icon 'search', text: t("search")
+				= link_to 'javascript:', class: "btn btn-danger", id: 'clear_search_conditions', style: 'margin-left: 3px;' do
+					= fa_icon 'eraser', text: 'Clear conditions'
+- content_for(:javascripts) do
+	:javascript
+		$(function(){
+			$('select').select2({allowClear: true, placeholder: "Choose ..."})
+			$('#clear_search_conditions').click(function(){
+				$('#search_conditions select, :hidden.form-control').val('').select2('val','')
+				$('#search_conditions :text, [type="search"]').val('')
+				$('#search_conditions textarea').text('')
+			})
+		})

@@ -1,0 +1,9 @@
+<%
+  modal = render partial: 'tooltip_edit_form', locals: {tooltip: @tooltip}
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#tooltip_edit_<%=@tooltip.id%>").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('[data-toggle="popover"]').popover('hide');

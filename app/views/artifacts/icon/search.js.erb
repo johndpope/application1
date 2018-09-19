@@ -1,0 +1,4 @@
+<%
+  icon_search_results = render partial: "search_result", locals: {images: @icons, total_count: @total_count}
+%>
+$('#icon_search_results').replaceWith('<%= escape_javascript(icon_search_results) %>');

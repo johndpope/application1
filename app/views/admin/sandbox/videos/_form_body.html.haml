@@ -1,0 +1,77 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	= f.label :title, t('sandbox.video.title')
+	= f.text_field :title, class: "form-control"
+	%p{class: 'help-block'} In case if empty video file name will be applied
+
+.row
+	.col-md-3
+		.form-group
+			= f.label :sandbox_video_set_id, t('sandbox.video.sandbox_video_set_id')
+			- options = Sandbox::VideoSet.order(:title).map{|vs|[vs.title,vs.id]}
+			= f.select(:sandbox_video_set_id, options, {include_blank: '', selected: f.object.sandbox_video_set_id}, {class: 'form-control'})
+	.col-md-3
+		.form-group
+			= f.label :video_type, t('sandbox.video.video_type')
+			- video_types = Templates::VIDEO_CHUNK_TYPES.merge(Templates::GENERAL_TYPES).collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- transition_types = Templates::TRANSITION_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- grouped_options = {'Videos' => video_types,'Transitions' => transition_types}
+			= f.select(:video_type, grouped_options_for_select(grouped_options, f.object.try(:video_type).try(:value)), {include_blank: '', selected: f.object.sandbox_video_set_id}, {class: 'form-control'})
+	- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+	.col-md-3
+		.form-group
+			= f.label :is_active, t('sandbox.video.is_active')
+			= f.select(:is_active, yes_no_options, {include_blank: '', selected: f.object.is_active}, {class: 'form-control'})
+	.col-md-3
+		.form-group
+			= f.label :is_approved, t('sandbox.video.is_approved')
+			= f.select(:is_approved, yes_no_options, {include_blank: '', selected: f.object.is_approved}, {class: 'form-control'})
+
+.row
+	.col-md-3
+		.form-group
+			= label_tag 'Country'
+			- default_country = Geobase::Country.find_by_code("US")
+			- unless default_country == nil
+				= text_field_tag('country', default_country.id, class: "form-control", data: {name: default_country.name})
+	.col-md-3
+		.form-group
+			= label_tag 'State'
+			= text_field_tag('region1', '', class: "form-control")
+	.col-md-3
+		.form-group
+			= label_tag 'County'
+			= text_field_tag('region2', '', class: "form-control")
+	.col-md-3
+		.form-group
+			= label_tag 'City'
+			= text_field_tag('city', '', class: "form-control")
+			= f.hidden_field :location_id, class: "form-control"
+			= f.hidden_field :location_type, class: "form-control"
+			- if @location_json
+				= hidden_field_tag '', @location_json.to_json, id: 'location_json', class: "form-control"
+.row
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :thumb, t("sandbox.video_set.thumb")
+			= f.file_field :thumb, accept: 'image/png,image/gif,image/jpeg'
+			%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+			- unless f.object.thumb.blank?
+				.form-group
+					= label_tag nil, 'Current Thumbnail'
+					%div= image_tag f.object.thumb.url(:w240), style: "width: 240px; height: 180px;", class: "thumbnail"
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :video, class: 'control-label'
+			= f.file_field :video, accept: 'video/mp4'
+			%p{class: 'help-block'} file format: mp4, file size: <= 200MB
+			- unless f.object.video.blank?
+				.form-group
+					= label_tag nil, 'Current Video'
+					%div= video_tag f.object.video.url, style: 'height: 180px; width: 240px;', controls: true, autobuffer: false, class: "thumbnail"
+.form-group
+	= f.label :notes, t("sandbox.video.notes")
+	= f.text_area :notes, rows: 3, class: "form-control"

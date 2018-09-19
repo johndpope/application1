@@ -1,0 +1,8 @@
+.title-block
+	%h1
+		%b Campaign
+		%span.font_red_no-weight View
+.campaign-view
+	.container
+		- @client_video_campaign_maps.each_with_index do |ccvm, index|
+			= render partial: "sandbox/sandbox_clients/show/#{index == 0 ? 'active' : 'default'}_campaign_video_block", locals: { campaign_video_map: ccvm, client_id: @sandbox_client.uuid }

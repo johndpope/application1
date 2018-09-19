@@ -1,0 +1,9 @@
+%td.text-center= item.id
+%td.name= @vmware_virtual_machine_names[item.id]
+- %w(vmware_server_id order_nr ip user password).each do |f|
+	%td= item.send(f)
+- %w(is_test is_active).each do |c|
+	%td.text-center
+		- label_text = item.send("#{c}?") ? t('yes') : t('no')
+		- label_class = item.send("#{c}?") ? 'success' : 'danger'
+		.label{class: "label-#{label_class}"}= label_text

@@ -1,0 +1,20 @@
+<%
+  url = @tmp_image.file.url
+  path = @tmp_image.file.path
+  tmp_icon = render partial: "settings", locals: {url: url, path: path}
+%>
+$('#blended_icon').html('<%= escape_javascript(tmp_icon) %>');
+$('.button_apply_settings').prop('disabled', true);
+$(".btn-remove").on("click", function(e){
+  $(this).parent(".box-tools").parent(".box-header").parent(".box").remove();
+});
+
+$('.delete').on('click', function(){
+  $(this).parent('.box','.row').remove();
+  $.ajax({
+    url: "/artifacts/icons/delete",
+    type: 'DELETE',
+    data: {image_path: $(this).data('path')}
+  });
+
+});

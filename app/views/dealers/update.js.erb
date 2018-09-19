@@ -1,0 +1,30 @@
+<%
+  modal_dom_id = dom_id(dealer, 'modal')
+  row_id = dom_id(dealer, 'row')
+  new_row = render partial: 'dealer_row', locals: {dealer: dealer}
+  modal = render partial: 'form', locals: {dealer: dealer}
+  has_similar_dealers = Dealer.get_similar_dealers(dealer, false)
+%>
+
+//$('#<%= modal_dom_id %>').modal('hide')
+//$('body').append('<%= escape_javascript(modal) %>');
+<% if has_similar_dealers.present? %>
+  $("#<%= modal_dom_id %>").remove()
+  $(".modal-backdrop").remove()
+  $('body').append('<%= escape_javascript(modal) %>');
+  $("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+    $(this).remove()
+  })
+  $('.has-error').popover({
+    trigger: 'hover',
+    placement: 'bottom',
+    animation: true
+  });
+  $('#dealer_brand_id').autocomplete({ source: $('#brand_list').val().split('<sep/>') });
+  $('.phone').inputmask("mask", {"mask": "(999)-999-9999 [x99999]"});
+  $('#duplicates_li a').first().trigger('click');
+<% else %>
+  $('#<%= modal_dom_id %>').modal('hide')
+<% end %>
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')
+$('.animationload').hide();

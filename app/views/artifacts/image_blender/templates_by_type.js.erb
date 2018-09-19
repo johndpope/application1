@@ -1,0 +1,10 @@
+<%
+  select_block = render partial: 'artifacts/image_blender/templates_by_type',
+  locals: {templates: @templates_by_type}
+%>
+$('#templates_by_type').html('<%= escape_javascript(select_block) %>');
+
+$('#image_blender_image_template_id').select2({
+  placeholder: "Choose some template",
+  allowClear: true
+})

@@ -1,0 +1,138 @@
+- yes_no_options = [[t('yes'), 'yes'],[t('no'), 'no']]
+.box.box-default.box-solid
+	.box-header.with-border
+		%h3.box-title= fa_icon 'filter', text: t('filter')
+	.box-body
+		.row
+			- if params[:api] == 'Flickr'
+				.col-md-2
+					.form-group
+						= label_tag :sort, 'Sort'
+						%div
+							- selected_sort = params[:sort] || Artifacts::FlickrImage::SORTING.first
+							= select_tag 'sort', options_for_select(Artifacts::FlickrImage::SORTING.map { |l| ["#{l.gsub('-', ' ')}", l] }, selected: selected_sort), :class => 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :limit, 'Limit'
+						%div
+							- limits = Artifacts::Image::LIMITS
+							- options = options_for_select(limits.map { |l| ["#{l} images", l] }, selected: params[:limit])
+							= select_tag 'limit', options, :class => 'form-control'
+
+
+			- if params[:api].blank?
+				.col-md-12
+					.col-md-2
+						.form-tag
+							= label_tag :has_gravity_point, "Gravity points"
+							%div
+								- options = options_for_select([["Items might have gravity points", "might_have"],["Items have gravity points", "true"], ["Items don't have gravity points", "false"]], selected: params[:has_gravity_point])
+								= select_tag 'has_gravity_point', options, include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :broadcaster_property, "Broadcaster Property"
+						%div
+							= select_tag 'broadcaster_property', options_for_select(yes_no_options, params[:broadcaster_property]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :import_status, "Import Status"
+						%div
+							- options = [[t('artifacts.images.import_status.imported'), 'imported'],[t('artifacts.images.import_status.importing'), 'importing']]
+							= select_tag 'import_status', options_for_select(options, params[:import_status]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :is_local, "Import Type"
+						%div
+							- options = [['Imported via API', 'false'],['Locally uploaded', 'true']]
+							= select_tag 'is_local', options_for_select(options, params[:is_local]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :reusable, "Reusable"
+						%div
+							= select_tag 'reusable', options_for_select(yes_no_options, params[:reusable]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :rating, "Rating"
+						%div
+							= text_field_tag 'rating', params[:rating], class: 'form-control'
+				.col-md-12
+					.col-md-2
+						= label_tag :extension, "Extension type"
+						%div
+							- options = [['svg templates','svg'],['jpeg files','jpeg'],['png files','png']]
+							= select_tag 'extension', options_for_select(options, params[:extension]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :use_for_landing_pages, "Use for landing pages"
+						%div
+							= select_tag 'use_for_landing_pages', options_for_select(yes_no_options, params[:use_for_landing_pages]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :client, "Client"
+						%div
+							= select_tag 'client_id', options_from_collection_for_select(Client.order("is_active DESC NULLS LAST, name ASC"), :id, :name, params[:client_id]), include_blank: true, class: 'form-control'
+					.col-md-2
+						= label_tag :by_resolution, "By resolution"
+						%div
+							= select_tag 'by_resolution', options_for_select([['High', 'high'],['Low', 'low'],['All', 'all']], params[:by_resolution]), class: 'form-control'
+					.col-md-2
+						= label_tag :limit, 'Limit'
+						- limits = Artifacts::Image::LIMITS
+						- options = options_for_select(limits.map { |l| ["#{l} images", l] }, selected: params[:limit])
+						= select_tag 'limit', options, :class => 'form-control'
+
+			- else
+				.col-md-6
+					.form-group
+						= check_box_tag :show_imported, true, params[:show_imported]
+						= label_tag :show_imported
+					.form-group
+						= check_box_tag :show_rejected, true, params[:show_rejected]
+						= label_tag :show_rejected
+
+- if params[:api].blank?
+	.box.box-default.box-solid
+		.box-header.with-border
+			%h3.box-title= fa_icon 'filter', text: 'Filter by radius'
+			.box-tools.pull-right
+				%button.btn.btn-box-tool{data: {widget: "collapse"}}
+					%i.fa.fa-minus
+		.box-body
+			.row
+				.col-md-12
+					.col-md-2
+						= label_tag :country, "Country"
+						= text_field_tag :country, nil
+						= hidden_field_tag :country_name, params[:country_name]
+					.col-md-2
+						= label_tag :region1, "State"
+						= text_field_tag :region1, nil
+					.col-md-2
+						= label_tag :city, "City"
+						= text_field_tag :city, nil, :data => {:remote => true, :url => get_coordinates_artifacts_images_path}
+					.col-md-1
+						= label_tag :lat, "Latitude"
+						= text_field_tag :lat, params[:lat], class: "form-control", placeholder: "latitude", readonly: true
+					.col-md-1
+						= label_tag :lng, "Longitude"
+						= text_field_tag :lng, params[:lng], class: "form-control", placeholder: "longitude", readonly: true
+					.col-md-1
+						= label_tag :radius, "Radius"
+						= text_field_tag :radius, params[:radius], class: "form-control", placeholder: "set radius"
+
+	.box.box-default.box-solid{:class => params[:image].blank? ? "collapsed-box" : ""}
+		.box-header.with-border
+			%h3.box-title
+				= link_to 'javascript://', class: "", data: {widget: "collapse"} do
+					= fa_icon 'filter'
+					= "Filter by category"
+			.box-tools.pull-right
+				= link_to 'javascript://', class: "clear_categories_filter" do
+					= fa_icon 'times'
+					= "clear"
+				%button.btn.btn-box-tool{data: {widget: "collapse"}}
+					%i.fa{:class => params[:image].blank? ? "fa-plus" : "fa-minus"}
+		.box-body
+			.row
+				- Artifacts::ImageCategory.where(:parent_id => nil).each do |category|
+					.col-md-2
+						.form-group
+							= label_tag category.name, category.name
+						- Artifacts::ImageCategory.where(:parent_id => category.id).each do |sub_category|
+							- flag = params[:image][:categories].values.include?(sub_category.id.to_s) unless params[:image].blank?
+							= check_box_tag "image[categories][#{sub_category.id}]", sub_category.id, flag, class: "image_categories"
+							= label_tag "image[categories][#{sub_category.id}]", sub_category.name, class: "search_image_categories_label"
+							%br

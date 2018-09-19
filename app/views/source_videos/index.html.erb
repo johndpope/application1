@@ -1,0 +1,62 @@
+<%content_for(:javascripts){javascript_include_tag 'jquery.remotipart'} %>
+
+<%= title 'Source Videos' %>
+
+<% breadcrumb :source_videos %>
+
+<%
+  require 'action_view'
+  require 'utils'
+
+  @source_video = SourceVideo.new
+%>
+
+<div id="video_items">
+	<div class="row">
+		<div class="col-md-12">
+		  <a href="javascript://" class="btn btn-primary" id="add_source_video">Add</a>
+		</div>
+	</div>
+	<p></p>
+
+	<% if !@source_videos.to_a.empty? %>
+    	<table class="table table-bordered">
+			<tr>
+				<th>ID</th>
+				<th>Internal Title</th>
+				<th>Filename</th>
+				<th>Size</th>
+				<th>Created at</th>
+				<th>Actions</th>
+			</tr>
+			<% for source_video in @source_videos %>
+				<tr>
+					<td><%= link_to(source_video.id, 'javascript://', class: 'edit-source-video') %></td>
+					<td><%= source_video.custom_title %></td>
+					<td>
+						<%= link_to(Utils.shortify_file_name(source_video.video_file_name), 'javascript://', {:title=>source_video.video_file_name}) %>
+					</td>
+					<td><%= number_to_human_size(source_video.video_file_size) %></td>
+					<td><%= source_video.created_at.strftime('%m-%d-%Y %R') %></td>
+					<td class="actions">
+						<a href="javascript://" class="btn btn-primary btn-xs btn-edit-source-video" title="Edit Item" data-url="<%= edit_source_video_path(source_video.id) %>">
+							<i class="fa fa-pencil"></i>
+						</a>
+
+						<%= form_tag(destroy_source_video_path(source_video.id), method: :delete) do |f| %>
+							<button type="submit" data-confirm="Are you sure?" class="btn btn-danger btn-xs" title="Remove Item">
+								<i class="fa fa-eraser"></i>
+							</button>
+						<% end %>
+					</td>
+				</tr>
+			<% end %>
+		</table>
+
+		<div><%= paginate @source_videos, theme: 'bootstrap' %></div>
+	<% else %>
+		<div class="alert alert-info">No items</div>
+	<% end %>
+</div>
+
+<%= render partial: 'source_videos/source_video_modal' %>

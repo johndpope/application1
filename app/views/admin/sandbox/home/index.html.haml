@@ -1,0 +1,21 @@
+- content_for(:header){I18n.t('admin.sandbox.dashboard')}
+- content_for(:javascripts){javascript_include_tag 'holderr.min'}
+
+- Sandbox::Client.joins(:client).joins(:client_category).order('clients.name').select('clients.*, sandbox_clients.*, sandbox_client_categories.name AS client_category_name').group_by(&:'client_category_name').sort.each do |cat, cat_clients|
+	.client-category-row
+		%h3.text-muted= cat
+		.row
+			- cat_clients.each do |client|
+				.col-lg-3.col-md-4.col-sm-6.col-xs-12
+					.media
+						.media-left
+							= link_to sandbox_client_path(client.uuid), target: "_BLANK" do
+								%img.media-object.sandbox-client-logo{style:"width: 48px; height:48px;",
+								data:{src: "holder.js/48x48?text=no logo&bg=#c0c0c0"},
+								:src => (client.logo.url(:square_64) if client.logo.exists?)}
+						.media-body
+							- text_class = "text-#{client.is_active? ? 'success' : 'danger'}"
+							%h4.media-heading= link_to client.client.name, sandbox_client_path(client.uuid), target: "_BLANK", class: text_class
+							%p
+								- text_label = t("#{client.is_active? ? '' : 'in'}active")
+								%span{class: text_class}= text_label

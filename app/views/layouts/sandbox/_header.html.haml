@@ -1,0 +1,49 @@
+- profile_exists = @video_marketing_campaign_form_public_profile_uuid.present? && @video_marketing_campaign_form_id.present?
+- profile_pth = profile_exists ? edit_sandbox_video_marketing_campaign_form_path(id: @video_marketing_campaign_form_id, public_profile_uuid: @video_marketing_campaign_form_public_profile_uuid, step: 2) : ""
+%nav.navbar.navbar-inverse
+  .container
+    .navbar-header
+      %button.navbar-toggle.collapsed{:id => "toggle_nav", "aria-expanded" => "false", "data-target" => "#navbar-collapse", "data-toggle" => "collapse", :type => "button"}
+        %span.sr-only Toggle navigation
+        %span.icon-bar
+        %span.icon-bar
+        %span.icon-bar
+      = link_to (admin_user_signed_in? ? sandbox_root_path : ""), class: "navbar-brand" do
+        %i.glyphicon.glyphicon-film
+        %span.font_echo Echo
+        %span.font_video Video
+        %span.font_blender Blender
+    #navbar-collapse.navbar-collapse{"aria-expanded" => "false"}
+      %ul.nav.navbar-nav
+        - if admin_user_signed_in?
+          %li{class: ('active' if params[:controller] == 'home' && params[:action] == 'index')}
+            = link_to 'Home', sandbox_root_path
+        %li{class: ('active' if params[:controller] == 'home' && params[:action] == 'how_it_works')}
+          = link_to 'How it works', sandbox_how_it_works_path, target: ('blank' unless params[:action] == 'how_it_works')
+        %li{class: ('active' if params[:controller] == 'contact_us')}
+          = link_to 'Contact Us', (@sandbox_client.blank? ? sandbox_contact_us_path : "/sandbox/clients/#{@sandbox_client.uuid}/contact_us")
+        - if params[:controller] == 'sandbox/home' && params[:action] == 'index'
+          %li= link_to 'Blender video', '#blender_video', class: "go_to_section"
+          %li= link_to 'Blender images', '#blender_images', class: "go_to_section"
+          %li= link_to 'Media volunteer', '#media_volunteer', class: "go_to_section"
+
+      - if params[:controller] == 'sandbox/home' && params[:action] == 'index'
+        %ul.menu_with_buttons{:class => ('visible' if (params[:controller] == 'sandbox/home' && params[:action] == 'index') )}
+          - if profile_exists
+            %li= link_to 'Profile', profile_pth
+          - else
+            %li= link_to 'Log in', '#', class: 'coming_soon_popover'
+            %li= link_to 'Register', shared_media_root_path, target: 'blank', class: ''
+          %li= link_to 'Client Sign Up', "#client_sign_up_guide", class: "go_to_section client-sign-up"
+      - if params[:controller] == 'sandbox/video_marketing_campaign_forms'
+        %ul.menu_with_buttons{class: 'visible'}
+          - if params[:action] == 'landing'
+            - unless profile_exists
+              %li= link_to 'Get Started', new_sandbox_video_marketing_campaign_form_path(@query_params), class: "red-btn"
+          - if profile_exists
+            %li= link_to 'Profile', profile_pth
+
+      - unless @sandbox_client.blank?
+        .navbar-custom-menu
+          = link_to sandbox_client_path(@sandbox_client.uuid) do
+            = image_tag(@sandbox_client.logo.url(:square_256), class: 'client-logo') + @sandbox_client.try(:client).try(:name)

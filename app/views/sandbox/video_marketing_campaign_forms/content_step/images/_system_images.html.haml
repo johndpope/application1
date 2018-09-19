@@ -1,0 +1,92 @@
+%section.q1
+	%ul.nav.nav-tabs.campaign_forms_tab
+		%li.active
+			= link_to '#stock_images_tab', "data-toggle"=>"tab" do
+				STOCK IMAGES
+				%span.badge.badge-pill.badge-primary
+		%li
+			= link_to '#template_images_tab', "data-toggle"=>"tab" do
+				STOCK IMAGE TEMPLATES
+	.tab-content
+		#stock_images_tab.tab-pane.fade.in.active
+			#stock_images_containder
+				= f.hidden_field :deleted_stock_images, value: "{#{@video_marketing_campaign_form.deleted_stock_images.to_a.join(',')}}"
+				.row
+					.col-md-12
+						.text-center
+							.checkbox
+								%label
+									= f.check_box :use_stock_images, class: 'iCheck-helper'
+									Use stock images
+				.row
+					.col-md-2
+						.row
+							.col-md-12{id: 'stock_images_categories_wrapper'}
+								%ul.list-group{id: 'stock_images_categories_block'}
+									%li.list-group-item{class:('active' if(!params[:category].present? || !@image_categories.include?(params[:category])))}
+										- url = url_for(controller: '/sandbox/video_marketing_campaign_forms', action: 'stock_images', format: 'js')
+										= link_to url, data: {remote: 'true'} do
+											%b ALL
+										= link_to url, class:'pull-right', data:{remote: 'true'} do
+											%b= @stock_images_total_count
+									- category_icons = {'people'=>'user', 'building'=>'building', 'trucks'=>'truck', 'other'=>'list'}
+									- @stock_images_counts_by_categories.select{|k,v|v>0}.each do |k,v|
+										%li.list-group-item{class:('active' if @image_categories.include?(params[:category]))}
+											- url = url_for(controller: '/sandbox/video_marketing_campaign_forms', action: 'stock_images', format: 'js', category: k)
+											= link_to url, data: {remote: true} do
+												- if category_icons.has_key? k
+													= fa_icon category_icons[k]
+												%b= k.titleize
+											= link_to url, data: {remote: true}, class: 'pull-right' do
+												%b= v
+					.col-md-10{id: 'stock_images_wrapper'}
+						#stock_images_block{class:('disabled-block' unless @video_marketing_campaign_form.use_stock_images)}
+							= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/system_images/stock_images_results", locals: { stock_images: stock_images}
+							.text-center
+								= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/system_images/stock_images_paginate", locals: { stock_images: stock_images }
+		#template_images_tab.tab-pane.fade.in
+			#stock_image_templates_container
+				= f.hidden_field :deleted_stock_image_templates, value: "{#{@video_marketing_campaign_form.deleted_stock_image_templates.to_a.join(',')}}"
+				.row
+					.col-md-12
+						.text-center
+							.checkbox
+								%label
+									= f.check_box :use_stock_image_templates, class: 'iCheck-helper'
+									Use stock image templates
+				.row
+					.col-md-3
+						.row
+							.col-md-12{id: 'stock_image_templates_categories_wrapper'}
+								- available_categories = Templates::ImageTemplate::CATEGORIES.stringify_keys.keys
+								%ul.list-group{id: 'stock_image_templates_categories_block'}
+									%li.list-group-item{class:('active' if(!params[:category].present? || !available_categories.include?(params[:category])))}
+										- url = url_for(controller: '/sandbox/video_marketing_campaign_forms', action: 'stock_image_templates', format: 'js')
+										= link_to url, data: {remote: 'true'} do
+											%b ALL
+										= link_to url, class:'pull-right', data:{remote: 'true'} do
+											%b= @stock_image_templates_total_count
+										- category_icons = {'people'=>'user', 'building'=>'building', 'vehicles'=>'truck', 'billboards_and_signs'=>'desktop', 'jobs_and_projects'=>'suitcase'}
+										- @stock_image_templates_counts_by_categories.select{|k,v|v>0}.each do |k,v|
+											%li.list-group-item{class:('active' if available_categories.include?(params[:category]))}
+												- url = url_for(controller: '/sandbox/video_marketing_campaign_forms', action: 'stock_image_templates', format: 'js', category: k)
+												= link_to url, data: {remote: true} do
+													- if category_icons.has_key? k
+														= fa_icon category_icons[k]
+													%b= t("models.templates.image_template.categories.#{k}")
+												= link_to url, data: {remote: true}, class: 'pull-right' do
+													%b= v
+					.col-md-9
+						#stock_image_templates_block{class:('disabled-block' unless @video_marketing_campaign_form.use_stock_image_templates)}
+							= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/system_images/stock_image_templates_results", locals: { stock_image_templates: stock_image_templates}
+							.text-center
+								= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/system_images/stock_image_templates_paginate", locals: { stock_image_templates: stock_image_templates }
+%hr
+.row
+	.col-md-12
+		= link_to "javascript://", id:"system_images_back_btn", class:"btn btn-default", role:'accordion-btn-prev' do
+			= fa_icon 'arrow-left'
+			%b Back
+		= link_to "javascript://", class:"btn btn-primary", role:"accordion-btn-next" do
+			= fa_icon 'arrow-right'
+			%b Next

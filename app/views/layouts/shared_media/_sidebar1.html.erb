@@ -1,0 +1,11 @@
+<aside class="main-sidebar">
+	<section class="sidebar" id="scrollspy">
+		<ul class="sidebar-menu">
+			<li <%= 'class=active' if params[:controller] == 'shared_media/images' && params[:action] == 'dashboard' %>><a href="<%= dashboard_shared_media_images_path %>"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
+			<li <%= 'class=active' if params[:controller] == 'shared_media/images' && params[:action] == 'local_import' %>><a href="<%= shared_media_images_local_import_path %>"><i class="fa fa-upload"></i><span>Upload your media</span></a></li>
+			<li <%= 'class=active' if params[:controller] == 'shared_media/images' && params[:action] == 'browse' %>><a href="<%= shared_media_images_path %>"><i class="fa fa-file-image-o"></i><span>Manage your images</span></a></li>
+			<li <%= 'class=active' if params[:controller] == 'shared_media/audios' && params[:action] == 'index' %>><a href="<%= shared_media_audios_path %>"><i class="fa fa-file-audio-o"></i><span>Manage your audios</span></a></li>
+			<li <%= 'class=active' if params[:controller] == 'shared_media/videos' && params[:action] == 'index' %>><a href="<%= shared_media_videos_path %>"><i class="fa fa-file-video-o"></i><span>Manage your videos</span></a></li>
+		</ul>
+	</section>
+</aside>

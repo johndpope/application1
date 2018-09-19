@@ -1,0 +1,3 @@
+- centered_columns = %w(id)
+- %w(id name parent_id).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("product_category.#{c}")

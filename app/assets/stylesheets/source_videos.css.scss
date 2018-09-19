@@ -1,0 +1,40 @@
+// Place all the styles related to the SourceVideos controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#placeholders_hint{padding-left: 0}
+
+.description-name-select { display: inline; }
+
+fieldset.form {
+	border: 1px solid #d5d5d5;
+	margin: 0 0 15px;
+	padding: 10px 15px 0;
+
+	> legend {
+		display: block;
+		width: auto;
+		margin: 0 0 -15px 0;
+		padding: 0 8px;
+		border: 0 none;
+		text-align: right;
+		line-height: normal;
+
+		> .btn { margin: -4px 0 0 0; }
+	}
+
+	.counter-characters {
+		padding: 0 5px 0 0;
+
+		.label {
+			margin-left: 3px;
+			vertical-align: text-top;
+		}
+	}
+}
+
+.parent_description_block {
+	padding-bottom: 15px;
+
+	.remove_nested_fields { width: 100%; }
+}

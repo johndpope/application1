@@ -1,0 +1,12 @@
+= render partial: 'clients/navigation'
+.nav-tabs-custom
+	%ul.nav.nav-tabs
+		- tabs = %w(client products source_videos)
+		- tabs.each do |t|
+			%li{class:('active' if t == active_tab)}
+				= link_to t.humanize, Rails.application.routes.url_helpers.send("#{t}_client_image_tag_selection_path", client)
+	.tab-content
+		- tabs.each do |t|
+			- if t == active_tab
+				.chart.tab-pane{class: 'active'}
+					= yield

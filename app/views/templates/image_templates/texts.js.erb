@@ -1,0 +1,9 @@
+<%=
+render partial: "generic_crud_elements/info_dialog",
+	locals: {
+		modal_name: "modal1",
+		modal_body_partial: "templates/image_templates/preview_texts",
+		modal_title: "Image Templates texts :#{@item.name}",
+		url: templates_image_template_path(@item)
+	}
+%>

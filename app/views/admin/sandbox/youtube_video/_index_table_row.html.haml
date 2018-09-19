@@ -1,0 +1,29 @@
+%td=item.id
+%td
+  - if !item.sandbox_client.blank?
+    = link_to item.sandbox_client.try(:client).try(:name), admin_sandbox_youtube_video_index_path('q[sandbox_client_id_eq]' => item.sandbox_client.id)
+%td
+  - unless item.title_product_components.blank?
+    - item.title_product_components.each do |sc|
+      %span.label.label-primary=sc
+%td
+  - unless item.title_subject_components.blank?
+    - item.title_subject_components.each do |subject|
+      %span.label.label-primary=subject
+%td
+  - unless item.title_entity_components.blank?
+    - item.title_entity_components.each do |entity|
+      %span.label.label-primary=entity
+%td
+  - unless item.tags.blank?
+    - item.tags.split(',').each do |tag|
+      %span.label.label-primary=tag
+%td
+  - unless item.location.blank?
+    - if item.location_type != 'Geobase::Country'
+      = link_to item.location.formatted_name(primary_region: true, primary_region_code: true), admin_sandbox_youtube_video_index_path('q[location_id_eq]' => item.location_id, 'q[location_type_eq]' => item.location_type)
+    - else
+      = link_to item.location.name, admin_sandbox_youtube_video_index_path('q[location_id_eq]' => item.location_id, 'q[location_type_eq]' => item.location_type)
+%td
+  - unless item.location.blank?
+    = link_to t("geobase.#{item.location_type}"), admin_sandbox_youtube_video_index_path('q[location_type_eq]' => item.location_type)

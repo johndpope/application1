@@ -1,0 +1,6 @@
+<%
+  row = render partial: "index_table_row", locals: {audio: @audio}
+  row_id = dom_id(@audio, 'row')
+%>
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(row)%>');
+$(".<%= @audio.class.to_s.underscore.gsub('/','_')%>_modal").modal('hide');

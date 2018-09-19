@@ -1,0 +1,2 @@
+- unless @channel_arts.blank?
+  = link_to (image_tag @channel_arts.first.file.url, {class: 'img-thumbnail channel_art_selected', id: "channel_art_selected", alt: 'no image', data: {id: @channel_arts.first.id} }), @channel_arts.first.file.url, {target: '_blank'}

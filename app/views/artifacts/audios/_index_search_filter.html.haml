@@ -1,0 +1,200 @@
+.box.box-default.box-solid#search_conditions
+	.box-header.with-border
+		%h3.box-title= fa_icon 'filter', text: t('filter')
+	.box-body
+		- criteria = params[:ransack] || {}
+
+		- if params[:api] == 'Soundcloud'
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :search_tags, 'Tags'
+						= search_field_tag 'search_tags', params[:search_tags], class: 'form-control', placeholder: 'Tags', title: 'a comma separated list of tags'
+				.col-md-2
+					.form-group
+						= label_tag :filter, 'Filter'
+						- filter_options = Artifacts::SoundcloudAudio::FILTER
+						- options = options_for_select(filter_options, selected: params[:filter])
+						= select_tag 'filter', options, class: 'form-control', include_blank: true
+				.col-md-2
+					.form-group
+						= label_tag :license, 'License'
+						- license_options = Artifacts::SoundcloudAudio::LICENSE
+						- options = options_for_select(license_options, selected: params[:license])
+						= select_tag 'license', options, class: 'form-control', include_blank: true
+				.col-md-2
+					.form-group
+						= label_tag :type, 'Type'
+						- type_options = Artifacts::SoundcloudAudio::TYPES
+						- options = options_for_select(type_options, selected: params[:type])
+						= select_tag 'type', options, class: 'form-control', include_blank: true
+				.col-md-2
+					.form-group
+						= label_tag :genres, 'Genres'
+						= search_field_tag 'genres', params[:genres], class: 'form-control', placeholder: 'Genres', title: 'a comma separated list of genres'
+
+				.row
+				.col-md-2
+					.form-group
+						= label_tag :bpm_from, 'Beats per minute (from)'
+						= number_field_tag 'bpm_from', params[:bpm_from].to_i, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :bpm_to, 'Beats per minute (to)'
+						= number_field_tag 'bpm_to', params[:bpm_to].to_i, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :duration_from, 'Duration (from), sec'
+						= number_field_tag 'duration_from', params[:duration_from].to_i, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :duration_to, 'Duration (to), sec'
+						= number_field_tag 'duration_to', params[:duration_to].to_i, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :limit, 'Limit'
+						- limits = Artifacts::Audio::LIMITS
+						- options = options_for_select(limits.map { |l| ["#{l} tracks", l] }, selected: params[:limit])
+						= select_tag 'limit', options, :class => 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :offset, 'Page'
+						- pages = 0.upto(9).to_a
+						- options = options_for_select(pages.map {|p| ["Page #{p + 1}", (p * params[:limit].to_i)]}, selected: params[:offset])
+						= select_tag 'offset', options, :class => 'form-control'	
+
+		- elsif params[:api] == 'Jamendo'
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :name, 'Track name'
+						= search_field_tag 'name', params[:name], class: 'form-control', placeholder: 'Track name'
+				.col-md-2
+					.form-group
+						= label_tag :artist_name, 'Artist name'
+						= search_field_tag 'artist_name', params[:artist_name], class: 'form-control', placeholder: 'Artist name'
+				.col-md-2
+					.form-group
+						= label_tag :album_name, 'Album name'
+						= search_field_tag 'album_name', params[:album_name], class: 'form-control', placeholder: 'Album name'
+				.col-md-2
+					.form-group
+						= label_tag :search_tags, 'Tags'
+						= search_field_tag 'search_tags', params[:search_tags], class: 'form-control', placeholder: 'Tags', title: 'Search by one or more tags (genre, instrument, theme and nc tags)'
+				.col-md-2
+					.form-group
+						= label_tag :order, 'Sort Order'
+						- sort_orders = Artifacts::JamendoAudio::SORT_ORDER
+						- options = options_for_select(sort_orders, selected: params[:order])
+						= select_tag 'order', options, class: 'form-control', include_blank: true,
+									 title: 'Be careful because declaring an order different than "relevance" as first order, you would entirely loose the search relevance order. If you want a particular rate to influence the order, probably "boost" is what you are looking for.'
+				.col-md-2
+					.form-group
+						= label_tag :boost, 'Boost'
+						- boost_options = Artifacts::JamendoAudio::BOOST
+						- options = options_for_select(boost_options, selected: params[:boost])
+						= select_tag 'boost', options, class: 'form-control', include_blank: true
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :type, 'Track type'
+						.radio
+							%label
+								%input{type: 'radio', name: 'type', checked: params[:type] == '1' ? true : false, value: 1}Album Track
+						.radio
+							%label
+								%input{type: 'radio', name: 'type', checked: params[:type] == '2' ? true : false, value: 2}Single Track
+						.radio
+							%label
+								%input{type: 'radio', name: 'type', checked: params[:type] == '0' ? true : false, value: 0}Both Types
+				.col-md-2
+					.form-group
+						= label_tag :audioformat, 'Audioformat'
+						- audio_formats = Artifacts::JamendoAudio::JAMENDO_AUDIOFORMAT
+						- options = options_for_select(audio_formats, selected: params[:audioformat])
+						= select_tag 'audioformat', options, :class => 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :limit, 'Limit'
+						- limits = Artifacts::Audio::LIMITS
+						- options = options_for_select(limits.map { |l| ["#{l} tracks", l] }, selected: params[:limit])
+						= select_tag 'limit', options, :class => 'form-control'
+
+		- else
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :artifacts_artist_id_eq, "Artist", class: 'control-label'
+						- artists = Artifacts::Artist.order(name: :asc).collect{|k| [k.name, k.id]}
+						= select_tag "ransack[artifacts_artist_id_eq]", options_for_select(artists, selected: criteria[:artifacts_artist_id_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :title_cont, 'Title'
+						= search_field_tag 'ransack[title_cont]', criteria[:title_cont], class: 'form-control', placeholder: 'Title'
+				.col-md-2
+					.form-group
+						= label_tag :description_cont, 'Description'
+						= search_field_tag 'ransack[description_cont]', criteria[:description_cont], class: 'form-control', placeholder: 'Description'
+				.col-md-2
+					.form-group
+						= label_tag :tags_name_cont, 'Tags'
+						= search_field_tag 'ransack[tags_name_cont]', criteria[:tags_name_cont], class: 'form-control', placeholder: 'Search by tags'
+				.col-md-2
+					.form-group
+						= label_tag :client_id_eq, 'Client'
+						- options = options_from_collection_for_select(Client.order(:name), :id, :name, criteria[:client_id_eq])
+						= select_tag 'ransack[client_id_eq]', options, include_blank: true, class: "form-control"
+				.col-md-2
+					.form-group
+						= label_tag :file_content_type_cont, 'File type'
+						- audio_formats = options_for_select([['mp3','audio/mpeg'],['wav','audio/wav']], selected: criteria[:file_content_type_cont])
+						= select_tag 'ransack[file_content_type_cont]', audio_formats, include_blank: true, class: "form-control"
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :type_cont, "Audio type", class: 'control-label'
+						- types = Artifacts::Audio::API_SOURCES_LIST.map{|a| [a,"Artifacts::#{a}Audio"]}
+						= select_tag "ransack[type_cont]", options_for_select(types, selected: criteria[:type_cont]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :sound_type_eq, "Sound type", class: 'control-label'
+						- sound_types = Artifacts::Audio::SOUND_TYPE.map{|k,v| [k.to_s.humanize, v]}
+						= select_tag "ransack[sound_type_eq]", options_for_select(sound_types, selected: criteria[:sound_type_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :genre_eq, "Genre", class: 'control-label'
+						- genres = Genre.all.collect{|k| [k.name, k.id]}
+						= select_tag "ransack[genre_eq]", options_for_select(genres.sort, selected: criteria[:genre_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :mood_eq, "Mood", class: 'control-label'
+						- moods = Artifacts::Audio::MOOD.map{|k,v| [k,v]}
+						= select_tag "ransack[mood_eq]", options_for_select(moods, selected: criteria[:mood_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :instrument_eq, "Instrument", class: 'control-label'
+						- instruments = Artifacts::Audio::INSTRUMENT.map{|k,v| [k.to_s.humanize,v]}
+						= select_tag "ransack[instrument_eq]", options_for_select(instruments, selected: criteria[:instrument_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :audio_category_eq, "Category", class: 'control-label'
+						- audio_categories = Artifacts::Audio::AUDIO_CATEGORIES.map{|k,v| [k,v]}
+						= select_tag "ransack[audio_category_eq]", options_for_select(audio_categories, selected: criteria[:audio_category_eq]), include_blank: true, class: 'form-control'
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :is_approved, "Is approved", class: 'control-label'
+						- options = [['YES', true],['NO', false]]
+						= select_tag "ransack[is_approved_eq]", options_for_select(options, selected: criteria[:is_approved_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :attribution_required_eq, "Attribution required", class: 'control-label'
+						- attributions = Artifacts::Audio::ATTRIBUTION.map{|k,v| [k.to_s.humanize,v]}
+						= select_tag "ransack[attribution_required_eq]", options_for_select(attributions, selected: criteria[:attribution_required_eq]), include_blank: true, class: 'form-control'
+				.col-md-2
+					.form-group
+						= label_tag :limit, 'Limit'
+						%div
+							- limits = Artifacts::Audio::LIMITS
+							- options = options_for_select(limits.map { |l| ["#{l} items", l] }, selected: params[:limit])
+							= select_tag 'limit', options, include_blank: true, :class => 'form-control'

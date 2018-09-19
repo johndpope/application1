@@ -1,0 +1,19 @@
+<page size="A4">
+  <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+  <div class="content">
+    <section class="">
+      <div class="container">
+        <br>
+        <p><b>Youtube Channel Example: <%= @youtube_channel_example.youtube_videos.size unless @youtube_channel_example.blank?%> Videos Posted Per Location</b></p>
+        <p><%= @youtube_channel_example.url unless @youtube_channel_example.blank? %></p>
+        <br>
+        <% unless @youtube_channel_screenshot.blank? %>
+          <%= wicked_pdf_image_tag @youtube_channel_screenshot.image.url, class: "ytb-channel-screen"%>
+        <% else %>
+          <%= wicked_pdf_image_tag '/missing.png', class: "img-missing"%>
+        <% end %>
+      </div>
+    </section>
+  </div>
+  <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+</page>

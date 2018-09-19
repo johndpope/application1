@@ -1,0 +1,6 @@
+$('#tr_yv_<%= @youtube_video.id %> .reblend').hide()
+if (<%= @already_in_queue %>) {
+  alert("Youtube video #<%= @youtube_video.id %> is alreay in 'Blend video set job' queue!")
+} else {
+  alert("Youtube video #<%= @youtube_video.id %> was successfully added to 'Blend video set job' queue!")
+}

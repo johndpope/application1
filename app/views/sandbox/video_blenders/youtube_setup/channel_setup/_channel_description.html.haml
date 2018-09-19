@@ -1,0 +1,27 @@
+%td.image
+  = link_to 'javascript://' do
+    = image_tag "/sandbox/icons/icon4.png"
+%td.time
+  = link_to 'javascript://' do
+    %span.num= 4
+%td.regenerate_block
+  .col-md-2
+    = link_to regenerate_channel_descriptions_sandbox_client_video_blenders_path, class: "btn btn-regenerate", data: {remote: true, "disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i>'} do
+      = fa_icon 'refresh 2x'
+  .col-md-10
+    .title-block
+      %h3
+        %b Channel
+        %span.font_red_no-weight Description
+      .sm_description
+        Max Description length:
+        %span.font_red 980 characters
+  .col-md-2
+  .col-md-10.channel_description
+    %p.sm_content
+      - labels = ['Client_short_d.', 'Industry_short_d.', 'Location short.d', 'Other_short_d.(optional)']
+      - labels.each_with_index do |v,i|
+        %span.label.label-info= v.to_s
+        = "+" unless i+1 == labels.size
+    .sm_content.yt_channel_description
+      = render partial: "sandbox/video_blenders/youtube_setup/channel_setup/channel_description_part", locals: {channel_description: @channel_description}

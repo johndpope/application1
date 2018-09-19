@@ -1,0 +1,25 @@
+<div id="sent_emails_list">
+  <div class="box box-danger direct-chat direct-chat-warning">
+    <div class="box-header with-border">
+      <h3 class="box-title"><i class="fa fa-envelope"></i> <b>Sent Emails</b></h3>
+      <div class="box-tools pull-right">
+        <%= link_to '<i class="fa fa-plus-circle"></i> Blank'.html_safe, new_sent_email_path(receiver: @receiver, resource_id: @sent_email_resource_id, resource_type: @sent_email_resource_type), remote: true , class: 'btn btn-sm btn-primary', style: "margin-right: 10px;", title: "Blank email template" %>
+        <% if @sent_email_resource_type == 'Dealer' %>
+          <%#= link_to '<i class="fa fa-plus-circle"></i> Follow up call'.html_safe, new_sent_email_path(receiver: @receiver, subject: @subject, resource_id: @sent_email_resource_id, resource_type: @sent_email_resource_type, type: "follow_up_call"), remote: true , class: 'btn btn-sm btn-primary', style: "margin-right: 10px;", title: "Follow up call email template" %>
+        <% end %>
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body">
+      <div id="sent_emails_table" class="direct-chat-messages" style="height: auto;">
+        <% unless sent_emails.to_a.empty? %>
+  				<% sent_emails.each do |sent_email| %>
+  					<%= render partial: 'sent_emails/sent_email_row', locals: {sent_email: sent_email} %>
+  				<% end %>
+      	<% end %>
+        <p id="no_sent_emails_tr" class="text-center" style="<%= 'display: none' unless sent_emails.to_a.empty? %>">No items available</p>
+      </div>
+    </div>
+  </div>
+</div>

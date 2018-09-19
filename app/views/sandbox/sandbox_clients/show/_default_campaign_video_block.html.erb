@@ -1,0 +1,7 @@
+<div class="city_select_bg"
+	data-json='{"background": ["<%= campaign_video_map[:locality_details].try(:default_background_image).try(:url) %>", "<%= campaign_video_map[:locality_details].try(:active_background_image).try(:url) %>"], "url":"<%= url_for(controller: "sandbox_clients", action: "video_campaign", client_uuid: client_id, locality_id: campaign_video_map[:locality].id) %>"}'
+	style="background-image: url('<%= campaign_video_map[:locality_details].try(:default_background_image).try(:url) %>');">
+	<div class="default">
+		<h2><%= campaign_video_map[:locality].name %></h2>
+	</div>
+</div>

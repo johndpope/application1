@@ -1,0 +1,17 @@
+.admin_tooltips{
+  &.index{
+    #recap {
+      ul {
+        &.nav-stacked {
+          max-height: 740px;
+          overflow-y: scroll;
+        }
+      }
+    }
+
+    .tooltips{
+      .id{width: 40px;}
+      .table_column{width: 200px}
+    }
+  }
+}

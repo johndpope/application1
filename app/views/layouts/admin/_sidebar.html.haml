@@ -1,0 +1,97 @@
+%aside.main-sidebar
+  %section.sidebar
+    %ul.sidebar-menu
+      %li
+        = link_to root_path do
+          = fa_icon 'home'
+          %span= t('root_home')
+      %li{class:('active' if params[:controller] == 'admin/user_companies')}
+        = link_to admin_user_companies_path do
+          = fa_icon 'building'
+          %span=  t('admin.user_companies_section')
+      %li{class:('active' if params[:controller] == 'admin/users')}
+        = link_to admin_users_path do
+          = fa_icon 'user'
+          %span= t('admin.users_section')
+      %li.tree-view{class:("active" if %w(admin/rendering_machines admin/vmware/servers).include?(params[:controller]))}
+        = link_to 'javascript:' do
+          = fa_icon 'server'
+          %span= t('admin.rendering_facilities_section')
+          = fa_icon 'angle-left', class: "pull-right"
+          %ul.treeview-menu
+            %li{class: ("active" if params[:controller] == 'admin/vmware/servers')}
+              = link_to admin_vmware_servers_path do
+                %span= t :vmware_servers
+            %li{class: ("active" if params[:controller] == 'admin/rendering_machines')}
+              = link_to admin_rendering_machines_path do
+                %span= t :vmware_virtual_machines
+      %li.tree-view{class:("active" if %w(admin/whenever/cron_job_groups admin/whenever/cron_jobs).include?(params[:controller]))}
+        = link_to 'javascript:' do
+          = fa_icon 'clock-o'
+          %span= t('admin.cron_jobs_section')
+          = fa_icon 'angle-left', class: "pull-right"
+          %ul.treeview-menu
+            %li{class: ("active" if params[:controller] == 'admin/whenever/cron_job_groups')}
+              = link_to admin_whenever_cron_job_groups_path do
+                = fa_icon "list"
+                %span= t :cron_job_groups
+            %li{class: ("active" if params[:controller] == 'admin/whenever/cron_jobs')}
+              = link_to admin_whenever_cron_jobs_path do
+                = fa_icon "clock-o"
+                %span= t :cron_jobs
+      - makes_and_models_components = %w(product_categories makes models)
+      - makes_and_models_controllers = makes_and_models_components.map{|c| "admin/makes_and_models/#{c}"}
+      - makes_and_models_menu_items_icons = {'product_categories' => 'book', 'makes' => 'list', 'models' => 'leaf'}
+      %li.tree-view{class:("active" if makes_and_models_controllers.include?(params[:controller]))}
+        = link_to 'javascript:' do
+          = fa_icon 'industry'
+          %span= t('admin.makes_and_models')
+          = fa_icon 'angle-left', class: "pull-right"
+          %ul.treeview-menu
+            - makes_and_models_components.each do |c|
+              %li{class: ("active" if params[:controller] == "admin/makes_and_models/#{c}")}
+                = link_to send("admin_makes_and_models_#{c}_path") do
+                  = fa_icon makes_and_models_menu_items_icons[c]
+                  %span= t("admin.#{c}")
+      - sandbox_controllers = %w(clients client_categories video_sets videos video_campaigns video_campaign_video_stages locality_details)
+      - sandbox_controller_prefix = "admin/sandbox"
+      - sandbox_controller_icons = {"clients" => "user",
+        "client_categories" => "users", "videos" => "file-movie-o", "video_campaigns" => "briefcase",
+        "video_campaign_video_stages" => "copy", "video_sets" => "list", "locality_details" => "globe"}
+      %li.tree-view{:class => ("active" if sandbox_controller_prefix == params[:controller].split('/')[0..1].join('/'))}
+        = link_to 'javascript:' do
+          = fa_icon 'cubes'
+          %span= t('admin.sandbox_section')
+          = fa_icon 'angle-left', class: "pull-right"
+          %ul.treeview-menu
+            %li{class: ("active" if sandbox_controller_prefix == params[:controller].split('/')[0..1].join('/') && params[:controller].split('/').last == "home")}
+              = link_to admin_sandbox_root_path do
+                = fa_icon "dashboard"
+                %span= t :dashboard
+            - sandbox_controllers.each do |c|
+              - current_sandbox_controller = params[:controller].split('/').last
+              %li{:class => ("active" if c == current_sandbox_controller)}
+                = link_to eval("admin_sandbox_#{c}_path") do
+                  = fa_icon sandbox_controller_icons[c]
+                  %span= t("admin.sandbox.#{c}")
+            %li{class: ('active' if params[:controller].split('/').last == 'videos_upload')}
+              = link_to admin_sandbox_upload_path do
+                = fa_icon 'upload'
+                %span= t('admin.sandbox.videos_upload')
+            %li{class: ('active' if params[:controller].split('/').last == 'youtube_channel')}
+              = link_to admin_sandbox_youtube_channel_index_path do
+                = fa_icon 'youtube-play'
+                %span="Youtube channels"
+            %li{class: ('active' if params[:controller].split('/').last == 'youtube_video')}
+              = link_to admin_sandbox_youtube_video_index_path do
+                = fa_icon 'video-camera'
+                %span="Youtube videos"
+            %li{class: ('active' if params[:controller].split('/').last == 'youtube_channel_image')}
+              = link_to admin_sandbox_youtube_channel_image_index_path do
+                = fa_icon 'file-image-o'
+                %span="Youtube channel images"
+
+      %li{class:('active' if params[:controller] == 'admin/tooltips')}
+        = link_to admin_tooltips_path do
+          = fa_icon 'user'
+          %span= 'Tooltips'

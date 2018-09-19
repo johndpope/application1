@@ -1,0 +1,16 @@
+<tr id="<%= dom_id(batch, 'row')%>">
+  <td class="text-center"><%=batch.id %></td>
+  <td><%= batch.title %></td>
+  <td title="<%= batch.description %>"><%= truncate(batch.description, length: 60) %></td>
+  <td class="text-center"><%= link_to batch.email_accounts_size, batch.email_accounts_url, target: "_blank" %></td>
+  <td class="text-center"><%= link_to "Link", batch.email_accounts_json, target: "_blank" %></td>
+  <td class="text-center actions">
+    <div class="btn-group btn-group-custom">
+      <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_batch_path(batch),  { class: 'btn btn-xs btn-primary', remote: true, title: 'Edit' } %>
+      <% if batch.executable_query %>
+        <%= link_to '<i class="fa fa-refresh"></i> Refresh'.html_safe, refresh_batch_path(batch),  { class: 'btn btn-xs btn-success', remote: true, title: 'Refresh' } %>
+      <% end %>
+      <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, batch, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-danger' %>
+    </div>
+  </td>
+</tr>

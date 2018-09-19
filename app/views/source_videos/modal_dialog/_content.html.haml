@@ -1,0 +1,24 @@
+.modal{class: 'modal-wide fade source-video-modal', id: dom_id(@source_video, 'form_modal'), style: "z-index: 1050 !important"}
+  .modal-dialog
+    .modal-content
+      - action = params[:action] == 'new' ? 'create' : 'update'
+      = nested_form_for @source_video,
+      url: url_for(controller: "source_videos",
+      action: action), authenticity_token: true, :multipart => true, data: {remote: true} do |f|
+        .modal-header
+          %button{type: 'button', class: 'close', data: {dismiss: 'modal'}, 'area-label' => 'Close'}
+            %span{'area-hidden' => true} &times;
+          %h4{class: 'modal-title'}
+            #{@source_video.new_record? ? I18n.t('new') : I18n.t('edit')} Subject Video
+            -unless @source_video.new_record?
+              &#35;
+              = @source_video.id
+        .modal-body
+          = render partial: "source_videos/modal_dialog/content_body", locals: {f: f}
+        .modal-footer
+          %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}} Close
+          = f.submit (@source_video.new_record? ? I18n.t('add') : I18n.t('update')),
+          class: 'btn btn-primary', data:{disable_with: (@source_video.new_record? ? I18n.t('adding') : I18n.t('updating'))}
+
+= javascript_include_tag 'source_videos/location'
+= javascript_include_tag 'source_videos/form'

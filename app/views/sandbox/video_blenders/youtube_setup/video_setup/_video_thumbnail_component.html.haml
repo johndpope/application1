@@ -1,0 +1,2 @@
+- @video_thumbnails.map do |item|
+  = link_to (image_tag URI::escape(item.file.url(:thumb), '[]'), {class: 'img-thumbnail thumbnail_img', data: {src: item.file.url(:original), id: item.id} }), 'javascript://', {target: '_blank'}

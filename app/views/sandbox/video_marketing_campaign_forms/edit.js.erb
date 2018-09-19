@@ -1,0 +1,13 @@
+<%
+  client_images_results = render partial: 'client_images_results', locals: {uploaded_images: @uploaded_images}
+  client_images_paginate = render partial: 'client_images_paginate', locals: {uploaded_images: @uploaded_images}
+%>
+<% if uploaded_images.total_count == 0 %>
+  $('.uploaded-photo-container').hide();
+<% end %>
+$('#client_images_results').replaceWith('<%= escape_javascript(client_images_results) %>');
+$('.client_images_paginate').replaceWith('<%= escape_javascript(client_images_paginate) %>');
+$('.page, .next, .first, .prev, .next_page').on('click', function () {
+  $('.animationload').show();
+});
+$('.animationload').hide();

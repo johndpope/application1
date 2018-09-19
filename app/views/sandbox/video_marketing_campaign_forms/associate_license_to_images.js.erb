@@ -1,0 +1,8 @@
+<%
+  @client_images.each do |image|
+    file_id = image.id
+    file_name = image.license_proof.file.instance.file_file_name
+    file_url = image.license_proof.file.url
+%>
+  $('[data-row-id="<%=file_id%>"]').find('.link_on_license_proof').html('<a href="<%=file_url%>" download> <%=file_id%>-<%=file_name%></a>');
+<% end %>

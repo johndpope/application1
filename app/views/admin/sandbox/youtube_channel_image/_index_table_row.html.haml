@@ -1,0 +1,12 @@
+%td=item.id
+%td
+  - if !item.sandbox_client.blank?
+    = link_to item.sandbox_client.try(:client).try(:name), admin_sandbox_youtube_channel_image_index_path('q[sandbox_client_id_eq]' => item.sandbox_client.id)
+%td.text-center
+  - unless item.file.instance.file_content_type.split('/').last == "svg+xml"
+    = link_to (image_tag URI::escape(item.file.url(:thumb), '[]'), {class: 'img-thumbnail livepreview', style: "width: 60px; height: 40px;", data: {src: item.file.url(:original)} }), URI::escape(item.file.url(:original), '[]'), {target: '_blank'}
+  - else
+    = link_to (image_tag URI::escape(item.file.url(:original), '[]'), {class: 'img-thumbnail livepreview', style: "width: 60px; height: 40px;", data: {src: item.file.url(:original)} }), URI::escape(item.file.url(:original), '[]'), {target: '_blank'}
+%td
+  - unless item.image_type.blank?
+    = link_to item.image_type, admin_sandbox_youtube_channel_image_index_path('q[image_type_eq]' => Sandbox::YoutubeChannelImage::IMAGE_TYPES[item.image_type.to_sym])

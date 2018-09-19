@@ -1,0 +1,8 @@
+<%
+  new_row = render partial: 'comment_row', locals: {comment: @comment, resource_id: @resource_id, resource_type: @resource_type}
+%>
+
+$('#modal_comment').modal('hide')
+$('#no_items_tr').hide();
+// $('#comments_table tbody').prepend('<%= escape_javascript(new_row) %>');
+$('#comments_table').prepend('<%= escape_javascript(new_row) %>');

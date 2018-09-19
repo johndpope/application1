@@ -1,0 +1,44 @@
+.panel.panel-primary{style: "#{'display:none;' if @video_marketing_campaign_form.package_type.try(:value) != VideoMarketingCampaignForm.package_type.find_value(:youtube).value}"}
+	.panel-heading{id:'youtube_heading'}
+		%h4.panel-title
+			= link_to 'javascript://', onclick: "$('#packages_next_btn').trigger('click');" do
+				%b
+					= fa_icon 'youtube-play', text:'BIND YOUTUBE CHANNEL'
+				%span{class: "badge badge-step pull-right"}
+					STEP 1.1
+	.panel-collapse.collapse{id:"youtube_section", "area-labelledby"=>"youtube_section"}
+		.panel-body
+			%p.help-block.text-center
+				Give us rights to programmatically upload videos into your Youtube channel
+			- unless @video_marketing_campaign_form.youtube_refresh_token.blank?
+				= render partial: 'bound_youtube_channel'
+			= render partial: 'refresh_token_block'
+			%hr
+			= link_to 'javascript://', id:"bind_youtube_channel_back_btn", class:"btn btn-default" do
+				= fa_icon 'arrow-left'
+				%b Back
+			= link_to 'javascript://', id:"bind_youtube_channel_next_btn", class:"btn btn-success" do
+				= fa_icon 'arrow-right'
+				%b Next
+- content_for :javascripts do
+	:javascript
+		$(function(){
+			$(document).ready(function(){
+				$('#btn_refresh_token_explanation').popover({
+					target: 'focus',
+					html: true,
+					content: function(){
+						return "#{escape_javascript(render(partial: 'what_is_refresh_token')).html_safe}"
+					}
+				})
+			})
+		})
+- if params[:section] == 'youtube_channel'
+	- content_for :javascripts do
+		:javascript
+			$(function(){
+				$(document).ready(function(){
+					$('.panel-collapse').collapse('hide');
+					$('#youtube_section').collapse('show');
+				})
+			})

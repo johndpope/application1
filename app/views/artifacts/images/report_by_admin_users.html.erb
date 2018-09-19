@@ -1,0 +1,21 @@
+<%= header 'Images report by admin users' %>
+<% breadcrumb :artifacts_images_report_by_admin_users, theme: "bootstrap" %>
+
+<div class="row">
+  <div class="col-md-6" id="report_by_admin_users_list">
+    <div class="text-center">
+      <%= select_tag(:days_ago, options_for_select([['Last day', 1], ['Last 2 days', 2], ['Last week', 7], ['Last 2 weeks', 14], ['Last month', 30], ['Last 3 months', 60], ['Last 6 months', 180], ['Last year', 365], ['All the time', -1]], params[:days_ago]), { include_blank: false, class: "form-control", style: "width: 250px;"}) %>
+    </div>
+    <table id="report_table" class="table table-bordered table-striped dataTable">
+    	<thead>
+    		<tr>
+    			<th>Admin user</th>
+    			<th style="width: 100px;">Images count</th>
+    		</tr>
+    	</thead>
+    	<tbody id="report_by_admin_users_tbody">
+        <%= render partial: "report_by_admin_users_tbody", locals: {report: @report} %>
+    	</tbody>
+    </table>
+  </div>
+</div>

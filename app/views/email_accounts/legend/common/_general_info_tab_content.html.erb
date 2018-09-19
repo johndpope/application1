@@ -1,0 +1,124 @@
+<div class="row">
+	<div class="col-md-2 text-muted">ID:</div>
+	<div class="col-md-10">
+		<%= email_account.id %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Deleted:</div>
+	<div class="col-md-10">
+		<% if email_account.deleted %>
+			<span class="label label-danger">YES</span>
+		<% else %>
+			<span class="label label-success">NO</span>
+		<% end %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Active:</div>
+	<div class="col-md-10">
+		<% if email_account.is_active %>
+			<span class="label label-success">YES</span>
+		<% else %>
+			<span class="label label-danger">NO</span>
+		<% end %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Email:</div>
+	<div class="col-md-10">
+		<%= email_account.email %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Password:</div>
+	<div class="col-md-10">
+		<%= email_account.password %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Recovery Email:</div>
+	<div class="col-md-10">
+		<%= email_account.recovery_email %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Recovery Phone:</div>
+	<div class="col-md-10">
+		<%= email_account.recovery_phone.try(:value) %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">First Name:</div>
+	<div class="col-md-10">
+		<%= email_account.firstname %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Last Name:</div>
+	<div class="col-md-10">
+		<%= email_account.lastname %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Secret Question:</div>
+	<div class="col-md-10">
+		<%= email_account.secret_question %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Secret Answer:</div>
+	<div class="col-md-10">
+		<%= email_account.secret_answer %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Locality:</div>
+	<div class="col-md-10">
+		<%= email_account.locality.try(:name) %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Region:</div>
+	<div class="col-md-10">
+    <% if email_account.region %>
+      <%= link_to email_account.region.try(:name), { controller: 'email_accounts', region_id: email_account.region_id, country_id: email_account.region.try(:country_id), limit: params[:limit] }, class: 'sort_link' %>
+    <% else %>
+      <%= email_account.locality.try(:primary_region).try(:name) %>
+    <% end %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Country:</div>
+	<div class="col-md-10">
+    <% if email_account.region %>
+      <%= email_account.region.try(:country).try(:code) %>
+    <% else %>
+      <%= email_account.locality.try(:country).try(:code) %>
+    <% end %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">IP:</div>
+	<div class="col-md-10">
+		<%= email_account.ip_address.try(:address) %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">IP Notes:</div>
+	<div class="col-md-10">
+		<%= email_account.ip_notes %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Notes:</div>
+	<div class="col-md-10">
+		<%= email_account.notes %>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2 text-muted">Created At:</div>
+	<div class="col-md-10">
+		<%= local_time(email_account.created_at, format: '%m/%d/%y %I:%M %p', title: email_account.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))%>
+	</div>
+</div>

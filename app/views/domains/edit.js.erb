@@ -1,0 +1,21 @@
+<%
+  modal = render partial: 'form', locals: {domain: domain}
+  modal_dom_id = dom_id(domain, 'modal')
+%>
+
+$("#<%= modal_dom_id %>").remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('.has-error').popover({
+  trigger: 'hover',
+  placement: 'bottom',
+  animation: true
+});
+$('.iCheck-helper').iCheck({
+  checkboxClass: 'icheckbox_minimal-blue',
+  radioClass: 'iradio_minimal-blue',
+  increaseArea: '20%'
+});

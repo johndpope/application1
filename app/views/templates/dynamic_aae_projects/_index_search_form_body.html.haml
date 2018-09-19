@@ -1,0 +1,26 @@
+.form-group
+	.row
+		.col-md-3
+			= sf.label :client_id, t('templates.dynamic_aae_project.client')
+			- options = options_from_collection_for_select(Client.order(:name), :id, :name, @search.client_id_eq)
+			= sf.select :client_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :project_type, t('templates.dynamic_aae_project.aae_project_type')
+			- video_types = Templates::VIDEO_CHUNK_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- transition_types = Templates::TRANSITION_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- grouped_options = {'Videos' => video_types,'Transitions' => transition_types}
+			= sf.select :aae_project_project_type_eq, grouped_options_for_select(grouped_options, @search.aae_project_project_type_eq), {include_blank: '', selected: @search.aae_project_project_type_eq}, {class: 'form-control'}
+		.col-md-2
+			= sf.label :source_video_id, t('templates.dynamic_aae_project.source_video')
+			- options = options_from_collection_for_select(SourceVideo.order(:custom_title), :id, :custom_title, @search.source_video_id_eq)
+			= sf.select :source_video_id_eq, options, {include_blank: true}, class: 'form-control'
+		.col-md-1
+			= sf.label :id, t('templates.dynamic_aae_project.id')
+			= sf.search_field :id_eq, class: "form-control"
+		.col-md-1
+			= sf.label :aae_project_id, t('templates.dynamic_aae_project.aae_project_id')
+			= sf.search_field :aae_project_id_eq, class: "form-control"
+		.col-md-2
+			= sf.label :target, t('templates.dynamic_aae_project.target')
+			- options = Templates::DynamicAaeProject::TARGETS.map{|key, value|[t("templates.dynamic_aae_project.targets.#{key.to_s}"), Templates::DynamicAaeProject::TARGETS[key]]}
+			= sf.select :target_eq, options, {include_blank: true}, class: "form-control"

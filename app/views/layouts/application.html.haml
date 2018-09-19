@@ -1,0 +1,39 @@
+!!!
+%html
+	%head
+		%title
+			- if content_for? :title
+				= yield :title
+			- else
+				= t('broadcaster')
+		%meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' }
+		= stylesheet_link_tag 'application'
+		= stylesheet_link_tag params[:controller]
+		= csrf_meta_tags
+		= yield :stylesheets
+	%body{class: "skin-blue sidebar-mini sidebar-open #{@body_class}", data: {page: @data_page}}
+		= render partial: '/overlay_spinner'
+		= yield :body_top
+		.wrapper
+			= render partial: "layouts/header"
+			= render partial: "layouts/sidebar"
+			%aside.content-wrapper
+				%section.content-header
+					- if content_for? :header
+						%h1
+							= yield :header
+							- if content_for? :small_header
+								%small= yield :small_header
+					= breadcrumbs separator: ' &rsaquo; ', class: :breadcrumb
+					= yield :content_header_bottom
+				%section.content= yield
+			%footer.main-footer
+				%strong
+					= t :copyright
+					&copy;
+					= Time.now.year
+				%strong= t("valynteen_solutions")
+		= yield :body_button
+		= javascript_include_tag 'application'
+		= javascript_include_tag params[:controller]
+		= yield :javascripts

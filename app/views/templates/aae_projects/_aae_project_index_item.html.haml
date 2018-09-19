@@ -1,0 +1,50 @@
+%tr{id: dom_id(aae_project, 'row')}
+  %td.text-center
+    %input{type: 'checkbox', class: "toggle-aae-project-item"}
+  %td= aae_project.id
+  %td= aae_project.project_type.try(:titleize)
+  %td= aae_project.title.try(:titleize)
+  - %w(texts images).each do |i|
+    - span_class = aae_project.send("has_#{i}?") ? 'success' : 'danger'
+    - span_text = aae_project.send("has_#{i}?") ? 'YES' : 'NO'
+    %td.text-center
+      %span.label{:class => "label-#{span_class}"}
+        = span_text
+  %td.text-center
+    - prefix = aae_project.is_approved ? 'success' : 'danger'
+    - text = aae_project.is_approved ? 'YES' : 'NO'
+    %span.label{class: ('label-' + prefix)}= text
+  %td
+    = link_to templates_aae_project_preview_thumbnail_path(aae_project), data: {remote: true}  do
+      = image_tag aae_project.thumbnail.url(:thumb), class: 'img-responsive', style: 'height: 18px; width: 32px;' unless aae_project.thumbnail.blank?
+  %td.text-center
+    - unless aae_project.video.blank?
+      = link_to templates_aae_project_preview_video_path(aae_project), data: {remote: true}, class: 'btn btn-default btn-sm' do
+        = fa_icon 'play'
+  %td.text-center
+    = Time.at(aae_project.video_duration).utc.strftime("%M:%S") unless aae_project.video_duration.blank?
+  %td.text-center= aae_project.screenshot_time
+  %td
+    .btn-group{role: 'group'}
+      = link_to templates_aae_project_path(aae_project),
+        class: 'btn btn-default btn-sm',
+        remote: true,
+        title: 'Preview' do
+        = fa_icon 'eye'
+      = link_to 'javascript:',
+        class: 'btn btn-default btn-sm',
+        :disabled => ("disabled" if aae_project.notes.blank?),
+        data: {container: "body", toggle: "popover", placement: "top", content: aae_project.notes, trigger: "hover"} do
+        = fa_icon 'exclamation', :class => ('text-danger' unless aae_project.notes.blank?)
+      = link_to edit_templates_aae_project_path(aae_project),
+        remote: true,
+        title: 'Edit',
+        data: {toggle: 'modal', target: dom_id(aae_project, 'modal')},
+        class: 'btn btn-default btn-sm' do
+        = fa_icon 'pencil'
+      = link_to templates_aae_project_path(aae_project, authenticity_token: form_authenticity_token),
+        method: :delete,
+        data: { confirm: 'Are you sure?', remote: true },
+        title: 'Delete',
+        class: 'btn btn-default btn-sm' do
+        = fa_icon 'trash', :class => 'text-danger'

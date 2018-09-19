@@ -1,0 +1,18 @@
+.title-block
+	%h1
+		%b Video
+		%span.font_red_no-weight Sets
+.video-sets
+	- if @sandbox_client.video_sets.empty?
+		.alert.alert-info No available video sets
+	- else
+		.row
+			- @sandbox_client.video_sets.where(is_active: true).order('order_nr, title').each do |vs|
+				.col-md-3.col-sm-6.vs-set
+					= link_to sandbox_client_video_blender_path(@sandbox_client.uuid, vs.id) do
+						= image_tag vs.thumb.url, data: {src: "holder.js/240x180"}, class: "thumbnail"
+						%span.btn.btn-sm.btn-danger
+							%i.glyphicon.glyphicon-film
+							%b Try
+							Blender
+					%h1= vs.title

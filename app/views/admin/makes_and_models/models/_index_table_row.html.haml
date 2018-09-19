@@ -1,0 +1,4 @@
+%td.id{class: 'text-center'}= item.id
+%td.name= item.name
+%td.make_id= item.try(:make).try(:name)
+%td.product_category_id= item.try(:product_category).try(:name)

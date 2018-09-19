@@ -1,0 +1,809 @@
+<% content_for(:javascripts){javascript_include_tag 'common/form/logo_block'} %>
+<% content_for(:stylesheets){stylesheet_link_tag 'common/form/logo_block'} %>
+
+<% content_for(:stylesheets){stylesheet_link_tag 'jquery.fileupload'} %>
+<% content_for(:stylesheets){stylesheet_link_tag 'jquery.fileupload-ui'} %>
+<% content_for(:javascripts){javascript_include_tag 'jquery-fileupload'} %>
+
+<% if @video_marketing_campaign_form.present? && @video_marketing_campaign_form.is_email_registration %>
+  <%= render partial: 'sandbox/video_marketing_campaign_forms/steps_after_email' %>
+<% else %>
+  <%= render partial: 'sandbox/video_marketing_campaign_forms/steps' %>
+<% end %>
+<div class="wrap1 step-<%= params[:step] %>">
+  <div class="col-md-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title text-center"><i class="fa fa-edit"></i><b> Video Marketing On-boarding Form</b></h3>
+        <h4 class="text-center">Please fill out this form to the best of your ability to help in the account set up process of your Video Marketing Campaign</h4>
+        <% if @video_marketing_campaign_form.errors.any?  %>
+          <!-- <div class="row">
+            <div class="col-md-12">
+              <div id="error_explanation" class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-exclamation-circle"></i> Some <%#= "error".pluralize(@video_marketing_campaign_form.errors.count) %> prohibited this form from being saved</h4>
+              </div>
+            </div>
+          </div> -->
+        <% end %>
+        <% if flash[:notice] %>
+          <div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+          </div>
+        <% end %>
+      </div>
+      <!-- /.box-header -->
+      <!-- form start -->
+      <%= nested_form_for @video_marketing_campaign_form, url: (params[:controller].include?("sandbox") ? (@video_marketing_campaign_form.id.nil? ? sandbox_video_marketing_campaign_form_path(@video_marketing_campaign_form) : sandbox_video_marketing_campaign_form_path(@video_marketing_campaign_form, public_profile_uuid: @video_marketing_campaign_form.try(:client).try(:public_profile_uuid))) : video_marketing_campaign_form_path(@video_marketing_campaign_form)), html: { multipart: true } do |f| %>
+        <input type="hidden" name="step" value="<%= params[:step]%>"/>
+        <%= f.hidden_field :dealer_ids %>
+        <%= f.hidden_field :industry_id %>
+        <%= f.hidden_field :client_id %>
+        <%= f.hidden_field :is_email_registration %>
+        <div class="box-body">
+          <div style="<%= 'display: none;' unless ['', '2'].include?(params[:step].to_s) %>">
+            <% manufacturers = Client.where("clients.business_type = ? AND clients.industry_id = ?", Client.business_type.find_value(:manufacturer).value, @video_marketing_campaign_form.industry_id).order("clients.name ASC") %>
+            <div class="panel-group" id="company_info_accordion">
+              <div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:company_name, :company_nickname, :primary_phone, :company_email, :website, :no_website]).present? ? 'panel-danger' : 'panel-primary' %>">
+                <div id="info_heading" class="panel-heading">
+                  <h4 class="panel-title">
+                    <a href="javascript://" onclick="$('#brands_selection_back_btn').trigger('click');"><b><i class="fa fa-info-circle"></i> COMPANY INFO</b><span class="badge badge-step pull-right">STEP 1</span></a>
+                    <% if (@video_marketing_campaign_form.errors.messages.keys & [:company_name, :company_nickname, :primary_phone, :company_email, :website, :no_website]).present? %>
+                      <small style="color: white;"> · Some <%= "error".pluralize((@video_marketing_campaign_form.errors.messages.keys & [:company_name, :company_nickname, :primary_phone, :company_email, :website, :no_website]).size) %> prohibited this section from being saved</small>
+                    <% end %>
+                  </h4>
+                </div>
+                <div id="info_section" class="panel-collapse collapse" aria-labelledby="info_section">
+                  <div class="panel-body">
+                    <div class="row">
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:company_name].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:company_name].try(:join, ',') %>">
+                        <%= f.label :company_name, "Official Name <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= f.text_field :company_name, class: "form-control", placeholder: "Official Company Name" %>
+                      </div>
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:company_nickname].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:company_nickname].try(:join, ',') %>">
+                        <%= f.label :company_nickname, "Nickname / Shortened Name <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_form.company_nickname", default: "Please introduce a shortened version of your company name that is commonly known. This name will be used in the video production.")}) %>
+                        <%= f.text_field :company_nickname, class: "form-control", placeholder: "Company Nickname / Shortened Name (Characters limit: #{Templates::AaeProjectText::TEXT_GROUPES_LIMITS[:general][:client]})", maxlength: Templates::AaeProjectText::TEXT_GROUPES_LIMITS[:general][:client] %>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <%= f.label :distributor_names, "Distributor Names", class: "control-label" %>
+                        <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_form.distributor_names", default: "If you are a dealer company, please select your distributor names from the suggested list. The autocomplete function predicts the rest of the distributor names when you are typing in this field. You can also introduce directly your distributor names and separate them by 'Enter' in this field. Please, do not use commas here.")}) %>
+                        <input id="distributors_list" type="hidden" value="<%= Dealer.distinct.select(:district).where('district IS NOT NULL AND industry_id = ?', @video_marketing_campaign_form.industry_id).order(:district).pluck(:district).map{|e| e.gsub(',', '')}.join('<sep/>') %>">
+                        <div class="input-group-custom">
+                          <%= f.text_field :distributor_names_csv, class: "form-control", placeholder: "Distributor names - Separate by 'Enter'", style: "width: 100%;" %>
+                          <span id="distributor_names_arrow_down" class="select-span-arrow"><i class="fa fa-caret-down"></i></span>
+                        </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <%= f.label :marketing_company_name, "Advertising Agency Name", class: "control-label" %>
+                        <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_form.marketing_company_name", default: "Please introduce the advertising agency name that you cooperate with.")}) %>
+                        <%= f.text_field :marketing_company_name, class: "form-control", placeholder: "Advertising agency name" %>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:primary_phone].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:primary_phone].try(:join, ',') %>">
+                        <%= f.label :primary_phone, "Primary Phone (will be used for video production) <span class='red-star'>*</span>".html_safe, class: 'control-label popover-box', data: {content: "Required field", toggle: 'popover'} %>
+                        <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_form.primary_phone", default: "This phone number will be used for video production! If you want to indicate other company phone numbers, please introduce them in the section 'Other company phones' below.")}) %>
+                        <%= f.text_field :primary_phone, class: "form-control", placeholder: "Primary phone" %>
+                      </div>
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:company_email].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:company_email].try(:join, ',') %>">
+                        <%= f.label :company_email, "Email <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= f.email_field :company_email, class: "form-control", placeholder: "Company Email" %>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:company_phones].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:company_phones].try(:join, ',') %>">
+                        <%= f.label :company_phones, "Other Phones".html_safe, class: 'control-label' %>
+                        <%= f.hidden_field :company_phones_csv %>
+                        <div id="phones_block" class="form-group">
+                          <div class="phone-types-example" style="display: none;">
+                            <%= select_tag('phone_type', options_for_select(Client::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, nil), { include_blank: false, class: 'form-control phone-type phone-type-example' }) %>
+                          </div>
+                          <%unless @video_marketing_campaign_form.company_phones.empty? %>
+                            <% @video_marketing_campaign_form.company_phones.each do |phone| %>
+                              <div class="input-group phone-row">
+                                <%= select_tag('phone_type', options_for_select(Representative::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type' }) %>
+                                <input type="text" class="form-control phone" placeholder="Phone Number" value="<%= phone.gsub(/[^0-9]/, '') %>">
+                                <span class="input-group-btn"><a href="javascript://" class="btn btn-default delete-link" title="Delete"><i class="fa fa-times"></i></a></span>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </div>
+                        <a id="phones_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus text-blue"></i> Add phone</a>
+                      </div>
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:website].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:website].try(:join, ',') %>">
+                        <div class="<%= 'has-error' if @video_marketing_campaign_form.errors[:no_website].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:no_website].try(:join, ',') %>">
+                          <%= f.label :no_website, "Do you have a website?", class: "control-label" %>
+                          <label style="margin-left: 10px;"><%= f.radio_button(:no_website, false, class: "iCheck-helper") %> Yes</label>
+                          <label style="margin-left: 10px;"><%= f.radio_button(:no_website, true, class: "iCheck-helper") %> No</label>
+                        </div>
+                        <div id="website_block" style="<%#= 'display: none;' if @video_marketing_campaign_form.no_website %>">
+                          <%= f.url_field :website, class: "form-control", placeholder: "Website" %>
+                        </div>
+                      </div>
+                    </div>
+                    <a id="info_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+              <div id="brands_selection_panel" class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:primary_brand, :secondary_brands]).present? ? 'panel-danger' : 'panel-primary' %>">
+                <div id="brands_selection_heading" class="panel-heading">
+                  <h4 class="panel-title">
+                    <a href="javascript://" onclick="$('#address_back_btn').trigger('click');"><b><i class="fa fa-building"></i> BRANDS</b><span class="badge badge-step pull-right">STEP 2</span></a>
+                    <% if (@video_marketing_campaign_form.errors.messages.keys & [:primary_brand, :secondary_brands]).present? %>
+                      <small style="color: white;"> · Some <%= "error".pluralize((@video_marketing_campaign_form.errors.messages.keys & [:primary_brand, :secondary_brands]).size) %> prohibited this section from being saved</small>
+                    <% end %>
+                  </h4>
+                </div>
+                <div id="brands_selection_section" class="panel-collapse collapse" aria-labelledby="brands_selection_section">
+                  <div class="panel-body">
+                    <div id="brands_selection_block">
+                      <%= render partial: 'sandbox/video_marketing_campaign_forms/brands', locals: {f: f, manufacturers: manufacturers} %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:address1, :address2, :zipcode, :locality, :region]).present? ? 'panel-danger' : 'panel-primary' %>">
+                <div id="address_heading" class="panel-heading">
+                  <h4 class="panel-title">
+                    <a href="javascript://" onclick="$('#brands_selection_next_btn').trigger('click');"><b><i class="fa fa-map-marker"></i> ADDRESS</b> <span class="badge badge-step pull-right">STEP 3</span></a>
+                    <% if (@video_marketing_campaign_form.errors.messages.keys & [:address1, :address2, :zipcode, :locality, :region]).present? %>
+                      <small style="color: white;"> · Some <%= "error".pluralize((@video_marketing_campaign_form.errors.messages.keys & [:address1, :address2, :zipcode, :locality, :region]).size) %> prohibited this section from being saved</small>
+                    <% end %>
+                  </h4>
+                </div>
+                <div id="address_section" class="panel-collapse collapse" aria-labelledby="address_section">
+                  <div id="address_section_body" class="panel-body">
+                    <div class="row">
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:address1].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:address1].try(:join, ',') %>">
+                        <%= f.label :address1, "Address 1 <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= f.text_field :address1, class: "form-control", placeholder: "Address 1" %>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <%= f.label :address2, "Address 2", class: "control-label" %>
+                        <%= f.text_field :address2, class: "form-control", placeholder: "Address 2" %>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-2 <%= 'has-error' if @video_marketing_campaign_form.errors[:zipcode].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:zipcode].try(:join, ',') %>">
+                        <%= f.label :zipcode, "Zip Code <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= f.text_field :zipcode, class: "form-control", placeholder: "Zip Code" %>
+                      </div>
+                      <div class="form-group col-md-4 <%= 'has-error' if @video_marketing_campaign_form.errors[:locality].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:locality].try(:join, ',') %>">
+                        <%= f.label :locality, "Locality <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= f.text_field :locality, class: "form-control", placeholder: "Locality" %>
+                      </div>
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:region].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:region].try(:join, ',') %>">
+                        <%= f.label :region, "State / Region <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+                        <%= f.text_field :region, class: "form-control", placeholder: "State / Region" %>
+                      </div>
+                    </div>
+                    <%= f.hidden_field :country %>
+                    <a id="address_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                    <a id="address_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+              <div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:representative_email]).present? ? 'panel-danger' : 'panel-primary' %>">
+                <div id="representative_heading" class="panel-heading">
+                  <h4 class="panel-title">
+                    <a href="javascript://" onclick="$('#address_next_btn').trigger('click');"><b><i class="fa fa-fax"></i> REPRESENTATIVE</b> <span class="badge badge-step pull-right">STEP 4</span></a>
+                    <% if (@video_marketing_campaign_form.errors.messages.keys & [:representative_email]).present? %>
+                      <small style="color: white;"> · Some <%= "error".pluralize((@video_marketing_campaign_form.errors.messages.keys & [:representative_email]).size) %> prohibited this section from being saved</small>
+                    <% end %>
+                  </h4>
+                </div>
+                <div id="representative_section" class="panel-collapse collapse" aria-labelledby="representative_section">
+                  <div id="representative_section_body" class="panel-body">
+                    <div class="row">
+                      <div class="form-group col-md-6">
+                        <%= f.label :representative_first_name, "First Name", class: "control-label" %>
+                        <%= f.text_field :representative_first_name, class: "form-control", placeholder: "Representative First Name" %>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <%= f.label :representative_last_name, "Last Name", class: "control-label" %>
+                        <%= f.text_field :representative_last_name, class: "form-control", placeholder: "Representative Last Name" %>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:representative_phones].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:representative_phones].try(:join, ',') %>">
+                        <%= f.label :representative_phones, "Phones",  class: 'control-label' %>
+                        <%= f.hidden_field :representative_phones_csv %>
+                        <div id="representative_phones_block" class="form-group">
+                          <div class="phone-types-example" style="display: none;">
+                            <%= select_tag('phone_type', options_for_select(Client::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, nil), { include_blank: false, class: 'form-control phone-type phone-type-example' }) %>
+                          </div>
+                          <%unless @video_marketing_campaign_form.representative_phones.empty? %>
+                            <% @video_marketing_campaign_form.representative_phones.each do |phone| %>
+                              <div class="input-group phone-row">
+                                <%= select_tag('phone_type', options_for_select(Representative::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type' }) %>
+                                <input type="text" class="form-control phone" placeholder="Phone Number" value="<%= phone.gsub(/[^0-9]/, '') %>">
+                                <span class="input-group-btn"><a href="javascript://" class="btn btn-default delete-link" title="Delete"><i class="fa fa-times"></i></a></span>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </div>
+                        <a id="representative_phones_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus text-blue"></i> Add phone</a>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <div class="form-group">
+                          <%= f.label :representative_email, "Email", class: "control-label" %>
+                          <%= f.email_field :representative_email, class: "form-control", placeholder: "Representative Email" %>
+                        </div>
+                      </div>
+                    </div>
+                    <a id="representative_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                    <a id="representative_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+              <div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:google_plus_url, :youtube_url, :twitter_url, :facebook_url, :has_youtube_channel]).present? ? 'panel-danger' : 'panel-primary' %>">
+                <div id="social_links_heading" class="panel-heading">
+                  <h4 class="panel-title">
+                    <a href="javascript://" onclick="$('#representative_next_btn').trigger('click');"><b><i class="fa fa-share-alt"></i> SOCIAL LINKS</b> <span class="badge badge-step pull-right">STEP 5</span></a>
+                    <% if (@video_marketing_campaign_form.errors.messages.keys & [:google_plus_url, :youtube_url, :twitter_url, :facebook_url, :has_youtube_channel]).present? %>
+                      <small style="color: white;"> · Some <%= "error".pluralize((@video_marketing_campaign_form.errors.messages.keys & [:google_plus_url, :youtube_url, :twitter_url, :facebook_url, :has_youtube_channel]).size) %> prohibited this section from being saved</small>
+                    <% end %>
+                  </h4>
+                </div>
+                <div id="social_links_section" class="panel-collapse collapse" aria-labelledby="social_links_section">
+                  <div class="panel-body">
+                    <div class="form-group text-center">
+                      <%= f.label :social_links, "If you don't enter any of your social links here, we will not use them in the video production"%>
+                    </div>
+                    <div class="checkbox text-center">
+                      <label><%= f.check_box :no_social_links, class: 'iCheck-helper' %> Don't have social links</label>
+                    </div>
+                    <br/>
+                    <div id="social_links" class="row" style="<%='display: none;' if @video_marketing_campaign_form.no_social_links %>">
+                      <div class="form-group col-md-6">
+                        <%= f.label :google_plus_url, "Google+", class: "control-label" %>
+                        <div class="input-group" style="width: 100%;">
+                          <div class="input-group-addon">
+                            <i class="fa fa-google-plus" style="font-size: large; font-weight: bold;"></i>
+                          </div>
+                          <%= f.url_field :google_plus_url, class: "form-control", placeholder: "Google+ Link" %>
+                        </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <div class="<%= 'has-error' if @video_marketing_campaign_form.errors[:has_youtube_channel].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:has_youtube_channel].try(:join, ',') %>">
+                          <%= f.label :has_youtube_channel, "Do you have Youtube Channel?", class: "control-label" %>
+                          <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_form.has_youtube_channel", default: "Please indicate here if you have a Youtube channel. This will reflect on your selecting the video package at the next step.")}) %>
+                          <label style="margin-left: 10px;"><%= f.radio_button(:has_youtube_channel, true, class: "iCheck-helper") %> Yes</label>
+                          <label style="margin-left: 10px;"><%= f.radio_button(:has_youtube_channel, false, class: "iCheck-helper") %> No</label>
+                        </div>
+                        <div class="input-group" style="width: 100%;">
+                          <div class="input-group-addon">
+                            <i class="fa fa-youtube-play" style="font-size: large;"></i>
+                          </div>
+                          <%= f.url_field :youtube_url, class: "form-control", placeholder: "Youtube Channel Link" %>
+                        </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <%= f.label :twitter_url, "Twitter", class: "control-label" %>
+                        <div class="input-group" style="width: 100%;">
+                          <div class="input-group-addon">
+                            <i class="fa fa-twitter" style="font-size: large;"></i>
+                          </div>
+                          <%= f.url_field :twitter_url, class: "form-control", placeholder: "Twitter Link" %>
+                        </div>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <%= f.label :facebook_url, "Facebook", class: "control-label" %>
+                        <div class="input-group" style="width: 100%;">
+                          <div class="input-group-addon">
+                            <i class="fa fa-facebook" style="font-size: large;"></i>
+                          </div>
+                          <%= f.url_field :facebook_url, class: "form-control", placeholder: "Facebook Link" %>
+                        </div>
+                      </div>
+                    </div>
+                    <a id="social_links_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="<%= 'display: none;' unless params[:step].to_s == '3' %>">
+            <% if params[:step].to_s == '3' %>
+              <%= f.hidden_field :packages_passed, value: true %>
+            <% end %>
+            <div class="col-md-12">
+              <div class="panel-group" id="packages_accordion">
+                <div class="panel panel-primary">
+                  <div id="packages_heading" class="panel-heading">
+                    <h4 class="panel-title">
+                      <a href="javascript://" onclick="$('#contact_back_btn').trigger('click');"><b><i class="fa fa-newspaper-o"></i> PACKAGES</b><span class="badge badge-step pull-right">STEP 1</span></a>
+                    </h4>
+                  </div>
+                  <div id="packages_section" class="panel-collapse collapse" aria-labelledby="packages_section">
+                    <div class="panel-body">
+                      <h3 class="text-center"><b>Select your Local Advertising</b></h3>
+
+                      <div class="row">
+                        <div class="col-md-4 bs">
+
+                          <div class="hdr">
+                            <span>1</span>
+                            <img class="", src="/assets/sandbox/home_page/industry_images/location.png">
+                          </div>
+                          <% if @video_marketing_campaign_form.has_youtube_channel && @video_marketing_campaign_form.package_type.try(:value) != VideoMarketingCampaignForm.package_type.find_value(:basic).value %>
+                            <div class="basic package">
+                              <div class="package-header">
+                                <h4 class="pkg-title">BASIC</h4>
+
+                                <i class="fa fa-star"></i>
+
+                                <div class="slantwise-box">
+                                  <ul class="options-list">
+                                    <li><i class="fa fa-map-marker"></i><span> 1 Location</span></li>
+                                    <li><i class="fa fa-youtube-play"></i><span> 5 Videos</span></li>
+                                    <li><i class="fa fa-user"></i><span> Your YouTube Account</span></li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div class="package-body">
+                                <table class="table-with-prices">
+                                  <tr>
+                                    <td>Price</td>
+                                    <td class="note-bold">$1,200</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Co-op $</td>
+                                    <td class="note-bold td-rel brd-bottom-none"><span class="sub-line"></span>($600)</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Net Cost</td>
+                                    <td class="note-bold brd-top-none">$600</td>
+                                  </tr>
+                                </table>
+
+                                <p class="package-text">
+                                  Choose 1 <span class="note">Location</span> + Choose the Brand(s)
+                                </p>
+
+                                <span class="note note-large">5 Videos</span>
+                                <div class="btn-container">
+                                  <%= link_to "#{@video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:youtube).value ? 'SELECTED' : 'SELECT PACKAGE'}", "javascript://", class: "package-btn active-package-btn #{'selected-package-btn' if @video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:youtube).value}", data: VideoMarketingCampaignForm::PACKAGE_INFO[:youtube], "data-is-youtube-package"=>"true" %>
+                                </div>
+                              </div>
+
+                              <div class="package-footer">
+                                <b>Your Net Cost</b>
+                                <h3 class="price">$600</h3>
+                                <p>(Eligible for 50% Co-op)</p>
+                              </div>
+                            </div>
+                          <% else %>
+                            <div class="basic package">
+                              <div class="package-header">
+                                <h4 class="pkg-title">BASIC</h4>
+                                <i class="fa fa-star"></i>
+                                <div class="slantwise-box">
+                                  <ul class="options-list">
+                                    <li><i class="fa fa-map-marker"></i><span> 1 Location</span></li>
+                                    <li><i class="fa fa-youtube-play"></i><span> 5 Videos</span></li>
+                                    <li><i class="fa fa-user"></i><span> Our YouTube Account</span></li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div class="package-body">
+                                <table class="table-with-prices">
+                                  <tr>
+                                    <td>Price</td>
+                                    <td class="note-bold">$1,200</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Co-op $</td>
+                                    <td class="note-bold td-rel brd-bottom-none">
+                                      <span class="sub-line"></span> ($600)
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Net Cost</td>
+                                    <td class="note-bold brd-top-none">$600</td>
+                                  </tr>
+                                </table>
+
+                                <p class="package-text">
+                                  Your Business <span class="note">Location</span> + Choose the Brand(s)
+                                </p>
+                                <span class="note note-large">5 Videos</span>
+
+                                <div class="btn-container">
+                                  <%= link_to "#{@video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:basic).value ? 'SELECTED' : 'SELECT PACKAGE'}", "javascript://", class: "package-btn active-package-btn #{'selected-package-btn' if @video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:basic).value}", data: VideoMarketingCampaignForm::PACKAGE_INFO[:basic] %>
+                                </div>
+                              </div>
+
+                              <div class="package-footer">
+                                <b>Your Net Cost</b>
+                                <h3 class="price">$600</h3>
+                                <p>(Eligible for 50% Co-op)</p>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+
+                        <div class="col-md-8 pd0">
+                          <div class="hdr">
+                            <span>More</span>
+                            <img class="", src="/assets/sandbox/home_page/industry_images/locations.png">
+                          </div>
+                          <div class="col-md-6">
+                            <div class="better package fr">
+                              <div class="package-header">
+                                <h4 class="pkg-title">BETTER</h4>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+
+                                <div class="slantwise-box">
+                                  <ul class="options-list">
+                                    <li><i class="fa fa-map-marker"></i><span> 3 Locations</span></li>
+                                    <li><i class="fa fa-youtube-play"></i><span> 3 Videos</span></li>
+                                    <li><i class="fa fa-user"></i><span> Our YouTube Accounts</span></li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <div class="package-body">
+                                <table class="table-with-prices">
+                                  <tr>
+                                    <td>Price</td>
+                                    <td class="note-bold">$4,000</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Co-op $</td>
+                                    <td class="note-bold br-bottom td-rel brd-bottom-none">
+                                      <span class="sub-line"></span>($2,000)
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Net Cost</td>
+                                    <td class="note-bold brd-top-none">$2,000</td>
+                                  </tr>
+                                </table>
+
+                                <p class="package-text">
+                                  Choose 3 <span class="note">Locations</span> + Choose the Brand(s)
+                                </p>
+
+                                <span class="note note-large">9 Videos</span>
+
+                                <div class="btn-container">
+                                  <%= link_to "#{@video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:better).value ? 'SELECTED' : 'SELECT PACKAGE'}", "javascript://", class: "package-btn active-package-btn #{'selected-package-btn' if @video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:better).value}", data: VideoMarketingCampaignForm::PACKAGE_INFO[:better] %>
+                                </div>
+
+                              </div>
+
+                              <div class="package-footer">
+                                <b>Your Net Cost</b>
+                                <h3 class="price">$2,000</h3>
+                                <p>(Eligible for 50% Co-op)</p>
+                              </div>
+
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="best package fl">
+                              <img alt="Icon coming soon" class="label-coming-soon" src="/assets/sandbox/home_page/most_popular.png">
+                              <div class="package-header">
+                                <h4 class="pkg-title">BEST</h4>
+
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+
+                                <div class="slantwise-box">
+                                  <ul class="options-list">
+                                    <li><i class="fa fa-map-marker"></i><span> 5 Locations</span></li>
+                                    <li><i class="fa fa-youtube-play"></i><span> 5 Videos</span></li>
+                                    <li><i class="fa fa-user"></i><span> Our YouTube Accounts</span></li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div class="package-body">
+                                <table class="table-with-prices">
+                                  <tr>
+                                    <td>Price</td>
+                                    <td class="note-bold">$6,000</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Co-op $</td>
+                                    <td class="note-bold td-rel brd-bottom-none"><span class="sub-line"></span>($3,000)</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Net Cost</td>
+                                    <td class="note-bold brd-top-none">$3,000</td>
+                                  </tr>
+                                </table>
+
+                                <p class="package-text">
+                                  Choose 5 <span class="note">Locations</span> + Choose the Brand(s)
+                                </p>
+
+                                <span class="note note-large">25 Videos</span>
+                                <div class="btn-container">
+                                  <%= link_to "#{@video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:best).value ? 'SELECTED' : 'SELECT PACKAGE'}", "javascript://", class: "package-btn active-package-btn #{'selected-package-btn' if @video_marketing_campaign_form.package_type.try(:value) == VideoMarketingCampaignForm.package_type.find_value(:best).value}", data: VideoMarketingCampaignForm::PACKAGE_INFO[:best] %>
+                                </div>
+                              </div>
+
+                              <div class="package-footer">
+                                <b>Your Net Cost</b>
+                                <h3 class="price">$3,000</h3>
+                                <p>(Eligible for 50% Co-op)</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <%= f.hidden_field :package_type %>
+                        <input id="localities_limit" type="hidden" value="<%= VideoMarketingCampaignForm::PACKAGE_INFO[@video_marketing_campaign_form.package_type.to_sym][:locations] %>"/>
+                      </div>
+
+                      <div class="row">
+                        <div class="container_for_cstm">
+                          <div class="custom package">
+                            <div class="title-container">
+                              <div class="fon">
+                                <h1>CUSTOM</h1>
+                                <i class="fa fa-star"></i>
+                              </div>
+                              <div class="slantwise-box"></div>
+                              <div class="white-box"></div>
+                            </div>
+
+                            <div class="txt-container">
+                              <p>If you did not find a suitable package, please choose a custom one</p>
+                            </div>
+
+                            <div class="btn-container">
+                              <a class="package-btn" href="javascript://">SELECT PACKAGE</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr/>
+                      <a id="packages_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+								<%= render 'bind_youtube_channel'%>
+
+                <div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:contact_email]).present? ? 'panel-danger' : 'panel-primary' %>">
+                  <div id="contact_heading" class="panel-heading">
+                    <h4 class="panel-title">
+                      <a href="javascript://" onclick="$('#localities_back_btn').trigger('click');"><b><i class="fa fa-fax"></i> CONTACT</b> <span class="badge badge-step pull-right">STEP 2</span></a>
+                      <% if (@video_marketing_campaign_form.errors.messages.keys & [:contact_email]).present? %>
+                        <small style="color: white;"> · Some <%= "error".pluralize((@video_marketing_campaign_form.errors.messages.keys & [:contact_email]).size) %> prohibited this section from being saved</small>
+                      <% end %>
+                    </h4>
+                  </div>
+                  <div id="contact_section" class="panel-collapse collapse" aria-labelledby="contact_section">
+                    <div id="contact_section_body" class="panel-body">
+                      <p id="contact_help_block" class="help-block text-center">Please provide us the contact information of your company person in order to reach you for further instructions.</p>
+                      <div class="row">
+                        <div class="form-group col-md-6">
+                          <%= f.label :contact_first_name, "First Name", class: "control-label" %>
+                          <%= f.text_field :contact_first_name, class: "form-control", placeholder: "Contact First Name" %>
+                        </div>
+                        <div class="form-group col-md-6">
+                          <%= f.label :contact_last_name, "Last Name", class: "control-label" %>
+                          <%= f.text_field :contact_last_name, class: "form-control", placeholder: "Contact Last Name" %>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group col-md-6 <%= 'has-error' if @video_marketing_campaign_form.errors[:contact_phones].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:contact_phones].try(:join, ',') %>">
+                          <%= f.label :contact_phones, "Phones",  class: 'control-label' %>
+                          <%= f.hidden_field :contact_phones_csv %>
+                          <div id="contact_phones_block" class="form-group">
+                            <div class="phone-types-example" style="display: none;">
+                              <%= select_tag('phone_type', options_for_select(Client::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, nil), { include_blank: false, class: 'form-control phone-type phone-type-example' }) %>
+                            </div>
+                            <%unless @video_marketing_campaign_form.contact_phones.empty? %>
+                              <% @video_marketing_campaign_form.contact_phones.each do |phone| %>
+                                <div class="input-group phone-row">
+                                  <%= select_tag('phone_type', options_for_select(Representative::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type' }) %>
+                                  <input type="text" class="form-control phone" placeholder="Phone Number" value="<%= phone.gsub(/[^0-9]/, '') %>">
+                                  <span class="input-group-btn"><a href="javascript://" class="btn btn-default delete-link" title="Delete"><i class="fa fa-times"></i></a></span>
+                                </div>
+                              <% end %>
+                            <% end %>
+                          </div>
+                          <a id="contact_phones_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus text-blue"></i> Add phone</a>
+                        </div>
+                        <div class="form-group col-md-6">
+                          <div class="form-group">
+                            <%= f.label :contact_email, "Email", class: "control-label" %>
+                            <%= f.email_field :contact_email, class: "form-control", placeholder: "Contact Email" %>
+                          </div>
+                        </div>
+                      </div>
+                      <a id="contact_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                      <a id="contact_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+								<div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:cities]).present? ? 'panel-danger' : 'panel-primary' %>">
+                  <div id="localities_heading" class="panel-heading">
+                    <h4 class="panel-title">
+                      <a href="javascript://" onclick="$('#brands_back_btn').trigger('click');"><b><i class="fa fa-map-marker"></i> LOCALITIES</b><span class="badge badge-step pull-right">STEP 3</span></a>
+                      <% if @video_marketing_campaign_form.errors.messages[:cities].present? %>
+                        <small style="color: white;"> · <%= @video_marketing_campaign_form.errors.messages[:cities].try(:join, ", ") %></small>
+                      <% end %>
+                    </h4>
+                  </div>
+                  <div id="localities_section" class="panel-collapse collapse" aria-labelledby="localities_section">
+                    <div class="panel-body">
+                      <p class="help-block text-center">Please list the city, town, borough that you want to set up as your location</p>
+                      <img src="/system/sandbox/icons/packages_locality_search_type_coming_soon.svg" class="text-center" style="display:block; margin:auto; margin-bottom: 20px;">
+                      <div id="locality_filters" class="row">
+                        <div class="col-md-3" style="display: none;">
+                          <% default_country = Geobase::Country.find_by_code("US") %>
+                          <%= hidden_field_tag 'country_default', nil, data: {id: default_country.try(:id), name: default_country.try(:name)} %>
+                          <%= label_tag :country, "Country", class: "control-label" %>
+                          <%= text_field_tag :country, nil %>
+                          <%= hidden_field_tag :country_name, default_country.try(:name) %>
+                        </div>
+                        <div class="col-md-4">
+                          <%= label_tag :region1, "State", class: "control-label" %>
+                          <%= text_field_tag :region1, nil %>
+                        </div>
+                        <div class="col-md-8">
+                          <%= label_tag :city, "Locality", class: "control-label" %>
+                          <%= text_field_tag :city, nil %>
+                        </div>
+                      </div>
+                      <div class="cities-div">
+                        <label class="control-label">Selected localities</label>
+                        <span id="selected_localities_count" class="badge"><%= @cities_json.size %></span> / <span id="localities_limit_count" class="badge"></span>
+                        <div class="pull-right">
+                          <label class="control-label">Your target market</label>
+                          <span id="population_total" class="badge">
+                            <%= @cities_json.map {|e| e[:population].to_s.gsub(',', '').to_i}.inject(:+).to_i.to_s(:delimited) %>
+                          </span>
+                        </div>
+                        <div class="row" id="cities_list">
+                          <% @cities_json.each do |city_json| %>
+                            <% city_arr = city_json[:text].split(", ") %>
+                            <div class="col-md-4 city-div" data-id="<%= city_json[:id] %>" data-population="<%= city_json[:population].to_s.gsub(',', '').to_i %>">
+                              <div class="state-block pull-left">
+                                <%= city_arr.last %>
+                              </div>
+                              <div class="locality-block">
+                                <%= city_json[:text].chomp(", #{city_arr.last.to_s}") %>
+                                <div class='population' title='Population'>
+                                  <%= city_json[:population] %> <i class='fa fa-user'></i>
+                                </div>
+                              </div>
+                              <a href="javascript://" class="btn btn-default btn-xs delete-city-link pull-right" title="Delete">
+                                <i class="fa fa-times"></i>
+                              </a>
+                            </div>
+                          <% end %>
+                        </div>
+                        <p id="localities_missing_text" class="col-md-12" style="display: none; color: #f39c12 !important; font-variant-caps: small-caps;">There are no localities selected</p>
+                        <hr/>
+                        <a id="localities_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                        <a id="localities_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                      </div>
+                      <%= f.hidden_field :cities %>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel <%= (@video_marketing_campaign_form.errors.messages.keys & [:brands_for_production]).present? ? 'panel-danger' : 'panel-primary' %>">
+                  <div id="brands_heading" class="panel-heading">
+                    <h4 class="panel-title">
+                      <a href="javascript://" onclick="$('#localities_next_btn').trigger('click');"><b><i class="fa fa-building"></i> BRANDS</b><span class="badge badge-step pull-right">STEP 4</span></a>
+                      <% if @video_marketing_campaign_form.errors.messages[:brands_for_production].present? %>
+                        <small style="color: white;"> · <%= @video_marketing_campaign_form.errors.messages[:brands_for_production].try(:join, ", ") %></small>
+                      <% end %>
+                    </h4>
+                  </div>
+                  <div id="brands_section" class="panel-collapse collapse" aria-labelledby="brands_section">
+                    <div class="panel-body">
+                      <p class="help-block text-center">Check off the Brand(s) you service from the list below. This will feature the usage of Brands Subject Videos in Video Production.</p>
+                      <% manufacturers_for_production = Client.where("clients.business_type = ? AND clients.id in (?)", Client.business_type.find_value(:manufacturer).value, ([@video_marketing_campaign_form.primary_brand].compact + @video_marketing_campaign_form.brands.to_a.map(&:to_i) + [-1]).uniq).order("clients.name ASC") %>
+                      <div class="row">
+                        <% manufacturers_for_production.each do |manufacturer| %>
+                          <div class="claim_option_brand col-md-2">
+                            <div class="img-frame brand-frame">
+                              <!-- <span class="img-helper"></span> -->
+                              <img class="brand-logo" src="<%= manufacturer.logo.present? ? manufacturer.logo.url(:original) : '/company_logo_missing.svg' %>" title="Brand: <%= manufacturer.id.to_s %>"/>
+                            </div>
+                            <div class="checkbox text-center" style="margin-top: 10px;">
+                              <label><%= f.check_box(:brands_for_production, { multiple: true, class: "iCheck-helper" }, manufacturer.id.to_s) %> <%= manufacturer.name %></label>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                      <hr/>
+                      <a id="brands_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                      <a id="brands_next_btn" class="btn btn-success" href="javascript://"><b>Next</b> <i class="fa fa-arrow-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-primary">
+                  <div id="logo_reveal_heading" class="panel-heading">
+                    <h4 class="panel-title">
+                      <a href="javascript://" onclick="$('#brands_next_btn').trigger('click');"><b><i class="fa fa-video-camera"></i> LOGO REVEAL VIDEO</b><span class="badge badge-step pull-right">STEP 5</span></a>
+                    </h4>
+                  </div>
+                  <div id="logo_reveal_section" class="panel-collapse collapse" aria-labelledby="logo_reveal_section">
+                    <div class="panel-body">
+                      <p class="help-block text-center">Most of our clients prefer to use our special promotions. Buy an additional video to promote your business for your website or social media.</p>
+                      <img src="/system/sandbox/icons/logo_reveal_coming_soon.svg" class="text-center" style="display:block; margin:auto; margin-bottom: 20px;">
+                      <hr/>
+                      <a id="logo_reveal_back_btn" class="btn btn-default" href="javascript://"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="col-md-3">
+              <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <h4 class="panel-title"><b><i class="fa fa-shopping-cart"></i> Order Summary</b></h4>
+                </div>
+                <div class="panel-body" style="min-height: 720px;">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <span id="package_name" class="bold-text" style="font-size: x-small;"></span>
+                    </div>
+                    <div class="col-md-6">
+                      <span id="package_price" class="pull-right bold-text" style="color: #f39c12; font-size: smaller;"></span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <span id="package_cart_description" style="font-size: x-small;"></span>
+                    </div>
+                  </div>
+                  <div class="row" style="margin-top: 100px;">
+                    <hr style="border-top: dashed 1px;" />
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <span><b>Total</b></span>
+                    </div>
+                    <div class="col-md-6">
+                      <span id="cart_total" class="pull-right bold-text" style="color: #f39c12;"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+          </div>
+          <% if params[:step].to_s == '4' %>
+            <%= f.hidden_field :content_passed, value: true %>
+            <%= render partial: 'sandbox/video_marketing_campaign_forms/content_step', locals: {f: f, stock_images: @stock_images, stock_image_templates: @stock_image_templates} %>
+          <% end %>
+        </div>
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+          <div class="text-center <%= 'has-error' if @video_marketing_campaign_form.errors[:agree_to_terms_of_use].present? %>" data-content="<%= @video_marketing_campaign_form.errors[:agree_to_terms_of_use].try(:join, ',') %>">
+            <label>
+              <div class="checkbox">
+                <label><%= f.check_box :agree_to_terms_of_use, class: "iCheck-helper" %> I agree to the</label> <%= link_to "Terms of Use and Privacy Policy",	'javascript://', id: 'terms_of_use_btn', data: {toggle: "modal", target: "#terms_of_use_modal"} %>
+              </div>
+            </label>
+          </div>
+          <%= render partial: 'terms_of_use_modal' %>
+          <%= f.submit 'SUBMIT', :class => 'btn btn-lg btn-warning', :id => 'video_marketing_campaign_form_submit', style: "margin-top: 10px;" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

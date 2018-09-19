@@ -1,0 +1,29 @@
+- unless f.object.new_record?
+	.row
+		.col-md-6
+			.form-group
+				= f.label :id, t('id')
+				= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+		.col-md-6
+			.form-group
+				= f.label :id, t('vmware.server.name')
+				= text_field_tag '', f.object.name, class: "form-control", disabled: "disabled"
+.row
+	.col-md-6
+		.form-group
+			= f.label :name, t('vmware.server.order_nr') + ' *'
+			= f.text_field :order_nr, class: "form-control"
+			%p{class: 'help-block'} Should be unique
+.row
+	.col-md-4
+		.form-group
+			= f.label :ip, t('vmware.server.ip') + ' *'
+			= f.text_field :ip, class: "form-control"
+	.col-md-4
+		.form-group
+			= f.label :user, t('vmware.server.user') + ' *'
+			= f.text_field :user, class: "form-control"
+	.col-md-4
+		.form-group
+			= f.label :password, t('vmware.server.password') + ' *'
+			= f.text_field :password, class: "form-control"

@@ -1,0 +1,52 @@
+<%= form_for @ip_address do |f| %>
+  <div class="row">
+    <% if @ip_address.errors.any? %>
+      <div class="col-md-12">
+        <div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@ip_address.errors.count, 'error') %> prohibited this ip address from being saved</h4>
+        </div>
+      </div>
+    <% end %>
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <%= f.check_box :additional_use, class: 'iCheck-helper' %>
+                <%= f.label :additional_use, class: 'control-label' %>
+              </div>
+              <div class="form-group <%= 'has-error' if @ip_address.errors[:address].present? %>" data-content="<%= @ip_address.errors[:address].try(:join, ',') %>">
+                <%= f.label :address, class: 'control-label' %>
+                <%= f.text_field :address, class: 'form-control', placeholder: "Address" %>
+              </div>
+              <div class="form-group">
+                <%= f.label :port, class: 'control-label' %>
+                <%= f.text_field :port, class: 'form-control', placeholder: "Port" %>
+              </div>
+							<div class="form-group">
+								<%= f.label :address_target, class: 'control-label' %>
+								<%= f.select :address_target, options_for_select(IpAddress::TARGETS.collect{ |key, value| [key.to_s.humanize, value] }, @ip_address.address_target.try(:value)), { include_blank: true, class: 'form-control' } %>
+							</div>
+              <div class="form-group">
+                <%= f.label :country, class: 'control-label' %>
+                <%= f.select :country_id, options_from_collection_for_select(Geobase::Country.order(:id), :id, :name, @ip_address.country_id), { include_blank: true, class: 'select2 form-control' } %>
+              </div>
+              <div class="form-group <%= 'has-error' if @ip_address.errors[:description].present? %>" data-content="<%= @ip_address.errors[:description].try(:join, ',') %>">
+                <%= f.label :description, class: 'control-label' %>
+                <%= f.text_area :description, { size: '40x5', class: 'form-control', placeholder: 'Description'} %>
+              </div>
+              <div class="form-group col-md-12">
+                <div class="actions pull-right">
+                  <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, ip_addresses_path, class: 'btn btn-sm btn-primary' %>
+                  <%= f.submit :class => 'btn btn-sm btn-success', :id => 'ip_address_submit' %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

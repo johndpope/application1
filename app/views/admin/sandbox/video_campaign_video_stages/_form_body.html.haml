@@ -1,0 +1,51 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	= f.label :title, t('sandbox.video_campaign_video_stage.title')
+	= f.text_field :title, class: "form-control"
+.row
+	.col-md-8
+		.form-group
+			= f.label :video_campaign_id, t('sandbox.video_campaign_video_stage.video_campaign_id')
+			- options = Sandbox::VideoCampaign.order(:title).map{|vc|[vc.title, vc.id]}
+			= f.select(:video_campaign_id, options, {include_blank: '', selected: f.object.video_campaign_id}, {class: 'form-control'})
+	.col-md-2
+		.form-group
+			= f.label :video_type, t('sandbox.video_campaign_video_stage.month_nr')
+			- months = 1.upto(12).map{|m| [m,m]}
+			= f.select(:month_nr, months, {include_blank: '', selected: f.object.month_nr}, {class: 'form-control'})
+	.col-md-2
+		= f.label :is_active, t('sandbox.video.is_active')
+		- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+		= f.select(:is_active, yes_no_options, {include_blank: '', selected: f.object.is_active}, {class: 'form-control'})
+
+= render partial: "admin/sandbox/common/form_locality", locals: {locality_field: "locality", f: f}
+
+.row
+	- %w(views position likes dislikes comments shares).each do |field|
+		.col-md-2
+			.form-group
+				= f.label field, t("sandbox.video_campaign_video_stage.#{field}")
+				= f.text_field field, class: "form-control"
+.row
+	.col-md-6
+		.form-group
+			= f.label :tags, t("sandbox.video_campaign_video_stage.tags")
+			= f.text_area :tags, rows: 3, class: "form-control"
+			%p{class: 'help-block'} Tags should be divided by comma
+	.col-md-6
+		.form-group
+			= f.label :description, t("sandbox.video_campaign_video_stage.description")
+			= f.text_area :description, rows: 3, class: "form-control"
+.row
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :thumbnail, t("sandbox.video_campaign_video_stage.thumbnail")
+			= f.file_field :thumbnail, accept: 'image/png,image/gif,image/jpeg'
+			%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+			- unless f.object.thumbnail.blank?
+				.form-group
+					= label_tag nil, 'Current Image'
+					%div= image_tag f.object.thumbnail.url(:w240)

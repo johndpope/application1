@@ -1,0 +1,11 @@
+en:
+  models:
+    templates:
+      image_template:
+        id: ID
+        categories:
+          people: People
+          jobs_and_projects: Jobs & Projects
+          buildings: Buildings
+          vehicles: Vehicles
+          billboards_and_signs: Billboards & Signs

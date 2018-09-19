@@ -1,0 +1,17 @@
+.box
+  .box-header
+    %h3.box-title= "Audios items"
+    .box-tools
+      %strong= @audios.count
+      items totally
+  .box-body
+    %table.table.table-striped.uploaded_audio_list
+      %tbody.thead
+        = render partial: "index_table_header"
+      %tbody.tbody
+        - @audios.each do |audio|
+          = render partial: "index_table_row", locals: {audio: audio}
+      - if @audios.to_a.any?
+        %tbody.tfoot
+          = render partial: "index_table_header"
+    = paginate @audios, theme: 'bootstrap'

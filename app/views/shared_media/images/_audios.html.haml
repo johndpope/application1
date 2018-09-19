@@ -1,0 +1,43 @@
+.box-header.with-border
+  %i.fa.fa-music
+  %span.total_uploaded_audio
+  .box-tools.pull-right
+    %button.btn.btn-box-tool{:type => "button", :data => {:widget => 'collapse'}}
+      %i.fa.fa-minus
+.box-body.no-padding
+  %table.table.table-striped#audio_description
+    %tbody
+      %thead
+        %th.id
+        %th.audio_desc_preview
+          %i.fa.fa-music{:title => "Audio"}
+          ="Audio"
+        %th.audio_desc_media_tags_notes
+          %i.fa.fa-tags{:title => "Tags and notes"}
+          ="audio's tags & notes"
+      %script{:id => "tmpl-audio-description", :type => "text/x-tmpl"}
+        {%=audio=o.files[0]%}
+        %tr
+          %td="{%=audio.id%}"
+          %td
+            .form-group
+              %audio{:controls => true, :class => 'audio_item'}
+                %source{:src => "{%=audio.url%}", :type => "audio/mp3"}
+            .form-group
+              = label_tag "title", "title"
+              = text_field_tag "audios[{%=audio.id%}][title]", "{%=audio.title%}", class: "form-control", placeholder: "Audio title"
+          %td
+            .form-group
+              %div
+                = label_tag "tags", "tags"
+                %span#tag_list_count.badge.tags_count
+              .input-group
+                %span.input-group-addon{:style => "background-color: #3c8dbc; border: 1px solid #3c8dbc;"}
+                  %i.fa.fa-tags{:style => "color: #ffffff"}
+                = text_field_tag "audios[{%=audio.id%}][tags]", "{%=audio.tag_list %}", class: "form-control tags", id: "tags", placeholder: "Enter tags"
+            .form-group
+              = label_tag "Notes"
+              .input-group
+                %span.input-group-addon{:style => "background-color: silver; border: 1px solid silvet;"}
+                  %i.fa.fa-thumb-tack{:style => "color: white"}
+                = text_area_tag "audios[{%=audio.id%}][notes]", "{%=audio.notes%}", class: 'form-control notes', rows: 2, placeholder: 'Notes'

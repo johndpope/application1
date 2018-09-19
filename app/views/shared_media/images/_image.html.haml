@@ -1,0 +1,15 @@
+= div_for(image, :class => 'col-lg-3 col-md-4 col-sm-6 col-xs-12') do
+  .box.box-solid.box-primary{:style => "min-height: 510px;"}
+    .box-header
+      %h3.box-title{title: image.title}
+        = truncate(image.title, length: 25, separator: ' ').presence || 'NO TITLE'
+      .box-tools.pull-right
+        %button.btn.btn-box-tool{data: {widget: "collapse"}}
+          %i.fa.fa-minus
+    .box-body{data: {persisted: (image.persisted?.to_s)}}
+      .parent
+        - src = image.file.exists? ? image.file.url(:thumb) : image.url
+        - src_original = image.file.exists? ? image.file.url(:original) : image.url_o
+        = link_to(src_original, class: "image-preview", target: "_blank", title: image.title) do
+          = image_tag src, :class => "img-thumbnail"
+    = render partial: 'image_footer', locals: {image: image}

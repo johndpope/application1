@@ -1,0 +1,13 @@
+<%
+  tbody = render partial: 'queue/scheduled_jobs_tbody', locals: {jobs: @scheduled_jobs}
+  paginate = render partial: 'queue/paginate', locals: {jobs: @scheduled_jobs, paginate_class: "scheduled_jobs_paginate"}
+  total_serach_results = @scheduled_jobs.total_count
+%>
+$('#scheduled_jobs_table_body').replaceWith('<%= escape_javascript(tbody) %>')
+$('.scheduled_jobs_paginate').replaceWith('<%= escape_javascript(paginate) %>')
+$('.page, .next, .first, .prev, .next_page').on('click', function () {
+  $('.animationload').show()
+})
+$('#scheduled_jobs_total_serach_results').text('<%= total_serach_results %>')
+$('#scheduled_jobs_table tr').effect('highlight', { color: '#00a65a' }, 1000)
+$('.animationload').hide()

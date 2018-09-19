@@ -1,0 +1,52 @@
+<div class="modal modal-wide fade" id="source_video_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save_source_video">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function($){
+    $.isBlank = function(obj){
+      return(!obj || $.trim(obj) === '');
+    };
+  })(jQuery);
+
+  $(function(){          	
+    modal_body = $('#source_video_modal .modal-body')            
+    
+    var source_video_modal_action = null
+    
+    $('#add_source_video').on('click', function(){                        
+      source_video_modal_action = '<%= new_source_video_url %>'
+      $('#source_video_modal').modal()
+    })
+
+    $('.btn-edit-source-video').on('click', function(){
+      source_video_modal_action = $(this).attr('data-url')
+      $('#source_video_modal').modal()
+    })
+
+    $('#source_video_modal').on('show.bs.modal', function (e) {            
+      modal_body.html('Loading ...')      
+      $.get(source_video_modal_action, {}, function(response){
+      	modal_body.html(response)
+      }).fail(function(e){
+        modal_body.html('<div class="alert alert-danger">Server error. Try again</div>')
+      })
+    })
+
+    
+  })
+</script>

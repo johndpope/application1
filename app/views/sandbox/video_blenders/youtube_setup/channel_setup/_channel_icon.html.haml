@@ -1,0 +1,32 @@
+%td.image
+  = link_to 'javascript://' do
+    = image_tag "/sandbox/icons/icon2.png"
+%td.time
+  = link_to 'javascript://' do
+    %span.num= 2
+%td.regenerate_block
+  .col-md-2
+    = link_to regenerate_channel_icon_sandbox_client_video_blenders_path, class: "btn btn-regenerate", data: {remote: true, "disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i>'} do
+      = fa_icon 'refresh 2x'
+  .col-md-10
+    .title-block
+      %h3
+        %b Channel
+        %span.font_red_no-weight Icon
+      .sm_description
+        Size:
+        %span.font_red 250x250
+        px.
+      .sm_description
+        Format:
+        %span.font_red png,jpg
+  .col-md-4
+  .col-md-2.ic_item
+    %h4 Client
+    = image_tag "/sandbox/icons/client_icon.png"
+  .col-md-2.ic_item
+    %h4 industry
+    = image_tag "/sandbox/icons/industry_icon.png"
+  .col-md-2.ic_item
+    %h4 locality
+    = image_tag "/sandbox/icons/locality_icon.png"

@@ -1,0 +1,21 @@
+.row
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :video, class: 'control-label'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.video_attachment', :default => "")})
+			= f.file_field :video, accept: 'video/mp4'
+			%p{class: 'help-block'} Please make sure that Subject Video was run through Adobe Media Encoder (format: mp4, resolution: 1280 x 720, FPS: 25, file size: <= 200MB)
+			- unless @source_video.video.blank?
+				.form-group
+					= label_tag nil, 'Current Video'
+					%div= video_tag @source_video.video.url, style: 'height: 170px; width: 300px;', controls: true, autobuffer: false
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :thumbnail, class: 'control-label'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.thumbnail_attachment', :default => "")})
+			= f.file_field :thumbnail, accept: 'image/png,image/gif,image/jpeg'
+			%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+			- unless @source_video.thumbnail.blank?
+				.form-group
+					= label_tag nil, 'Current Thumbnail'
+					%div= image_tag @source_video.thumbnail.url(:thumb), class: 'img-responsive', style: 'height: 170px; width: 300px;'

@@ -1,0 +1,16 @@
+<%
+  modal = render partial: 'youtube_video_search_phrases/form', locals: {youtube_video_search_phrase: youtube_video_search_phrase}
+  modal_dom_id = dom_id(youtube_video_search_phrase, 'modal')
+%>
+
+$("#<%= modal_dom_id %>").remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('.has-error').popover({
+  trigger: 'hover',
+  placement: 'bottom',
+  animation: true
+});

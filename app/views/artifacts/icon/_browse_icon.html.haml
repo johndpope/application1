@@ -1,0 +1,22 @@
+.modal.fade#browse_icon
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button.close{ type: 'button', data: { dismiss: 'modal' } }
+          %span &times;
+        %h4= 'Select icon'
+      .modal-body
+        = form_tag artifacts_search_icon_path, method: "get", authenticity_token: true, id: "search_image_form", data: {image_trigger: 'image_field', remote: true} do |f|
+          .row
+            .col-md-10
+              = label_tag '','Icon'
+              = text_field_tag "q[title_or_description_or_tags_name_or_country_or_region1_or_region2_or_city_cont]", nil, class: 'form-control',id: 'search_criteria',data:{name: "q[title_or_description_or_tags_name_or_country_or_region1_or_region2_or_city_cont]"}, placeholder: 'Search Criteria ...'
+            .col-md-2
+              %button.btn.btn-success.search-btn{ type: 'submit', :data => {disable_with: t('searching')}, style: 'margin-top: 24px'  }
+                = t('search')
+                = fa_icon 'search'
+          %div.pagination_count.pull-left#icon_search_results
+          #icon_search_results
+      .modal-footer
+        = button_tag 'Cancel', {:class => 'btn btn-success',"data-dismiss" => "modal"}
+= javascript_include_tag 'artifacts/select_image'

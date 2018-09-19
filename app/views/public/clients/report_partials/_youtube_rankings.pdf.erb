@@ -1,0 +1,42 @@
+<% if !@youtube_video_search_ranks_by_youtube.blank? %>
+  <% @youtube_video_search_ranks_by_youtube.first(4).to_a.each_with_index do |youtube_item, index| %>
+    <page size="A4">
+      <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+        <div class="content">
+          <section class="section5">
+            <div class="container">
+              <div class="col-xs-12">
+                <p><b>Youtube Ranks of Posted Videos: Search Results</b></p>
+              </div>
+
+              <div class="col-xs-12">
+                <p class="mg-0"><b>Keywords Searched:</b> <%=youtube_item.youtube_video_search_phrase.phrase%></p>
+                <p class="mg-0"><b>Page:</b> <%=youtube_item.page%>, <b>Position:</b> <%=youtube_item.position%></p>
+                <p class="mg-0"><b>Screenshot Capture:</b> <%=youtube_item.screenshot_updated_at%></p>
+                <div class="ytb-screen-crop">
+                  <%= wicked_pdf_image_tag youtube_item.screenshot, class: "ytb-screen-img img-thumbnail" %>
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+      <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+    </page>
+  <% end %>
+<% elsif @youtube_video_search_ranks_by_google.blank?%>
+  <page size="A4">
+    <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+      <div class="content">
+        <section class="section5">
+          <div class="container">
+            <div class="col-xs-12"><p><b>Youtube Ranks of Posted Videos: Search Results</b></p></div>
+            <div class="col-xs-12">
+              <%= wicked_pdf_image_tag '/missing.png', class: "img-missing" %>
+            </div>
+          </div>
+        </section>
+      </div>
+    <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+  </page>
+<% end %>

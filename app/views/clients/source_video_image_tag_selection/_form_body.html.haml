@@ -1,0 +1,9 @@
+.form-group
+	= f.label :artifacts_image_tag_list, 'Tags'
+	%div
+		= f.text_field :artifacts_image_tag_list, class: 'form-control', placeholder: 'Enter comma separated tags ...', data:{taggable: 'true'}
+	%p.help-block
+		Source Video specific tags from Media Storage
+
+:javascript
+	$("[data-taggable]").tagsinput({tagClass: 'tag label label-tags label-primary'});

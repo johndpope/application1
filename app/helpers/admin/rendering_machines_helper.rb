@@ -1,0 +1,2 @@
+module Admin::RenderingMachinesHelper
+end

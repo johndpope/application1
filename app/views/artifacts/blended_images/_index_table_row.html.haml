@@ -1,0 +1,23 @@
+%td.text-center
+	= item.id
+%td.text-left
+	= item.title
+%td.text-left
+	= item.try(:clients).try(:name)
+%td.text-left
+	= item.location.blank? ? '' : "#{item.location.try(:formatted_name, primary_region: true, primary_region_code: true)}"
+%td.text-left
+	= item.image_template.name unless item.image_template.blank?
+%td.text-center
+	- src_original = item.file.exists? ? item.file.url(:original) : ""
+	= link_to(src_original, class: "image-preview", target: "_blank", title: item.title) do
+		= image_tag item.file.url(:small), class: 'livepreview', data: {src: item.file.url(:small)}, style: 'height: 18px; width: 32px;' unless item.file.blank?
+%td.text-center
+	= link_to '', artifacts_blended_image_show_modal_image_text_path(item.id),{class:"fa fa-file-text", data:{remote: true}}
+%td.text-center
+	= link_to '', artifacts_blended_image_show_modal_image_image_path(item.id) ,{class:"fa fa-file-image-o", data: {remote:true}}
+%td.text-center
+	- unless item.tags.blank?
+		= link_to 'javascript://', class: "btn btn-default btn-sm tags-toggle",
+			data: {container: "body", tags: item.tags, placement: "top", toggle: "popover", trigger: "hover"} do
+			= fa_icon 'tags'

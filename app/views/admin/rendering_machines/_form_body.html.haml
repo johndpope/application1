@@ -1,0 +1,35 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.row
+	.col-md-6
+		.form-group
+			= f.label :vmware_server_id, t('rendering_machine.vmware_server_id') + ' *'
+			= f.select(:vmware_server_id, @vmware_server_id_options, {include_blank: '', selected: f.object.vmware_server_id}, {class: 'form-control'})
+	.col-md-6
+		.form-group
+			= f.label :order_nr, t('rendering_machine.order_nr') + ' *'
+			= f.text_field :order_nr, class: "form-control"
+			%p{class: 'help-block'} Should be unique
+.row
+	- %w(is_test is_active).each do |c|
+		.col-md-6
+			.form-group
+				= f.label :is_active, t("rendering_machine.#{c}")
+				- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+				= f.select(c, yes_no_options, {include_blank: '', selected: f.object.send(c)}, {class: 'form-control'})
+.row
+	.col-md-4
+		.form-group
+			= f.label :ip, t('rendering_machine.ip')
+			= f.text_field :ip, class: "form-control"
+			%p{class: 'help-block'} IP addres for connecting to the sever via FTP protocol. Should be unique
+	.col-md-4
+		.form-group
+			= f.label :user, t('rendering_machine.user')
+			= f.text_field :user, class: "form-control"
+	.col-md-4
+		.form-group
+			= f.label :password, t('rendering_machine.password')
+			= f.text_field :password, class: "form-control"

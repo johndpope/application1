@@ -1,0 +1,23 @@
+.modal{class: 'modal fade', id: dom_id(blended_video_chunk, 'notes_modal')}
+	.modal-dialog
+		.modal-content
+			= form_tag client_update_blended_video_chunk_notes_path(@client.id, blended_video_chunk), data:{remote: "true"} do
+				.modal-header
+					%button{type: 'button', class: 'close', data: {dismiss: 'modal'}, 'area-label' => 'Close'}
+						%span{'area-hidden' => true} &times;
+					%h4{class: 'modal-title'}
+						Blended Video Chunk #
+						= blended_video_chunk.id
+				.modal-body
+					.form-group
+						= label_tag 'blended_video_chunk_notes', 'Notes'
+						= text_area_tag 'blended_video_chunk_notes', blended_video_chunk.try(:dynamic_aae_project).try(:notes), class: "form-control"
+				.modal-footer
+					%button{type: 'submit', class: 'btn btn-primary', data: {disable_with: t('updating')}}= t('update')
+					%button{type: 'button', class: 'btn btn-warning', id: 'clear_notes'} Clear
+					%button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}}= t('close')
+
+:javascript
+	$('#clear_notes').on('click', function(){
+		$('#blended_video_chunk_notes').val('')
+	})

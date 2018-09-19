@@ -1,0 +1,126 @@
+<%= form_for @youtube_video_annotation, url: youtube_video_youtube_video_annotation_path(@youtube_video_annotation.youtube_video, @youtube_video_annotation), :html => { :multipart => true } do |f| %>
+	<%= f.hidden_field :youtube_video_id %>
+	<div class="row">
+		<% if @youtube_video_annotation.errors.any? %>
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@youtube_video_annotation.errors.count, 'error') %> prohibited this youtube video annotation from being saved</h4>
+				</div>
+			</div>
+		<% end %>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<%= f.label :type, class: 'control-label' %>
+								<%= f.select(:annotation_type, options_for_select(YoutubeVideoAnnotation::TYPES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video_annotation.annotation_type.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select type' }) %>
+							</div>
+							<div class="form-group <%= 'has-error' if @youtube_video_annotation.errors[:description].present? %>" data-content="<%= @youtube_video_annotation.errors[:description].try(:join, ',') %>">
+								<%= f.label :description, class: 'control-label' %>
+								<%= f.text_area :description, size: '40x3', class: 'form-control', placeholder: 'Description', maxlength: "#{YoutubeVideoAnnotation::DESCRIPTION_LIMIT}" %>
+							</div>
+							<div class="form-group">
+								<%= f.label :style, class: 'control-label' %>
+								<%= f.select(:style, options_for_select(YoutubeVideoAnnotation::STYLES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video_annotation.style.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select style' }) %>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-4">
+									<%= f.label :font_size, class: 'control-label' %>
+									<%= f.select(:font_size, options_for_select(YoutubeVideoAnnotation::FONT_SIZES, @youtube_video_annotation.font_size), { include_blank: false, class: 'form-control', placeholder: 'Select font size' }) %>
+								</div>
+								<div class="form-group col-md-4">
+									<%= f.label :font_color, class: 'control-label' %>
+									<%= f.select(:font_color, options_for_select(YoutubeVideoAnnotation::FONT_COLORS.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video_annotation.font_color.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select font color' }) %>
+								</div>
+								<div class="form-group col-md-4">
+									<%= f.label :background, class: 'control-label' %>
+									<%= f.select(:background, options_for_select(YoutubeVideoAnnotation::BACKGROUNDS.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video_annotation.background.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select background' }) %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="form-group col-md-6">
+									<%= f.label :start_time, class: 'control-label' %>
+									<%= f.hidden_field :start_time, class: 'form-control' %>
+									<div>
+								    <input id="start_time_hours" name="value" value=0 size=2 readonly/>
+										<span class="time-delimiter">:</span>
+								    <input id="start_time_minutes" name="value" value=0  size=2 readonly/>
+										<span class="time-delimiter">:</span>
+								    <input id="start_time_seconds" name="value" value=0 size=2 readonly/>
+									</div>
+								</div>
+								<div class="form-group col-md-6">
+									<%= f.label :end_time, class: 'control-label' %>
+									<%= f.hidden_field :end_time, class: 'form-control' %>
+									<div>
+								    <input id="end_time_hours" name="value" value=0 size=2 readonly/>
+										<span class="time-delimiter">:</span>
+								    <input id="end_time_minutes" name="value" value=0  size=2 readonly/>
+										<span class="time-delimiter">:</span>
+								    <input id="end_time_seconds" name="value" value=0 size=2 readonly/>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :link_type, class: 'control-label' %>
+								<%= f.select(:link_type, options_for_select(YoutubeVideoAnnotation::LINK_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video_annotation.link_type.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select link type' }) %>
+							</div>
+							<div class="form-group">
+								<%= f.label :link, class: 'control-label' %>
+								<%= f.text_field :link, class: 'form-control' %>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-6">
+									<%= f.label :link_start_time, class: 'control-label' %>
+									<%= f.hidden_field :link_start_time, class: 'form-control' %>
+									<div>
+								    <input id="link_start_time_hours" name="value" value=0 size=2 readonly/>
+										<span class="time-delimiter">:</span>
+								    <input id="link_start_time_minutes" name="value" value=0  size=2 readonly/>
+										<span class="time-delimiter">:</span>
+								    <input id="link_start_time_seconds" name="value" value=0 size=2 readonly/>
+									</div>
+								</div>
+								<div class="form-group col-md-6">
+									<label class="control-label"></label>
+									<div class="checkbox">
+										<label><%= f.check_box :open_in_new_window, class: 'iCheck-helper' %> Open link in new window</label>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-6">
+									<div class="checkbox">
+										<label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+									</div>
+								</div>
+								<div class="form-group col-md-6">
+									<div class="checkbox">
+										<label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-12">
+									<div class="actions pull-right">
+										<%= link_to 'Back', edit_youtube_video_path(@youtube_video_annotation.youtube_video_id, :anchor => "annotations-tab"), class: 'btn btn-sm btn-primary' %>
+										<%= f.submit :class => 'btn btn-sm btn-success', :id => 'youtube_video_annotation_submit' %>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

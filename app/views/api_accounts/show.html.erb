@@ -1,0 +1,43 @@
+<h1>Show page </h1>
+<p id="notice"><%= notice %></p>
+
+
+<p>
+  <strong>Website:</strong>
+  <%= @api_account.website %>
+</p>
+
+<p>
+  <strong>Username:</strong>
+  <%= @api_account.username %>
+</p>
+
+<p>
+  <strong>Api key:</strong>
+  <%= @api_account.api_key %>
+</p>
+
+<p>
+  <strong>Balance:</strong>
+  <%= @api_account.balance %>
+</p>
+<p>
+  <strong>Name:</strong>
+  <%= @api_account.name %>
+</p>
+<p>
+  <strong>Registration email:</strong>
+  <%= @api_account.registration_email %>
+</p>
+<p>
+  <strong>Currency:</strong>
+  <%= @api_account.currency %>
+</p>
+<p>
+  <strong>Description:</strong>
+  <%= @api_account.description %>
+</p>
+
+
+<%= link_to 'Edit', edit_api_account_path(@api_account) %> |
+<%= link_to 'Back', api_accounts_path %>

@@ -1,0 +1,4 @@
+- content_for(:header){'Assets'}
+- content_for(:small_header){@client.name}
+
+= render partial: "public/clients/assets_index", locals: {assets: @assets}

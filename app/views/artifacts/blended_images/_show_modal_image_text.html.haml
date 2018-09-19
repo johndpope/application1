@@ -1,0 +1,22 @@
+.modal.fade{ id: 'modal_image_text' }
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button.close{ type: 'button', data: { dismiss: 'modal' } }
+          %span &times;
+        %h4= "Texts #{item.id}"
+      .modal-body
+        %table.table.table-bordered.table-hover.table-striped
+          %thead
+            %th{style: "width: 40px;"} #
+            %th= "Text value"
+          %tbody
+            - @item.texts.each do |text|
+              %tr
+                %td= "#{text.id}"
+                %td= "#{text.value}"
+          %tfoot
+            %th{style: "width: 40px;"} #
+            %th= "Text value"
+      .modal-footer
+        = button_tag 'Cancel', {:class => 'btn btn-success',"data-dismiss" => "modal"}

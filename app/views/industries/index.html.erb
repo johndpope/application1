@@ -1,0 +1,92 @@
+<% title 'Industries' %>
+<% if flash[:notice] %>
+  <div id="notice_explanation" class="alert alert-success alert-dismissable col-md-11">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4>
+      <i class="icon fa fa-exclamation-circle"></i>
+      <%= flash[:notice] %>
+    </h4>
+  </div>
+<% end %>
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable col-md-11">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+<div id="industries_list">
+  <div class="row">
+    <div class="col-md-5">
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+        <span class="badge bg-blue">
+          <%= @industries.total_count %>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @industries.to_a.empty? %>
+    <table id="industries_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+          <th style="width: 50px;" class="sort" id="code-th" data-field="code">Code</th>
+          <th class="sort" id="name-th" data-field="name" title="Name">Name</th>
+          <th class="sort" id="nickname-th" data-field="nickname" title="Nickname">Nickname</th>
+          <th style="width: 90px;" class="text-center" title="Short descriptions">Short descr.</th>
+          <th style="width: 90px;" class="text-center" title="Long descriptions">Long descr.</th>
+          <th style="width: 90px;" class="text-center">Tags</th>
+          <th style="width: 90px;" class="text-center">Images</th>
+          <th style="width: 130px;" class="text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @industries.each do |industry| %>
+					<%= render partial: 'industry_row', locals: {industry: industry} %>
+				<% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <div><%= paginate @industries, theme: 'bootstrap' %></div>
+
+  <% if @industries.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+  <h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+  <%
+    order = [:id, :code, :name, :nickname]
+    order_type = [["Ascending", "asc"], ["Descending", "desc"]]
+    order_value = params[:order]
+    order_value = :code unless order_value
+  %>
+  <div id="search_params">
+    <%= form_tag({ controller: :industries, action: :index}, {method: :get, id: 'filters_form'}) do |f| %>
+      <div class="filter-label">Select industry:</div>
+      <%= hidden_field_tag :id, params[:id], class: 'ajax form-control', data: { source: industries_json_list_path } %>
+      <div class="filter-label">Order by:</div>
+      <%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.gsub("_", " ").humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label">Order type:</div>
+      <%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label">Items on page:</div>
+      <%= select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500 ], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+      <div class="filter-label text-center">
+        <div class="col-md-12">
+          <button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

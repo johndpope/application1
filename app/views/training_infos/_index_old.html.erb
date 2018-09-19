@@ -1,0 +1,54 @@
+<div id="training_infos_list">
+	<div class="row">
+		<div class="col-md-5">
+			<%= link_to 'New training info', new_training_info_path, class: 'btn btn-sm btn-primary' %>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @training_infos.size%></span>
+			</div>
+		</div>
+	</div>
+	<% unless @training_infos.to_a.empty? %>
+		<table id="training_infos_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="text-center">ID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Group Name</th>
+					<th style="width: 50px;" class="text-center">Version</th>
+					<th style="width: 80px;" class="text-center">Recorded At</th>
+					<th style="width: 80px;" class="text-center">Uploaded At</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @training_infos.each do |training_info| %>
+					<tr>
+						<td class="text-center"><%= link_to training_info.id, training_info_path(training_info), target: '_blank' %></td>
+						<td><%= training_info.name %></td>
+						<td title="<%= training_info.description %>"><%= truncate(training_info.description, length: 100) %></td>
+						<td><%= training_info.group_name %></td>
+						<td class="text-center"><%= training_info.version %></td>
+						<td class="text-center"><%= training_info.recorded_at.try(:strftime, '%m/%d/%y') %></td>
+						<td class="text-center"><%= training_info.created_at.try(:strftime, '%m/%d/%y') %></td>
+						<td class="text-center actions">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_training_info_path(training_info), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, training_info, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+	<% if @training_infos.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

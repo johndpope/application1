@@ -1,0 +1,22 @@
+<%
+  modal = render partial: 'browse_icon'
+%>
+$('body').append('<%= escape_javascript(modal) %>');
+$("#browse_icon").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+
+$("#browse_icon").on('click', '.found-image', function(){
+  image_path = $(this).data('path');
+  img_trigger = $(this).closest(".modal-dialog").find("form").data('image-trigger');
+  image_url = $(this).attr("src");
+
+  $('#color_options').find("#icon_path").val(image_path);
+
+  $.ajax({
+    url: "/artifacts/icons/get_icon_file",
+    type: 'GET',
+    data: {image_path: image_path, image_url: image_url},
+    success: function(){}
+  });
+});

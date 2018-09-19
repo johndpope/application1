@@ -1,0 +1,227 @@
+<%
+  modal = render partial: 'form', locals: {image: @image, clients: @clients}
+  modal_dom_id = dom_id(@image.becomes(Artifacts::Image), 'modal')
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+
+var rating = $('#artifacts_image_rating').val();
+for(var i = 0; i< rating; i++){
+  $('a[data-index=' + i + ']').find('i').removeClass('fa-star-o').addClass('fa-star');
+}
+
+$('.image_rating').on('click', function(e){
+  var target_class = $(this).find("i").attr('class').split(' ')[1];
+  var data_index = $(this).data('index');
+  $('.image_rating').find('i').removeClass('fa-star').addClass('fa-star-o');
+  $('#artifacts_image_rating').val(data_index + 1);
+
+  for(var i = 0; i<= data_index; i++){
+    $('a[data-index=' + i + ']').find('i').removeClass('fa-star-o').addClass('fa-star');
+  }
+
+});
+
+$('.image_rating').dblclick(function(){
+  $(this).find('i').removeClass('fa-star').addClass('fa-star-o');
+  $('#artifacts_image_rating').val(0);
+});
+
+
+$('select').select2({
+  placeholder: 'Choose',
+  width: '100%',
+  allowClear: true
+})
+
+  $('#artifacts_image_country').select2({
+    placeholder: 'Choose country',
+    width: '100%',
+    minimumInputLength: 0,
+    allowClear: true,
+    ajax: {
+      url: '/geobase/countries.json',
+      quietMillis: 300,
+      data: function (term, page) { return { name_or_code_cont: term, page: page, per_page: 10, sorts: 'name asc' } },
+      results: function (data, page){
+        return {
+          results: $.map(
+            data.items,
+            function(e){
+              return { id: e.name, text: e.name }
+            }
+          ),
+          more: (page * 10) < data.total
+        }
+      }
+    },
+    initSelection: function(element,callback){
+      var data = {id: element.val(), text: element.val()}
+      callback(data);
+    }
+  }).on( "change", function(e){
+    if (e.val != ""){
+      $.get("/geobase/countries.json?name_cont=" + e.val + "", function(data){
+        $('#artifacts_image_country').data('id', data.items[0].id)
+      })
+    }else{
+      $('#artifacts_image_country').data("id", "");
+    }
+  });
+
+  $('#artifacts_image_region1').select2({
+    placeholder: 'Choose state',
+    width: '100%',
+    minimumInputLength: 0,
+    allowClear: true,
+    ajax: {
+      url: '/geobase/regions.json',
+      quietMillis: 300,
+      data: function (term, page) {
+        return {
+          name_or_code_cont: term,
+          level_eq: 1,
+          country_name_cont: $('#artifacts_image_country').val(),
+          page: page,
+          per_page: 10,
+          sorts: 'name asc'
+        }
+      },
+      results: function (data, page){
+        return {
+          results: $.map(
+            data.items,
+            function(e){
+              return { id: e.name, text: e.name }
+            }
+          )
+        }
+      }
+    },
+    initSelection: function(element,callback){
+      var data = {id: element.val(), text: element.val()}
+      callback(data);
+    }
+  }).on("change", function(e){
+    if (e.val != ""){
+      $.get("/geobase/regions.json?name_cont=" + e.val + "", function(data){
+        $('#artifacts_image_region1').data("id", data.items[0].id);
+      });
+    }else{
+      $('#artifacts_image_region1').data("id", "");
+    }
+  });
+
+  $('#artifacts_image_region2').select2({
+    placeholder: 'Choose county',
+    width: '100%',
+    minimumInputLength: 0,
+    allowClear: true,
+    ajax: {
+      url: '/geobase/regions.json',
+      quietMillis: 300,
+      data: function (term, page) {
+        return {
+          name_or_code_cont: term,
+          level_eq: 2,
+          country_id_eq: $('#artifacts_image_country').data('id'),
+          parent_id_eq: $('#artifacts_image_region1').data('id'),
+          page: page,
+          per_page: 10,
+          sorts: 'name asc'
+        }
+      },
+      results: function (data, page){
+        return {
+          results: $.map(
+            data.items,
+            function(e){
+              return { id: e.name, text: e.name }
+            }
+          )
+        }
+      }
+    },
+    initSelection: function(element,callback){
+      var data = {id: element.val(), text: element.val()}
+      callback(data);
+    }
+  }).on("change", function(e){
+    if (e.val != ""){
+      $.get("/geobase/regions.json?country_id_eq=" + $('#artifacts_image_country').data('id') + "&level_eq=2&parent_id_eq=" + $('#artifacts_image_region1').data('id') + "&name_cont=" + e.val + "", function(data){
+        $('#artifacts_image_region2').data("id", data.items[0].id)
+      })
+    }else{
+      $('#artifacts_image_region2').data("id","").select2('val', '')
+    }
+  });
+
+  $('#artifacts_image_city').select2({
+    placeholder: 'Choose city',
+    width: '100%',
+    minimumInputLength: 0,
+    allowClear: true,
+    ajax: {
+      url: '/geobase/localities.json',
+      quietMillis: 300,
+      data: function (term, page) {
+        return {
+          name_or_code_cont: term,
+          country_id_eq: $('#artifacts_image_country').data("id"),
+          primary_region_name_eq: $('#artifacts_image_region1').val(),
+          page: page,
+          per_page: 10,
+          sorts: ['population desc', 'name asc']
+        }
+      },
+      results: function (data, page){
+        return {
+          results: $.map(
+            data.items,
+            function(e){
+              return { id: e.name, text: e.name }
+            }
+          )
+        }
+      }
+    },
+    initSelection: function(element,callback){
+      var data = {id: element.val(), text: element.val()}
+      callback(data);
+    }
+  });
+
+
+  $('#artifacts_image_industry_id').select2({
+    dropdownCssClass: 'bigdrop',
+    placeholder: 'Select industry',
+    allowClear: true,
+    ajax: {
+      url: '/industries/tools/json_list',
+      dataType: 'json',
+      data: function (term, page) {
+        return {
+          id: $(this).val(),
+          q: term
+        }
+      },
+      results: function (data, page) { return { results: data } }
+    },
+    initSelection: function (item, callback) {
+      var id = item.val();
+      if (id !== '') {
+        $.ajax('/industries/tools/json_list', {
+          data: { id: id },
+          dataType: 'json'
+        }).done(function (data) {
+          callback(data[0]);
+        });
+      }
+    },
+    formatResult: function (item) { return (item.text); },
+    formatSelection: function (item) { return (item.text); },
+    escapeMarkup: function (m) { return m; }
+  });

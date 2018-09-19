@@ -1,0 +1,18 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	=f.label :name, t('model.name') + ' *'
+	=f.text_field :name, class: "form-control"
+
+.form-group
+	.row
+		.col-md-6
+			= f.label :make_id, t('model.make_id') + ' *'
+			- options = Make.order(:name).collect{|c|[c.name,c.id]}
+			= f.select(:make_id, options, {include_blank: ''}, {class: 'form-control'})
+		.col-md-6
+			= f.label :product_category_id, t('model.product_category_id') + ' *'
+			- options = ProductCategory.order(:name).collect{|c|[c.name,c.id]}
+			= f.select(:product_category_id, options, {include_blank: ''}, {class: 'form-control'})

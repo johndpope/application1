@@ -1,0 +1,19 @@
+<div class="modal fade" id="detect_other_dealers_modal" style="z-index: 9999 !important;" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered brands-modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>
+          <b>Our system detected the possible records that may refer to your company. Please confirm the records that belong to you.</b>
+        </h4>
+      </div>
+      <div class="modal-body wrap-modal step-1" style="padding-bottom: 35px;">
+        <div id="dealers_table">
+          <%= render partial: "search_tbody", locals: { dealers: dealers} %>
+        </div>
+        <div class="row">
+          <%= link_to "Submit", new_sandbox_video_marketing_campaign_form_path(query_params), id: "signup_action_url_submit", class: 'btn btn-success btn-lg pull-right', style: "margin-right: 15px; margin-top: 25px;" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

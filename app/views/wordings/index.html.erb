@@ -1,0 +1,64 @@
+<%= content_for(:javascripts){javascript_include_tag '/assets/wordings/filter'} %>
+<% title 'Wordings' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<%= link_to 'Add Wording', new_wording_path, class: 'btn btn-sm btn-primary left' %>
+
+<div id="wordings_list">
+	<%= render partial: 'list_of_wordings' %>
+	<div><%= paginate @wordings, theme: 'bootstrap' %></div>
+	<div class="modal modal-wide fade" id="wording_legend" style="z-index: 999999;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+</div>
+
+<div id="filter" class="no-print"><i class="glyphicon glyphicon-search"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :name, :chars, :resource_id, :resource_type, :resource_name, :admin_user_id, :updated_at, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :updated_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({ controller: :wordings, action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+			<div class="filter-label">Source:</div>
+			<%= search_field_tag :source, params[:source], class: 'form-control' %>
+			<div class="filter-label">Name:</div>
+			<%= select_tag(:name, options_for_select(Wording.names_list, params[:name]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">URL:</div>
+			<%= search_field_tag :url, params[:url], class: 'form-control' %>
+			<div id="geobase_filter">
+				<%= render partial: 'wordings/types/filter' %>
+			</div>
+			<label class="control-label" for="industry_id">Industry:</label>
+			<input type="hidden" id="industry_id" name="industry_id" class="ajax form-control" data-source="<%= industries_json_list_path %>" data-insert-resource="Industry" value="<%= params[:industry_id] %>">
+			<div class="filter-label">Resource ID:</div>
+			<%= search_field_tag :resource_id, params[:resource_id], class: 'form-control' %>
+			<div class="filter-label">Resource type:</div>
+			<%= select_tag(:resource_type, options_for_select(Wording.select(:resource_type).distinct.where('resource_type IS NOT NULL').pluck(:resource_type), params[:resource_type]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Admin user:</div>
+			<%= select_tag(:admin_user_id, options_from_collection_for_select(AdminUser.all.order(:email), :id, :full_name, params[:admin_user_id]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Updated by:</div>
+			<%= select_tag(:updated_by_id, options_from_collection_for_select(AdminUser.all.order(:email), :id, :email, params[:updated_by_id]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

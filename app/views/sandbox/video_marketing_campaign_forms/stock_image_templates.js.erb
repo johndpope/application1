@@ -1,0 +1,17 @@
+<%
+  stock_image_templates_results = render partial: '/sandbox/video_marketing_campaign_forms/content_step/images/system_images/stock_image_templates_results', locals: {stock_image_templates: stock_image_templates}
+  stock_image_templates_paginate = render partial: '/sandbox/video_marketing_campaign_forms/content_step/images/system_images/stock_image_templates_paginate', locals: {stock_image_templates: stock_image_templates}
+%>
+<% if stock_image_templates.total_count == 0 %>
+  $('#stock_image_templates_container').hide();
+<% end %>
+$('#stock_image_templates_results').replaceWith('<%= escape_javascript(stock_image_templates_results) %>');
+$('.stock_image_templates_paginate').replaceWith('<%= escape_javascript(stock_image_templates_paginate) %>');
+$('.page, .next, .first, .prev, .next_page').on('click', function () {
+  $('.animationload').show();
+});
+$('.animationload').hide();
+
+$.each($('#video_marketing_campaign_form_deleted_stock_image_templates').val().toString().replace('{', '').replace('}', '').split(","), function (index, value) {
+  $("#stock_image_template_" + value).addClass("disabled-block");
+});

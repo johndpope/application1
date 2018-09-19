@@ -1,0 +1,9 @@
+.nav-tabs-custom
+	%ul.nav.nav-tabs
+		- (1..2).each do |i|
+			%li{class: (i == 2 ? 'active' : '')}
+				= link_to "#{i == 1 ? 'Donor' : 'Recipient'}", "#sub_tab_#{basic_tab_id}_#{i == 1 ? 'donor' : 'recipient'}", data: {toggle: "tab"}
+	.no-padding.tab-content
+		- (1..2).each do |i|
+			.tab-pane.chart{class: (i == 2 ? 'active' : ''), id: "sub_tab_#{basic_tab_id}_#{i == 1 ? 'donor' : 'recipient'}"}
+				= render partial: File.join("source_videos/modal_dialog/form/tab_control",(i == 1 ? 'donor' : ''),basic_tab_id), locals: {f: f}

@@ -1,0 +1,13 @@
+.form-group
+	.row
+		.col-md-3
+			= sf.label :client_id, t('sandbox.video_set.sandbox_client_id')
+			- options = options_from_collection_for_select(Client.order(:name), :id, :name, @search.client_id_eq)
+			= sf.select :client_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :is_active_eq, t('sandbox.video_set.is_active')
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= sf.select :is_active_eq, options_for_select(yes_no_options, @search.is_active_eq), {include_blank: true}, class: 'form-control'
+		.col-md-3
+			= sf.label :title_cont, t('sandbox.video_set.title')
+			= sf.search_field :title_cont, class: "form-control"

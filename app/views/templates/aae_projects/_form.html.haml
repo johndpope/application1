@@ -1,0 +1,69 @@
+.modal{class: 'modal-wide fade aae-project-modal', id: dom_id(aae_project, 'modal')}
+  .modal-dialog
+    .modal-content
+      = form_for aae_project, authenticity_token: true, remote: true, :multipart => true do |f|
+        .modal-header
+          %button{type: 'button', class: 'close', data: {dismiss: 'modal'}, 'area-label' => 'Close'}
+            %span{'area-hidden' => true} &times;
+          %h4{class: 'modal-title'}
+            #{aae_project.new_record? ? 'New' : 'Edit'} AAE Project
+            -unless aae_project.new_record?
+              &#35;
+              = aae_project.id
+        .modal-body
+          .nav-tabs-custom
+            %ul.nav.nav-tabs
+              %li.active= link_to 'Project Settings','#project_settings', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+              - unless aae_project.new_record?
+                %li= link_to 'Project Items Settings','#project_items_settings', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+            .tab-content{class: 'no-padding'}
+              .tab-pane.active{class: 'chart', id: 'project_settings'}
+                - %w(title description is_approved sub_dir screenshot_time notes).each do |field|
+                  - field_type = aae_project.class.columns_hash[field].type
+                  .control-box{class: (field_type == :boolean ? 'checkbox' : 'form-group')}
+                    = f.label field, class: 'control-label'
+                    - case field_type
+                      - when :text
+                        = f.text_area field, class: 'form-control', rows: 4
+                      - when :boolean
+                        = f.label field do
+                          = f.check_box field
+                      - else
+                        = f.text_field field, class: 'form-control'
+                .form-group{class: 'control-box'}
+                  = f.label :type, class: 'control-label'
+                  - types = Templates::AaeProject::TYPES.collect{|k,v| [k.to_s.titleize, v]}
+                  = select(:templates_aae_project, :project_type, types, {include_blank: '', selected: (aae_project.project_type.value unless aae_project.project_type.blank?)}, {class: 'form-control'})
+                .control-box
+                  = f.label :xml
+                  = f.file_field :xml
+                  - unless aae_project.xml.blank?
+                    .form-group
+                      = label_tag nil, 'Current XML'
+                      %div= aae_project.xml_file_name
+                .row
+                  .col-md-6
+                    .form-group{class: 'control-box'}
+                      = f.label :thumbnail, class: 'control-label'
+                      = f.file_field :thumbnail, accept: 'image/png,image/gif,image/jpeg'
+                      %p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+                      - unless aae_project.thumbnail.blank?
+                        .form-group
+                          = label_tag nil, 'Current Thumbnail'
+                          %div= image_tag aae_project.thumbnail.url(:thumb), class: 'img-responsive', style: 'height: 170px; width: 300px;'
+                  .col-md-6
+                    .form-group{class: 'control-box'}
+                      = f.label :video, class: 'control-label'
+                      = f.file_field :video, accept: 'video/mp4'
+                      %p{class: 'help-block'} file format: mp4, file size: <= 200MB
+                      - unless aae_project.video.blank?
+                        .form-group
+                          = label_tag nil, 'Current Video'
+                          %div= video_tag aae_project.video.url, style: 'height: 170px; width: 300px;', controls: true, autobuffer: false
+              - unless aae_project.new_record?
+                .tab-pane{class: 'chart', id: 'project_items_settings'}
+                  = render partial: 'aae_project_items_form', locals: {f: f}
+        .modal-footer
+          %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}} Close
+          = f.submit (aae_project.new_record? ? t('add') : t('update')),
+          class: 'btn btn-primary', data: {disable_with: (aae_project.new_record? ? t('adding') : t('updating'))}

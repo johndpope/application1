@@ -1,0 +1,21 @@
+= content_for(:title) { 'How it works' }
+
+.slider-stat
+	.container
+		.info-box
+			%h1= t('sandbox.echo_video_blender')
+			%p= t('sandbox.echo_video_blender_description').html_safe
+.container.main-body
+	.title-block
+		%h1
+			%b= t('sandbox.echo')
+			%span.font_red_no-weight= t('sandbox.echo_video')
+			= t('sandbox.echo_video_blender_process')
+	.row
+		- 1.upto(8).each do |i|
+			.col-md-6.video-content-box{style: "min-height: 700px;"}
+				= link_to "#{i}", class: "img-tb" do
+					= image_tag "/system/sandbox/demo_video/echo_video_screenshot_#{i}.png", alt: "Title"
+					%i.glyphicon.glyphicon-play-circle
+				%h2.text-title=t("sandbox.how_it_works.header#{i}")
+				%p.text-description=t("sandbox.how_it_works.description#{i}")

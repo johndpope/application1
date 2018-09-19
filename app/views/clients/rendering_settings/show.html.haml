@@ -1,0 +1,44 @@
+= render partial: 'clients/navigation'
+- header @client.name
+- small_header 'Rendering Settings'
+- title 'Rendering Settings'
+- breadcrumb :client_rendering_settings, @client
+= form_for(@client, url: {controller: "clients/rendering_settings", action: "update"}, method: "put") do |f|
+	= f.fields_for :rendering_settings do |builder|
+		.row
+			.col-md-3
+				.form-group
+					= builder.label :rendering_priority, t('client.priority')
+					= tooltip_by_field({table_name: "client_rendering_settings", table_column: "rendering_priority"})
+					= builder.text_field :rendering_priority, class: "form-control"
+					%p.help-block
+						Higher value - lower priority.
+						%strong 0
+						is highest priority
+		.row
+			.col-md-3
+				.form-group
+					= builder.check_box :auto_approve_rendered_video_chunks, class: "iCheck-helper"
+					= builder.label :auto_approve_rendered_video_chunks, 'Auto Approve Rendered Video Chunks', class: "control-label"
+					= link_to 'Review Video Chunks', client_video_workflow_path(@client.id), target: '_BLANK'
+					= tooltip_by_field({table_name: "client_rendering_settings", table_column: "auto_approve_rendered_video_chunks"})
+					%p.help-block
+
+		.row
+			.col-md-3
+				.form-group
+					= builder.check_box :auto_blend_accepted_video_sets, class: "iCheck-helper"
+					= builder.label :auto_blend_accepted_video_sets, 'Auto Blend Approved Video Sets', class: "control-label"
+					= link_to 'Review Blended Video Sets', client_video_workflow_path(@client.id), target: '_BLANK'
+					= tooltip_by_field({table_name: "client_rendering_settings", table_column: "auto_blend_accepted_video_sets"})
+					%p.help-block
+
+		.row
+			.col-md-3
+				.form-group
+					= builder.check_box :auto_create_youtube_video_content, class: "iCheck-helper"
+					= builder.label :auto_create_youtube_video_content, 'Auto Create Youtube Video Content', class: "control-label"
+					= tooltip_by_field({table_name: "client_rendering_settings", table_column: "auto_create_youtube_video_content"})
+	.row
+		.col-md-12
+			= submit_tag t('update'), class: "btn btn-primary"

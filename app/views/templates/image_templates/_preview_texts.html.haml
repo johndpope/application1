@@ -1,0 +1,16 @@
+- if @item.texts.to_a.any?
+	%h4 List of Texts used in Template:
+
+	%table.table.table-bordered.table-hover.table-striped
+		%thead
+			= render partial: "templates/image_templates/texts_table_header"
+		%tbody
+			- @item.texts.each_with_index do |text, i|
+				%tr
+					%td= (text.id)
+					%td= (text.name)
+		%tfoot
+			= render partial: "templates/image_templates/texts_table_header"
+- else
+	.alert.alert-info
+		%span Project doesn't contain any dynamic texts

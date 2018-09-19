@@ -1,0 +1,6 @@
+- title 'Source Video Image Tags'
+- content_for(:small_header){@client.name}
+
+= render partial: "navigation"
+= render partial: "clients/image_tags/tab_control_header", locals: {client: @client}
+.no-padding.tab-content

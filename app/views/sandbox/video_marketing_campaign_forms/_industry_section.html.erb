@@ -1,0 +1,127 @@
+<!-- <div id="fon2"></div> -->
+<% industries = Industry.distinct.joins("INNER JOIN dealers ON industries.id = dealers.industry_id").order(:name)
+  group_dealers = Dealer.group(:brand_id, :industry_id).count.keys
+  h = {}
+  group_dealers.each do |gr|
+    h["id_" + gr.second.to_s] = group_dealers.select {|e| e.second == gr.second}.map(&:first).sort
+  end
+%>
+<%= hidden_field_tag :industries_json, h.to_json %>
+<div id="industry_selection">
+  <div class="industry_blocks_row">
+    <div class="industry_block">
+      <div class="col">
+        <%= link_to 'javascript://', class: "" do %>
+          <%= image_tag "/assets/sandbox/home_page/industry_images/industry_icon_1.png", class: "sp-product-img" %>
+        <% end %>
+      </div>
+      <div class="col">
+        <h1>H.V.A.C.</h1>
+        <% hvac_brands = h["id_722"].map {|b| "<span class='label label-primary'>#{b}</span>"}.join(" ") unless h["id_722"].blank? %>
+        <%= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "#{hvac_brands}", html: true, title: "<b>Brands</b>"} do %>
+          <%= "More information" %>
+          <%= fa_icon 'angle-down' %>
+        <% end %>
+      </div>
+      <div class="col">
+        <%= link_to "SELECT", 'javascript://', class: "btn select-btn industry-chooser", data: {industry_id: 722} %>
+        <%= link_to "CHANGE", 'javascript://', class: "btn change-btn", style: "display: none;" %>
+      </div>
+    </div>
+    <div class="industry_block">
+      <div class="col">
+        <%= link_to 'javascript://', class: "" do %>
+          <%= image_tag "/assets/sandbox/home_page/industry_images/industry_icon_2.png", class: "sp-product-img" %>
+        <% end %>
+      </div>
+      <div class="col">
+        <h1>TRACTORS</h1>
+        <% tractor_brands = h["id_994"].map {|b| "<span class='label label-primary'>#{b}</span>"}.join(" ") unless h["id_994"].blank? %>
+        <%= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "#{tractor_brands}", html: true, title: "<b>Brands</b>"} do %>
+          <%= "More information" %>
+          <%= fa_icon 'angle-down' %>
+        <% end %>
+      </div>
+      <div class="col">
+        <%= link_to "SELECT", 'javascript://', class: "btn select-btn industry-chooser", data: {industry_id: 994} %>
+        <%= link_to "CHANGE", 'javascript://', class: "btn change-btn", style: "display: none;" %>
+      </div>
+    </div>
+    <div class="industry_block coming_soon">
+      <div class="col">
+        <%= link_to 'javascript://', class: "" do %>
+          <%= image_tag "/assets/sandbox/home_page/industry_images/industry_icon_4.png", class: "sp-product-img" %>
+        <% end %>
+      </div>
+      <div class="col">
+        <h1>AUTO</h1>
+        <%= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "<span class='label label-danger'>COMING SOON</span>", html: true, title: "<b>Brands</b>"} do %>
+          <%= "More information" %>
+          <%= fa_icon 'angle-down' %>
+        <% end %>
+      </div>
+      <div class="col">
+        <%= link_to "SELECT", 'javascript://', class: "btn select-btn disabled" %>
+        <%= link_to "CHANGE", 'javascript://', class: "btn change-btn", style: "display: none;" %>
+      </div>
+    </div>
+  </div>
+  <div class="industry_blocks_row">
+    <div class="industry_block coming_soon">
+      <div class="col">
+        <%= link_to 'javascript://', class: "" do %>
+          <%= image_tag "/assets/sandbox/home_page/industry_images/industry_icon_3.png", class: "sp-product-img" %>
+        <% end %>
+      </div>
+      <div class="col">
+        <h1>TRUCKS</h1>
+        <%= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "<span class='label label-danger'>COMING SOON</span>", html: true, title: "<b>Brands</b>"} do %>
+          <%= "More information" %>
+          <%= fa_icon 'angle-down' %>
+        <% end %>
+      </div>
+      <div class="col">
+        <%= link_to "SELECT", 'javascript://', class: "btn select-btn disabled" %>
+        <%= link_to "CHANGE", 'javascript://', class: "btn change-btn", style: "display: none;" %>
+      </div>
+    </div>
+    <div class="industry_block coming_soon">
+      <div class="col">
+        <%= link_to 'javascript://', class: "" do %>
+          <%= image_tag "/assets/sandbox/home_page/industry_images/industry_icon_5.png", class: "sp-product-img" %>
+        <% end %>
+      </div>
+      <div class="col">
+        <h1>REAL ESTATE</h1>
+        <%= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "<span class='label label-danger'>COMING SOON</span>", html: true, title: "<b>Brands</b>"} do %>
+          <%= "More information" %>
+          <%= fa_icon 'angle-down' %>
+        <% end %>
+      </div>
+      <div class="col">
+        <%= link_to "SELECT", 'javascript://', class: "btn select-btn disabled" %>
+        <%= link_to "CHANGE", 'javascript://', class: "btn change-btn", style: "display: none;" %>
+      </div>
+    </div>
+    <div class="industry_block coming_soon">
+      <div class="col">
+        <%= link_to 'javascript://', class: "" do %>
+          <%= image_tag "/assets/sandbox/home_page/industry_images/industry_icon_6.png", class: "sp-product-img" %>
+        <% end %>
+      </div>
+      <div class="col">
+        <h1>OTHER</h1>
+        <%#= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "Please select this type if you didn't find your industry. You will be redirected to our Video Marketing On-boarding Form for further sign up process.", html: true, title: "<b>OTHER</b>"} do %>
+        <%= link_to 'javascript://', class: 'more-info-link popover-box', data: {content: "<span class='label label-danger'>COMING SOON</span>", html: true, title: "<b>Brands</b>"} do %>
+          <%= "More information" %>
+          <%= fa_icon 'angle-down' %>
+        <% end %>
+      </div>
+      <div class="col">
+        <%#= link_to "SELECT", new_sandbox_video_marketing_campaign_form_path, class: "btn select-btn", data: {confirm: "Are you sure?"} %>
+        <%= link_to "SELECT", 'javascript://', class: "btn select-btn disabled" %>
+        <%= link_to "CHANGE", 'javascript://', class: "btn change-btn", style: "display: none;" %>
+      </div>
+    </div>
+  </div>
+</div>

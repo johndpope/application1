@@ -1,0 +1,287 @@
+<%= content_for(:javascripts){javascript_include_tag 'contracts_form'} %>
+
+<%= form_for @contract, url: client_contract_path(@client, @contract), :html => { :multipart => true } do |f| %>
+	<div class="row">
+		<% if @contract.errors.any? %>
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@contract.errors.count, 'error') %> prohibited this contract from being saved</h4>
+				</div>
+			</div>
+		<% end %>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<%= f.label :parent_contract, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "parent_id"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgb(54, 127, 169); border: 1px solid rgb(54, 127, 169);"><i class="fa fa-sitemap"></i></span>
+									<%= select_tag('contract[parent_id]', options_from_collection_for_select(@contracts, :id, :display_name, @contract.parent_id), { include_blank: true, class: 'form-control select2' }) %>
+								</div>
+							</div>
+							<div id="products_form_group" class="form-group <%= 'has-error' if @contract.errors[:products].present? %>" data-content="<%= @contract.errors[:products].try(:join, ',') %>">
+								<%= f.label "Products *", class: 'control-label', title: "Required field" %>
+								<%= tooltip_by_field({tooltip_text: t('tooltips.contracts.products', :default => "")}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #7C529E; border: 1px solid #7C529E;"><i class="fa fa-cube"></i></span>
+									<% products_array = Product.where('client_id = ?', @client.id).map { |p| [p.name, p.id] } %>
+									<%= f.select :products, options_for_select(products_array, @contract.products.pluck(:id)), { include_blank: true }, { placeholder: 'Select products', class: 'select2 form-control', multiple: "multiple" } %>
+								</div>
+							</div>
+							<div class="form-group <%= 'has-error' if @contract.errors[:contract_document].present? %>" data-content="<%= @contract.errors[:contract_document].try(:join,',') %>">
+								<%= f.label :contract_document, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "contract_document_file_name"}) %>
+								</br>
+								<% if @contract.id.present? && @contract.contract_document.present? %>
+									<%= link_to @contract.contract_document_file_name, URI::escape(@contract.contract_document.url, '[ ]'), target: "_blank" %>
+								<% end %>
+								<%= f.file_field :contract_document, style: "padding-top: 10px" %>
+							</div>
+							<div class="form-group">
+								<%= f.label :execution_date, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "execution_date"}) %>
+								<%= f.text_field :execution_date, class: 'form-control datepicker', value: @contract.execution_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-6">
+									<%= f.label :start_date, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "start_date"}) %>
+									<%= f.text_field :start_date, class: 'form-control datepicker', value: @contract.start_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+								</div>
+								<div class="form-group col-md-6">
+									<%= f.label :end_date, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "end_date"}) %>
+									<%= f.text_field :end_date, class: 'form-control datepicker', value: @contract.end_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :setup_period, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "setup_period"}) %>
+								<%= f.number_field :setup_period, class: 'form-control numeric positive-numeric' %>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-6">
+									<%= f.label :video_posting_start_date, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "video_posting_start_date"}) %>
+									<%= f.text_field :video_posting_start_date, class: 'form-control datepicker', value: @contract.video_posting_start_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+								</div>
+								<div class="form-group col-md-6">
+									<%= f.label :video_posting_end_date, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "video_posting_end_date"}) %>
+									<%= f.text_field :video_posting_end_date, class: 'form-control datepicker', value: @contract.video_posting_end_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.check_box :evergreen_provision, class: 'iCheck-helper' %>
+								<%= f.label :evergreen_provision, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "evergreen_provision"}) %>
+							</div>
+							<div class="form-group">
+								<%= f.label :description, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "description"}) %>
+								<div class="input-group">
+									 <span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+									<%= f.text_area :description, size: '40x10', class: 'form-control', placeholder: 'Description' %>
+								</div>
+							</div>
+              <hr/>
+              <div class="row">
+                <div class="form-group col-md-6 <%= 'has-error' if @contract.errors[:payment_amount].present? %>" data-content="<%= @contract.errors[:payment_amount].try(:join, ',') %>">
+  								<%= f.label :payment_amount, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "payment_amount"}) %>
+  								<%= f.number_field :payment_amount, class: 'form-control numeric positive-numeric', placeholder: "Payment amount" %>
+  							</div>
+                <div class="form-group col-md-6 <%= 'has-error' if @contract.errors[:down_payment].present? %>" data-content="<%= @contract.errors[:down_payment].try(:join, ',') %>">
+  								<%= f.label :down_payment, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "down_payment"}) %>
+  								<%= f.number_field :down_payment, class: 'form-control numeric positive-numeric', placeholder: "Down payment" %>
+  							</div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-6 <%= 'has-error' if @contract.errors[:payment_duration].present? %>" data-content="<%= @contract.errors[:payment_duration].try(:join, ',') %>" title="Payment duration (months)">
+  								<%= f.label :payment_duration, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "payment_duration"}) %>
+  								<%= f.number_field :payment_duration, class: 'form-control numeric positive-numeric', placeholder: "Payment duration (months)" %>
+  							</div>
+                <div class="form-group col-md-6 <%= 'has-error' if @contract.errors[:payment_frequency].present? %>" data-content="<%= @contract.errors[:payment_frequency].try(:join, ',') %>">
+  								<%= f.label :payment_frequency, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "contracts", table_column: "payment_frequency"}) %>
+  								<%= f.select :payment_frequency, options_for_select(Contract::PAYMENT_FREQUENCIES, @contract.payment_frequency), {include_blank: true}, class: 'form-control select2', placeholder: "Payment frequency" %>
+  							</div>
+              </div>
+              <div class="form-group">
+								<%= f.check_box :send_automatic_invoices, class: 'iCheck-helper' %>
+								<%= f.label :send_automatic_invoices, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "send_automatic_invoices"}) %>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="box box-warning">
+								<div class="box-header with-border">
+									<div class="form-group check-group" id="client_approval_div">
+										<input id="contract_client_approval_required" class="iCheck-helper" type="checkbox">
+										<%= f.label :client_approval_required, class: 'control-label' %>
+										<%= tooltip_by_field({table_name: "contracts", table_column: "client_approval_required"}) %>
+									</div>
+								</div>
+								<div class="box-body">
+									<div id="client_approve_block" style="display: none;">
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_channel_names_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_channel_names_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_channel_names_approval"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_channel_descriptions_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_channel_descriptions_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_channel_descriptions_approval"}) %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_channel_art_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_channel_art_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_channel_art_approval"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_channel_icon_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_channel_icon_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_channel_icon_approval"}) %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_video_titles_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_video_titles_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_video_titles_approval"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_video_descriptions_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_video_descriptions_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_video_descriptions_approval"}) %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_video_tags_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_video_tags_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_video_tags_approval"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_video_custom_thumbnails_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_video_custom_thumbnails_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_video_custom_thumbnails_approval"}) %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :youtube_channel_tags_approval, class: 'iCheck-helper' %>
+												<%= f.label :youtube_channel_tags_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "youtube_channel_tags_approval"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :video_production_templates_approval, class: 'iCheck-helper' %>
+												<%= f.label :video_production_templates_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "video_production_templates_approval"}) %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :media_storage_images_approval, class: 'iCheck-helper' %>
+												<%= f.label :media_storage_images_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "media_storage_images_approval"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :google_plus_cover_photos_approval, class: 'iCheck-helper' %>
+												<%= f.label :google_plus_cover_photos_approval, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "google_plus_cover_photos_approval"}) %>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="box box-success">
+								<div class="box-header with-border">
+									<div class="form-group check-group" id="client_supply_div">
+										<input id="contract_client_supply_required" class="iCheck-helper" type="checkbox">
+										<%= f.label :client_supply_required, class: 'control-label' %>
+										<%= tooltip_by_field({table_name: "contracts", table_column: "client_supply_required"}) %>
+									</div>
+								</div>
+								<div class="box-body">
+									<div id="client_supply_block" style="display: none;">
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :client_images_supply, class: 'iCheck-helper' %>
+												<%= f.label :client_images_supply, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "client_images_supply"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :client_logos_supply, class: 'iCheck-helper' %>
+												<%= f.label :client_logos_supply, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "client_logos_supply"}) %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-6">
+												<%= f.check_box :client_videos_supply, class: 'iCheck-helper' %>
+												<%= f.label :client_videos_supply, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "client_videos_supply"}) %>
+											</div>
+											<div class="form-group col-md-6">
+												<%= f.check_box :client_music_supply, class: 'iCheck-helper' %>
+												<%= f.label :client_music_supply, class: 'control-label' %>
+												<%= tooltip_by_field({table_name: "contracts", table_column: "client_music_supply"}) %>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :client_subject_video_supply_date, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "client_subject_video_supply_date"}) %>
+								<%= f.text_field :client_subject_video_supply_date, class: 'form-control datepicker', value: @contract.client_subject_video_supply_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+							</div>
+							<div class="form-group">
+								<%= f.label :amendment_date, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "amendment_date"}) %>
+								<%= f.text_field :amendment_date, class: 'form-control datepicker', value: @contract.amendment_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+							</div>
+							<div class="form-group">
+								<%= f.label :amendment_description, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "contracts", table_column: "amendment_description"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #5FB2DD; border: 1px solid #5FB2DD;"><i class="fa fa-align-right"></i></span>
+									<%= f.text_area :amendment_description, size: '40x10', class: 'form-control', placeholder: 'Amendment description' %>
+								</div>
+							</div>
+							<%= f.hidden_field :client_id %>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row center">
+						<div class="btn-group btn-group-custom">
+							<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_contracts_path(@client), class: 'btn btn-lg btn-primary' %>
+							<%= f.submit :class => 'btn btn-lg btn-success', :id => 'contract_submit' %>
+							<% if params[:action] == "new" && @client.email_accounts_setups.empty? %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, new_client_email_accounts_setup_path(@client), class: 'btn btn-lg btn-primary' %>
+							<% else %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, client_email_accounts_setups_path(@client), class: 'btn btn-lg btn-primary' %>
+							<% end %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

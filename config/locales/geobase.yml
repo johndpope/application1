@@ -1,0 +1,5 @@
+en:
+  geobase:
+    Geobase::Country: Country
+    Geobase::Region: Region
+    Geobase::Locality: Locality

@@ -1,0 +1,67 @@
+.box-header.with-border
+  %i.fa.fa-file-video-o
+  %span.total_uploaded_video
+  .box-tools.pull-right
+    %button.btn.btn-box-tool{:type => "button", :data => {:widget => 'collapse'}}
+      %i.fa.fa-minus
+.box-body.no-padding
+  %table.table.table-striped.videos
+    %tbody#video_description
+      %thead
+        %th.id
+        %th.preview
+          %i.fa.fa-file-video-o{:title => "Video preview"}
+          ="Video preview"
+        %th.video_title
+          %i.fa.fa-info-circle{:title => "Video preview"}
+          ="Video title"
+        %th.video_tags_notes
+          %i.fa.fa-tags{:title => "Video preview"}
+          ="video's tags & notes"
+      %script{:id => "tmpl-video-description", :type => "text/x-tmpl"}
+        {%= video=o.files[0] %}
+        {%=console.log(video)%}
+        %tr
+          %td="{%=video.id%}"
+          %td
+            = hidden_field_tag "videos[{%=video.id%}][id]", "{%=video.id%}"
+            %video{:controls => true, :style => "width: 90%"}
+              %source{:src => "{%=video.url%}", :type => "video/mp4"}
+          %td
+            .form-group
+              = label_tag "title", "title"
+              = text_field_tag "videos[{%=video.id%}][title]", "{%=video.title%}", class: "form-control", placeholder: "Video title"
+            .row.location_data
+              .col-md-6
+                .form-group
+                  = label_tag "country", "Country"
+                  = text_field_tag "videos[{%=video.id%}][country]", "{%=video.country.id%}", class: "form-control video_country", data: {id: "{%=video.country.id%}", name: "{%=video.country.name%}", type: "country"}
+              .col-md-6
+                .form-group
+                  = label_tag "state", "State"
+                  = text_field_tag "videos[{%=video.id%}][region1]", "{%=video.region1.id%}", class: "form-control video_region1", data: {id: "{%=video.region1.id%}", name: "{%=video.region1.name%}"}
+              .col-md-6
+                .form-group
+                  = label_tag "county", "County"
+                  = text_field_tag "videos[{%=video.id%}][region2]", "{%=video.region2.id%}", class: "form-control video_region2", data: {id: "{%=video.region2.id%}", name: "{%=video.region2.name%}"}
+              .col-md-6
+                .form-group
+                  = label_tag "city", "City"
+                  = text_field_tag "videos[{%=video.id%}][city]", "{%=video.city.id%}", class: "form-control video_city", data: {id: "{%=video.city.id%}", name: "{%=video.city.name%}"}
+
+          %td
+            .form-group
+              %div
+                = label_tag "tags", "tags"
+                %span#tag_list_count.badge.tags_count
+              .input-group
+                %span.input-group-addon{:style => "background-color: #3c8dbc; border: 1px solid #3c8dbc;"}
+                  %i.fa.fa-tags{:style => "color: #ffffff"}
+                = text_field_tag "videos[{%=video.id%}][tags]", "{%=video.tag_list%}", class: "form-control tags", id: "tags", placeholder: "Enter tags"
+
+            .form-group
+              = label_tag "Notes"
+              .input-group
+                %span.input-group-addon{:style => "background-color: silver; border: 1px solid silvet;"}
+                  %i.fa.fa-thumb-tack{:style => "color: white"}
+                = text_area_tag "videos[{%=video.id%}][notes]", "{%=video.notes%}", class: 'form-control notes', rows: 2, placeholder: 'Notes'

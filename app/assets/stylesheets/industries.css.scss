@@ -1,0 +1,75 @@
+thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+	padding: 4px !important;
+	vertical-align: middle !important;
+	position: relative;
+}
+
+.filter-label {
+	margin-top: 2px;
+	font-weight: bold;
+}
+
+th, td { font-size: 13px; }
+
+.overflow { word-wrap: break-word; }
+
+.bootstrap-tagsinput {
+	width: 100%;
+	margin: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.label-tags {
+  font-size: 13px !important;
+}
+
+.description-name-select { display: inline; width: 170px;}
+
+fieldset.form {
+	border: 1px solid #d5d5d5;
+	margin: 0 0 15px;
+	padding: 10px 15px 0;
+
+	> legend {
+		display: block;
+		width: auto;
+		margin: 0 0 -15px 0;
+		padding: 0 8px;
+		border: 0 none;
+		text-align: right;
+		line-height: normal;
+
+		> .btn { margin: -4px 0 0 0; }
+	}
+
+	.counter-characters {
+		padding: 0 5px 0 0;
+
+		.label {
+			margin-left: 3px;
+			vertical-align: text-top;
+		}
+	}
+}
+
+.parent_description_block {
+	padding-bottom: 15px;
+
+	.remove_nested_fields { width: 100%; }
+}
+
+.select-span-arrow {
+  position: absolute;
+  margin-top: 4px;
+  right: 10px;
+  z-index: 99999;
+  .fa {
+    color: black !important;
+  }
+}

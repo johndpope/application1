@@ -1,0 +1,22 @@
+= render partial: "navigation"
+.row
+	.col-md-2
+		.box.box-solid
+			.box-header.with-border
+				%h3.box-title Subject Videos
+			.box-body.no-padding
+				%ul.nav.nav-pills.nav-stacked
+					- %w(subject_videos donor_videos).each do |e|
+						%li{class: ('active' if params[:action] == e)}
+							= link_to send("client_#{e}_path",client.id) do
+								= e.humanize
+								%span.pull-right.text-green
+									- if e == 'subject_videos'
+										= @client.source_videos.count
+									- else
+										%span{title: 'In Use'}= @client.client_donor_source_videos.size
+										\/
+										%span{title: 'Total'}= @client.donors.joins(:source_videos).count
+
+	.col-md-10
+		= yield

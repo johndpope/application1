@@ -1,0 +1,32 @@
+<% title 'Source Videos' %>
+
+<% breadcrumb :source_videos %>
+
+<div><%= paginate @source_videos, theme: 'bootstrap' %></div>
+
+<p><button id="add_video_script" class="btn btn-primary">Add</button></p>
+
+<table class="table table-bordered">
+<tr>
+	<th>ID</th>
+	<th>Internal Title</th>
+	<th class="text-center">Preview</th>				
+	<th class="text-center">Video Script</th>				
+	<th>Actions</th>
+	<th>Created at</th>				
+</tr>
+<% for video in @source_videos%>
+	<tr>
+		<td><%= video.id %></td>
+		<td><%= video.custom_title %></td>
+		<td class=" text-center">
+			<a href="#" title="Preview script body" data-toggle="modal"><span class="glyphicon glyphicon-search preview-script"></span></a>
+		</td>						
+		<td></td>
+		<td><%= link_to 'Edit', edit_source_video_path(video.id) %></td>
+		<td><%= video.created_at.strftime('%m-%d-%Y %R') %></td>			
+	</tr>
+<% end %>
+</table>
+
+<div><%= paginate @source_videos, theme: 'bootstrap' %></div>

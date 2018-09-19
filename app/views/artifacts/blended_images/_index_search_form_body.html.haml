@@ -1,0 +1,35 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :id_eq, t('artifacts.dynamic_image.id')
+			= sf.search_field :id_eq, class: 'form-control', placeholder: "id"
+		.col-md-2
+			= sf.label :title_cont, t('artifacts.dynamic_image.title')
+			= sf.search_field :title_cont, class: 'form-control', placeholder: "title"
+		.col-md-2
+			= sf.label :client_id, t('artifacts.dynamic_image.client_id')
+			- options = options_from_collection_for_select(Client.order(:name), :id, :name, @search.client_id_eq)
+			= sf.select :client_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :templates_image_template_type, t('artifacts.dynamic_image.template_type')
+			- types = Templates::ImageTemplate::TYPES.map{|type| [t("templates.image_template.types.#{type.split("::").last}"), type]}
+			= sf.select :image_template_type_eq, options_for_select(types, @search.image_template_type_eq),{include_blank: true, selected: @search.image_template_type_eq},{class: 'form-control'}
+		.col-md-2
+			= sf.label :templates_image_template_id, t('artifacts.dynamic_image.template_name')
+			- collection = {}
+			- types = Templates::ImageTemplate.all.collect{|k,v| k.type}.uniq.sort
+			- types.each do |t| collection[t("templates.image_template.types.#{t.gsub('Templates::', '')}")] = Templates::ImageTemplate.where(:type => t).order(:name).collect{|k,v| [k.name, k.id]} end
+			= sf.select :templates_image_template_id_eq, grouped_options_for_select(collection, @search.templates_image_template_id_eq),{include_blank: '', selected: @search.templates_image_template_id_eq},{class: 'form-control'}
+		.col-md-2
+	.row
+		.col-md-2
+			= sf.label :location_type, t('artifacts.dynamic_image.location_type')
+			- locales = Artifacts::DynamicImage.all.select("location_type").map{|type| type.location_type.blank?  ? "" : [t("geobase.#{type.location_type}"), type.location_type] }.uniq - [""]
+			= sf.select :location_type_eq, options_for_select(locales, @search.location_type_eq), {include_blank: true, selected: @search.location_type_eq}, class: "form-control"
+		.col-md-2
+			= sf.label :location_id,t('artifacts.dynamic_image.location_name')
+			- arr = {}
+			- geo_types = [["Geobase::Locality","Locality"],["Geobase::Region","Region"]]
+			- geo_types.each{|t,v| arr[v] = Artifacts::DynamicImage.where(:location_type => t.to_s).collect{|k| [t == "Geobase::Locality" ? Geobase::Locality.find(k.location_id).name : Geobase::Region.find(k.location_id).name, k.location_id]}.uniq }
+			= sf.select :location_id_eq, grouped_options_for_select(arr, @search.location_id_eq),{include_blank: true, selected: @search.location_id_eq},{class: 'form-control'}
+		.col-md-8

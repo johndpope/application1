@@ -1,0 +1,14 @@
+<% title 'Training infos' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<% if params[:group_name].present? %>
+	<%= render partial: 'training_infos/index_old' %>
+<% else %>
+	<%= render partial: 'training_infos/group_videos' %>
+<% end %>

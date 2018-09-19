@@ -1,0 +1,2 @@
+module Sandbox::ContentBlendersHelper
+end

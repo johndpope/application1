@@ -1,0 +1,43 @@
+.row
+	.col-md-1
+		.form-group
+			= label_tag '', 'ID'
+			%div= link_to @donor_source_video.id, edit_client_path(@donor_source_video.client.id), target: '_BLANK'
+	.col-md-4
+		.form-group
+			= label_tag '', 'Client Name'
+			%div= link_to @donor_source_video.client.name, edit_client_path(@donor_source_video.client.id), target: '_BLANK'
+	.col-md-4
+		.form-group
+			= label_tag '', 'Product'
+			%div= link_to @donor_source_video.product.name, edit_client_product_path(@donor_source_video.client.id, @donor_source_video.product.id), target: '_BLANK'
+	.col-md-3
+		.form-group
+			= label_tag '', 'Ready for Production'
+			%div
+				%span.label{class: "label-#{@donor_source_video.ready_for_production? ? 'success' : 'danger'}"}= t(@donor_source_video.ready_for_production? ? 'yes' : 'no')
+
+.row
+	.col-md-12
+		.form-group
+			= label_tag '', 'Internal Title'
+			%div= link_to @donor_source_video.custom_title, edit_client_path(@donor_source_video.client.id), target: '_BLANK'
+- unless @donor_source_video.location.nil?
+	.row
+		.col-md-12
+			.form-group
+				= label_tag '', 'Location'
+				%div= @donor_source_video.location.formatted_name(primary_region: true)
+.row
+	.col-md-12
+		.form-group
+			= label_tag '', 'Is Virtual'
+			%div
+				%span.label{class: "label-#{@donor_source_video.is_virtual? ? 'success' : 'danger'}"}= t(@donor_source_video.is_virtual? ? 'yes' : 'no')
+.row
+	.col-md-12
+		.form-group
+			= label_tag '', 'Use in Dyn. Projects only Subject Video specific Dynamic Text Strings'
+			%div
+				%span.label{class: "label-#{@donor_source_video.use_only_sv_specific_dyn_text_strings? ? 'success' : 'danger'}"}= t(@donor_source_video.use_only_sv_specific_dyn_text_strings? ? 'yes' : 'no')
+= render partial: 'source_videos/modal_dialog/form/tab_control/donor/media_block'

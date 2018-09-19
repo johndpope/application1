@@ -1,0 +1,20 @@
+.modal.fade#browse_images
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button.close{ type: 'button', data: { dismiss: 'modal' } }
+          %span &times;
+        %h4= 'Choose images from Artifacts'
+      .modal-body
+        .form-group
+          = label_tag '','Image'
+          .input-group
+            = text_field_tag :q, params[:q], class: "form-control"
+            .input-group-btn
+              %button.btn.btn-primary.search-btn#search-btn{ type: 'button', :data => {disable_with: t('searching')}}
+                = t('search')
+                = fa_icon 'search'
+        %div.pagination_count.pull-left
+        #search_results
+      .modal-footer
+        = button_tag 'Cancel', {:class => 'btn btn-primary',"data-dismiss" => "modal"}

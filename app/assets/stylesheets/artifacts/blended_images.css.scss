@@ -1,0 +1,29 @@
+.artifacts_blended_images{
+  &.index{
+    #artifacts_dynamic_image_items{
+      .id{width: 40px;}
+      .title{width: 400px;}
+      .client_id{width: 400px;}
+      .dynamic_image_preview{width: 50px;}
+      .texts_preview{width: 50px;}
+      .images_preview{width: 50px;}
+      .tags{width: 50px;}
+      .options{width: 50px;}
+    }
+
+    .livepreview {
+      width: 100px;
+      height: 100px;
+      position: relative;
+    }
+    .modal-dialog{
+      width: 50%;
+    }
+
+  }
+  #livepreview_dialog{position: absolute;}
+  #livepreview_dialog img{
+    border: 4px solid silver;
+    border-radius: 7px;
+  }
+}

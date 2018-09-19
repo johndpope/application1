@@ -1,0 +1,21 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :video_campaign_client_id, t('sandbox.video_campaign_video_stage.client')
+			- options = options_from_collection_for_select(Client.order(:name), :id, :name, @search.video_campaign_client_id_eq)
+			= sf.select :video_campaign_client_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :video_campaign_id, t('sandbox.video_campaign_video_stage.video_campaign_id')
+			= sf.hidden_field :video_campaign_id_eq, class: "form-control"
+			- current_video_campaign = if @search.video_campaign_id_eq.blank?; {}; else; Sandbox::VideoCampaign.find_by_id(@search.video_campaign_id_eq); end
+			= hidden_field_tag '', current_video_campaign.to_json(only: [:id, :title]), id: "current_video_campaign_json"
+		.col-md-2
+			= sf.label :title_cont, t('sandbox.video.title')
+			= sf.search_field :title_cont, class: "form-control"
+		.col-md-2
+			= sf.label :is_active_eq, t('sandbox.video.is_active')
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= sf.select :is_active_eq, options_for_select(yes_no_options, @search.is_active_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :id_eq, t('sandbox.video.id')
+			= sf.search_field :id_eq, class: 'form-control'

@@ -1,0 +1,3 @@
+- centered_columns = %w(id)
+- %w(id name).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("make.#{c}")

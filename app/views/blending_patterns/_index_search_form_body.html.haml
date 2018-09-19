@@ -1,0 +1,17 @@
+- content_for(:javascripts){javascript_include_tag "blending_patterns/index_search_form"}
+- product = Product.find_by_id(search.product_id_eq)
+- source_video = SourceVideo.find_by_id(search.source_video_id_eq)
+= hidden_field_tag '', (product.blank? ? "{}" : product.to_json(only:[:id, :name])), id: 'search_form_product_json'
+= hidden_field_tag '', (source_video.blank? ? "{}" : source_video.to_json(only:[:id, :custom_title])), id: 'search_form_source_video_json'
+.form-group
+	.row
+		.col-md-3
+			= sf.label :client_id, "Client"
+			- options = options_from_collection_for_select(Client.order(:name), :id, :name, @search.client_id_eq)
+			= sf.select :client_id_eq, options, {include_blank: true}, class: "form-control blending_pattern_client_id"
+		.col-md-3
+			= sf.label :client_id, "Campaign"
+			= sf.hidden_field :product_id_eq, class: "form-control blending_pattern_product_id"
+		.col-md-3
+			= sf.label :client_id, "Subject Video"
+			= sf.hidden_field :source_video_id_eq, class: "form-control blending_pattern_source_video_id"

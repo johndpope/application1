@@ -1,0 +1,157 @@
+- header t('artifacts.upload_local_files')
+- breadcrumb :artifacts_image_upload, theme: "bootstrap"
+- content_for(:stylesheets) do
+  = stylesheet_link_tag 'jquery.fileupload'
+  = stylesheet_link_tag 'jquery.fileupload-ui'
+- content_for(:javascripts){javascript_include_tag 'jquery-fileupload'}
+- yes_no_options = [[t('yes'), true],[t('no'), false]]
+
+.row
+  .col-md-3
+    .form-group
+      = label_tag 'Country'
+      - default_country = Geobase::Country.find_by_code("US")
+      - unless default_country == nil
+        = hidden_field_tag('country', default_country.id, class: "form-control", data: {name: default_country.name})
+  .col-md-3
+    .form-group
+      = label_tag 'State'
+      = hidden_field_tag('region1', '', class: "form-control")
+  .col-md-3
+    .form-group
+      = label_tag 'County'
+      = hidden_field_tag('region2', '', class: "form-control")
+  .col-md-3
+    .form-group
+      = label_tag 'City'
+      = hidden_field_tag('city', '', class: "form-control")
+
+.row
+  .col-md-3
+    .form-group
+      = label_tag 'tags', 'Tags'
+      = text_field_tag 'tags', '', class: "form-control"
+      %p.help-block Tags should be separated by commas
+  - help_blocks = {reusable: 'Image can be used for any clients', broadcaster_property: 'Image is created or bought for broadcaster'}
+  - %w(reusable broadcaster_property).each do |p|
+    .col-md-3
+      .form-group
+        = label_tag p, t("artifacts.images.#{p}")
+        = select_tag p, options_for_select(yes_no_options, %w(reusable).include?(p) ? true: nil), include_blank: true
+        %p.help-block= help_blocks[p.to_sym]
+.row
+  .col-md-3
+    .form-group
+      = label_tag 'client_id', 'Client', class: "control-label"
+      = select_tag 'client_id', options_from_collection_for_select(Client.order(:name), "id", "name"), include_blank: true
+      %p.help-block Select client just in case when images are specific to particular client
+  .col-md-3
+    .form-group
+      = label_tag 'product_id', 'Product', class: "control-label"
+      = select_tag 'product_id', options_from_collection_for_select(Product.order(:name), "id", "name"), include_blank: true
+  .col-md-3
+    .form-group
+      = label_tag 'industry_image', 'Industry'
+      = text_field_tag('industry_image', '', class: 'form-control')
+.row
+  .col-md-12
+    .form-group
+      = label_tag "use for landing pages", "Use for landing pages"
+      = check_box_tag "use_for_landing_pages", '', false, class: "special_tag"
+  .col-md-12
+    .form-group
+      = hidden_field_tag "special_tags", ""
+      .checkbox
+        = label_tag '', class: "control-label" do
+          Is Icon
+          = check_box_tag "is_icon", "st_icon", false
+      #icon_tags{style: "display:none"}
+        - Artifacts::Image::SPECIAL_TAGS[:icon_tags][:tag_groups].each do |tg_key, tg_values|
+          .tag_group
+            .row
+              .col-md-2
+                .form-group
+                  = label_tag do
+                    = tg_key.to_s.humanize
+                    = check_box_tag "#{tg_key}_special_tag", tg_key, false, class: "special_tag"
+              .col-md-10{:id => "#{tg_key}_box", :style => "display: none"}
+                - tg_values.each do |tg_value|
+                  - if tg_value != 'st_industry_icon'
+                    - if tg_value == 'st_call_to_action_icon'
+                      .col-md-2
+                        .form-group
+                          = label_tag "#{tg_value}", t("artifacts.images.special_tags.#{tg_value}")
+                          = check_box_tag t("artifacts.images.special_tags.#{tg_value}"), tg_value, false, class: "special_tag"
+                      .col-md-2{:id => "call_to_action_box", :style => "display: none"}
+                        .form-group
+                          = label_tag "common", "Common"
+                          = check_box_tag "common", 'common', false, class: "special_tag"
+                        .form-group
+                          = label_tag "political", "Political"
+                          = check_box_tag "political", 'political', false, class: "special_tag"
+                        .form-group
+                          = label_tag "charity", "Charity"
+                          = check_box_tag "charity", 'charity', false, class: "special_tag"
+                        .form-group
+                          = label_tag "you tube", "You Tube"
+                          = check_box_tag "you tube", 'you tube', false, class: "special_tag"
+                      .col-md-2{:id => "product_services"}
+                        .form-group
+                          = label_tag "products_and_services", "Produsts & Services"
+                          = check_box_tag "products_and_services", 'products_and_services', false, class: "special_tag"
+                    - else
+                      %div{:id => "#{tg_value}_box"}
+                        .col-md-2
+                          .form-group
+                            = label_tag "#{tg_value}", t("artifacts.images.special_tags.#{tg_value}"), class: "control-label"
+                            = check_box_tag t("artifacts.images.special_tags.#{tg_value}"), tg_value, false, class: "special_tag"
+.row
+  .col-md-6
+    .form-group
+      = label_tag 'notes', 'Notes'
+      = text_area_tag 'notes', '', class: 'form-control', rows: 3
+
+.row
+  .col-md-6
+    .form-group
+      = label_tag 'rating', 'Rating for uploaded images'
+      = hidden_field_tag :rating, "", class: "form-control"
+      .rating_block
+      - 5.times do |i|
+        = link_to 'javascript://', class: "image_rating", data: {index: i} do
+          = fa_icon 'star-o 2x'
+      %p.help-block Set image rating
+
+.row
+  - Artifacts::ImageCategory.where(:parent_id => nil).each do |category|
+    .category_col
+      .form-group
+        = label_tag category.name, category.name
+        %br
+        - Artifacts::ImageCategory.where(:parent_id => category.id).each do |sub_category|
+          = check_box_tag sub_category.id, sub_category.id, false, class: "image_categories"
+          = label_tag sub_category.id, sub_category.name, class: "image_categories_label"
+          %br
+
+= form_for Artifacts::Image.new, url: upload_artifacts_images_path, :html => { :multipart => true, :id => "fileupload"  } do |f|
+  .row{class: "fileupload-buttonbar"}
+    .col-md-7
+      %span{class: "btn btn-success fileinput-button"}
+        %i{class: "icon-plus icon-white"}
+        %span= t('browse')
+        = f.file_field :file, multiple: true, accept: 'image/png,image/gif,image/jpeg, image/jpg, image/svg'
+      %button{type: "submit", class:"btn btn-primary start"}
+        %i{class:"icon-upload icon-white"}
+        %span= t('start_all')
+      %button{type:"reset", class:"btn btn-warning cancel"}
+        %i{class:"icon-ban-circle icon-white"}
+        %span= t('cancel_all')
+    .col-md-5
+      .progress{class: "progress progress-success progress-striped active fade"}
+        .bar{style: "width:0%;"}
+  .fileupload-loading
+  %br
+  %table{class:"table table-striped"}
+    %tbody{class: "files", data: {toggle: "modal-gallery", target: "#modal-gallery"}}
+
+= render partial: "local_import_templates"

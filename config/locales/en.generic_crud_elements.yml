@@ -1,0 +1,24 @@
+en:
+  created_at: Created At
+  updated_at: Updated At
+  last_changed_by: Last Changed By
+  add: Add
+  adding: Adding ...
+  create: Create
+  creating: Creating ...
+  update: Update
+  updating: Updating ...
+  save: Save
+  saving: Saving ...
+  close: Close
+  new: New
+  edit: Edit
+  remove: Remove
+  removing: Removing ...
+  delete: Delete
+  deleting: Deleting ...
+  filter: Filter
+  search_conditions: Search Conditions
+  applying_filter: Applying Filter...
+  search: "Search"
+  searching: "Searching ..."

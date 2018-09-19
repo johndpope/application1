@@ -1,0 +1,46 @@
+.modal.fade{id:"how_to_obtain_refresh_token_modal", role:"dialog", "aria-labelledby"=>"hot_to_obtain_refresh_token_btn"}
+	.modal-dialog{role:"document"}
+		.modal-content
+			.modal-header
+				= link_to class:"close", data:{dismiss:"modal"}, "aria-label"=>"Close" do
+					%span{"aria-hidden"=>"true"}
+						&times;
+				%h4.modal-title{id:"myModalLabel"}How to obtain Refresh Token
+			.modal-body
+				.carousel.slide{id:"carousel", data:{ride:"carousel"}}
+					%ol.carousel-indicators
+						%li.active{data:{target:"#carousel", "slide-to"=>"0"}}
+						%li{data:{target:"#carousel", "slide-to"=>"1"}}
+						%li{data:{target:"#carousel", "slide-to"=>"2"}}
+					.carousel-inner{role:"listbox"}
+						.item.active
+							%img{alt:"500x600", src:"/sandbox/youtube_package/step-1.jpeg"}
+							.carousel-caption
+								%h3
+									Step1
+								%div
+									Choose your Google Account and sign in
+						.item
+							%img{alt:"500x600", src:"/sandbox/youtube_package/step-2.jpeg"}
+							.carousel-caption
+								%h3
+									Step 2
+								%div
+									Choose your Youtube Account. In case if you have several accounts, choose necessary one
+						.item
+							%img{alt:"500x600", src:"/sandbox/youtube_package/step-3.jpeg"}
+							.carousel-caption
+								%h3
+									Step 3
+								%div
+									Give us requesting rights and click "Allow"
+
+					= link_to '#carousel', class:"left carousel-control", role:"button", data:{slide:"prev"} do
+						%span.glyphicon.glyphicon-chevron-left{"aria-hidden"=>"true"}
+						%span.sr-only Previous
+
+					= link_to "#carousel", class:"right carousel-control", role:"button", data:{slide:"next"} do
+						%span.glyphicon.glyphicon-chevron-right{"aria-hidden"=>"true"}
+						%span.sr-only Next
+			.modal-footer
+				= link_to 'Close', 'javascript://', class:"btn btn-primary", data:{dismiss:"modal"}

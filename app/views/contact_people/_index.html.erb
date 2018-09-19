@@ -1,0 +1,20 @@
+<div id="contact_people_list">
+  <div class="box box-info">
+    <div class="box-header with-border">
+      <h3 class="box-title"><i class="fa fa-user"></i> <b>Contact Persons</b></h3>
+      <div class="box-tools pull-right">
+        <%= link_to '<i class="fa fa-plus-circle"></i> Add'.html_safe, new_contact_person_path(resource_id: @contact_person_resource_id, resource_type: @contact_person_resource_type), remote: true , class: 'btn btn-sm btn-primary', style: "margin-right: 10px;", title: "Add contact person" %>
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+      </div>
+    </div>
+    <div id="contact_people_table" class="box-body">
+      <% unless contact_people.to_a.empty? %>
+				<% contact_people.each_with_index do |contact_person, index| %>
+					<%= render partial: 'contact_people/contact_person_row', locals: {contact_person: contact_person} %>
+				<% end %>
+    	<% end %>
+      <p id="no_items_tr" class="text-center" style="<%= 'display: none' unless contact_people.to_a.empty? %>">No items available</p>
+    </div>
+  </div>
+</div>

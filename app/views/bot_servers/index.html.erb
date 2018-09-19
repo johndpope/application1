@@ -1,0 +1,128 @@
+<% title 'Bot servers' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i><%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+
+<div id="bot_servers_list">
+	<div class="row">
+		<div class="col-md-5">
+			<%= link_to '<i class="fa fa-plus"></i> New bot server'.html_safe, new_bot_server_path, class: 'btn btn-sm btn-primary' %>
+      <%= link_to '<i class="fa fa-play"></i> Enable & run all'.html_safe, enable_and_run_bot_servers_path, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-success" %>
+      <%= link_to '<i class="fa fa-stop"></i> Turn off & clear all'.html_safe, turn_off_activity_and_clear_queue_bot_servers_path, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @bot_servers.total_count %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @bot_servers.to_a.empty? %>
+		<table id="bot_servers_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="text-center">ID</th>
+					<th>Name</th>
+					<th>Path</th>
+					<th class="text-center">Active threads updated at</th>
+          <th class="text-center">Daily activity status</th>
+          <th class="text-center">Accounts in queue</th>
+          <th class="text-center">Total accounts assigned</th>
+          <th class="text-center">Updated at</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @bot_servers.each do |bot_server| %>
+					<tr>
+						<td class="text-center"><%=bot_server.id %></td>
+						<td><%=bot_server.name %></td>
+						<td><%=bot_server.path %></td>
+						<td class="text-center"><%= local_time(bot_server.active_threads_updated_at, format: '%m/%d/%y %I:%M %p', title: bot_server.active_threads_updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if bot_server.active_threads_updated_at.present? %></td>
+            <td class="text-center">
+              <% if bot_server.human_emulation %>
+                <div class="btn-group btn-group-custom">
+                  <% if bot_server.daily_activity_enabled %>
+                    <%= link_to 'ON', turn_daily_activity_bot_server_path(bot_server), class: 'btn btn-success btn-xs turn-daily-activity', title: 'Click to switch' %>
+                  <% else %>
+                    <%= link_to 'OFF', turn_daily_activity_bot_server_path(bot_server), class: 'btn btn-danger btn-xs turn-daily-activity', title: 'Click to switch' %>
+                  <% end %>
+                </div>
+              <% else %>
+                <span>-</span>
+              <% end %>
+            </td>
+            <td class="text-center"><%= GoogleAccountActivity.includes(google_account:[email_account:[:bot_server]]).where("bot_servers.id = ? AND google_account_activities.linked IS NOT TRUE", bot_server.id).references(google_account:[email_account:[:bot_server]]).size.to_s(:delimited) %></td>
+            <td class="text-center"><%= link_to bot_server.email_accounts.size.to_s(:delimited), email_accounts_path(bot_server_id: bot_server.id), target: "_blank" %></td>
+            <td class="text-center"><%= local_time(bot_server.updated_at, format: '%m/%d/%y %I:%M %p', title: bot_server.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if bot_server.updated_at.present? %></td>
+						<td class="text-center actions">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_bot_server_path(bot_server), { class: 'btn btn-xs btn-primary' } %>
+                <% if bot_server.human_emulation %>
+                  <%= link_to 'Clear queue', clear_daily_activity_queue_bot_server_path(bot_server), class: 'btn btn-xs btn-warning', data: { confirm: 'Are you sure?' } %>
+                  <% if bot_server.daily_activity_enabled %>
+                    <%= link_to 'Run activity', run_daily_activity_bot_server_path(bot_server), class: 'btn btn-xs btn-success', data: { confirm: 'Are you sure?' } %>
+                    <%= link_to 'Run in batch', run_in_batch_daily_activity_bot_server_path(bot_server), class: 'btn btn-xs btn-info', data: { confirm: 'Are you sure?' } %>
+                  <% end %>
+                <% end %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, bot_server, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger', style: "display: none;" %>
+                <%= link_to '<i class="fa fa-power-off"></i> Start Zenno'.html_safe, start_zenno_bot_server_path(bot_server), data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-success' %>
+                <%= link_to '<i class="fa fa-power-off"></i> Kill Zenno'.html_safe, kill_zenno_bot_server_path(bot_server), data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+  <div><%= paginate @bot_servers, theme: 'bootstrap' %></div>
+
+	<% if @bot_servers.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :name, :updated_at, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :created_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({ action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+      <div class="filter-label">Name:</div>
+      <%= search_field_tag :name, params[:name], class: 'form-control' %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

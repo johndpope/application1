@@ -1,0 +1,144 @@
+<%= form_for @bot_server do |f| %>
+  <div class="row">
+    <% if @bot_server.errors.any? %>
+      <div class="col-md-12">
+        <div id="error_explanation" class="alert alert-danger alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@bot_server.errors.count, 'error') %> prohibited this bot server from being saved</h4>
+        </div>
+      </div>
+    <% end %>
+    <div class="col-md-12">
+      <div class="form-group <%= 'has-error' if @bot_server.errors[:name].present? %>" data-content="<%= @bot_server.errors[:name].try(:join, ',') %>">
+        <%= f.label :name, class: 'control-label' %>
+        <%= f.text_field :name, class: 'form-control', placeholder: "Name" %>
+      </div>
+      <div class="form-group <%= 'has-error' if @bot_server.errors[:path].present? %>" data-content="<%= @bot_server.errors[:path].try(:join, ',') %>">
+        <%= f.label :path, class: 'control-label' %>
+        <%= f.text_field :path, class: 'form-control', placeholder: "Path" %>
+      </div>
+      <label class="control-label">TARGETS</label>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <div class="checkbox">
+            <label><%= f.check_box :human_emulation, class: 'iCheck-helper' %> For human emulation</label>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <div class="checkbox">
+            <label><%= f.check_box :has_threads_data, class: 'iCheck-helper' %> Has threads data</label>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <div class="checkbox">
+            <label><%= f.check_box :has_hardware_data, class: 'iCheck-helper' %> Has hardware data</label>
+          </div>
+        </div>
+      </div>
+      <div id="for_human_emulation" style="<%= 'display: none;' unless @bot_server.human_emulation %>">
+        <label class="control-label">DAILY ACTIVITY</label>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :daily_activity_enabled, class: 'iCheck-helper' %> Daily activity enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :auto_clear_daily_activity_queue, class: 'iCheck-helper' %> Auto clear daily activity queue</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :recovery_accounts_activity_enabled, class: 'iCheck-helper' %> Recovery accounts activity enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :recovery_bot_running_status, class: 'iCheck-helper' %> Recovery bot running status</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :recovery_accounts_batch_activity_enabled, class: 'iCheck-helper' %> Recovery accounts batch activity enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :recovery_phone_assign_enabled, class: 'iCheck-helper' %> Recovery phone assign enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :recovery_answers_checker_enabled, class: 'iCheck-helper' %> Recovery answers checker enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :recovery_email_sync_enabled, class: 'iCheck-helper' %> Recovery email sync enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :youtube_channel_recovery, class: 'iCheck-helper' %> Youtube channel recovery</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :security_checkup_enabled, class: 'iCheck-helper' %> Security checkup enabled</label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :only_priority_tasks, class: 'iCheck-helper' %> Only priority tasks</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <% %w(accounts_assign_recovery_phone_per_day_per_phone start_business_working_hour end_business_working_hour account_logins_per_day minimum_working_hours check_interval).each do |field| %>
+            <div class="form-group col-md-4" style="padding-left: 40px;">
+              <%= f.label :"#{field}", class: 'control-label' %>
+              <%= f.number_field :"#{field}", class: 'form-control numeric positive-numeric' %>
+            </div>
+          <% end %>
+        </div>
+        <label class="control-label">YOUTUBE PRODUCTION</label>
+        <div class="row">
+          <% %w(create_youtube_business_channel verify_youtube_business_channel fill_youtube_business_channel youtube_video_delete youtube_video_info youtube_video_upload youtube_website_associate youtube_video_card_add adwords_campaign_add adwords_campaign_group_add call_to_action_overlay_add google_plus_video_add youtube_video_status youtube_video_search_rank).each do |field| %>
+          <div class="form-group col-md-4">
+            <div class="checkbox">
+              <label><%= f.check_box :"#{field}", class: 'iCheck-helper' %> <%= "#{field.humanize} enabled"%></label>
+            </div>
+          </div>
+          <% end %>
+        </div>
+        <div class="row">
+          <% %w(videos cards adwords_campaigns adwords_campaign_groups call_to_actions videos_on_google_plus).each do |field| %>
+            <div class="col-md-4 form-group" style="padding-left: 40px;">
+              <%= f.label :"#{field}_to_post_range", class: 'control-label' %>
+              <div class="form-group">
+                <% %w(minimum maximum).each_with_index do |r, index| %>
+                  <div class="col-md-4">
+                    <%= f.number_field :"#{r}_#{field}_to_post", class: 'form-control numeric positive-numeric', title: "#{r.titleize} #{field} to post" %>
+                  </div>
+                  <% if index == 0 %>
+                    <div class="col-md-1">
+                      <span class="text-center" style="vertical-align: middle; font-weight: bold; font-size: 22px;"> : </span>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="form-group col-md-12">
+        <div class="actions pull-right">
+          <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, bot_servers_path, class: 'btn btn-sm btn-primary' %>
+          <%= f.submit :class => 'btn btn-sm btn-success', :id => 'bot_server_submit' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

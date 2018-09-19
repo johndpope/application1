@@ -1,0 +1,8 @@
+%td.status
+  - unless blended_video.workflow_status.blank?
+    - is_accepted = blended_video.workflow_status['all_segments_approved'] == true
+    - is_rejected = blended_video.workflow_status['some_segments_rejected'] == true
+    - if is_accepted || is_rejected
+      - label_class = is_accepted ? 'success' : 'danger'
+      - label_text = is_accepted ? 'Accepted' : 'Rejected'
+      %span.label{class: "label-#{label_class}"}= label_text

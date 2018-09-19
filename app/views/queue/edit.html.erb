@@ -1,0 +1,37 @@
+<% title params[:name].humanize.titleize + ' Queue' %>
+<% content_for :header do %>
+  <h1 class="pull-left"><%= params[:name].humanize.titleize + ' Queue' %></h1>
+  <div class="actions pull-right">
+    <% if !@job.completed %>
+      <%= link_to 'Submit & Stop', "javascript://", class: 'btn btn-primary btn-sm', style: "font-variant: small-caps;", onclick: "$('#submit_and_stop').click();" %>
+      <%= link_to 'Submit & Next', "javascript://", class: 'btn btn-success btn-sm', style: "font-variant: small-caps;", onclick: "$('#submit_and_next').click();" %>
+    <% else %>
+      <%= link_to '<i class="fa fa-chevron-left"></i> Back'.html_safe, index_queue_path(name: params[:name]), class: "btn btn-primary btn-sm", style: "font-variant: small-caps;" %>
+    <% end %>
+  </div>
+  <br/>
+<% end %>
+<%= form_for @job, url: { action: 'submit' } do |f| %>
+  <%= hidden_field_tag :utc_offset %>
+  <% if File.exists? (Rails.root.join('app', 'views', 'queue', 'kind', "_#{params[:name]}.html.erb")) %>
+    <%= render partial: "queue/kind/#{params[:name]}", locals: { job: @job } %>
+    <div class="row">
+      <div class="form-group col-md-12">
+        <div class="actions pull-right">
+          <% if !@job.completed %>
+            <%#= link_to 'Stop', index_queue_path(name: params[:name]), class: "btn bg-aqua-active", style: "font-variant: small-caps;" %>
+            <%= f.submit 'Submit & Stop', id: "submit_and_stop", class: 'btn btn-primary btn-lg', style: "font-variant: small-caps;", data: {confirm: 'Are you sure?'} %>
+            <%= f.submit 'Submit & Next', id: "submit_and_next", class: 'btn btn-success btn-lg', name: 'next', style: "font-variant: small-caps;", data: {confirm: 'Are you sure?'} %>
+          <% else %>
+            <%= link_to '<i class="fa fa-chevron-left"></i> Back'.html_safe, index_queue_path(name: params[:name]), class: "btn btn-primary btn-lg", style: "font-variant: small-caps;" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div id="notice_explanation" class="alert alert-danger alert-dismissable">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+      <h4><i class="icon fa fa-exclamation-circle"></i> Missing partial for this resource</h4>
+    </div>
+  <% end %>
+<% end %>

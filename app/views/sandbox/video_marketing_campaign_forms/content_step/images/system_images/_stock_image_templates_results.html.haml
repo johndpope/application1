@@ -1,0 +1,13 @@
+#stock_image_templates_results.row
+	- if stock_image_templates.to_a.any?
+		- stock_image_templates.each do |image|
+			.col-md-2
+				.box{id:"stock_image_template_#{image.id}", class:"box-solid box-primary artifacts_image", data:{id: "#{image.id}"}}
+					.box-body
+						.parent
+							- src = image.sample.url(:thumb)
+							- src_original = image.sample.url(:original)
+							= link_to(src_original, class: "image-preview", target: "_blank", title: image.name) do
+								= image_tag src, class: "img-thumbnail"
+							= link_to 'javascript://', title: 'Delete', class: 'delete-image-template' do
+								= fa_icon 'times', :class => 'text-danger'

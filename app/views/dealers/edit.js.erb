@@ -1,0 +1,23 @@
+<%
+  modal = render partial: 'form', locals: {dealer: dealer}
+  modal_dom_id = dom_id(dealer, 'modal')
+%>
+
+$("#<%= modal_dom_id %>").remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+$('.has-error').popover({
+  trigger: 'hover',
+  placement: 'bottom',
+  animation: true
+});
+$('#dealer_brand_id').autocomplete({ source: $('#brand_list').val().split('<sep/>') });
+$('.phone').inputmask("mask", {"mask": "(999)-999-9999 [x99999]"});
+$('.animationload').hide();
+$('.carousel').carousel({
+  interval: false,
+  ride: false
+});

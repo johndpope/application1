@@ -1,0 +1,8 @@
+<%
+	modal_id = dom_id(@blended_video_chunk, 'notes_modal')
+	modal = render partial: 'clients/video_workflow/video_set_block/notes_modal_dialog', locals: {blended_video_chunk: @blended_video_chunk}
+%>
+$('body').remove('#<%= modal_id%>').append('<%= escape_javascript(modal) %>');
+$('#<%=modal_id%>').modal({show: true}).on('hidden.bs.modal', function(e){
+    $(this).remove()
+})

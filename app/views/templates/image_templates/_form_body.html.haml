@@ -1,0 +1,63 @@
+- options = Templates::ImageTemplate::TYPES.map{|template_type| [t("templates.image_template.types.#{template_type.gsub("Templates::","")}"), template_type]}
+- category_options = Templates::ImageTemplate::CATEGORIES.map{|k,v| [t("models.templates.image_template.categories.#{k}"), v]}
+.nav-tabs-custom
+	%ul.nav.nav-tabs
+		%li.active= link_to 'Image Templates','#image_templates', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+		- unless f.object.new_record?
+			%li= link_to 'Project Items Settings','#project_items_settings', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+	.tab-content
+		.tab-pane{class: "active", id: "image_templates"}
+			#image_templates
+				.control-box
+					.col-md-12{class: 'form-group'}
+						= f.label :name
+						= f.text_field :name, class: "form-control", placeholder: "enter template name"
+				.control-box
+					.col-md-4{class: 'form-group'}
+						= f.label :type
+						= f.select :type, options_for_select(options, f.object.type), {include_blank: true}, class: "form-control"
+					.col-md-4{class: 'form-group'}
+						= f.label :client_id
+						- clients = Client.order(:name)
+						= f.select :client_id, options_from_collection_for_select(clients, :id, :name, f.object.client_id), {include_blank: true}, class: "form-control"
+					.col-md-4{class: 'form-group'}
+						= f.label :product_id
+						- products = Product.all
+						= f.select :product_id, options_from_collection_for_select(products, :id, :name, f.object.product_id), {include_blank: true}, class: "form-control"
+				.control-box
+					.col-md-4
+						= f.label :category
+						= f.select :category, options_for_select(category_options, f.object.category.try(:value)), {include_blank: true}, class: "form-control"
+				.control-box
+					.col-md-12{class: 'form-group'}
+						= f.label :is_active, class: 'control-label'
+						= f.check_box :is_active
+				.control-box
+					.col-md-6{class: 'form-group'}
+						= f.label :sample, class: 'control-label'
+						= f.file_field :sample, accept: 'image/png,image/gif,image/jpeg', id: 'sample_file_field'
+					.col-md-6{class: 'form-group'}
+						= f.label :svg, class: 'control-label'
+						= f.file_field :svg, accept: 'image/svg+xml', class: '', id: 'svg_file_field'
+
+				.control-box
+					.col-md-6{class: 'form-group'}
+						= label_tag nil, 'Current Sample Image'
+						%div= image_tag f.object.sample.url(:thumb), class: 'img-responsive, img-thumbnail', id: 'sample_preview', style: 'width: 250px;', alt: 'no sample img'
+					.col-md-6{class: 'form-group'}
+						= label_tag nil, 'Current Svg Template'
+						%div= image_tag f.object.svg.url, class: 'img-responsive, img-thumbnail', id: 'svg_preview', style: 'width: 250px;', alt: 'no svg img'
+
+				%div{style: "clear:both"}
+			%br
+			.control-box{class: 'form-group'}
+				#fields{class: 'panel'}
+					.col-md-12
+						#texts_fields
+					.col-md-12
+						#images_fields
+					%div{style: "clear:both"}
+
+		- unless f.object.new_record?
+			.tab-pane{id: "project_items_settings"}
+				= render partial: 'items_form', locals: {f: f}

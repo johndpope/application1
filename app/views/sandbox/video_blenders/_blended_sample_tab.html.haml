@@ -1,0 +1,86 @@
+.row.allUnits
+	.col-md-3
+		.title-block
+			%h2
+				%b Snippet
+				%span.font_red_no-weight Library
+		.au-movies
+			- unless @locations.to_a.empty?
+				- location_options = @locations.map{|l|[l.formatted_name(primary_region: true, primary_region_code: true), "#{l.class.name.to_s.underscore.gsub('/','_')}_#{l.id}"]}
+				= select_tag('localities', options_for_select(location_options), { include_blank: true, class: 'selectCity' })
+			.blockInformation-gray
+				%p Drag video chunks to the TimeLine block
+				= link_to class: "help_link" do
+					= fa_icon "info-circle"
+			- videos = @video_set.get_videos.where.not(video_file_name: nil).group_by(&:video_type)
+			- transitions = @video_set.get_transitions.where.not(video_file_name: nil).group_by(&:video_type)
+			.gallery
+				%ul.nav
+					- unless videos.blank?
+						%li.active
+							= link_to '#video-fragments', data:{toggle: :tab} do
+								%b Video
+								Chunks
+					- unless transitions.blank?
+						%li
+							= link_to '#transition-fragments', data: {toggle: :tab} do
+								%b Transitions
+				.tab-content.excerpts
+					- media_types = {"video" => "video_chunk", "transition" => "transition"}
+					- %w(video transition).each_with_index do |t, index|
+						- if grouped_videos = eval(t.pluralize)
+							.tab-pane.fade{id: "#{t}-fragments", class: ("in active" if index == 0)}
+								= render partial: 'sandbox/video_blenders/blended_sample/video_snippet', locals: { media_type: media_types[t],
+									grouped_videos: grouped_videos,
+									data_action_prefix: t }
+	.col-md-9.player
+		.title-block
+			%h2
+				%b Blended
+				%span.font_red_no-weight Sample
+		.video-border
+			%video.video-js.vjs-default-skin#video1{controls: "controls", preload: "auto", data: {setup: "{}"}}
+				%source{src: @blended_video_src, type: "video/mp4"}
+		= render partial: 'sandbox/video_blenders/blended_sample/gid_popover'
+
+	.col-md-9
+		.row.video_pattern
+			.col-md-2
+				= link_to refresh_pattern_sandbox_client_video_blenders_path, class: "refresh_pattern btn btn-different btn-sm btn-red", data: {remote: true, "disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i> Pattern'} do
+					= fa_icon 'refresh 2x spin-hover'
+					= "Pattern"
+			.col-md-10
+				.video_pattern_title_block
+					%h2
+						%b Video
+						%span.font_red_no-weight Pattern
+				.video_pattern_items_block
+					- unless @pattern.blank?
+						- @pattern.each_with_index do |v,i|
+							%span.label.ytb_pattern{class: "label-#{v == 'subject' ? "info" : "default"}"}= I18n.t("templates.video_types.#{v.to_s}")
+					- else
+						= "No patterns"
+		.title-block
+			%h2
+				%b Time
+				%span.font_red_no-weight Line
+		.statistics
+			.pull-left{style: "margin-top: 20px;"}
+				Sample timeline
+				- unless @locations.try(:first).blank?
+					generated for
+					= @locations.try(:first).formatted_name(primary_region: true, primary_region_code: true)
+			.pull-left.info
+				%div
+					Total time:
+					%span#timeline_total_time
+					&nbsp;|&nbsp;Components number:
+					%span#timeline_elements_nr
+
+			= link_to 'javascript:', id: "timelineClearAll", class: "btn btn-different btn-red" do
+				= fa_icon 'close'
+				= "Clear"
+			= link_to 'javascript:', id: "btn_download", class: "btn btn-different btn-green btn-ico" do
+				= fa_icon 'download'
+
+		= render partial: 'sandbox/video_blenders/blended_sample/timeline', locals: {pattern: @default_blending_pattern}

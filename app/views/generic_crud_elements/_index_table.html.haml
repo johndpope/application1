@@ -1,0 +1,19 @@
+.box
+  .box-header
+    - unless @index_table_header.blank?
+      %h3.box-title= @index_table_header
+    .box-tools
+      %strong= @items.total_count
+      items totally
+  .box-body
+    .table-responsive
+      %table.table{class: "table-bordered table-hover table-striped", id: "#{@clazz.to_s.underscore.gsub('/','_')}_items"}
+        %tbody.thead
+          = render partial: "generic_crud_elements/index_table_header"
+        %tbody.tbody
+          - @items.to_a.each_with_index do |item, index|
+            = render partial: "generic_crud_elements/index_table_row", locals: {item: item, row_nr: (index + 1)}
+        - if @items.to_a.any?
+          %tbody.tfoot
+            = render partial: "generic_crud_elements/index_table_header"
+    = paginate @items, theme: 'bootstrap'

@@ -1,0 +1,45 @@
+.modal.fade{ id: 'select_image_modal_dialog' }
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button.close{ type: 'button', data: { dismiss: 'modal' } }
+          %span &times;
+        %h4= t('artifacts.dynamic_image.choose_image')
+      .modal-body
+        = form_tag artifacts_image_blender_search_path, method: "get", authenticity_token: true, id: "search_image_form", data:{image_trigger: image_field, remote: true} do |f|
+          %ul.nav.nav-tabs
+            %li.active= link_to t('artifacts.dynamic_image.choose_images'),'#images', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+            %li= link_to t('artifacts.dynamic_image.choose_logo'), '#logo', data: {toggle: 'tab'}, 'aria-expanded' => "false"
+          .tab-content
+            .tab-pane{class: "active", id: "images"}
+              .row
+                .col-md-2
+                  - groups = []
+                  - (1..30).to_a.each{|q| groups.push(q) unless q%3 != 0}
+                  = label_tag "limit", "Limit"
+                  = select_tag "limit", options_for_select(groups), include_blank: true, class: 'form-control', data: {url: artifacts_image_blender_search_path, remote: true}
+                .col-md-4
+                  - options = [["st_icon".humanize, true]]
+                  = label_tag '',t('artifacts.dynamic_image.type')
+                  = select_tag "q[is_special_eq]", options_for_select(options),include_blank: true, class: 'form-control types', id: 'is_special_eq'
+                .col-md-4
+                  = label_tag '',t('artifacts.dynamic_image.image')
+                  = text_field_tag "q[title_or_description_or_tags_name_or_country_or_region1_or_region2_or_city_cont]", nil, class: 'form-control',id: 'search_criteria',data:{name: "q[title_or_description_or_tags_name_or_country_or_region1_or_region2_or_city_cont]"}, placeholder: 'Search Criteria ...'
+                .col-md-2
+                  %button.btn.btn-success.search-btn{ type: 'submit', :data => {disable_with: t('searching')}, style: 'margin-top: 24px'  }
+                    = t('search')
+                    = fa_icon 'search'
+              %div{class: "pagination_count pull-left", id: "image_blender_search_results"}
+            .tab-pane{id: "logo"}
+              .row
+                .col-md-12
+                  - clients = Client.order(:name)
+                  = label_tag '', t("artifacts.dynamic_image.client_id")
+                  = select :image_blender, :id_client,
+                    options_from_collection_for_select(clients, 'id', 'name', allow_blank: true),
+                    {include_blank: true},{class:'form-control', data: {url: artifacts_select_logo_path, remote: true}}
+
+              #logo_search_result
+      .modal-footer
+        = button_tag 'Cancel', {:class => 'btn btn-success',"data-dismiss" => "modal"}
+= javascript_include_tag 'artifacts/select_image'

@@ -1,0 +1,48 @@
+<%
+	# Country
+	params[:country_id] = Geobase::Country.find_by_code('US').id unless params[:country_id].present?
+	countrys = Geobase::Country.all.order(name: :asc)
+	country_by_id = countrys.try('find_by_id', params[:country_id]).try(:id)
+
+	# State
+	if params[:country_id].present?
+		state = Geobase::Region.where('country_id = ? AND level = 1', params[:country_id]).order(name: :asc)
+		search_state = (params[:state_id].present?) ? state.find_by_id(params[:state_id]) : nil
+	end
+
+	if params[:state_id].present?
+		# County
+		county = Geobase::Region.where('country_id = ? AND level = 2 AND parent_id = ?', params[:country_id], params[:state_id]).order('level ASC NULLS LAST, name ASC')
+		search_county = (params[:county_id].present?) ? county.find_by_id(params[:county_id]) : nil
+
+		# Locality
+		localitys = Geobase::Locality.where('primary_region_id = ?', params[:state_id]).order(population: :desc)
+		search_locality = localitys.find_by_id(params[:locality_id])
+	end
+
+	# Landmark
+	if params[:locality_id].present?
+		landmarks = Geobase::Landmark.where('locality_id = ?', params[:locality_id]).order(name: :asc)
+		landmark_by_id = landmarks.find_by_id(params[:landmark_id]).try(:id)
+	end
+%>
+<div class="filter-label">Country:</div>
+<%= select_tag(:country_id, options_from_collection_for_select(countrys, :id, :name, country_by_id), { include_blank: true, class: 'form-control change-select', placeholder: 'Country' }) %>
+
+<% if params[:country_id].present? %>
+	<div class="filter-label">State:</div>
+	<%= select_tag(:state_id, options_from_collection_for_select(state, :id, :name, search_state.try(:id)), { include_blank: true, class: 'form-control change-select', placeholder: 'State' }) %>
+<% end %>
+
+<% if params[:state_id].present? %>
+	<div class="filter-label">County:</div>
+	<%= select_tag(:county_id, options_from_collection_for_select(county, :id, :name, search_county.try(:id)), { include_blank: true, class: 'form-control change-select', placeholder: 'County' }) %>
+
+	<div class="filter-label">Locality:</div>
+	<%= select_tag(:locality_id, options_from_collection_for_select(localitys, :id, :name, search_locality.try(:id)), { include_blank: true, class: 'form-control change-select', placeholder: 'Locality' }) %>
+<% end %>
+
+<% if params[:locality_id].present? %>
+	<div class="filter-label">Landmark:</div>
+	<%= select_tag(:landmark_id, options_from_collection_for_select(landmarks, :id, :name, landmark_by_id), { include_blank: true, class: 'form-control change-select', placeholder: 'Landmark' }) %>
+<% end %>

@@ -1,0 +1,8 @@
+- piwik_statistics_data_json = {}
+- piwik_stat_query = "SELECT date_trunc('day', piwik_statistics.created_at) as date, SUM(piwik_statistics.nb_visits) as visits, SUM(piwik_statistics.nb_actions) as actions, SUM(piwik_statistics.nb_pageviews) as pageviews FROM piwik_statistics LEFT JOIN client_landing_pages ON client_landing_pages.id = piwik_statistics.client_landing_page_id WHERE client_landing_pages.client_id = #{@client.id} GROUP BY date_trunc('day', piwik_statistics.created_at) ORDER BY date DESC"
+- piwik_stat_keys = %w(visits actions pageviews)
+- piwik_stat_result = ActiveRecord::Base.connection.execute(piwik_stat_query).to_a
+- piwik_stat_keys.each{|k| piwik_statistics_data_json[k] = piwik_stat_result.map{|x| x[k].to_i}}
+
+.row
+  %div{id: "piwik_statistics_chart", data: piwik_statistics_data_json}

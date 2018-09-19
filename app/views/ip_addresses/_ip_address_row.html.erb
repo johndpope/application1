@@ -1,0 +1,39 @@
+<tr title='<%= "Additional use: #{ip_address.description}" if ip_address.description.present? %>'>
+  <td class="text-center"><%=link_to ip_address.id, edit_ip_address_path(ip_address), target: "_blank" %></td>
+  <td><%=ip_address.address %></td>
+  <td class="text-center"><%=ip_address.port %></td>
+  <td class="text-center"><%=ip_address.address_target %></td>
+  <td class="text-center"><%=ip_address.country.try(:code) %></td>
+  <% (1..5).to_a.each do |i| %>
+    <td class="text-center"><i class='fa <%= ip_address.send("stage#{i}").to_f < 1.0 ? "fa-minus-circle" : "fa-check-circle" %>' style='font-size: x-large; color: <%= ip_address.send("stage#{i}").to_f < 1.0 ? "#d73925" : "green" %>'></i></td>
+  <% end %>
+  <td class="text-center" style="font-weight: bold; font-size: x-large;"><%=ip_address.rating.to_i %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_is_active("true").by_assigned_to_client("true").size, email_accounts_path(ip: ip_address.address, assigned_to_client: true, is_active: true), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_is_active("false").by_deleted("false").by_assigned_to_client("true").size, email_accounts_path(ip: ip_address.address, assigned_to_client: true, is_active: false, deleted: false), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_deleted("true").by_assigned_to_client("true").size, email_accounts_path(ip: ip_address.address, assigned_to_client: true, deleted: true), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_is_active("true").by_assigned_to_client("false").size, email_accounts_path(ip: ip_address.address, assigned_to_client: false, is_active: true), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_is_active("false").by_deleted("false").by_assigned_to_client("false").size, email_accounts_path(ip: ip_address.address, assigned_to_client: false, is_active: false, deleted: false), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_deleted("true").by_assigned_to_client("false").size, email_accounts_path(ip: ip_address.address, assigned_to_client: false, deleted: true), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_is_active("true").size, email_accounts_path(ip: ip_address.address, is_active: true), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_is_active("false").by_deleted("false").size, email_accounts_path(ip: ip_address.address, is_active: false, deleted: false), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).by_deleted("true").size, email_accounts_path(ip: ip_address.address, deleted: true), target: "_blank" %></td>
+  <td class="text-center"><%= link_to EmailAccount.where("ip_address_id = ?", ip_address.id).by_display_all(nil).size, email_accounts_path(ip: ip_address.address), target: "_blank" %></td>
+  <td class="text-center"><%= link_to ip_address.email_accounts.size, email_accounts_path(ip: ip_address.address, display_all: true), target: "_blank" %></td>
+  <td class="text-center"><%= local_time(ip_address.updated_at, format: '%m/%d/%y %I:%M %p', title: ip_address.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %></td>
+  <td class="text-center"><%= local_time(ip_address.try(:last_assigned_at), format: '%m/%d/%y %I:%M %p', title: ip_address.try(:last_assigned_at).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if ip_address.try(:last_assigned_at).present?%></td>
+  <!-- <td class="text-center"><%#= local_time(ip_address.try(:updated_at), format: '%m/%d/%y %I:%M %p', title: ip_address.try(:updated_at).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if ip_address.try(:updated_at).present?%></td> -->
+  <% unless display_only %>
+    <td class="text-center actions">
+      <% if !ip_address.additional_use? %>
+        <div class="btn-group btn-group-custom">
+          <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_ip_address_path(ip_address), { class: 'btn btn-xs btn-primary', target: "_blank" } %>
+          <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, ip_address, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger', style: 'display:none' %>
+          <%= link_to '<i class="fa fa-eraser"></i> Return'.html_safe, return_ip_address_ip_address_path(ip_address), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-warning' %>
+          <%= link_to '<i class="fa fa-eraser"></i> Return by country'.html_safe, return_ip_address_ip_address_path(ip_address, by_country: true), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+        </div>
+      <% else %>
+        <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_ip_address_path(ip_address), { class: 'btn btn-xs btn-primary' } %>
+      <% end %>
+    </td>
+  <% end %>
+</tr>

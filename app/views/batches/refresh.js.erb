@@ -1,0 +1,9 @@
+<%
+  modal_dom_id = dom_id(@batch, 'modal')
+  row_id = dom_id(@batch, 'row')
+  new_row = render partial: 'batch_row', locals: {batch: @batch}
+%>
+
+$('#<%= modal_dom_id %>').modal('hide')
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(new_row) %>')
+$('#<%= row_id %>').effect('highlight', 1500)

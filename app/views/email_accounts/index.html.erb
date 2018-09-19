@@ -1,0 +1,270 @@
+<% title 'Email Accounts' %>
+<% breadcrumb :email_accounts %>
+<% ip_addresses = IpAddress.where(id: @email_accounts.map(&:ip_address_id)) %>
+<div id="email_accounts_list">
+  <div class="row">
+  	<div class="col-md-5"></div>
+  	<div class="col-md-7">
+  		<div class="form-group">
+  			<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+  			<span class="badge bg-blue"><%= @email_accounts.total_count%></span>
+  		</div>
+  	</div>
+  </div>
+  <% if ip_addresses.present? %>
+    <div class="panel panel-primary">
+      <div id="social_links_heading" class="panel-heading">
+        <h4 class="panel-title">
+          <a href="#ip_addresses_body" data-toggle="collapse" data-target="#ip_addresses_body"><b><i class="fa fa-globe"></i> IP ADDRESSES</b></a>
+        </h4>
+      </div>
+      <div id="ip_addresses_body" class="panel-collapse collapse" aria-labelledby="ip_addresses_body">
+        <div class="panel-body">
+          <table id="ip_addresses_table" class="table table-bordered table-striped dataTable">
+      			<%= render partial: 'ip_addresses/ip_addresses_thead', locals: {display_only: true} %>
+      			<tbody>
+      				<% ip_addresses.each do |ip_address| %>
+      					<%= render partial: 'ip_addresses/ip_address_row', locals: {ip_address: ip_address, display_only: true} %>
+      				<% end %>
+      			</tbody>
+      		</table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% unless @email_accounts.to_a.empty? %>
+    <% page = params[:page].present? ? params[:page].to_i - 1 : 0 %>
+  	<table id="email_accounts_table" class="table table-bordered table-striped dataTable">
+  		<thead>
+  			<tr>
+          <th class="text-center" style="min-width: 25px;">#</th>
+  				<th class="sort text-center" style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+  				<th style="width: 65px;">Screenshot</th>
+  				<th class="sort" id="email-th" data-field="email">Email</th>
+          <th>Recovery Domain</th>
+  				<th class="sort" id="locality-th" data-field="locality">Locality</th>
+  				<th class="sort text-center" id="region-th" data-field="region">Region</th>
+  				<!-- <th style="width: 65px;" class="sort" id="country-th" data-field="country">Country</th> -->
+          <th style="min-width: 55px;" class="sort text-center" id="client-th" data-field="client">Client</th>
+          <th style="width: 90px;" class="sort text-center" id="ip-th" data-field="ip">IP</th>
+  				<th style="width: 35px;" class="text-center sort" id="deleted-th" data-field="deleted" title="Deleted"><i class="fa fa-fw fa-trash"></i></th>
+  				<th style="width: 35px;" class="text-center sort" id="is_active-th" data-field="is_active" title="Is Active"><i class="fa fa-fw fa-check-square"></th>
+  				<th style="width: 35px;" class="text-center sort" id="is_verified_by_phone-th" data-field="is_verified_by_phone" title="Phone Verified"><i class="fa fa-fw fa-phone-square"></th>
+          <th style="width: 45px;" class="sort text-center" id="status_change_date-th" data-field="status_change_date">Status Changed</th>
+  				<th style="width: 60px;" class="sort text-center" id="activity_start-th" data-field="activity_start">Activity Start</th>
+  				<th style="width: 60px;" class="sort text-center" id="last_success_sign_in-th" data-field="last_success_sign_in" title="Last Success Sign In">Last Sign In</th>
+  				<th style="width: 60px;" class="sort text-center" id="activity_end-th" data-field="activity_end">Activity End</th>
+  				<th style="width: 60px;" class="sort text-center" id="activity_end_crash-th" data-field="activity_end_crash">Activity End Crash</th>
+  				<th style="width: 45px;" class="sort text-center" id="activity_time-th" data-field="activity_time">Last Online</th>
+  				<th style="width: 45px;" class="sort text-center" id="today_online_time-th" data-field="today_online_time">Today Online</th>
+  				<th style="width: 45px;" class="text-center" title="Since <%= Setting.get_value_by_name('GoogleAccountActivity::STORING_ONLINE_TIME_START_DATE') %>">Average Online</th>
+  				<th style="width: 45px;" class="sort text-center" id="recovery_time-th" data-field="recovery_time">Recovery Time</th>
+  				<th style="width: 30px;" class="text-center" title="Actions"><i class="fa fa-wrench"></i></th>
+  			</tr>
+  		</thead>
+  		<tbody role="alert" aria-live="polite" aria-relevant="all">
+  			<% @email_accounts.each_with_index do |ea, index| %>
+  				<tr>
+            <td class="text-center"><%= page * params[:limit].to_i + index + 1 %></td>
+  					<td class="text-center"><%= link_to ea.id, 'javascript://', data: { legend_url: legend_email_account_path(ea) } %></td>
+  					<td class="text-center">
+  						<% if ea.screenshots.last.present? && ea.screenshots.last.image.present? %>
+  							<div class="screenshot-div">
+  								<%= link_to (image_tag URI::escape(ea.screenshots.last.image.url(:thumb), '[]'), { class: 'img-thumbnail livepreview', title: ea.screenshots.last.created_at.in_time_zone('Eastern Time (US & Canada)').strftime('%m/%d/%Y %I:%M %p - Eastern Time (US & Canada)'), data: { src: ea.screenshots.last.image.url(:original) } }), URI::escape(ea.screenshots.last.image.url(:original), '[]'), { class: "image-preview", target: '_blank' } %>
+  								<%= link_to edit_email_account_path(ea) + '#screenshots-tab', { target: '_blank' } do %>
+  									<span class="badge bg-orange"><%= ea.screenshots.size %></span>
+  								<% end %>
+  							</div>
+  						<% end %>
+  					</td>
+  					<td class="overflow">
+  						<%= link_to ea.email.gsub("@gmail.com", ""), edit_email_account_path(ea), target: '_blank' %>
+  					</td>
+            <td class="overflow">
+  						<% recovery_email_domain = ea.recovery_email.to_s.split("@").last %>
+              <%= link_to recovery_email_domain, { controller: 'email_accounts', recovery_email_domain: recovery_email_domain, limit: params[:limit] } %>
+  					</td>
+  					<% if ea.locality || ea.region %>
+  						<td>
+  							<% if ea.locality %>
+  								<%= link_to ea.locality.try(:name), { controller: 'email_accounts', locality_id: ea.locality_id, limit: params[:limit] }, class: 'sort_link' %>
+  							<% end %>
+  						</td>
+  						<td class="overflow text-center" style="max-width: 100px;">
+  							<% if ea.region %>
+  								<%= link_to ea.region.try(:code).try(:split, '<sep/>').try(:first).try(:split, '-').try(:last) || ea.region.try(:name), { controller: 'email_accounts', region_id: ea.region_id, country_id: ea.region.try(:country_id), limit: params[:limit] }, class: 'sort_link' %>
+  							<% else %>
+  								<%= ea.locality.try(:primary_region).try(:code).try(:split, '<sep/>').try(:first).try(:split, '-').try(:last) || ea.locality.try(:primary_region).try(:name) %>
+  							<% end %>
+  						</td>
+  						<!-- <td class="text-center" style="max-width: 80px;">
+  							<%# if ea.region %>
+  								<%#= ea.region.try(:country).try(:code) %>
+  							<%# else %>
+  								<%#= ea.locality.try(:country).try(:code) %>
+  							<%# end %>
+  						</td> -->
+  					<% else %>
+  						<td><%= ea.locality_name %></td>
+  						<td><%= ea.region_name %></td>
+  						<!-- <td class="text-center"><%#= ea.country_name %></td> -->
+  					<% end %>
+            <td class="text-center">
+              <% if ea.client %>
+              <%= link_to ea.client.name, { controller: 'email_accounts', client_id: ea.client.id, limit: params[:limit] }, class: 'sort_link' %>
+              <% end %>
+            </td>
+  					<td class="text-center">
+  						<% if ea.ip_address.try(:address) %>
+  							<%= link_to ea.ip_address.try(:address), { controller: 'email_accounts', ip: ea.ip_address.try(:address), limit: params[:limit] }, class: 'sort_link' %>
+  						<% end %>
+  					</td>
+  					<td class="text-center">
+  						<% if ea.deleted %>
+  							<%= link_to 'Y', { controller: 'email_accounts', deleted: true, limit: params[:limit] }, class: 'btn btn-danger btn-xs sort_link' %>
+  						<% else %>
+  							<%= link_to 'N', { controller: 'email_accounts', deleted: false, limit: params[:limit] }, class: 'btn btn-success btn-xs sort_link' %>
+  						<% end %>
+  					</td>
+  					<td class="text-center">
+  						<% if ea.is_active %>
+  							<%= link_to 'Y', { controller: 'email_accounts', is_active: true, limit: params[:limit] }, class: 'btn btn-success btn-xs sort_link' %>
+  						<% else %>
+  							<%= link_to 'N', { controller: 'email_accounts', is_active: false, limit: params[:limit] }, class: 'btn btn-danger btn-xs sort_link' %>
+  						<% end %>
+  					</td>
+  					<td class="text-center">
+  						<% if ea.is_verified_by_phone %>
+  							<%= link_to 'Y', { controller: 'email_accounts', is_verified_by_phone: true, limit: params[:limit] }, class: 'btn btn-success btn-xs sort_link' %>
+  						<% else %>
+  							<%= link_to 'N', { controller: 'email_accounts', is_verified_by_phone: false, limit: params[:limit] }, class: 'btn btn-danger btn-xs sort_link' %>
+  						<% end %>
+  					</td>
+            <td class="text-center">
+  						<%= local_time(ea.status_change_date, format: '%m/%d/%y %I:%M %p', title: ea.status_change_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if ea.status_change_date.present?%>
+  					</td>
+  					<td class="text-center">
+              <%= local_time(ea.try(:email_item).try(:google_account_activity).try(:activity_start).try(:last), format: '%m/%d/%y %I:%M %p', title:  ea.try(:email_item).try(:google_account_activity).try(:activity_start).try(:last).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if  ea.try(:email_item).try(:google_account_activity).try(:activity_start).try(:last).present?%>
+  					</td>
+  					<td class="text-center">
+              <%= local_time(ea.try(:email_item).try(:google_account_activity).try(:last_success_sign_in).try(:last), format: '%m/%d/%y %I:%M %p', title: ea.try(:email_item).try(:google_account_activity).try(:last_success_sign_in).try(:last).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if ea.try(:email_item).try(:google_account_activity).try(:last_success_sign_in).try(:last).present?%>
+  					</td>
+  					<td class="text-center">
+              <%= local_time(ea.try(:email_item).try(:google_account_activity).try(:activity_end).try(:last), format: '%m/%d/%y %I:%M %p', title: ea.try(:email_item).try(:google_account_activity).try(:activity_end).try(:last).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if ea.try(:email_item).try(:google_account_activity).try(:activity_end).try(:last).present?%>
+  					</td>
+  					<td class="text-center">
+              <%= local_time(ea.try(:email_item).try(:google_account_activity).try(:activity_end_crash).try(:last), format: '%m/%d/%y %I:%M %p', title: ea.try(:email_item).try(:google_account_activity).try(:activity_end_crash).try(:last).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if ea.try(:email_item).try(:google_account_activity).try(:activity_end_crash).try(:last).present?%>
+  					</td>
+  					<td class="text-center">
+  						<%= ea.email_item.try(:google_account_activity).try(:activity_time) %>
+  					</td>
+  					<td class="text-center">
+  						<%= ea.email_item.try(:google_account_activity).try(:formatted_today_online_time) %>
+  					</td>
+  					<td class="text-center">
+  						<%= ea.email_item.try(:google_account_activity).try(:formatted_total_online_time) %>
+  					</td>
+  					<td class="text-center" title="<%= ea.email_item.try(:google_account_activity).try(:last_recovery_attempt_date) %>">
+  						<%= ea.email_item.try(:google_account_activity).try(:recovery_time) %>
+  					</td>
+  					<td class="text-center">
+  						<%= link_to '<i class="fa fa-pencil"></i>'.html_safe, edit_email_account_path(ea),  { class: 'btn btn-xs btn-primary', target: '_blank', title: 'Edit' } %>
+  					</td>
+  				</tr>
+  			<% end %>
+  		</tbody>
+  	</table>
+  <% end %>
+
+  <% if @email_accounts.to_a.empty? %>
+  	<div class="alert alert-info">No items available</div>
+  <% else %>
+    <div><%= paginate @email_accounts, theme: 'bootstrap' %></div>
+  <% end %>
+
+  <div class="modal modal-wide fade" id="email_account_legend" style="z-index: 999999;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+</div>
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :email, :tier, :locality, :region, :country, :account_type, :deleted, :is_active, :is_verified_by_phone, :recovery_email_sync, :ip, :client, :activity_start, :last_success_sign_in, :check_status, :activity_end, :activity_end_crash, :activity_time, :today_online_time, :recovery_time, :recovery_answer, :status_change_date, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		country_id = params[:country_id]
+		order_value = params[:order]
+		# default_country_id ||= Country.where(code: 'US').first.try(:id)
+		# country_id = default_country_id unless country_id
+		order_value = :created_at unless order_value
+	%>
+	<div id="search_params">
+		<%= hidden_field_tag :regions_url, regions_path %>
+		<%= form_tag({ controller: :email_accounts, action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<%= hidden_field_tag :display_all, params[:display_all], class: 'form-control' %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+      <div class="filter-label">Google Account Activity ID:</div>
+      <%= search_field_tag :google_account_activity_id, params[:google_account_activity_id], class: 'form-control numeric' %>
+			<div class="filter-label">Email:</div>
+			<%= search_field_tag :email, params[:email], class: 'form-control' %>
+      <div class="filter-label">Recovery Email Domain:</div>
+      <%= select_tag(:recovery_email_domain, options_for_select(EmailAccount.recovery_email_domains, params[:recovery_email_domain]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">IP:</div>
+			<%= search_field_tag :ip, params[:ip], class: 'form-control' %>
+			<div class="filter-label">Account Type:</div>
+			<%= select_tag('account_type', options_for_select(EmailAccount::ACCOUNT_TYPES.collect { |key, value| [key.to_s.humanize, value] }, params[:account_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<!-- <div class="filter-label">Email Type:</div>
+			<%= select_tag(:email_item_type, options_for_select(@email_item_types, params[:email_item_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %> -->
+			<!--div class="filter-label">Tier:</div>
+			<%#= select_tag('tier', options_for_select((1..8).to_a, params[:tier]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>-->
+			<!--div class="filter-label">Country:</div>
+			<%#= select_tag(:country_id, options_from_collection_for_select(Geobase::Country.order(:name), :id, :name, country_id), { include_blank: '', class: 'form-control' }) %> -->
+			<div class="filter-label">Region:</div>
+			<%= hidden_field_tag 'region_id', params[:region_id], { include_blank: '', class: 'form-control' } %>
+			<div class="filter-label">Locality:</div>
+			<%= hidden_field_tag 'locality_id', params[:locality_id], { include_blank: '', class: 'form-control' } %>
+			<div class="filter-label">Lost:</div>
+			<%= select_tag(:lost, options_for_select([['YES', true], ['NO', false]], params[:lost]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Deleted:</div>
+			<%= select_tag(:deleted, options_for_select([['YES', true], ['NO', false]], params[:deleted]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Active:</div>
+			<%= select_tag(:is_active, options_for_select([['YES', true], ['NO', false]], params[:is_active]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Recovery Phone Assigned:</div>
+			<%= select_tag(:recovery_phone_assigned, options_for_select([['-', ''], ['Unassigned', 'no'], ['Assigned', true], ['In Progress', false]], params[:recovery_phone_assigned]), { include_blank: '', class: 'form-control' }) %>
+      <div class="filter-label">Recovery email sync:</div>
+			<%= select_tag(:recovery_email_sync, options_for_select([['YES', true], ['NO', false]], params[:recovery_email_sync]), { include_blank: '', class: 'form-control' }) %>
+      <div class="filter-label">Recovery Inbox Period:</div>
+			<%= select_tag(:recovery_inbox_email_last_time, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760], ['Last 2 years', 17520], ['Last 3 years', 26280]], params[:recovery_inbox_email_last_time]), { include_blank: '', class: 'form-control' }) %>
+      <div class="filter-label">Recovery Inbox Email Type:</div>
+			<%= select_tag(:recovery_inbox_email_type, options_for_select(RecoveryInboxEmail::EMAIL_TYPES.sort.to_h.collect{ |key, value| [key, value] }, params[:recovery_inbox_email_type]), { include_blank: '', class: 'form-control' }) %>
+      <div class="filter-label">Status Changed Period:</div>
+      <%= select_tag(:status_changed_last_time, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760]], params[:status_changed_last_time]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Phone Verified:</div>
+			<%= select_tag(:is_verified_by_phone, options_for_select([['YES', true], ['NO', false]], params[:is_verified_by_phone]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Has recovery email:</div>
+			<%= select_tag(:has_recovery_email, options_for_select([['YES', true], ['NO', false]], params[:has_recovery_email]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Has alternate email:</div>
+			<%= select_tag(:has_alternate_email, options_for_select([['YES', true], ['NO', false]], params[:has_alternate_email]), { include_blank: '', class: 'form-control' }) %>
+      <div class="filter-label">Assigned to client:</div>
+			<%= select_tag(:assigned_to_client, options_for_select([['YES', true], ['NO', false]], params[:assigned_to_client]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Error Type:</div>
+			<%= select_tag(:error_type, options_for_select(GoogleAccount::ERROR_TYPES.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:error_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Recovery Answer:</div>
+			<%= select_tag(:recovery_answer, options_for_select(GoogleAccountActivity::RECOVERY_ANSWERS.sort.to_h.collect{ |key, value| [key.to_s.humanize, value] }, params[:recovery_answer]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Client:</div>
+			<%= select_tag(:client_id, options_from_collection_for_select(Client.all.order(:name), :id, :name, params[:client_id]), { include_blank: '', class: 'form-control' }) %>
+      <div class="filter-label">Bot server:</div>
+			<%= select_tag(:bot_server_id, options_from_collection_for_select(BotServer.where(human_emulation: true).order(:id), :id, :name, params[:bot_server_id]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500 ], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

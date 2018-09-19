@@ -1,0 +1,5 @@
+<div id="client_images_results" class="row">
+  <% @uploaded_images.each do |item| %>
+    <%= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/client_images/image_block", locals: {item: item} %>
+  <% end %>
+</div>

@@ -1,0 +1,13 @@
+- centered_columns = %w(id is_active in_queue in_watch_folder_output in_watch_folder today_video_sets total_video_sets today_video_chunks total_video_chunks number_of_generating_dynamic_projects is_accessible time_of_last_created_project is_test disk_space)
+- iconed_columns = {'is_accessible' => 'signal', 'in_watch_folder_output' => 'file-video-o', 'in_queue' => 'list', 'in_watch_folder' => 'folder', 'number_of_generating_dynamic_projects' => 'calendar'}
+- hidden_in_xs_sm = %w(in_watch_folder_output total_video_sets total_video_chunks time_of_last_created_project is_test disk_space ip)
+= hidden_field_tag :dashboard_rendering_machines_json_url, dashboard_video_workflow_rendering_machines_path(:json)
+= hidden_field_tag :yes_value, t('yes')
+= hidden_field_tag :no_value, t('no')
+- %w(id ip name in_watch_folder in_queue number_of_generating_dynamic_projects in_watch_folder_output disk_space time_of_last_created_project today_video_sets total_video_sets today_video_chunks total_video_chunks is_accessible is_test is_active).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''} #{hidden_in_xs_sm.include?(c) ? 'hidden-xs hidden-sm' : ''}"}
+		- text = t("rendering_machine.#{c}")
+		- if iconed_columns.key? c
+			= fa_icon iconed_columns[c], title: text
+		- else
+			= text

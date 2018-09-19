@@ -1,0 +1,11 @@
+.row
+	.col-md-6
+		- unless @donor_source_video.video.blank?
+			.form-group
+				= label_tag '', 'Current Video'
+				%div= video_tag @donor_source_video.video.url, style: 'height: 170px; width: 300px;', controls: true, autobuffer: false
+	.col-md-6
+		- unless @donor_source_video.thumbnail.blank?
+			.form-group
+				= label_tag nil, 'Current Thumbnail'
+				%div= image_tag @donor_source_video.thumbnail.url(:thumb), class: 'img-responsive', style: 'height: 170px; width: 300px;'

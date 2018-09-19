@@ -1,0 +1,93 @@
+<%= header 'Images report by industries' %>
+<% breadcrumb :artifacts_images_report_by_industries, theme: "bootstrap" %>
+<% short_description_warning = Setting.get_value_by_name("Wording::SHORT_DESCRIPTION_WARNING").to_i %>
+<% long_description_warning = Setting.get_value_by_name("Wording::LONG_DESCRIPTION_WARNING").to_i %>
+<% images_warning = Setting.get_value_by_name("Artifacts::Image::MINIMUM_WARNING").to_i %>
+
+<div id="report_by_industries_list">
+  <div><%= paginate @industries, theme: 'bootstrap' %></div>
+  <h4>
+    <span class="label label-success"><%= @industries.total_count %></span>
+    <%= 'item'.pluralize(@industries.total_count) %> totally
+  </h4>
+	<% unless @industries.to_a.empty? %>
+    <% page = params[:page].present? ? params[:page].to_i - 1 : 0 %>
+		<table id="industries_table" class="table table-bordered table-striped dataTable">
+			<thead>
+        <%= render 'report_by_industries_table_header' %>
+			</thead>
+			<tbody>
+				<% @industries.each_with_index do |industry, index| %>
+					<tr>
+            <% images_count = industry.images_count %>
+            <% short_descriptions_count = industry.description_wordings_size('short_description') %>
+            <% long_descriptions_count = industry.description_wordings_size('long_description') %>
+            <td class="text-center"><%= page * params[:limit].to_i + index + 1 %></td>
+						<td class="text-center"><%= industry.id %></td>
+            <td><%= industry.code %></td>
+						<td><%= industry.name %></td>
+            <td>
+              <% parent = industry.try(:parent)%>
+              <% if parent.present? %>
+                <%= link_to parent.name, report_by_industries_artifacts_images_path(industry_id: parent.id), target: "_blank" %>
+              <% end %>
+            </td>
+            <td>
+              <% top_level = industry.try(:top_level) %>
+              <% if top_level.present? %>
+                <%= link_to top_level.name, report_by_industries_artifacts_images_path(industry_id: top_level.id), target: "_blank" %>
+              <% end %>
+            </td>
+            <td class="text-center <%= 'attention' if short_descriptions_count < short_description_warning %>"><%= link_to short_descriptions_count.to_s(:delimited), wordings_path(resource_id: industry.id, resource_type: industry.class.name, name: 'short_description'), target: "_blank" %></td>
+            <td class="text-center <%= 'attention' if long_descriptions_count < long_description_warning %>"><%= link_to long_descriptions_count.to_s(:delimited), wordings_path(resource_id: industry.id, resource_type: industry.class.name, name: 'long_description'), target: "_blank" %></td>
+						<td class="text-center <%= 'attention' if images_count < images_warning %>"><%= link_to images_count.to_s(:delimited), artifacts_images_path(ransack: {industry_id_eq: industry.id}), target: "_blank" %></td>
+					</tr>
+				<% end %>
+			</tbody>
+      <% if @industries.size > 25 %>
+        <tfoot>
+          <%= render 'report_by_industries_table_header' %>
+        </tfoot>
+      <% end %>
+		</table>
+	<% end %>
+
+	<div><%= paginate @industries, theme: 'bootstrap' %></div>
+
+	<% if @industries.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>
+
+<div id="toolbar-toggle" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="toolbar" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :name, :code, :short_descriptions_count, :long_descriptions_count, :images_count]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :code unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag(report_by_industries_artifacts_images_path, { method: :get, id: 'filters_form' }) do |f| %>
+      <div class="filter-label" title="Select industry by NAICS industry code or by typing industry name">Industry</div>
+      <%= hidden_field_tag :industry_id, params[:industry_id], class: 'form-control' %>
+      <div class="filter-label">Images count less than (inclusive)</div>
+      <%= search_field_tag :images_count_limit, params[:images_count_limit], class: 'form-control numeric' %>
+			<div class="filter-label">Order by</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page</div>
+			<%= search_field_tag :limit, params[:limit], class: 'form-control numeric' %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right" style="margin-top: 5px;">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

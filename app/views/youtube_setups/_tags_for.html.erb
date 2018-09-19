@@ -1,0 +1,15 @@
+<div class="box-header with-border text-center">
+  <% if target == 'channel' %>
+    <h4 class="box-title"><span class="label label-default label-round label-main"><%= link_to "#{target.to_s.upcase} TAGS", 'javascript://', {remote: true, data: {target: target, source: 'tags_overview'}, class: "tags-overview"} %><br/><span class="limit-span">Limit <b><%= Setting.get_value_by_name('YoutubeChannel::TAGS_CHARS_LIMIT') %> - (current channel tags count - 1) x 2</b> ch.</span></span> = <span class="label label-default label-round">Client tags</span> + <span class="label label-default label-round">Industry tags</span> + <span class="label label-default label-round">Location tags</span> + <span class="label bg-aqua label-round">Other <%= target.to_s %> tags (optional)</span></h4>
+  <% else %>
+    <h4 class="box-title"><span class="label label-default label-round label-main"><%= link_to "#{target.to_s.upcase} TAGS", 'javascript://', {remote: true, data: {target: target, source: 'tags_overview'}, class: "tags-overview"} %><br/><span class="limit-span">Limit <b><%= Setting.get_value_by_name('YoutubeVideo::TAGS_CHARS_LIMIT') %> - (current video tags count - 1) x 2</b> ch.</span></span> = <span class="label label-default label-round">Client tags</span> + <span class="label label-default label-round">Donor Client tags</span> + <span class="label label-default label-round">Product with donor product tags</span> + <span class="label label-default label-round">Industry tags</span> + <span class="label label-default label-round">Subject video with donor video tags</span> + <span class="label label-default label-round">Location tags</span> + <span class="label bg-aqua label-round">Other <%= target.to_s %> tags (optional)</span></h4>
+  <% end %>
+</div>
+<div class="form-group" id="youtube_setup_other_<%= type %>_<%= target %>_tag_list_block">
+  <div>
+    <%= f.label :"other_#{target}_tags" %>
+    <%= tooltip_by_field({tooltip_text: t("tooltips.common.tags", :default => "")}) %>
+    <span id="youtube_setup_other_<%= type %>_<%= target %>_tag_list_count" class="badge">0</span>
+  </div>
+  <%= f.text_field :"other_#{type}_#{target}_tag_list", class: 'form-control tags-field', placeholder: 'Enter tags', value: @youtube_setup.send("other_#{type}_#{target}_tag_list").to_a.sort.join(",") %>
+</div>

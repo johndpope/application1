@@ -1,0 +1,13 @@
+<%
+  tbody = render partial: 'queue/history_tbody', locals: {jobs: @completed_jobs}
+  paginate = render partial: 'queue/paginate', locals: {jobs: @completed_jobs, paginate_class: "paginate"}
+  total_serach_results = @completed_jobs.total_count
+%>
+$('#jobs_table_body').replaceWith('<%= escape_javascript(tbody) %>')
+$('.paginate').replaceWith('<%= escape_javascript(paginate) %>')
+$('.page, .next, .first, .prev, .next_page').on('click', function () {
+  $('.animationload').show()
+})
+$('#total_serach_results').text('<%= total_serach_results %>')
+$('#jobs_table tr').effect('highlight', { color: '#00a65a' }, 1000)
+$('.animationload').hide()

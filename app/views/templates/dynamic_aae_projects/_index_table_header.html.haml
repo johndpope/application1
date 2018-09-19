@@ -1,0 +1,10 @@
+- centered_columns = %w(id created_at)
+- %w(id created_at aae_project_id aae_project_type client source_video location_id location_type target).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("templates.dynamic_aae_project.#{c}")
+%th.text-center{title: t("templates.dynamic_aae_project.tar_project")}
+	= fa_icon 'file-archive-o'
+%th.rendered_video.text-center{title: t("templates.dynamic_aae_project.rendered_video")}
+	= fa_icon 'youtube-play'
+- @iconed_columns.each do |c, i|
+	%th.text-center{class: c, title: t("templates.dynamic_aae_project.#{c}")}
+		= fa_icon(i)

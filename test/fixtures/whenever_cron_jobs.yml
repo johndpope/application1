@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  period_type: 1
+  period_value: 1
+  options: MyText
+
+two:
+  period_type: 1
+  period_value: 1
+  options: MyText

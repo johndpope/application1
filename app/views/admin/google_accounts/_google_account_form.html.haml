@@ -1,0 +1,28 @@
+= semantic_form_for [:admin, @google_account] do |f|
+      = f.inputs 'Admin Details' do
+            = f.input :email
+            = f.input :password, as: :string
+            %li#content{class: 'string input optional stringish'}
+                  %p.generate-password Generate new password
+                  %p.generate-password
+                        %input#password_generator{type: 'text'}
+                        %a.clipboard-link Copy
+                  %p.generate-password
+                        %button#btn_generate Generate
+
+            = f.input :client_id, as: :select, :collection=>Client.all
+            = f.input :first_name
+            = f.input :last_name
+            = f.input :phone
+            = f.input :phone_owner
+            = f.input :city
+            = f.input :state
+            = f.input :recovery_email
+            = f.input :google_api_client
+            = f.input :refresh_token, :input_html => { :disabled => :true }
+            = f.input :account_type, as: :select
+            = f.input :google_status, as: :select
+            = f.input :deleted
+            = f.input :is_active
+            = f.input :ip, :as=>:string
+      = f.actions

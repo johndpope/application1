@@ -1,0 +1,85 @@
+- header 'ARTifacts Dashboard'
+- breadcrumb :artifacts_dashboard, theme: "bootstrap"
+
+.box.box-info
+  .box-header.with-border
+    %h3.box-title Recap Report
+    .progress
+      - complete = @saved_images.ceil
+      .progress-bar.progress-bar-success.progress-bar-striped{ style: "width: #{complete}%" }
+        = "#{complete}% Complete Downloads"
+      - pending = @pending_images.floor
+      .progress-bar.progress-bar-warning.progress-bar-striped{ style: "width: #{pending}%" }
+        = "#{pending}% Pending Downloads"
+  .box-body
+    .row#recap
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Artifacts::Image.distribution_by_tag.first(32).each do |k, v|
+            %li
+              %a{ href: artifacts_images_path(ransack: { tags_name_cont: k }) }
+                = fa_icon 'tag'
+                = k
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Artifacts::Image.distribution_by_region1.first(32).each do |k, v|
+            %li
+              - region1, country = k.split(', ')
+              %a{ href: artifacts_images_path(ransack: { region1_cont: region1, country_cont: country }) }
+                = k
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Artifacts::Image.distribution_by_region2.first(32).each do |k, v|
+            %li
+              - region2, region1 = k.split(', ')
+              %a{ href: artifacts_images_path(ransack: { region2_cont: region2, region1_cont: region1 }) }
+                = k
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Artifacts::Image.distribution_by_city.first(32).each do |k, v|
+            %li
+              - city, region1 = k.split(', ')
+              %a{ href: artifacts_images_path(ransack: { city_cont: city, region1_cont: region1 }) }
+                = k
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+  .box-footer
+    .row
+      .col-md-3
+        .description-block.border-right#img-total
+          %h5.description-header= @total_images.to_s(:delimited)
+          %span.description-text TOTAL IMAGES
+      .col-md-3
+        .description-block.border-right#img-region1-cov
+          %h5.description-header= @states_covered.to_s(:delimited)
+          %span.description-text STATES COVERED
+      .col-md-3
+        .description-block.border-right#img-region2-cov
+          %h5.description-header= @counties_covered.to_s(:delimited)
+          %span.description-text COUNTIES COVERED
+      .col-md-3
+        .description-block.border-right#img-city-cov
+          %h5.description-header= @cities_covered.to_s(:delimited)
+          %span.description-text CITIES COVERED
+.row
+  - %w(Flickr Pixabay Openclipart Iconfinder).each do |type|
+    .col-md-3
+      .info-box
+        %span.info-box-icon.bg-green
+          = fa_icon 'download'
+        .info-box-content
+          .info-box-text
+            %strong= type.upcase
+            downloads for the last day
+          .info-box-number= "Artifacts::#{type}Image".constantize.recent_downloads(1.day).to_s(:delimited)
+          .info-box-text
+            %strong= type.upcase
+            total pending downloads
+          .info-box-number= "Artifacts::#{type}Image".constantize.pending_downloads.to_s(:delimited)
+.row
+  .col-md-6
+    #country
+  .col-md-6
+    #region

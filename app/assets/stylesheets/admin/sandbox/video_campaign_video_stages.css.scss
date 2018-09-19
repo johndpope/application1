@@ -1,0 +1,12 @@
+.admin_sandbox_video_campaign_video_stages{
+	&.index{
+		#sandbox_video_campaign_video_stage_items{
+			.id{width: 40px;}
+			.month_nr{width: 60px;}
+			.thumb{width: 80px;}
+			.locality_id{width: 200px;}
+			.is_active {width: 80px;}
+			.iconed_column{width: 80px;}
+		}
+	}
+}

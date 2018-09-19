@@ -1,0 +1,6 @@
+<% row_id = dom_id(@audio, 'row') %>
+table = $('#<%= row_id%>').closest('table');
+if($('tbody.tbody tr',table).length == 0){
+	$('tbody.tfoot', table).hide();
+}
+$("#<%=row_id%>").remove();

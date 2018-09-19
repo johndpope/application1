@@ -1,0 +1,14 @@
+.clients_exclude_aae_templates{
+	&.index{
+		span.included{margin-right: 5px;}
+		#templates_aae_project_opt_out_items{
+			.order_nr{width: 40px;}
+			.id{width: 40px;}
+			.status_info{width: 50px;}
+			.video_thumbnail{width: 90px;}
+			.video{width: 90px;}
+			.actions{width: 130px;}
+			.status{width: 100px;}
+		}
+	}
+}

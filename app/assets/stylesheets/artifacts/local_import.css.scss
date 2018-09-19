@@ -1,0 +1,20 @@
+.template-upload, .template-download{
+	td.preview{width: 100px;}
+	td.size{width: 120px;}
+	td.actions{width: 200px;}
+}
+.image_categories_label, .search_image_categories_label{
+	font-weight: normal;
+}
+.category_col{
+	width: 14.2%;
+	float: left;
+	padding-left: 10px;
+}
+.collapseLink{
+	font-size: 16px;
+	font-weight: bold;
+	margin: 10px 0px;
+	display: block;
+	float: left;
+}

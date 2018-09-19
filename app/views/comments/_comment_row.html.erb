@@ -1,0 +1,15 @@
+<div id="<%= dom_id(comment, 'row')%>" class="direct-chat-msg">
+  <div class="direct-chat-info clearfix">
+    <span class="direct-chat-name pull-left"><%= comment.versions.last.try(:whodunnit) %></span>
+    <span class="direct-chat-timestamp pull-right"><i><b><%= time_ago_in_words(comment.updated_at) %> ago</b></i> on <b><%= local_time(comment.updated_at, format: '%m/%d/%y at %I:%M %p', title: comment.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y at %I:%M %p - Eastern Time (US & Canada)')) %></b></span>
+  </div>
+  <img class="direct-chat-img img-bordered-sm bg-yellow" src="/user.png">
+  <!-- <div class="direct-chat-text direct-chat-text-comment" title="<%#= comment.value %>"> -->
+  <div class="direct-chat-text" title="<%= comment.value %>">
+    <div class="btn-group pull-right">
+      <%= link_to '<i class="fa fa-pencil"></i>'.html_safe, edit_comment_path(comment),  { class: 'btn btn-default btn-sm', remote: true, title: 'Edit' } %>
+      <%= link_to '<i class="fa fa-trash"></i>'.html_safe, comment, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-default btn-sm', title: 'Delete' %>
+    </div>
+    <p style="white-space: pre-line;"><%= truncate(comment.value, length: 1000) %></p>
+  </div>
+</div>

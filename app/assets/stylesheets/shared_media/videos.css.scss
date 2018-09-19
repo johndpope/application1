@@ -1,0 +1,17 @@
+.shared_media_videos{
+  .uploaded_video_list{
+    .id{ width: 20px;}
+    .player{ width: 50px;}
+    .title{ width: 100px;}
+    .name{ width: 100px;}
+    .client{ width: 100px;}
+    .notes{ width: 100px; }
+    .size{ width: 20px; }
+    .tags{ width: 20px; }
+    .actions{ width: 50px; }
+    .location{ width: 100px; }
+    video{
+      width: 80px;
+    }
+  }
+}

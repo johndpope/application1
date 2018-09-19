@@ -1,0 +1,100 @@
+.row
+	.col-md-2
+		%strong Workflow Stage:
+	.col-md-10= params[:workflow_stage].titleize
+.row
+	.col-md-2
+		%strong Video Set ID:
+	.col-md-10= @blended_video.id
+- unless params[:video_segment_id].blank?
+	.row
+		.col-md-2
+			%strong Video Segment ID:
+		.col-md-10= params[:video_segment_id]
+%br
+%p
+	%strong Associated Delayed Jobs
+.panel-group#delayed_jobs_accordion
+	- if @failed_delayed_jobs.empty?
+		.callout.callout-info
+			%p
+				= fa_icon 'exclamation-circle'
+				There are no delayed jobs associated
+	- @failed_delayed_jobs.each do |dj|
+		- dj_name = dj.handler.scan(/struct:(.*)\n/i).flatten.first
+		- dj_max_attempts = dj_name.constantize.get_max_attempts
+		- dj_label_class = if dj.attempts == 0
+			- 'default'
+		- elsif dj.attempts >= dj_max_attempts
+			- 'danger'
+		- elsif dj.attempts	< dj_max_attempts
+			- 'warning'
+
+		- dj_status = if dj.attempts == 0 && dj.locked_by.blank?
+			- 'created'
+		- elsif dj.attempts == 0 && !dj.locked_by.blank?
+			- 'first_time_execution'
+		- elsif dj.attempts > 0 && dj.attempts < dj_max_attempts && !dj.locked_by.blank?
+			- 'restarted_after_failure'
+		- elsif dj.attempts > 0	&& dj.attempts >= dj_max_attempts
+			- 'final_failure'
+		- elsif dj.attempts > 0 && dj.attempts < dj_max_attempts
+			- 'failed'
+
+		- dj_panel_class = if dj_status == 'created'
+			- 'default'
+		- elsif dj_status == %w(first_time_execution restarted_after_failure).include?(dj_status)
+			- 'warning'
+		- else
+			- 'danger'
+
+		.panel{class: "panel-#{dj_panel_class || 'default'}"}
+			.panel-heading
+				%h4.panel-title
+					= link_to "#dj_#{dj.id}", data: {toggle: "collapse", parent: "#delayed_jobs_accordion"} do
+						.row
+							.col-md-8
+								%strong= t("delayed_jobs.titles_by_names.#{dj_name}")
+							.col-md-4
+								.label-max-attempts.label.label-primary.pull-right{title: "Max Number of Attempts"}= dj_max_attempts
+								.label-attempts.label.pull-right{class: "label-#{dj_label_class}", title: "Number of Attempts", style: "margin-right: 5px;"}= dj.attempts
+								.label-status.label.pull-right{class: "label-#{dj_panel_class}",title: 'Execution Status', style: "margin-right: 5px;"}= dj_status.titleize
+			.panel-collapse.collapse{id: "dj_#{dj.id}"}
+				.panel-body
+					.row
+						.col-md-2
+							%strong ID
+						.col-md-10= dj.id
+					.row
+						.col-md-2
+							%strong Name
+						.col-md-10= t("delayed_jobs.titles_by_names.#{dj_name}")
+					.row
+						.col-md-2
+							%strong Number of Attempts
+						.col-md-10.col-attempts= dj.attempts
+					.row
+						.col-md-2
+							%strong Max Number of Attempts
+						.col-md-10= dj_max_attempts
+					.row
+						.col-md-2
+							%strong Created At
+						.col-md-10= dj.created_at
+					.row
+						.col-md-2
+							%strong Handler
+						.col-md-10
+							%span.handler-text= dj.handler
+					.row
+						.col-md-2
+							%strong Last Error
+						.col-md-10
+							%span.last-error-text= dj.last_error
+:javascript
+	$(document).ready(function(){
+		$('.panel-group#delayed_jobs_accordion .panel-collapse').on('shown.bs.collapse', function () {
+			collapsible_block = $(this)
+			$('.handler-text, .last-error-text', collapsible_block).readmore()
+		})
+	});

@@ -1,0 +1,24 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :id_eq, t('templates.image_template.id')
+			= sf.search_field :id_eq, class: 'form-control', placeholder: "template id"
+		.col-md-2
+			= sf.label :name_cont, t('templates.image_template.name')
+			= sf.search_field :name_cont, class: 'form-control', placeholder: "Name"
+		.col-md-2
+			= sf.label :type_id
+			- types = Templates::ImageTemplate::TYPES.map{|type| [t("templates.image_template.types.#{type.split("::").last}"), type]}
+			= sf.select :type_eq, options_for_select(types, @search.type_eq), {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :client_id
+			- clients = Client.order(:name)
+			= sf.select :client_id_eq, options_from_collection_for_select(clients, :id, :name, @search.client_id_eq), {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :product_id
+			- products = Product.all
+			= sf.select :product_id_eq, options_from_collection_for_select(products, :id, :name, @search.product_id_eq), {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :is_active
+			- options = [['yes', true],['no', false]]
+			= sf.select :is_active_eq, options_for_select(options, @search.is_active_eq), {include_blank: true}, class: "form-control"

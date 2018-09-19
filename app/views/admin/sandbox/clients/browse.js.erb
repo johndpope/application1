@@ -1,0 +1,7 @@
+<%
+  modal = render partial: 'browse', locals: {image_type: @image_type}
+%>
+$('body').append('<%= escape_javascript(modal) %>');
+$("#browse_images").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})

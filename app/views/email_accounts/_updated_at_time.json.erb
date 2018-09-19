@@ -1,0 +1,1 @@
+<%= local_time(email_account[field], format: "#{field.to_s.humanize.titleize} · %m/%d/%y %I:%M %p", title: email_account[field].try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if email_account[field].present? %>

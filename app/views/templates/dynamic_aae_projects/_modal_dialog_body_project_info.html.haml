@@ -1,0 +1,17 @@
+- if aae_project = @dynamic_aae_project.try(:aae_project)
+	.row
+		.col-md-3
+			%b Original Project ID:
+		.col-md-9
+			= link_to aae_project.try(:id), templates_aae_projects_url(id: aae_project.id), target: "_BLANK"
+	.row
+		.col-md-3
+			%b Original Project Title:
+		.col-md-9
+			= link_to aae_project.try(:title), templates_aae_projects_url(id: aae_project.id), target: "_BLANK"
+	.row
+		.col-md-3
+			%b Type:
+		.col-md-9
+			- if type = aae_project.try(:project_type)
+				= t("templates_aae_projects.project_types.#{type}")

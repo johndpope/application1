@@ -1,0 +1,6 @@
+<%
+  row = render partial: "index_table_row", locals: {video: @video}
+  row_id = dom_id(@video, 'row')
+%>
+$('#<%= row_id %>').replaceWith('<%= escape_javascript(row)%>');
+$(".<%= @video.class.to_s.underscore.gsub('/','_')%>_modal").modal('hide');

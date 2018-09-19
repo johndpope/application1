@@ -1,0 +1,23 @@
+<li class="tab-url dropdown <% if 'clients' == params[:controller] && %w(assets assets_images).include?(params[:action]) %>active open<% end %>">
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">
+		Assets <span class="caret"></span>
+	</a>
+	<ul class="dropdown-menu" style="z-index: 1012; border-color: #3c8dbc;">
+		<li role="presentation"><div style="padding-left: 10px;"><b>Descriptions</b></div></li>
+		<li class="disabled" role="presentation"><%= link_to 'Client', 'javascript://', role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_descriptions' == params[:action] && params[:target] == 'client' }" %></li>
+		<li class="disabled" role="presentation"><%= link_to 'Donors', 'javascript://', role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_descriptions' == params[:action] && params[:target] == 'donors' }" %></li>
+		<li class="disabled" role="presentation"><%= link_to 'Industry', 'javascript://', role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_descriptions' == params[:action] && params[:target] == 'industry' }" %></li>
+		<li role="presentation"><div style="padding-left: 10px;"><b>Tags</b></div></li>
+		<li class="disabled" role="presentation"><%= link_to 'Client', 'javascript://', role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_tags' == params[:action] && params[:target] == 'client' }" %></li>
+		<li class="disabled" role="presentation"><%= link_to 'Donors', 'javascript://', role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_tags' == params[:action] && params[:target] == 'donors' }" %></li>
+		<li class="disabled" role="presentation"><%= link_to 'Industry', 'javascript://', role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_tags' == params[:action] && params[:target] == 'industry' }" %></li>
+		<li role="presentation"><div style="padding-left: 10px;"><b>Images</b></div></li>
+		<li role="presentation"><%= link_to 'Client', @assets_client_images_link, role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_images' == params[:action] && params[:target] == 'client' }" %></li>
+		<% if @assets_donors_images_link != '#' %>
+			<li role="presentation"><%= link_to 'Donors', @assets_donors_images_link, role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_images' == params[:action] && params[:target] == 'donors' }" %></li>
+		<% end %>
+		<li role="presentation"><%= link_to 'Industry', @assets_industry_images_link, role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets_images' == params[:action] && params[:target] == 'industry' }" %></li>
+		<li class="divider"></li>
+		<li role="presentation"><%= link_to '<b>Summary</b>'.html_safe, @assets_link, role: "menuitem", tabindex: "-1", class: "#{'menuitem-active' if 'clients' == params[:controller] && 'assets' == params[:action] }" %></li>
+	</ul>
+</li>

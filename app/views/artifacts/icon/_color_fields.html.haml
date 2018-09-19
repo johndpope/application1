@@ -1,0 +1,4 @@
+- @options.each do |t|
+  .form-group
+    = label_tag "Color #{@options.index(t)}"
+    = text_field :icon_colors, "#{t[0]}", value: "#{t[1]}", class: "form-control pick-a-color"

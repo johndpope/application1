@@ -1,0 +1,3 @@
+<% unless @channel_icon.blank? %>
+  $('.channel_icon_img').attr('src','<%=@channel_icon.file.url%>').animate({opacity:0},200).animate({opacity:1},200);
+<% end %>

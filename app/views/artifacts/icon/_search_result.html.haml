@@ -1,0 +1,24 @@
+#icon_search_results
+  .row
+    .col-md-12{style: "margin-top: 10px"}
+      %label{class: "control-label"}
+        = t('items_totally')
+      %span{class: "label label-default"}
+        = "#{@icons.total_count}"
+  #paginator
+    = paginate(@icons, :remote => true, :theme => "bootstrap")
+  .row
+    - @icons.each_slice(3) do |icon_row|
+      .col-md-12
+        - icon_row.each do |icon|
+          - unless !File.exists?(icon.file.path) && !icon.file.path.blank?
+            .col-md-4
+              %div.image-block{class: "thumbnail"}
+                = image_tag icon.try(:file).try(:url, :original), title: icon.title, class: "img-responsive found-image", width: "300px",
+                  data: {path: icon.try(:file).try(:path), id: icon.id, dismiss: "modal"}
+                - unless icon.title.blank?
+                  %span{class: "label label-default"}
+                    = "#{icon.title}"
+  %hr
+  #paginator
+    = paginate(@icons, :remote => true, :theme => "bootstrap")

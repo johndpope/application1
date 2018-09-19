@@ -1,0 +1,3 @@
+- centered_columns = %w(thumb is_active)
+- %w(id title sandbox_client_id order_nr thumb is_active).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}= t("sandbox.video_set.#{c}")

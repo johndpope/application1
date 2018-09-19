@@ -1,0 +1,11 @@
+<%
+  modal = render partial: 'form', locals: {comment: @comment, resource_id: params[:resource_id], resource_type: params[:resource_type]}
+%>
+
+$("div.modal-backdrop.fade.in").remove();
+$('#modal_comment').remove();
+$('body').append('<%= escape_javascript(modal) %>');
+$("#modal_comment").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+});
+$('.has-error').popover({  trigger: 'hover',  placement: 'bottom',  animation: true});

@@ -1,0 +1,26 @@
+<%
+  modal = render partial: 'tags', locals: {email_accounts_setup: email_accounts_setup, target: target}
+  modal_dom_id = 'tags_modal'
+%>
+
+$("#<%= modal_dom_id %>").modal('destroy').remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+
+function colorTags() {
+  var tags = $('#tags_modal span.tag');
+  for (var i = 0; i < tags.length; i++) {
+      tags[i].className = 'tag label label-tags label-primary';
+  }
+}
+
+$('.tags-view').tagsinput();
+$('#tags_modal .bootstrap-tagsinput input').css('display', 'none');
+
+$('#tags_modal span.tag span').css('display', 'none');
+
+colorTags();
+$('body').removeClass('waiting');

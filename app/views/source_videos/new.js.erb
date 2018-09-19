@@ -1,0 +1,14 @@
+<% modal = render partial: '/source_videos/modal_dialog/content' %>
+$('body').remove('.source-video-modal').append('<%= escape_javascript(modal) %>');
+$('.source-video-modal').modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function(e){
+		$(this).remove()
+})
+
+$('[data-toggle="popover"]').popover({
+	content: $(this).data('content'),
+	title: $(this).data('title'),
+	html: true,
+	placement: 'top',
+	container:'.modal',
+	trigger: 'hover'
+});

@@ -1,0 +1,27 @@
+- content_for(:title) { @sandbox_client.client.name }
+- content_for(:javascripts){javascript_include_tag 'jquery.shuffle'}
+- @blended_video_src = !@video_set.blended_sample.blank? ? @video_set.blended_sample.url : "/system/sandbox/slider/video/blender_export_small.mp4"
+
+.navigation_row
+	.clear
+		= link_to 'javascript://', class: "float-left" do
+			= fa_icon 'chevron-left'
+		= link_to 'javascript://', class: "float-right" do
+			= fa_icon 'chevron-right'
+
+.container.main-body
+	.arrow-steps.clearfix
+		%a.step.current{"data-toggle" => "tab", :href => "#blender_sample", :role => "tab"} Blender Sample
+		%a.step{"data-toggle" => "tab", :href => "#youtube_setup", :role => "tab"} YouTube Setup
+		%a.step{"data-toggle" => "tab", :href => "#youtube_channel", :role => "tab"} YouTube Channel
+		%a.step{"data-toggle" => "tab", :href => "#youtube_video", :role => "tab"} YouTube Video
+	.tab-content.tab_nav
+		#blender_sample.tab-pane.active{:role => "tabpanel"}
+			= render partial: 'blended_sample_tab'
+		#youtube_setup.tab-pane{:role => "tabpanel"}
+			= render partial: 'youtube_setup_tab'
+		#youtube_channel.tab-pane{:role => "tabpanel"}
+			= render partial: 'youtube_channel_tab'
+		#youtube_video.tab-pane{:role => "tabpanel"}
+			= render partial: 'youtube_video_tab'
+= render partial: 'sandbox/video_blenders/blended_sample/info_box'

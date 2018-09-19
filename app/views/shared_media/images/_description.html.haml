@@ -1,0 +1,19 @@
+= form_tag(shared_media_images_group_update_path, multipart: true, remote: true) do
+  .panel.panel-default
+    .panel-heading
+      %h3{:style => "text-align:center; margin:10px;"}
+        ="Update"
+        %i.fa.fa-pencil-square-o
+    .panel-body
+      .box.box-primary.images-box.hidden= render partial: "images"
+      .box.box-primary.audios-box.hidden= render partial: "audios"
+      .box.box-primary.videos-box.hidden= render partial: "videos"
+      .row.center
+        .btn-group.btn-group-custom
+          = link_to "#", :class => "btn btn-primary btn-lg prev-step" do
+            = fa_icon "arrow-left"
+            = "Back"
+          = submit_tag "Save", data: { disable_with: "Saving..." }, :class => "btn btn-lg btn-success"
+          = link_to "#", :class => "btn btn-primary btn-lg next-step" do
+            = "Next"
+            = fa_icon "arrow-right"

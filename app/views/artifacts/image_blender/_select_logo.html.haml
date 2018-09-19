@@ -1,0 +1,16 @@
+- products = @client.products
+#logo_search_result
+  %h4 There are #{@client.products.count} logotypes
+  .row
+    - products.each do |product|
+      .col-md-4
+        %div.image-block{class: "thumbnail"}
+          = image_tag product.try(:logo).try(:url, :thumb), class: "img-responsive logo-image", width: "300px",
+            data: {path: product.try(:logo).try(:path), id: product.id, type: "artifacts_logo", dismiss: "modal"}
+          %br
+          .btn-group
+            = link_to "#{product.id}", "#", title: "id", class: "btn btn-default btn-sm"
+            = link_to "#{truncate(product.name, :length => 15, :separator => ' ')}", "#", title: "#{product.name}", class: "btn btn-default btn-sm"
+            = link_to product.logo.url, class: "btn btn-default btn-sm dimensions", title: "image's dimensions", target: "_BLANK" do
+              - dimensions = Paperclip::Geometry.from_file(product.logo.path)
+              = fa_icon 'file-image-o', text: [dimensions.width.to_i, dimensions.height.to_i].join('x')

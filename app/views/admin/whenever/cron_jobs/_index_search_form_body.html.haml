@@ -1,0 +1,17 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :id_eq, t('whenever_cron_job.id')
+			= sf.search_field :id_eq, class: 'form-control'
+		.col-md-2
+			= sf.label :video_campaign_client_id, t('whenever_cron_job.job_group')
+			- options = options_from_collection_for_select(WheneverCronJobGroup.order(:name), :id, :name, @search.job_group_id_eq)
+			= sf.select :job_group_id_eq, options, {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :job_type_eq, t('whenever_cron_job.job_type')
+			- job_type_options = WheneverCronJob::JOB_TYPES.map{|k,v|[I18n.t("whenever_cron_job.job_types.#{k}"), v]}
+			= sf.select :job_type_eq, options_for_select(job_type_options, @search.job_type_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :is_active_eq, t('whenever_cron_job.is_active')
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= sf.select :is_active_eq, options_for_select(yes_no_options, @search.is_active_eq), {include_blank: true}, class: 'form-control'

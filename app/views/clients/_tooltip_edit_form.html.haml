@@ -1,0 +1,26 @@
+.modal.fade{:id => "tooltip_edit_#{tooltip.id}"}
+  .modal-dialog.modal-lg
+    .modal-content
+      = form_tag tooltip_update_path(tooltip.id), {method: :post, data: {remote: true}} do
+        .modal-header
+          %button.close{ type: 'button', data: { dismiss: 'modal' } }
+            %span &times;
+          %h4= "Tooltip edit: #{tooltip.id}"
+        .modal-body
+          .nav-tabs-custom
+            %ul.nav.nav-tabs
+              %li.active= link_to 'Edit','#edit_tooltip_text',data: {toggle: 'tab'}
+              %li= link_to 'Revisions','#tooltip_change_log',data: {toggle: 'tab'}
+            .tab-content{class: 'no-padding'}
+              .tab-pane.active{class: '', id: 'edit_tooltip_text'}
+                .row
+                  .col-md-12
+                    = label_tag 'tooltip', 'Tooltip'
+                    = text_area_tag 'tooltip_text', tooltip.value, class: 'form-control', rows: 3
+              .tab-pane{class: '', id: 'tooltip_change_log'}
+                = render partial: "tooltip_versions", locals: {tooltip: @tooltip}
+        .modal-footer
+          = button_tag '', {:class => 'btn btn-primary', :type => 'submit'} do
+            = fa_icon 'floppy-o'
+            = 'Save'
+          = button_tag 'Cancel', {:class => 'btn btn-danger',"data-dismiss" => "modal"}

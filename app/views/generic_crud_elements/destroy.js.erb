@@ -1,0 +1,11 @@
+<% row_id = dom_id(item, 'row') %>
+table = $('#<%= row_id%>').closest('table');
+if($('tbody.tbody tr',table).length == 0){
+	$('tbody.tfoot', table).hide();
+}
+$('#<%= row_id%>').remove();
+
+//recalculation of row order numbers
+$('tbody.tbody tr', table).each(function(index){
+	$('.row_nr', $(this)).text(index + 1);
+})

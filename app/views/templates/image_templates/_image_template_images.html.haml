@@ -1,0 +1,19 @@
+%tr{id: dom_id(image_form.object, 'image_row')}
+  %td
+    = image_form.object.id
+    = image_form.hidden_field :id
+  %td= image_form.text_field :name, class: 'form-control'
+  %td= image_form.text_field :width, class: 'form-control'
+  %td= image_form.text_field :height, class: 'form-control'
+  %td
+    - if image_form.object.new_record?
+      = link_to "javascript:", class: "btn-danger btn btn-sm btn-remove-new-image" do
+        = fa_icon 'trash', text: t('remove')
+    - elsif
+      - url = templates_image_template_image_path(image_form.object, authenticity_token: form_authenticity_token)
+      = link_to url,
+        method: :delete,
+        data: { confirm: 'Are you sure?', remote: true, disable_with: t('removing') },
+        title: 'Delete',
+        class: 'btn btn-danger btn-sm btn-remove-existing-text' do
+        = fa_icon 'trash', text: t('remove')

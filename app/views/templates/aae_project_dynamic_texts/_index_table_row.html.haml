@@ -1,0 +1,19 @@
+%tr{id: dom_id(dynamic_text, "row")}
+  %td= dynamic_text.id
+  %td
+    = form_for dynamic_text, remote: "true" do |f|
+      = f.text_field :value, class: "form-control text-counter #{'has-error' if dynamic_text.value.to_s.size > dynamic_text.text_type_limit}", data: {content: "#{'Too long! Limit is ' + dynamic_text.text_type_limit.to_s + ' characters.' if dynamic_text.value.to_s.size > dynamic_text.text_type_limit}"}, maxlength: dynamic_text.text_type_limit, placeholder: "Enter #{t("templates_aae_projects.project_text_types.#{f.object.text_type}")} (character limit: #{f.object.text_type_limit})"
+  %td= dynamic_text.try(:product).try(:name)
+  %td
+    .btn-group{role: "group"}
+      = link_to edit_templates_aae_project_dynamic_text_path(dynamic_text),
+        title: "Edit",
+        class: "btn btn-default btn-sm",
+        data: {remote: "true"} do
+        = fa_icon "pencil"
+      = link_to templates_aae_project_dynamic_text_path(dynamic_text, authenticity_token: form_authenticity_token),
+        method: :delete,
+        data: { confirm: 'Are you sure?', remote: true },
+        title: 'Delete',
+        class: 'btn btn-default btn-sm btn-remove-existing-dynamic-text' do
+        = fa_icon 'trash'

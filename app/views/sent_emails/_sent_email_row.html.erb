@@ -1,0 +1,10 @@
+<div id="<%= dom_id(sent_email, 'row')%>" class="direct-chat-msg">
+  <div class="direct-chat-info clearfix">
+    <span class="direct-chat-name pull-left"><%= sent_email.admin_user.try(:email) %> <i class="fa fa-paper-plane-o"></i> <%= sent_email.receiver %></span>
+    <span class="direct-chat-timestamp pull-right"><i><b><%= time_ago_in_words(sent_email.updated_at) %> ago</b></i> on <b><%= local_time(sent_email.updated_at, format: '%m/%d/%y at %I:%M %p', title: sent_email.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y at %I:%M %p - Eastern Time (US & Canada)')) %></b></span>
+  </div>
+  <img class="direct-chat-img img-bordered-sm bg-red" src="/user.png">
+  <div class="direct-chat-text">
+    <p style="white-space: pre-line;"><b><%= sent_email.subject %></b><hr style="margin-top: 10px !important; margin-bottom: 10px !important;"/><%= sent_email.body.html_safe %></p>
+  </div>
+</div>

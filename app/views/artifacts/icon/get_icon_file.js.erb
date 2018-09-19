@@ -1,0 +1,23 @@
+<%
+  selected_image = render partial: "selected_image", locals: {image_url: params[:image_url]}
+%>
+$('#selected_icon').html('<%= escape_javascript(selected_image) %>');
+<%
+  color_fields = render partial: "color_fields", locals: {options: @options}
+%>
+$('#color_fields').html('<%= escape_javascript(color_fields) %>');
+
+$(".pick-a-color").pickAColor({
+  showSpectrum            : true,
+  showSavedColors         : true,
+  saveColorsPerElement    : true,
+  fadeMenuToggle          : true,
+  showAdvanced						: true,
+  showBasicColors         : true,
+  showHexInput            : true,
+  allowBlank							: true,
+  inlineDropdown					: true
+}).on("change", function(){
+  $('.button_apply_settings').prop('disabled', false);
+});
+$('#blended_icon').html("");

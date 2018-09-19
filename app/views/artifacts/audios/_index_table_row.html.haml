@@ -1,0 +1,59 @@
+%tr{class: "template-upload fade in", id: dom_id(audio, "row")}
+  %td= audio.id
+  %td{class: "text-center"}
+    - if audio.screenshots.last.try(:image).present?
+      .screenshot-div
+        = link_to (image_tag URI::escape(audio.screenshots.last.image.url(:thumb), '[]'), { class: 'img-thumbnail livepreview', title: audio.screenshots.last.created_at.in_time_zone('Eastern Time (US & Canada)').strftime('%m/%d/%Y %I:%M %p - Eastern Time (US & Canada)'), data: { src: audio.screenshots.last.image.url(:original) } }), URI::escape(audio.screenshots.last.image.url(:original), '[]'), { target: '_blank' }
+        = link_to "javascript://", { target: '_blank' } do
+          %span{class: "badge bg-orange"}= audio.screenshots.size
+  %td{class: "text-center"}
+    - unless audio.file.blank?
+      %div{data: {code: audio.full_title}}
+        %audio{id: "audio_#{audio.id}", controls: "controls", preload: "none", style: "display: none; width: 495px;"}
+          %source{src: "#{audio.file}", type: "audio/mp3"}
+      = Time.at(audio.duration).utc.strftime("%H:%M:%S") if audio.duration.present?
+  %td= @audio_artists[audio.id] unless @audio_artists.nil?
+  %td= audio.try(:title)
+  %td{class: "text-center"}
+    - if audio.sound_type == "sound_music"
+      %span.label{class: 'label-success'}= audio.sound_type.try(:titleize)
+    - if audio.sound_type == "sound_effect"
+      %span.label{class: 'label-primary'}= audio.sound_type.try(:titleize)
+  %td{class: "text-center"}= audio.attribution_required.humanize unless audio.attribution_required.blank?
+  %td{class: "text-center"}= check_box_tag :is_approved, "", audio.is_approved, data: {id: audio.id}, class: 'is_approved_check'
+  %td= audio.try(:clients).try(:name)
+  %td{class: "text-center"}
+    - if audio.genres.size > 4
+      = link_to 'javascript://', class: "btn btn-default btn-sm genres_for_audio",
+        data: {genres: audio.genres} do
+        = fa_icon 'info-circle'
+    - else
+      - audio.genres.each do |genre|
+        %small{class: "label bg-green"}= genre.name
+  %td{class: "text-center"}
+    %small{class: "label bg-purple"}= audio.mood.try(:titleize)
+  %td{class: "text-center"}
+    %small{class: "label bg-blue"}= audio.audio_category.try(:titleize)
+  %td{class: "text-center"}
+    - unless audio.tags.blank?
+      = link_to 'javascript://', class: "btn btn-default btn-sm tags_for_audio",
+        data: {container: "body", tags: audio.tags, placement: "top", toggle: "popover", trigger: "hover"} do
+        = fa_icon 'tags'
+  %td.has_voice{class: "text-center"}
+    - label_text = if audio.has_voice.nil?; 'Unreviewed'; else; audio.has_voice? ? t('yes') : t('no');end
+    - label_class = if audio.has_voice.nil?; 'default'; else; audio.has_voice? ? 'success' : 'danger';end
+    .label{class: "label-#{label_class}"}= label_text
+  %td.actions
+    .btn-group{role: "group"}
+      = link_to edit_artifacts_audio_path(audio, authenticity_token: form_authenticity_token),
+        :data => {remote: true},
+        :title => 'Edit',
+        :class => 'btn btn-default btn-sm edit' do
+        = fa_icon 'pencil'
+
+      = link_to artifacts_audio_path(audio, authenticity_token: form_authenticity_token),
+        :method => "delete",
+        :data => {confirm: 'Are you sure?', remote: true},
+        :title => 'Delete',
+        :class => 'btn btn-default btn-sm delete' do
+        = fa_icon 'trash-o'

@@ -1,0 +1,16 @@
+%p
+	%strong=title
+%table.table.table-bordered.table-hover.table-striped
+	%thead
+		%th.text-center{width: '40px'}
+			= check_box_tag '', data:{role: 'check-manufacturers'}
+		%th.text-center{width: '40px'} ID
+		%th Name
+	%tbody
+		- manufacturers.each do |manufacturer|
+			%tr
+				%td.text-center
+					= check_box_tag 'client[certifying_manufacturer_ids][]', manufacturer.id, (associated_manufacturer_ids.include? manufacturer.id)
+				%td.text-center= manufacturer.id
+				%td
+					= link_to manufacturer.name, edit_client_path(manufacturer.id), target: '_BLANK'

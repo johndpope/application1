@@ -1,0 +1,6 @@
+<%
+	row_id = dom_id(@blended_video_chunk)
+	row = render partial: "clients/video_workflow/video_set_block/video_segments_block/video_segments_table_row", locals: {bvc: @blended_video_chunk}
+%>
+$('#<%=row_id%>').replaceWith('<%= escape_javascript(row)%>');
+$('#<%=dom_id(@blended_video_chunk, "notes_modal")%>').modal('hide');

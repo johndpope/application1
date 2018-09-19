@@ -1,0 +1,16 @@
+.artifacts_image_blender{
+  &.index{
+    #image_blender_search_results{
+      .image_block{
+        margin-bottom: 10px;
+        img{width: 240px; height: 240px}
+      }
+    }
+
+    #form_blend{
+      .bootstrap-tagsinput{
+        display: block;
+      }
+    }
+  }
+}

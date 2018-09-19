@@ -1,0 +1,16 @@
+.form-group
+	.row
+		.col-md-2
+			= sf.label :id_eq, 'ID'
+			= sf.search_field :id_eq, class: 'form-control', placeholder: "System ID"
+		.col-md-2
+			= sf.label :type_id
+			- types = [['VK Photo', 'Artifacts::VkPhoto']]
+			= sf.select :type_eq, options_for_select(types, @search.type_eq), {include_blank: true}, class: "form-control"
+		.col-md-2
+			= sf.label :person_birth_year_eq, 'Birth Year'
+			= sf.search_field :person_birth_year_eq, class: 'form-control', placeholder: "Birth Year"
+		.col-md-2
+			= sf.label :person_gender_eq, 'Gender'
+			- options = Artifacts::HumanPhoto::GENDERS.map{|k,v|[k,v]}
+			= sf.select :person_gender_eq, options_for_select(options, @search.person_gender_eq), {include_blank: true}, class: "form-control"

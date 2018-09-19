@@ -1,0 +1,15 @@
+= selectable_column
+= column :id
+= column do
+    %div
+
+= column :email
+= column :password
+= column :recovery_email
+= column :phone
+= column :state
+= column :city
+= column 'Authorize' do
+    = link_to 'Authorize', google_api_authenticate_path(google_account_id: @google_account.id)
+
+= actions

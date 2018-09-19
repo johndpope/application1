@@ -1,0 +1,136 @@
+<aside class="main-sidebar">
+	<section class="sidebar" id="scrollspy">
+		<div class="user-panel">
+			<div class="pull-left image">
+				<%= image_tag 'man-photo.png', class: 'img-circle' %>
+			</div>
+			<div class="pull-left info">
+				<p><%= current_admin_user.present? ? current_admin_user[:email] : 'guest'%></p>
+				<a href="javascript://"><i class="fa fa-circle text-success"></i> Online</a>
+			</div>
+		</div>
+		<ul class="sidebar-menu">
+			<li <%= 'class=active' if params[:controller] == 'dashboard' %>><a href="<%= dashboard_path %>"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
+			<li><a href="<%= admin_root_path %>" target="_blank"><i class="fa fa-gear"></i><span>Active Admin Panel</span></a></li>
+			<li><a href="<%= admin_sandbox_root_path %>"><i class="fa fa-gears"></i><span>Admin Tools</span></a></li>
+			<li><a href="<%= admin_sandbox_root_path %>"><i class="fa fa-cubes"></i><span><%= t('sidebar.sandbox')%></span></a></li>
+			<li <%= 'class=active' if ['clients', 'client_landing_pages', 'representatives', 'products', 'contracts', 'accounts_setup'].include? params[:controller] %>><a href="<%= clients_path %>"><i class="fa fa-user"></i><span>Clients</span></a></li>
+			<li class="treeview <%= 'active' if ['host_machine', 'email_accounts', 'youtube_channels', 'youtube_videos', 'youtube_video_annotations', 'youtube_video_cards', 'wordings', 'ip_addresses', 'bot_servers', 'training_infos', 'social_accounts'].include? params[:controller] %>">
+				<a href="#"><i class="fa fa-folder"></i><span>Assets</span> <i class="fa pull-right fa-angle-left"></i></a>
+				<ul class="treeview-menu">
+					<li <%= 'class=active' if params[:controller] == 'host_machine' %>>
+						<a href="<%= host_machines_path %>"><i class="fa fa-angle-double-right"></i> Host Machines</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'email_accounts' &&  params[:action] != 'order' %>>
+						<a href="<%= email_accounts_path %>"><i class="fa fa-angle-double-right"></i> Email Accounts</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'email_accounts'  && params[:action] == 'order' %>>
+						<a href="/email_accounts/tools/order"><i class="fa fa-angle-double-right"></i> Order Email Accounts</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'youtube_channels' && params[:action] != 'order' %>>
+						<a href="/youtube_channels"><i class="fa fa-angle-double-right"></i> Youtube Channels</a>
+					</li>
+					<li <%= 'class=active' if ['youtube_videos', 'youtube_video_annotations', 'youtube_video_cards'].include?(params[:controller]) && params[:action] != 'order' %>>
+						<a href="/youtube_videos"><i class="fa fa-angle-double-right"></i> Youtube Videos</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'social_accounts' %>>
+						<a href="<%= social_accounts_path %>"><i class="fa fa-angle-double-right"></i> Social Accounts</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'wordings' && params[:action] != 'order' %>>
+						<a href="<%= wordings_path %>"><i class="fa fa-angle-double-right"></i> Wordings</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'ip_addresses' %>>
+						<a href="<%= ip_addresses_path %>"><i class="fa fa-angle-double-right"></i> IP Addresses</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'bot_servers' %>>
+						<a href="<%= bot_servers_path %>"><i class="fa fa-angle-double-right"></i> Bot Servers</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'training_infos' %>>
+						<a href="<%= training_infos_path %>"><i class="fa fa-angle-double-right"></i> Training Videos</a>
+					</li>
+				</ul>
+			</li>
+			<li class="treeview <%= 'active' if ['phones', 'phone_services', 'phone_service_accounts', 'phone_providers', 'phone_usages'].include? params[:controller] %>">
+				<a href="#"><i class="fa fa-phone"></i><span>Phones Stuff</span> <i class="fa pull-right fa-angle-left"></i></a>
+				<ul class="treeview-menu">
+					<li <%= 'class=active' if params[:controller] == 'phone_services' %>>
+						<a href="<%= phone_services_path %>"><i class="fa fa-angle-double-right"></i> Phone Services</a>
+					</li>
+					<li <% 'class=active' if params[:controller] == 'phone_service_accounts' %>>
+						<a href="<%= phone_service_accounts_path %>"><i class="fa fa-angle-double-right"></i> Phone Service Accounts</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'phone_providers' %>>
+						<a href="<%= phone_providers_path %>"><i class="fa fa-angle-double-right"></i> Phone Providers</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'phones' %>>
+						<a href="<%= phones_path %>"><i class="fa fa-angle-double-right"></i> Phones</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'phone_usages' %>>
+						<a href="<%= phone_usages_path %>"><i class="fa fa-angle-double-right"></i> Phone Usages</a>
+					</li>
+				</ul>
+			</li>
+			<li class="treeview <%= 'active' if ['source_videos', 'video_scripts', 'video_part'].include? params[:controller] %>">
+				<a href="#"><i class="fa fa-video-camera"></i><span>Video Production</span> <i class="fa fa-angle-left pull-right"></i></a>
+				<ul class="treeview-menu">
+					<li <%= 'class=active' if params[:action] == 'transitions' %>>
+						<a href="<%= transitions_path %>"><i class="fa fa-indent"></i> Transitions</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'video_scripts' %>>
+						<a href="<%= video_scripts_path %>"><i class="fa fa-file-text"></i> Video Scripts</a>
+					</li>
+				</ul>
+			</li>
+			<li><%= link_to artifacts_root_path do %><%= fa_icon 'image' %><span>Artifacts</span><% end %></li>
+			<li class="treeview <%= 'active' if %w(templates/aae_projects templates/aae_project_dynamic_texts client_landing_page_templates).include? params[:controller] %>">
+				<a href="#">
+					<i class="fa fa-file-movie-o"></i>
+					<span>Templates</span> <i class="fa fa-angle-left pull-right"></i>
+				</a>
+				<ul class="treeview-menu">
+					<li class="<%= 'active' if params[:controller] == 'templates/aae_projects' %>">
+						<%= link_to templates_aae_projects_path do %>
+							<%= fa_icon 'file-text-o' %>
+							<span>AAE Templates</span>
+						<% end %>
+					</li>
+					<li class="<%= 'active' if params[:controller] == 'templates/aae_project_texts/correct_static_texts' %>">
+						<%= link_to templates_correct_static_texts_path do %>
+							<%= fa_icon 'file-text-o' %>
+							<span>Correct AAE Template Static Texts</span>
+						<% end %>
+					</li>
+					<li class="<%= 'active' if(params[:controller] == 'templates/aae_project_dynamic_texts' && params[:action] == 'quick_edit') %>">
+						<%= link_to templates_aae_project_dynamic_texts_quick_edit_path do %>
+							<%= fa_icon 'file-text-o' %>
+							<span>Quick edit of dynamic texts</span>
+						<% end %>
+					</li>
+					<li class="<%= 'active' if(params[:controller] == 'client_landing_page_templates') %>">
+						<%= link_to client_landing_page_templates_path do %>
+							<%= fa_icon 'file-text-o' %>
+							<span>Client Landing Page Templates</span>
+						<% end %>
+					</li>
+				</ul>
+			</li>
+			<li class="treeview <%= 'active' if ['watching_video_categories', 'settings', 'recovery_attempt_responses', 'text_chunks'].include? params[:controller] %>">
+				<a href="#"><i class="fa fa-sliders"></i><span>Preferences</span> <i class="fa fa-angle-left pull-right"></i></a>
+				<ul class="treeview-menu">
+					<li <%= 'class=active' if params[:controller] == 'watching_video_categories' %>>
+						<a href="<%= watching_video_categories_path %>"><i class="fa fa-th-list"></i> Watching Categories</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'recovery_attempt_responses' %>>
+						<a href="<%= recovery_attempt_responses_path %>"><i class="fa fa-outdent"></i> Recovery Responses</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'text_chunks' %>>
+						<a href="<%= text_chunks_path %>"><i class="fa fa-cubes"></i> Text Chunks</a>
+					</li>
+					<li <%= 'class=active' if params[:controller] == 'settings' %>>
+						<a href="<%= settings_path %>"><i class="fa fa-gears"></i> Settings</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</section>
+</aside>

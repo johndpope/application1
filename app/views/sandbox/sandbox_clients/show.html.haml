@@ -1,0 +1,21 @@
+- content_for(:title) { "#{@sandbox_client.client.name} Samples" }
+- content_for(:javascripts) do
+	- %w(parallax campaign_view).each do |js|
+		= javascript_include_tag "sandbox/sandbox_clients/#{js}"
+.main-paralax-box
+	- if @sandbox_client.background_image
+		.bg_pe.parallax{style:"background-image: url('/assets/sandbox/bg.png'), url('#{@sandbox_client.background_image}');", data: {offset: "100"}}
+	.container
+		.mpb-info
+			%h1
+				%b Client
+				Info
+			- if @sandbox_client.description
+				%hr
+				.mpb-text-info
+					%p= @sandbox_client.description
+		- if @sandbox_client.video_sets
+			.subject_image{style: "background-image: url('#{@sandbox_client.subject_image}');"}
+.container.main-body
+	- %w(video_sets content_blender campaign_view).each do |partial|
+		= render partial: "sandbox/sandbox_clients/show/#{partial}"

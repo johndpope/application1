@@ -1,0 +1,29 @@
+- title 'Client Recipients'
+- header @client.name
+- small_header 'Recipients'
+- breadcrumb :recipients, @client
+= render 'clients/navigation'
+
+- if @client.recipients.count > 0
+	.box
+		.box-header.with-border
+			%h3.box-title List of Content Recipients
+			.box-tools
+				%strong total count:
+				%span.label.label-primary= @recipients.total_count
+		.box-body
+			%table.table.table-bordered.table-hover.table-striped
+				%thead
+					%tr
+						%th.id{width: "40px;"}ID
+						%th.name Client Name
+				%tbody
+					- @recipients.each do |r|
+						%tr
+							%td= r.id
+							%td= link_to r.name, edit_client_path(r.id), target: '_BLANK'
+			= paginate @recipients, theme: 'bootstrap'
+- else
+	.callout.callout-info
+		%p
+			This client doesn't have any recipient

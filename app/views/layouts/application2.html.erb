@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= yield :title%></title>
+		<%= stylesheet_link_tag "application", media: "all" %>
+		<%= javascript_include_tag "application" %>
+		<% unless devise_controller? %>
+			<%= stylesheet_link_tag params[:controller], media: "all"%>
+			<%= javascript_include_tag params[:controller]%>
+		<% end %>
+		<%= yield :head %>
+		<%= csrf_meta_tags %>
+	</head>
+	<%
+		page = [:controller, :action].map { |e| params[e].gsub('/', '_').camelize }.join
+		p_classes = params[:controller].split('/').join('_') + ' ' + params[:action]
+		p_classes += ' sidebar-collapse' if params[:controller] == 'dashboard' && params[:action] == 'index'
+	%>
+	<body class="skin-blue sidebar-mini <%= p_classes %>" data-page="<%= page %>">
+		<%= yield :body_top %>
+		<div class="wrapper">
+			<%= render partial: 'layouts/header' %>
+			<%= render partial: 'layouts/sidebar' %>
+			<aside class="content-wrapper">
+				<section class="content-header">
+					<% if content_for? :title %>
+						<h1>
+							<%= yield :title %>
+							<% if content_for :small_header %>
+								<small><%= yield :small_header%></small>
+							<% end %>
+						</h1>
+						<%= breadcrumbs separator: ' &rsaquo; ', class: :breadcrumb %>
+					<% end %>
+				</section>
+				<section class="content"><%= yield %></section>
+			</aside>
+		</div>
+		<%= yield :body_bottom %>
+		<%= render partial: 'layouts/footer' %>
+	</body>
+</html>

@@ -1,0 +1,60 @@
+<% count = @client.source_videos.each_slice(15).count %>
+<% @client.source_videos.each_slice(15).each_with_index do |video_pack, index| %>
+  <page size="A4">
+    <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+    <div class="content">
+
+      <% if(index == 0) %>
+        <section class="section1">
+          <div class="container">
+            <div class="video-dashboard-link-block pd-t-10">
+              <p><strong>Video Dashboard Link:</strong></p>
+              <% posted_videos_url = "#{Rails.configuration.routes_default_url_options[:host]}#{Rails.application.routes.url_helpers.public_client_youtube_videos_path(@client.public_profile_uuid, status: "done")}" %>
+              <%= link_to posted_videos_url, posted_videos_url, { target: '_blank' }%>
+            </div>
+          </div>
+        </section>
+      <% end %>
+
+      <%
+        if (index == 0)
+          section_class = "section2-first"
+        else
+          section_class = "section2"
+        end
+      %>
+        <section class="<%=section_class%>">
+          <div class="container">
+            <div class="col-xs-8">
+              <% if index == 0 %>
+                <p>
+                  <b>Total: <span class="client-name"><%=@client.name%></span></b>
+                  <b>Videos: <span class="total-client-videos"><%=@client.source_videos.count%></span></b>
+                </p>
+              <% end %>
+
+              <ul class="ol-wrap">
+                <% video_pack.each do |video| %>
+                  <li><%=video.custom_title%></li>
+                <% end %>
+              </ul>
+            </div>
+
+            <div class="col-xs-4">
+              <% if(index == 0) %>
+                <p><strong> Total Locations: <span class="total-locations"><%=@locations.count%></span> Locations</strong></p>
+                <ul>
+                  <% @locations.each do |locality, code| %>
+                    <li><%=locality%>, <%=code%></li>
+                  <% end %>
+                </ul>
+              <% end %>
+            </div>
+          </div>
+        </section>
+
+    </div>
+    <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+  </page>
+
+<% end %>

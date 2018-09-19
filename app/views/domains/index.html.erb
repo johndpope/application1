@@ -1,0 +1,71 @@
+<% title 'Domains' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<div id="domains_list">
+	<div class="row">
+		<div class="col-md-5"><%= link_to 'New domain', new_domain_path, remote: true, class: 'btn btn-sm btn-primary' %></div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @domains.total_count %></span>
+			</div>
+		</div>
+	</div>
+
+	<table id="domains_table" class="table table-bordered table-striped dataTable">
+		<thead>
+			<tr>
+				<th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+				<th class="sort" id="name-th" data-field="name">Name</th>
+        <th class="sort text-center" id="parked-th" data-field="parked">Parked</th>
+				<th class="sort" id="updated_at-th" data-field="updated_at">Updated at</th>
+				<th class="sort" id="created_at-th" data-field="created_at">Created at</th>
+				<th style="width: 130px;" class="text-center">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @domains.each do |domain| %>
+				<%= render partial: 'domain_row', locals: {domain: domain} %>
+			<% end %>
+		</tbody>
+	</table>
+
+	<div><%= paginate @domains, theme: 'bootstrap' %></div>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :name, :parked, :updated_at, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :updated_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({ action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+			<div class="filter-label">Name:</div>
+			<%= search_field_tag :name, params[:name], class: 'form-control' %>
+      <div class="filter-label">Parked:</div>
+      <%= select_tag(:parked, options_for_select([['YES', true], ['NO', false]], params[:parked]), { include_blank: true, class: 'form-control' } ) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

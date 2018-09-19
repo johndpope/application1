@@ -1,0 +1,3 @@
+- video_campaigns = @sandbox_client.video_campaigns.joins(:campaign_video_stages).where("sandbox_video_campaign_video_stages.locality_id = ?", locality_id).distinct
+- video_campaigns.each do |vc|
+	%option{value: vc.id, data: {url: sandbox_client_content_blender_preview_path(@sandbox_client.uuid, vc.id, locality_id)}}= vc.title

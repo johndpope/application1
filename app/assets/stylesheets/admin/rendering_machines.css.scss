@@ -1,0 +1,9 @@
+.admin_rendering_machines{
+	&.index{
+		#rendering_machine_items{
+			.id{width: 40px;}
+			.ip, .user, .password{width: 140px;}
+			.order_nr, .vmware_server_id, .is_active, .is_test{width: 100px;}
+		}
+	}
+}

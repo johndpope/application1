@@ -1,0 +1,30 @@
+<% google_last_rank = youtube_video_search_phrase.youtube_video_search_ranks.where(search_type: YoutubeVideoSearchRank.search_type.find_value(:google).value).last %>
+<% youtube_last_rank = youtube_video_search_phrase.youtube_video_search_ranks.where(search_type: YoutubeVideoSearchRank.search_type.find_value(:youtube).value).last %>
+<tr id="<%= dom_id(youtube_video_search_phrase, 'row')%>" class="search-phrase">
+  <td class="text-center"><%= youtube_video_search_phrase.id %></td>
+  <td><%= youtube_video_search_phrase.phrase %></td>
+  <td class="text-center">
+    <b>
+      <% if google_last_rank.present? && google_last_rank.screenshot.present? %>
+        <%= link_to google_last_rank.rank.to_i, URI::escape(google_last_rank.screenshot.url(:original), '[]'), {target: '_blank', class: 'image-preview', data: {src: google_last_rank.screenshot.url(:original)} } %>
+      <% end %>
+    </b>
+  </td>
+  <td class="text-center"><%= local_time(google_last_rank.created_at, format: '%m/%d/%y %I:%M %p', title: google_last_rank.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if google_last_rank.present?%></td>
+  <td class="text-center">
+    <b>
+      <% if youtube_last_rank.present? && youtube_last_rank.screenshot.present? %>
+        <%= link_to youtube_last_rank.rank.to_i, URI::escape(youtube_last_rank.screenshot.url(:original), '[]'), {target: '_blank', class: 'image-preview', data: {src: youtube_last_rank.screenshot.url(:original)} } %>
+      <% end %>
+    </b>
+  </td>
+  <td class="text-center"><%= local_time(youtube_last_rank.created_at, format: '%m/%d/%y %I:%M %p', title: youtube_last_rank.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if youtube_last_rank.present?%></td>
+  <td><%= local_time(youtube_video_search_phrase.updated_at, format: '%m/%d/%y %I:%M %p', title: youtube_video_search_phrase.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if youtube_video_search_phrase.updated_at.present?%></td>
+  <td><%= local_time(youtube_video_search_phrase.created_at, format: '%m/%d/%y %I:%M %p', title: youtube_video_search_phrase.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if youtube_video_search_phrase.created_at.present?%></td>
+  <td class="text-center actions">
+    <div class="btn-group btn-group-custom">
+      <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_youtube_video_search_phrase_path(youtube_video_search_phrase, youtube_video_id: youtube_video_search_phrase.youtube_video_id), { class: 'btn btn-xs btn-primary', remote: true, title: 'Edit' } %>
+      <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, youtube_video_search_phrase_path(youtube_video_search_phrase, youtube_video_id: youtube_video_search_phrase.youtube_video_id), method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-danger' %>
+    </div>
+  </td>
+</tr>

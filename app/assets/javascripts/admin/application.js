@@ -1,0 +1,19 @@
+//= require jquery
+//= require overlay_spinner
+//= require jquery.ui.all
+//= require twitter/bootstrap
+//= require aLTE/app.min.js
+//= require aLTE/icheck.min.js
+//= require aLTE/jquery.dataTables.min.js
+//= require shared.js
+//= require select2
+//= require jquery_ujs
+//= require jquery.remotipart
+//= require_tree ../lib
+//= require common
+
+//= require jquery.inputmask
+//= require jquery.inputmask.extensions
+//= require jquery.inputmask.numeric.extensions
+//= require jquery.inputmask.date.extensions
+//= require bootstrap-tagsinput

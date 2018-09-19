@@ -1,0 +1,19 @@
+- versions = PaperTrail::Version.where(:item_id => @tooltip.id, :item_type => 'Tooltip')
+.box
+  .box-header.with-border
+    .box-tools
+      %strong= "items totally: #{versions.count}"
+  .box-body
+    %table.table.table-striped.table-bordered.table-hover.versions
+      %thead
+        %tr
+          %th.id.text-center Action
+          %th.user.text-center User
+          %th.time.text-center Date
+      %tbody
+        - versions.order("created_at DESC").limit(30).each do |item|
+          %tr
+            %td.text-center= item.event
+            %td.text-center= item.whodunnit
+            %td.text-center
+              %i= local_time(item.created_at, format: '%m/%d/%y %I:%M %p', title: item.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canade)'))

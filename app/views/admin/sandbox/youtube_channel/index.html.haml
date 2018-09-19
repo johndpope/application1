@@ -1,0 +1,25 @@
+- title 'Youtube channel'
+- small_header 'Youtube channel'
+- breadcrumb :youtube_setups
+#youtube_channel_setups_list.content-block
+  .row
+    .col-md-12
+      .form-group
+        = @sandbox_youtube_channel.class_name.underscore
+
+.box
+  .box-header
+    %h3.box-title="List of YouTube channels settings"
+    .box-tools
+      %strong= @sandbox_youtube_channel.size
+      items totally
+  .box-body
+    %table.table{class: "table-bordered table-hover table-striped", id: "#{@sandbox_youtube_channel.class_name.underscore}_items"}
+      %tbody.thead
+        = render partial: "index_table_header"
+      %tbody.tbody
+        - @sandbox_youtube_channel.to_a.each_with_index do |item, index|
+          = render partial: "index_table_row", locals: {item: item, row_nr: (index + 1)}
+      %tbody.tfoot
+        = render partial: "index_table_header"
+    = paginate @sandbox_youtube_channel, theme: 'bootstrap'

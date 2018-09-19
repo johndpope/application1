@@ -1,0 +1,29 @@
+.jumbotron
+  .row
+    .col-md-12
+      %h2 Sign in by social account
+  %hr
+  .row
+    .col-md-3
+      = link_to '/omni_auth_users/auth/facebook', :class => 'btn btn-block btn-social btn-lg btn-facebook',
+        title: 'Sing in by Social Auth' do
+        = fa_icon 'facebook', text: 'Sign in with Facebook'
+
+      = link_to '/auth/twitter/', :class => 'btn btn-block btn-social btn-lg btn-twitter',
+        title: 'Sing in by Social Auth' do
+        = fa_icon 'twitter', text: 'Sign in with twitter'
+
+      = link_to '/auth/vk/', :class => 'btn btn-block btn-social btn-lg btn-vk',
+        title: 'Sing in by Social Auth' do
+        = fa_icon 'vk', text: 'Sign in with vk'
+
+      = link_to '/auth/linkedin/', :class => 'btn btn-block btn-social btn-lg btn-linkedin',
+        title: 'Sing in by Social Auth' do
+        = fa_icon 'linkedin', text: 'Sign in with linkedin'
+
+      = link_to '/auth/google/', :class => 'btn btn-block btn-social btn-lg btn-google',
+        title: 'Sing in by Social Auth' do
+        = fa_icon 'google', text: 'Sign in with google'
+    .col-md-3
+    .col-md-3
+    .col-md-3

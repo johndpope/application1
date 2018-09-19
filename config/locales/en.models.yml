@@ -1,0 +1,575 @@
+en:
+  client:
+    id: ID
+    name: Name
+    priority: Priority
+    business_types:
+      manufacturer: Manufacturer
+      dealer: Dealer
+    logo: Logo
+    badge_logo: Badge
+  artifacts:
+    state: State
+    county: County
+    city: City
+    upload_local_files: Upload Local files
+    image_blender: Image Blender
+    blending_settings: Blending Settings
+    blended_image: Blended Image
+    blended_images: Blended Images
+    image_templates: Image Templates
+    template_types: Template Types
+    dynamic_image:
+      id: ID
+      title: Title
+      client_id: Client
+      file: Blended Image
+      texts: Related Texts
+      images: Related Images
+      tags: Tags
+      location_id: Location
+      location_type: Location type
+      location_name: Location name
+      location: Location
+      title: Title
+      tags: Tags
+      templates_image_template_id: Type
+      template_type: Template type
+      template_name: Template name
+      choose_image: Choose image
+      choose_images: Choose images
+      choose_logo: Choose logo
+      type: Type
+      image: Image
+    images:
+      image_templates:
+        text1: Text 1
+        text2: Text 2
+        text3: Text3
+        text4: Text 4
+        subject_image: Subject Image
+        icon_image: Icon Image
+        artifacts_image1: Artifacts Image 1
+        artifacts_image2: Artifacts Image 2
+        artifacts_image3: Artifacts Image 3
+        artifacts_image4: Artifacts Image 4
+        artifacts_image5: Artifacts Image 5
+        artifacts_image6: Artifacts Image 6
+      import_status:
+        import: Import
+        imported: Imported
+        importing: Importing
+      broadcaster_property: Is Broadcaster Property
+      reusable: Is Reusable
+      index:
+        by_title: By Title
+        by_country: By Country
+        by_region1: By State
+        by_region2: By County
+        by_city: By City
+        by_tags_name: By Tags
+        by_source_tags_name: By Source Tags
+      gravities:
+        n: North
+        s: South
+        w: West
+        e: East
+        c: Center
+        nw: North-West
+        ne: North-East
+        sw: South-West
+        se: South-East
+      tags: Tags
+      special_tags:
+        special_tags: Special Tags
+        st_icon: Icon
+        st_country_flag_icon: Country Flag Icon
+        st_region_flag_icon: Region Flag Icon
+        st_industry_icon: industry_icon
+        st_region_abbr_icon: Region Abbr Icon
+        st_call_to_action_icon: Call To Action Icon
+        st_industry_icon: Industry Icon
+        st_country_icon: Country Icon
+        st_region_icon: Region Icon
+    gravity_layer: Gravity Layer
+  rendering_machine:
+    id: ID
+    name: Name
+    ip: FTP IP
+    user: FTP User
+    password: FTP Password
+    rdp_ip: RDP IP
+    rdp_user: RDP User
+    rdp_password: RDP Password
+    is_active: Is Active
+    in_watch_folder: In Watch Folder
+    in_queue: In Queue
+    in_watch_folder_output: Output Videos In Watch Folder
+    is_accessible: Is Accessible
+    today_video_sets: Today Video Sets
+    total_video_sets: Total Video Sets
+    today_video_chunks: Today Video Chunks
+    total_video_chunks: Total Video Chunks
+    number_of_generating_dynamic_projects: Number of AAE Dynamic Projects that are currently generating
+    time_of_last_created_project: Time of last created project
+    is_test: Is Test
+    available_disk_space: Disk Space Available
+    total_disk_space: Disk Space Total
+    disk_space: Disk Space
+    vmware_server_id: Server ID
+    order_nr: Order Nr
+  video_thumbnail_dynamic_text:
+    id: ID
+    value: Value
+    client_id: Client
+    subject_video_id: Subject Video
+    text_type: Text Type
+  templates:
+    aae_project_validation_test_settings:
+      id: ID
+      client_id: Client
+      product_id: Product
+      source_video_id: Subject Video
+      project_type: Template Type
+      location: Location
+    image_template:
+      id: ID
+      name: Name
+      product_id: Product
+      client_id: Client
+      is_active: Is Active
+      sample: Sample Preview
+      svg: SVG
+      texts_preview: Texts preview
+      type: Type
+      types:
+        ArtifactsImageTemplate: Artifacts Image
+        YoutubeChannelArtTemplate: Youtube Channel Art
+        YoutubeVideoThumbnailTemplate: Youtube Video Thumbnail
+        GooglePlusArtTemplate: Google Plus Art
+        StockImageTemplate: Stock Image
+    image_template_image:
+      id: ID
+      name: Name
+      width: Width
+      height: Height
+      image_type: Type
+    image_template_text:
+      id: ID
+      name: Name
+      text_type: Type
+    video_types:
+      introduction: Introduction
+      transition: Transition
+      text_transition: Text Transition
+      simple_transition: Simple Transition
+      image_text_transition: Image Text Transition
+      logo_transition: Logo Transition
+      call_to_action: Call to action
+      phone_call_to_action: Phone Call to action
+      ending: Ending
+      credits: Credits
+      summary_points: Summary Points
+      bridge_to_subject: Bridge to subject
+      collage: Collage
+      social_networks: Social Networks
+      subject: Subject Video
+      likes_and_views: Likes and Views
+      subscription: Subscription
+    dynamic_aae_projects: Dynamic AAE Projects
+    dynamic_aae_projects_list: List of Dynamic AAE Projects
+    dynamic_aae_project:
+      id: ID
+      aae_project: AAE Project
+      aae_project_id: AAE Project ID
+      aae_project_type: Project Type
+      client: Client
+      client_product_id: Product
+      source_video: Source Video
+      source_video_id: Source Video ID
+      target: Target
+      targets:
+        sandbox: Sandbox
+        distribution: Distribution
+        test: Test
+      rendered_video: Rendered Video
+      rendered_video_thumb: Rendered Video Thumbnail
+      images: Dynamic Project Images
+      texts: Dynamic Project Texts
+      location_id: Location Name
+      location_type: Location Type
+      tar_project: Tar archive of project
+      created_at: Created At
+    aae_project:
+      has_texts: Texts
+      has_images: Images
+      id: ID
+      name: Project Folder Name
+      title: Title
+      project_type: Type
+      is_approved: Approved
+      is_active: Active
+      thumbnail: Video Sample Thumbnail
+      video: Video Sample
+      video_duration: Video Sample Length (mm:ss)
+      created_at: Created at
+      aae_projects: AAE Projects
+      aae_projects_list: List of AAE Projects
+      sample_video_thumbnail: Video Sample Thumbnail
+      sample_video: Video Sample
+      test_video: Test Video
+      sample_video_duration: Video Sample Length (mm:ss)
+      notes: Notes
+      has_notes: Notes
+      is_special: Special
+      content_validation: Content Validation
+      content_lock: Content Lock
+    aae_project_text:
+      types:
+        bridge_to_sub_tagline: Bridge To Sub Tagline Text
+        bridge_to_sub_text: Bridge To Sub Text
+        call_to_action_text: Call To Action Text
+        client: Client Name
+        collage_call_to_action: Collage Call To Action Text
+        collage_quote: Collage Quote
+        credits_images_info: Images Info
+        credits_music_info: Music Info
+        credits_producer_name: Producer Name
+        credits_videos_info: Videos Info
+        credits_link: Media Credits Link
+        credits_client_disclaimer: Client Disclaimer Text
+        ending_tagline: Ending Tagline Text
+        facebook: Facebook
+        google_plus: Google Plus
+        instagram: Instagram
+        intro_text: Intro Text
+        intro_tagline: Intro Tagline Text
+        likes_and_views_tagline: L&V Tagline Text
+        linkedin: Linkedin
+        location: Location Name
+        phone: Phone
+        pinterest: Pinterest
+        social_networks_call_to_action: Call To Action Text
+        state: State
+        sum_points_point_text: Summary Points Text
+        transition_client_quote: Transition Client Quote
+        twitter: Twitter
+        video_subject: Subject Video Name
+        web_site: Web Site
+        youtube: Youtube
+        subscription_notification_text: Subscription Notification Text
+      groupes:
+        introduction: Introduction
+        transition: Transition
+        text_transition: Text Transition
+        simple_transition: Simple Transition
+        logo_transition: Logo Transition
+        image_text_transition: Image Text Transition
+        call_to_action: Call to action
+        ending: Ending
+        credits: Credits
+        summary_points: Summary Points
+        bridge_to_subject: Bridge to subject
+        collage: Collage
+        social_networks: Social Networks
+        general: General
+        subject: Subject
+        likes_and_views: Likes and Views
+        subscription: Subscription
+  templates_aae_projects:
+    has_texts: Has Texts
+    has_images: Has Images
+    id: Project ID
+    name: Project name
+    title: Project Title
+    project_type: Project Type
+    is_approved: Approved
+    screenshot_time: Screenshot time (hh:mm:ss)
+    templates_aae_project_texts:
+      name: Name
+      value: Value
+      encoded_value: Encoded Value
+      text_limit: Limit
+      is_static: Static?
+      text_type: Type
+    templates_aae_project_images:
+      height: Height
+      width: Width
+      media_type: Media Type
+      file_name: File name
+      image_type: Image Type
+      image_types:
+        location_image: Location Image
+        client_logo: Client Logo
+        client_secondary_logo: Secondary Client Logo
+        subject_image: Subject Image
+        client_image: Client Image
+    aae_templates: Adobe After Effect Templates
+    project_types:
+      introduction: Introduction
+      transition: Transition
+      text_transition: Text Transition
+      simple_transition: Simple Transition
+      logo_transition: Logo Transition
+      image_text_transition: Image Text Transition
+      call_to_action: Call to action
+      phone_call_to_action: Phone Call to action
+      ending: Ending
+      credits: Credits
+      summary_points: Summary Points
+      bridge_to_subject: Bridge to subject
+      collage: Collage
+      social_networks: Social Networks
+      general: General
+      subject: Subject
+      likes_and_views: Likes and Views
+      subscription: Subscription
+      tooltips:
+        introduction: Intro segment that introduces subject video and client services. It's devided into Intro Text and Tagline.
+        transition: Independent client quote or fact about client or company (avoid repeating phrases from collages).
+        text_transition: Text Transition
+        simple_transition: Simple Transition
+        logo_transition: Logo Transition
+        image_text_transition: Image Text Transition
+        call_to_action: Specific for client / company activity type call to action phrase. It's a phrase that motivates customers to act.
+        phone_call_to_action: Phone Call to action
+        ending: Independent conclusion phrase based on subject video or client / company activity. It's a short and precise phrase which repeats the main idea.
+        credits: Credits are not used currently. Video Segment that includes information about credits and client disclaimer.
+        summary_points: Summary Points
+        bridge_to_subject: Video segment that binds client name with subject video name. It's devided into Bridge To Sub Text and Bridge To Sub Tagline.
+        collage: Video Segment is devided into Collage Quote and Collage Call To Action Text
+        social_networks: Social Networks
+        general: Client Name. Different variations of client's name to be used as a linkage between different parts of the segments.
+        subject: Subject
+        likes_and_views: Likes and Views
+        subscription: Optional. Video Segment that represents Subscription Notification Text
+    project_text_types:
+      intro_text: Intro Text
+      intro_tagline: Tagline
+      transition_client_quote: Transition Client Quote
+      call_to_action_text: Call To Action Text
+      ending_tagline: Tagline
+      client: Client Name
+      video_subject: Subject Video Name
+      bridge_to_sub_tagline: Bridge To Sub Tagline
+      bridge_to_sub_text: Bridge To Sub Text
+      collage_call_to_action: Collage Call To Action Text
+      collage_quote: Collage Quote
+      sum_points_point_text: Summary Points Text
+      location: Location Name
+      credits_client_disclaimer: Disclamer
+      credits_link: Credits Link
+      subscription_notification_text: Subscription Notification Text
+      tooltips:
+        intro_text: Word or phrase which binds city name with client or company name. It's a very specific word which introduces your Subject Video (City name + Intro Text + Client name)
+        intro_tagline: Independent intro phrase. It's a very specific phrase that introduces your product/services.
+        transition_client_quote: Independent client quote or fact about client or company (avoid repeating phrases from collages).
+        call_to_action_text: Specific for client / company activity type call to action phrase. It's a phrase that motivates customers to act.
+        ending_tagline: Independent conclusion phrase based on subject video or client / company activity. It's a short and precise phrase which repeats the main idea.
+        client: Client Name. Different variations of client's name to be used as a linkage between different parts of the segments.
+        video_subject:
+        bridge_to_sub_tagline: Independent bridge to subject phrase. It's a phrase which attracts your attention to the main subject idea.
+        bridge_to_sub_text: Word or phrase which binds client or company name with subject video name (verb). Short and precise phrase which leads to the main subject video's idea (Client name + Bridge to subject + Subject video name)
+        collage_call_to_action: Independent call to action phrase which fits both client and location. Linking phrase location + phrase, which encourage actions
+        collage_quote: Client quote or fact about client or company. It's a phrase about client/product, which is used to give more information about client
+        sum_points_point_text:
+        location:
+        credits_client_disclaimer:
+        credits_link:
+        subscription_notification_text: Optional. Video Segment that represents Subscription Notification Text
+    project_text_type_hints:
+      intro_text: Welcomes, Supports
+      intro_tagline: Get involved!, Believe in America, A Future To Believe In
+      transition_client_quote: Hillary For America, Make America Great Again, When Lawyers COMPETE... You WIN!
+      call_to_action_text: Donate to save child's life!, Register at LegalBistro and get legal help!
+      ending_tagline: We have community of professional lawyers
+      client: Hillary Clinton, Hillary, Mrs. Clinton, Mrs. Hillary
+      bridge_to_sub_text: Presents, Speaks about
+      bridge_to_sub_tagline: America believes in Hillary
+      video_subject: Tax Reform, Immigrants Issue
+      collage_quote: JDRF is uniquely positioned to create a future without T1D
+      collage_call_to_action: Show your Support, Donate!
+      credits_client_disclaimer: ''
+      subscription_notification_text: Subscribe to our channel to get notifications about new videos!
+    text_types:
+      intro_text: Intro Text
+      intro_tagline: Tagline
+      transition_client_quote: Transition Client Quote
+      call_to_action_text: Call To Action Text
+      ending_tagline: Tagline
+      client: Client Name
+      video_subject: Subject Video Name
+      bridge_to_sub_tagline: Bridge To Sub Tagline
+      bridge_to_sub_text: Bridge To Sub Text
+      collage_call_to_action: Collage Call To Action Text
+      collage_quote: Collage Quote
+      sum_points_point_text: Summary Points Text
+      credits_client_disclaimer: Client Disclamer
+      subscription_notification_text: Subscription Notification Text
+  templates_aae_dynamic_project_text:
+    project_type: Project Type
+    text_type: Text Type
+    value: Value
+    id: ID
+    client_id: Client ID
+  sandbox:
+    client_category:
+      id: ID
+      name: Name
+    client:
+      id: ID
+      slug: SEO Name
+      description: Description
+      client_id: Broadcaster Client
+      client_category_id: Client Category
+      is_active: Is Active
+      logo: Logo Image
+      background_image: Background Image
+      subject_image: Subject Image
+    video_set:
+      id: ID
+      title: Title
+      order_nr: Order Nr
+      is_active: Is Active
+      sandbox_client_id: Sandbox Client
+      thumb: Thumbnail
+      blended_sample: Blended Sample Video
+    video:
+      id: ID
+      title: Title
+      description: description
+      is_active: Is Active
+      thumb: Thumbnail
+      video: Video
+      sandbox_video_set_id: Sandbox Video Set
+      source_video_id: Source Video
+      templates_aae_project_id: AAE Project
+      video_type: Video Type
+      duration: Duration hh:mm:ss
+      client: Client
+      video_set_id: Video Set
+      locality_id: Locality
+      location_id: Location
+      location_type: Location Type
+      created_at: Created At
+      updated_at: Updated At
+      updated_by: Updated By
+      is_approved: Approved
+      notes: Notes
+      has_notes: Has Notes
+    video_campaign:
+      id: ID
+      title: Title
+      sandbox_client_id: Sandbox Client
+      client: Client
+      source_video_id: Subject Video
+      is_active: Is Active
+      order_nr: Order Nr
+    video_campaign_video_stage:
+      id: ID
+      title: Title
+      description: Description
+      is_active: Is Active
+      video_campaign_id: Video Campaign
+      tags: Tags
+      likes: Likes
+      dislikes: Dislikes
+      comments: Comments
+      shares: Shares
+      position: Position
+      views: Views
+      thumbnail: Thumbnail
+      month_nr: Month
+      locality_id: Locality
+      client: Client
+    locality_details:
+      id: ID
+      locality_id: Locality
+      default_background_image: Inactive Background
+      active_background_image: Active Background
+  youtube_channel:
+    channel_types:
+      business: Business
+      personal: Personal
+  blending_pattern:
+    blending_patterns: Blending Patterns
+    blending_patterns_list: Blending Patterns List
+    id: ID
+    name: Name
+    value: Value
+    order_nr: Order Nr
+    client_id: Client
+    product_id: Campaign
+    source_video_id: Source Video
+    errors:
+      empty: Blending Pattern Parts cannot be empty
+      subject_is_not_presented: You didn't choose Subject Video item
+  source_video:
+    is_virtual: Is Virtual
+  admin_user:
+    id: ID
+    email: Username
+    skype: Skype
+    password: Password
+    roles: Role
+    signed_in: Signed in
+    company: Company
+  admin_user_company:
+    name: "Name"
+  user_roles:
+    admin: Administrator
+    crew_member: Crew Member
+    content_manager: Content Manager
+    client: Client
+  video_resolutions:
+    hd: HD (1280x720)
+    full_hd: Full HD (1920x1080)
+  vmware:
+    server:
+      id: ID
+      name: Name
+      user: User
+      password: Password
+      name: Name
+      ip: IP Address
+      order_nr: Order Nr
+  whenever_cron_job:
+    id: ID
+    description: Description
+    job_group_id: Job Group ID
+    job_group: Job Group
+    job_type: Job Type
+    job_value: Job Value
+    period: Period
+    at: At
+    is_active: Is Active
+    job_types:
+      command: Command
+      runner: Runner
+      rake: Rake Task
+  whenever_cron_job_group:
+    id: ID
+    name: Name
+  product_category:
+    id: ID
+    name: Name
+    parent_id: Parent
+  make:
+    id: ID
+    name: Name
+  model:
+    id: ID
+    name: Name
+    product_category_id: Product Category
+    make_id: Make
+  delayed_jobs:
+    "Templates::DynamicAaeProjects::CreateDynamicAaeProjectJob": Create Dynamic Project
+    "Templates::DynamicAaeProjects::TakeOutputVideoJob": Take Output Video
+    "Templates::DynamicAaeProjects::RemoveOutputVideoFromRenderingMachineJob": Remove Output Video
+    "BlendedVideos::BlendVideoSetJob": Blend Video Set
+    "Youtube::CreateYoutubeVideoJob": Generate Youtube Content
+    "Youtube::GenerateThumbnailForCreatedYoutubeVideoJob": Generate Youtube Thumbnail
+  client_blending_settings:
+    client_id: Client
+    use_instrumental_soundtrack_only: Use instrumental music only
+    soundtrack_genre_blacklist: Exclude genres

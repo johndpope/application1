@@ -1,0 +1,5 @@
+%aside.main-sidebar
+	%section#scrollspy{class: "sidebar"}
+		%ul.sidebar-menu
+			- if File.exists? Rails.root.join('app/views/layouts', 'roles', current_admin_user.try(:roles).to_s, '_sidebar.html.haml')
+				= render partial: "layouts/roles/#{current_admin_user.roles}/sidebar"

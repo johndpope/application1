@@ -1,0 +1,6 @@
+- unless @channel_description.blank?
+  - @channel_description.each do |type,text|
+    - unless text.blank?
+      .ytb_description_block
+        .title=type.to_s.humanize
+        .text=text.to_s.humanize

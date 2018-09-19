@@ -1,0 +1,15 @@
+.box
+	.box-header.with-border
+		%h3.box-title= table_title
+		.box-tools
+			%strong= items.count
+			items totally
+	.box-body
+		%table.table.table-bordered.table-hover.table-striped{id: "youtube_video_body_images"}
+			%tbody
+				%tr
+					%th.order_nr.text-center #
+					%th.text-center{colspan: 2} Image used in video
+					%th Media Credits
+				- items.each_with_index do |item, index|
+					= render partial: "public/credits/youtube/videos/common/image_index_table_row", locals: {item: item, index: index}

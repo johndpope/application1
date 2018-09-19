@@ -1,0 +1,41 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	= f.label :title, t('sandbox.video_set.title')
+	= f.text_field :title, class: "form-control"
+.row
+	.col-md-6
+		.form-group
+			= f.label :sandbox_client_id, t('sandbox.video_set.sandbox_client_id')
+			- options = Sandbox::Client.joins(:client).select('sandbox_clients.*, clients.name as client_name').order("clients.name").map{|sc|[sc.client.name,sc.id]}
+			= f.select(:sandbox_client_id, options, {include_blank: '', selected: f.object.try(:sandbox_client).try(:id)}, {class: 'form-control'})
+	.col-md-3
+		.form-group
+			= f.label :is_active, t('sandbox.video_set.is_active')
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= f.select(:is_active, yes_no_options, {include_blank: '', selected: f.object.is_active}, {class: 'form-control'})
+	.col-md-3
+		.form-group
+			= f.label :order_nr, t('sandbox.video_set.order_nr')
+			= f.text_field :order_nr, class: "form-control"
+.row
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :thumb, t("sandbox.video_set.thumb")
+			= f.file_field :thumb, accept: 'image/png,image/gif,image/jpeg'
+			%p{class: 'help-block'} file format: png/gif/jpg, file size: <= 2MB
+			- unless f.object.thumb.blank?
+				.form-group
+					= label_tag nil, 'Current Thumbnail'
+					%div= image_tag f.object.thumb.url(:w240), style: "width: 240px; height: 180px;"
+	.col-md-6
+		.form-group{class: 'control-box'}
+			= f.label :blended_sample, class: 'control-label'
+			= f.file_field :blended_sample, accept: 'video/mp4'
+			%p{class: 'help-block'} file format: mp4, file size: <= 200MB
+			- unless f.object.blended_sample.blank?
+				.form-group
+					= label_tag nil, 'Current Blended Sample'
+					%div= video_tag f.object.blended_sample.url, style: 'height: 180px; width: 240px;', controls: true, autobuffer: false

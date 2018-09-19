@@ -1,0 +1,24 @@
+<%= f.hidden_field :summary_points_passed, value: true %>
+<% unless summary_points_passed %>
+	<p class="help-block text-center">We prepared for you specific phrases that will be used as important facts about your company. Please edit these phrases and fill in the blanks. You can also add your additional phrases that represent the services you provide.</p>
+<% end %>
+<div class="form-group">
+	<%= f.fields_for :wordings do |builder| %>
+		<%= builder.hidden_field :resource_id, value: @video_marketing_campaign_form.id %>
+		<%= builder.hidden_field :resource_type, value: 'VideoMarketingCampaignForm' %>
+		<%= builder.hidden_field :name, value: "summary_point" %>
+		<fieldset class="form col-md-6">
+			<div class="form-group">
+				<%= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i>'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger remove-text-btn remove-summary-point', title: "Remove" %>
+				<%= builder.text_area :source, class: 'form-control ', rows: 1,  placeholder: 'Enter text (character limit: 100)', maxlength: 100 %>
+			</div>
+		</fieldset>
+	<% end %>
+	<%= f.link_to_add '<i class="fa fa-plus"></i> Add text'.html_safe, :wordings, class: "btn btn-sm btn-primary" %>
+</div>
+<hr/>
+<% if summary_points_passed %>
+	<a class="btn btn-default" href="javascript://" role="accordion-btn-prev"><i class="fa fa-arrow-left"></i> <b>Prev</b></a>
+<% else %>
+	<button class="btn btn-primary" type="submit"><b>Confirm</b> <i class="fa fa-arrow-right"></i></button>
+<% end %>

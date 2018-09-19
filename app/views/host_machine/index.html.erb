@@ -1,0 +1,36 @@
+<% title 'Host Machines' %>
+
+<% breadcrumb :host_machine %>
+
+<% unless @host_machines.to_a.empty? %>
+	<table class="table table-bordered">
+		<tr>
+			<th>ID</th>
+			<th>URL</th>
+			<th>IP Address</th>
+			<th>Root Name</th>
+			<th>Root Password</th>
+			<th class="text-center">Creation Date</th>
+		</tr>
+<% end %>
+
+<% @host_machines.each do |hm| %>
+	<tr>
+		<td><%= link_to hm.id, show_host_machine_path(hm) %></td>
+		<td><%= link_to hm.url, hm.normalized_url, target: '_blank' %></td>
+		<td><%= hm.ip_address %></td>
+		<td><%= hm.root_name %></td>
+		<td><%= hm.root_password %></td>
+		<td class="text-center"><%= hm.created_at.strftime('%m/%d/%Y %R') %></td>
+	</tr>
+<% end %>
+
+<% unless @host_machines.to_a.empty? %>
+	</table>
+<% end %>
+
+<div><%= paginate @host_machines, theme: 'bootstrap' %></div>
+
+<% if @host_machines.to_a.empty? %>
+	<div class="alert alert-info">No items available</div>
+<% end %>

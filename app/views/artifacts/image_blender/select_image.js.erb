@@ -1,0 +1,23 @@
+<%
+  modal = render partial: 'select_image_modal_dialog', locals: {image_field: @image_field}
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#select_image_modal_dialog").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+
+$('#image_blender_id_client').select2({
+  placeholder: "Choose ...",
+  allowClear: true
+  })
+
+$('#is_special_eq').select2({
+    placeholder: "Choose ...",
+    allowClear: true
+  })
+
+$('#limit').select2({
+  placeholder: "Choose ...",
+  allowClear: true
+});

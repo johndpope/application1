@@ -1,0 +1,6 @@
+<%
+  new_row = render partial: 'setting_row', locals: {setting: @setting}
+%>
+
+$('#modal_setting').modal('hide')
+$('#settings_table tbody').prepend('<%= escape_javascript(new_row) %>');

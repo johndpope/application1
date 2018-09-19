@@ -1,0 +1,191 @@
+<div class="modal modal-wide fade" id="<%= dom_id(industry, 'modal') %>" style="z-index: 1050 !important">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= nested_form_for industry,  url: {controller: params[:controller],  action: (industry.new_record? ? 'create' : 'update')}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <% if industry.new_record? %>
+            <h4>New industry</h4>
+          <% else %>
+            <h4>Industry #<%= industry.id%></h4>
+          <% end %>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px">
+          <div class="panel-group" id="info-accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div id="info_heading" class="panel-heading">
+                <h4 class="panel-title">
+                  <a role="button" data-toggle="collapse" data-parent="info-accordion" href="#info" aria-expanded="true" aria-controls="info"><b>INFO</b></a>
+                </h4>
+              </div>
+              <div id="info" class="panel-collapse collapse in" aria-labelledby="info">
+                <div class="panel-body">
+                  <%= f.hidden_field :id %>
+                  <div class="form-group <%= 'has-error' if @industry.errors[:name].present? %>" data-content="<%= @industry.errors[:name].try(:join, ',') %>">
+                    <%= f.label :name, class: 'control-label' %>
+                    <%= f.text_field :name , class: 'form-control', placeholder: 'Name', readonly: true %>
+                  </div>
+                  <div class="form-group <%= 'has-error' if @industry.errors[:nickname].present? %>" data-content="<%= @industry.errors[:nickname].try(:join, ',') %>">
+                    <%= f.label :nickname, class: 'control-label' %>
+                    <%= tooltip_by_field({table_name: "industries", table_column: "nickname"}) %>
+                    <%= f.text_field :nickname , class: 'form-control', placeholder: 'Nickname (Maximum length: 10 characters)', maxlength: 10 %>
+                  </div>
+                  <!-- <div class="form-group <%#= 'has-error' if industry.errors[:alternate_names].present? %>" data-content="<%#= industry.errors[:alternate_names].try(:join, ',') %>">
+                    <div class="select2-tags-wrapper">
+                      <%#= f.label :alternate_names, "Alternate Names", class: "control-label" %>
+                      <%#= tooltip_by_field({table_name: "industries", table_column: "alternate_names"}) %>
+                      <span id="industry_alternate_names_csv_count" class="badge">0</span>
+                    </div>
+                    <%#= f.hidden_field "alternate_names_csv", data: { placeholder: "Alternate Names" } %>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <% has_errors_in_title_components = (industry.errors.messages[:business_video_title_patterns].present? || industry.errors.messages[:business_channel_title_patterns].present?) ? true: false %>
+          <div class="panel-group" id="title_components_accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div id="title_components_heading" class="panel-heading">
+                <h4 class="panel-title">
+                  <a role="button" data-toggle="collapse" data-parent="title_components_accordion" href="#title_components" aria-expanded="true" aria-controls="title_components"><b>TITLE COMPONENTS</b> <%= tooltip_by_field({tooltip_text: t("tooltips.industries.title_components", :default => "Title components are the components for Channel and Video titles that will be copied to the clients with type Manufacturer of the current industry in YouTube Setup section.")}) %></a>
+                  <% if has_errors_in_title_components %><small class="text-danger"><b>One of the fields is blank</b></small><% end %>
+                </h4>
+              </div>
+              <div id="title_components" class="panel-collapse collapse <%= 'in' if has_errors_in_title_components %>" aria-labelledby="title_components">
+                <div class="panel-body">
+                  <div class="form-group <%= 'has-error' if industry.errors[:industry_title_components].present? %>" data-content="<%= industry.errors[:industry_title_components].try(:join, ',') %>">
+                    <div class="select2-tags-wrapper">
+                      <%= f.label :industry_title_components, "Industry Title Components", class: "control-label" %>
+                      <%= tooltip_by_field({table_name: "industries", table_column: "industry_title_components"}) %>
+                      <span id="industry_industry_title_components_csv_count" class="badge">0</span>
+                    </div>
+                    <%= f.hidden_field "industry_title_components_csv", data: { placeholder: "Industry Title Components" } %>
+                  </div>
+                  <% %w(business).each do |type| %>
+                    <div class="nav-tabs custom-tabs">
+                      <ul class="nav nav-tabs">
+                        <% %w(channel video).each_with_index do |target, index| %>
+                          <li class="tab-url <%= 'active' if index == 0 %>"><a href="#<%= type %>_<%= target %>_tab" data-toggle="tab" style="font-variant: small-caps;"><%= target.titleize.pluralize %> part</a></li>
+                        <% end %>
+                      </ul>
+                      <div class="tab-content">
+                        <% %w(channel video).each_with_index do |target, index| %>
+                          <div class="tab-pane <%= 'active' if index == 0 %>" id="<%= type %>_<%= target %>_tab">
+                            <div class="form-group <%= 'has-error' if @industry.errors[:"#{type}_#{target}_title_patterns"].present? %>" data-content="<%= @industry.errors[:"#{type}_#{target}_title_patterns"].try(:join, ',') %>">
+              								<%= f.label :"#{type}_#{target}_title_patterns", "Title Patterns *", class: 'control-label', title: "Required field" %>
+            									<%= tooltip_by_field({table_name: "industries", table_column: "#{type}_#{target}_title_patterns"}) %>
+              								<div class="input-group">
+              									<%= f.select "#{type}_#{target}_title_patterns", options_from_collection_for_select(YoutubeComponentPattern.where(component_type: YoutubeComponentPattern.component_type.find_value("#{target}_title").value), :components, :name, @industry[:"#{type}_#{target}_title_patterns"]), { include_blank: true }, { placeholder: "Select #{target} title patterns", class: 'select2 form-control', multiple: "multiple" } %>
+                                <span id="<%= type %>_<%= target %>_title_patterns_arrow_down" class="select-span-arrow"><i class="fa fa-caret-down"></i></span>
+              								</div>
+              							</div>
+                            <% %w(descriptor entity subject).each do |field| %>
+                              <div class="form-group <%= 'has-error' if industry.errors[:"#{type}_#{target}_#{field}"].present? %>" data-content="<%= industry.errors[:"#{type}_#{target}_#{field}"].try(:join, ',') %>">
+                                <div class="select2-tags-wrapper">
+                                  <%= f.label "#{type}_#{target}_#{field}_csv", "#{field} Components".titleize, class: "control-label" %>
+                                  <%= tooltip_by_field({table_name: "industries", table_column: "#{type}_#{target}_#{field}"}) %>
+                                  <span id="industry_<%= type %>_<%= target %>_<%= field %>_csv_count" class="badge">0</span>
+                                </div>
+                                <%= f.hidden_field "#{type}_#{target}_#{field}_csv", data: { placeholder: "#{type} #{target} #{field} components".titleize } %>
+                              </div>
+                            <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="panel-group" id="descriptions-accordion" role="tablist" aria-multiselectable="true">
+              <% has_errors_in_descriptions = (industry.errors.messages[:"wordings.source"].present? || industry.errors.messages[:"wordings.name"].present?) ? true: false %>
+              <div class="panel panel-default">
+                <div id="descriptions_heading" class="panel-heading">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="descriptions-accordion" href="#descriptions" aria-expanded="true" aria-controls="descriptions"><b>DESCRIPTIONS</b> <%= tooltip_by_field({tooltip_text: t("tooltips.industries.wordings",:default => "Write specific industry descriptions. Long - will be used in Video descriptions, short - in channel descriptions.")}) %> <span class="badge calc"><%= industry.wordings.size%></span></a>
+                    <% if has_errors_in_descriptions %><small class="text-danger"><b>One of the fields is blank</b></small><% end %>
+                  </h4>
+                </div>
+                <div id="descriptions" class="panel-collapse collapse" aria-labelledby="descriptions">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <%= f.fields_for :wordings do |builder| %>
+                        <%= builder.hidden_field :resource_id, value: industry.id %>
+                        <%= builder.hidden_field :resource_type, value: 'Industry' %>
+                        <fieldset class="form">
+                          <legend>
+                            <%= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i> Remove'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger btn-flat' %>
+                          </legend>
+                          <div class="row">
+                            <div class="col-md-2">
+                              <label class="control-label">Type</label>
+                              <%= builder.select(:name, {'short_description'=>{'data-text-type-limit' => 300}, 'long_description'=>{'data-text-type-limit' => 1000}}, {include_blank: true}, class: 'form-control description-name-select m-b') %>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="control-label">Text</label>
+                            <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+                            <% if builder.object.name.present? %>
+                              <% limits = {'short_description'=>300, 'long_description'=>1000}%>
+                              <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits[builder.object.name]})", maxlength: limits[builder.object.name] %>
+                            <% else %>
+                              <%= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: 'Enter text' %>
+                            <% end %>
+                          </div>
+                        </fieldset>
+                      <% end %>
+                      <%= f.link_to_add '<i class="fa fa-plus"></i> Add text'.html_safe, :wordings, class: "btn btn-sm btn-primary" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-group" id="tags-accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div id="tags_heading" class="panel-heading">
+                <h4 class="panel-title">
+                  <a role="button" data-toggle="collapse" data-parent="tags-accordion" href="#tags" aria-expanded="true" aria-controls="tags"><b>TAGS</b> <%= tooltip_by_field({tooltip_text: t("tooltips.common.tags", :default => "")}) %> <span id="tag_list_count" class="badge calc">0</span></a>
+                  <% if industry.errors[:tag_list].present? %><small class="text-danger"><b><%= industry.errors[:tag_list].try(:join, ',') %></b></small><% end %>
+                </h4>
+              </div>
+              <div id="tags" class="panel-collapse collapse" aria-labelledby="tags">
+                <div class="panel-body">
+                  <div class="form-group <%= 'has-error' if industry.errors[:tag_list].present? %>" data-content="<%= industry.errors[:tag_list].try(:join, ',') %>" id="tag_list_block">
+                    <%= f.text_field :tag_list, class: 'form-control', placeholder: 'Enter tags', value: industry.tag_list.to_a.sort.join(",") %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-group" id="summary_points-accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div id="summary_points_heading" class="panel-heading">
+                <h4 class="panel-title">
+                  <a role="button" data-toggle="collapse" data-parent="summary_points-accordion" href="#summary_points" aria-expanded="true" aria-controls="summary_points"><b>SUMMARY POINTS</b> <%= tooltip_by_field({table_name: "industries", table_column: "summary_points"}) %> <span id="industry_summary_points_csv_count" class="badge">0</span></a>
+                  <% if industry.errors[:summary_points].present? %><small class="text-danger"><b><%= industry.errors[:summary_points].try(:join, ',') %></b></small><% end %>
+                </h4>
+              </div>
+              <div id="summary_points" class="panel-collapse collapse" aria-labelledby="summary_points">
+                <div class="panel-body">
+                  <div class="form-group <%= 'has-error' if industry.errors[:summary_points].present? %>" data-content="<%= industry.errors[:summary_points].try(:join, ',') %>" id="summary_points_block">
+                    <%= f.hidden_field "summary_points_csv", data: { placeholder: "Summary Points" } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (industry.new_record? ? t(:create) : t(:update)), class: 'btn btn-primary', data: {disable_with: (industry.new_record? ? t(:creating) : t(:updating)) }, onclick: "$('.animationload').show();" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

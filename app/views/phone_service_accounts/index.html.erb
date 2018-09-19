@@ -1,0 +1,64 @@
+<% title 'Phone Service Accounts' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<div id="phone_service_accounts_list">
+	<div class="row">
+		<div class="col-md-5"><%= link_to 'New Phone Service Account', new_phone_service_account_path, class: 'btn btn-sm btn-primary' %></div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @phone_service_accounts.size %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @phone_service_accounts.to_a.empty? %>
+		<table id="phone_service_accounts_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 50px;" class="text-center">ID</th>
+					<th>Phone Service</th>
+					<th>website</th>
+					<th>Username</th>
+					<th>Password</th>
+					<th>Current Bid</th>
+					<th>Balance</th>
+					<th>Currency</th>
+					<th style="width: 130px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @phone_service_accounts.each do |phone_service_account| %>
+					<tr>
+						<td class="text-center"><%= phone_service_account.id %></td>
+						<td><%= link_to_if phone_service_account.phone_service.present?, phone_service_account.phone_service.try(:name), edit_phone_service_path(phone_service_account.phone_service), target: '_blank' %></td>
+						<td><%=link_to_if phone_service_account.phone_service.present?, phone_service_account.phone_service.try(:website), phone_service_account.phone_service.try(:normalized_website), target: '_blank' %></td>
+						<td><%= phone_service_account.api_account.try(:username) %></td>
+						<td><%= phone_service_account.api_account.try(:password) %></td>
+						<td><%= phone_service_account.current_bid %></td>
+						<td><%= phone_service_account.api_account.try(:balance).try(:round,2) %> <%= phone_service_account.api_account.try(:currency).to_s.first(3) %></td>
+						<td><%= phone_service_account.api_account.try(:currency) %></td>
+						<td class="text-center actions">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_phone_service_account_path(phone_service_account), { class: 'btn btn-xs btn-primary' } %>
+								<% if phone_service_account.phone_service.name == "VOIP-MS"%>
+									<%= link_to '<i class="fa fa-pencil"></i> Order DIDs'.html_safe, order_dids_phone_service_account_path(phone_service_account), { class: 'btn btn-xs btn-warning' } %>
+								<% end %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, phone_service_account, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+	<% if @phone_service_accounts.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>

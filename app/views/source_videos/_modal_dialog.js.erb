@@ -1,0 +1,23 @@
+<% modal = render partial: 'source_videos/modal_dialog/content' %>
+
+<% if @source_video.errors.any? %>
+    window.error_messages = JSON.parse('<%= escape_javascript(@source_video.errors.messages.select{|k,v| k unless v.blank?}.to_json.html_safe) %>')
+
+    $('.control-box').removeClass('has-error')
+    $('.error-label').remove()
+
+    for(k in window.error_messages){
+        control_el = $('#source_video_' + k)
+        control_el.closest('.control-box').addClass('has-error')
+        for(i in window.error_messages[k]){
+            error_block = $('<div class="error-label"><label class="control-label"></label></div>')
+            error_block.find('label').text(window.error_messages[k][i])
+            control_el.after(error_block)
+        }
+    }
+<% else %>
+    $('body').remove('.source-video-modal').append('<%= escape_javascript(modal) %>');
+    $('.source-video-modal').modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function(e){
+        $(this).remove()
+    })
+<% end %>

@@ -1,0 +1,806 @@
+<%content_for(:javascripts){javascript_include_tag 'dashboard/admin'}%>
+<% operational_type = EmailAccount.account_type.find_value(:operational).value %>
+<div class="row text-center">
+	<%= select_tag(:bot_server_id, options_from_collection_for_select(BotServer.where(human_emulation: true).order(:id), :id, :name, params[:bot_server_id]), { include_blank: false, class: "form-control", style: "width: 375px;"}) %>
+</div>
+<div id="owl-demo" class="owl-carousel" style="display: none;">
+	<div class="item">
+		<h1 class="page-header">Daily Processes</h1>
+    <div id="problems_box" class="box box-widget" style="display: none;">
+  		<div class="box-header with-border">
+      	<h3 class="box-title"><i class="fa fa-fire-extinguisher"></i> Problems</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+  		</div>
+  		<div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <tbody id="problems" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+        </table>
+  		</div>
+		</div>
+		<div class="box box-widget">
+    		<div class="box-header with-border">
+        	<h3 class="box-title"><i class="fa fa-exchange"></i> Google Account Activity</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          </div>
+    		</div>
+    		<div class="box-body">
+					<div class="row">
+						<div class="col-md-6">
+							<table class="table table-bordered table-striped vertical-align-middle">
+								<th colspan="2" class="text-center"><b><u>Daily</u></b></th>
+								<tr><td>Max threads </td><td class="text-center"><span id="active_threads_maximum_threads" class="numbers"></span></td></tr>
+								<tr><td>Active threads </td><td class="text-center"><span id="active_threads_active_threads" class="numbers"></span></td></tr>
+								<tr><td>Queue </td><td class="text-center"><span id="active_threads_queue" class="numbers"></span></td></tr>
+								<tr><td>Queue crashed </td><td class="text-center"><span id="active_threads_queue_crashed" class="numbers"></span></td></tr>
+							</table>
+						</div>
+						<div class="col-md-6">
+							<table class="table table-bordered table-striped vertical-align-middle">
+								<th colspan="2" class="text-center"><b><u>Provide SMS</u></b></th>
+								<tr><td>Current Total </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, error_type: GoogleAccount::ERROR_TYPES['provide a phone number, we\'ll send a verification code'], limit: 25 }, id: 'dashboard_provide_sms_current_total_size', target: '_blank', class: "numbers" %></td></tr>
+								<tr><td>In progress </td><td class="text-center"><span id="dashboard_provide_sms_in_progress_size" class="numbers"></span></td></tr>
+								<tr><td>Didn't recovered </td><td class="text-center"><span id="dashboard_provide_sms_finished_still_need_sms_size" class="numbers"></span></td></tr>
+								<tr><td>Recovered </td><td class="text-center"><span id="dashboard_provide_sms_finished_success_size" class="numbers"></span></td></tr>
+							</table>
+						</div>
+					</div>
+					<table class="table table-bordered table-striped vertical-align-middle">
+						<th colspan="2" class="text-center"><b><u>Average Online Time</u></b></th>
+						<tr><td>Today</td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, "is_active" => true, "filter[order]" => "today_online_time", "filter[order_type]" => "desc"}, id: 'dashboard_today_average_online_time', target: '_blank', class: 'numbers' %>
+						<tr><td>Accumulative from <i><%= Setting.get_value_by_name("GoogleAccountActivity::STORING_ONLINE_TIME_START_DATE") %></i></td><td class="text-center"><span id="dashboard_total_average_online_time" class="numbers"></span></td></tr>
+					</table>
+    		</div>
+		</div>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-paper-plane"></i> Recovery Inbox Emails</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <caption>
+            <%= select_tag(:recovery_inbox_emails_period, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last 72 hours', 72], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760], ['Last 2 years', 17520], ['Last 3 years', 26280]], params[:recovery_inbox_emails_period]), { include_blank: false, class: "form-control", style: "width: 150px;"}) %>
+            <br/><br/><b><u>Google</u></b>
+          </caption>
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 30px;">Code</th>
+              <th>Type</th>
+              <th style="width: 30px;">Count</th>
+            </tr>
+          </thead>
+          <tbody id="google_recovery_inbox_emails" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+        </table>
+        <hr/>
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <caption><b><u>Youtube</u></b></caption>
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 30px;">Code</th>
+              <th>Type</th>
+              <th style="width: 30px;">Count</th>
+            </tr>
+          </thead>
+          <tbody id="youtube_recovery_inbox_emails" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+        </table>
+      </div>
+    </div>
+    <%= render partial: "dashboard/video_workflow" %>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-magic"></i> Email Accounts Creation</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div id="account_creation_progress" style="display:none;">
+          <div class="progress">
+            <span class="progress-bar-span"></span>
+            <div class="progress-bar progress-bar-primary created" style="width: 0%;" title="Created"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+		<div class="box box-widget">
+  		<div class="box-header with-border">
+      	<h3 class="box-title"><i class="fa fa-undo"></i> Recovery attempt answers</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+  		</div>
+  		<div class="box-body">
+				<!-- <div id="prgs">
+					<div class="progress">
+						<span id="dashboard_recovery_attempt_text" class="progress-bar-span"></span>
+						<div class="progress-bar"></div>
+					</div>
+				</div> -->
+				<table class="table table-bordered table-striped vertical-align-middle">
+          <caption style="margin-bottom: 10px;">
+            <%= select_tag(:recovery_attempt_answers_period, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last 72 hours', 72], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760], ['Last 2 years', 17520], ['Last 3 years', 26280]], params[:recovery_attempt_answers_period]), { include_blank: false, class: "form-control", style: "width: 150px;"}) %>
+          </caption>
+					<thead>
+						<tr>
+							<th class="text-center" style="width: 30px;">Code</th>
+							<th>Name</th>
+							<th class="text-center" style="min-width: 45px;">Count</th>
+						</tr>
+					</thead>
+					<tbody id="recovery_statistics" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2"><i>Recovery Attempts 24 h. (Missing / Done)</i></td>
+              <td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_recovery_attempts_missing_size', target: '_blank', class: 'numbers' %> / <span id="dashboard_recovery_attempts_size" class="numbers"></span></td>
+            </tr>
+          </tfoot>
+				</table>
+			</div>
+		</div>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-comments"></i> Phone usages statistics</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <thead>
+            <caption style="margin-bottom: 10px;"><%= select_tag(:phone_usages_period, options_for_select([['Last 24 hours', 1], ['Last 48 hours', 2], ['Last 72 hours', 3], ['Last week', 7], ['Last 2 weeks', 14], ['Last month', 30], ['Last 3 months', 60], ['Last 6 months', 180], ['Last year', 365]], params[:phone_usages_period]), { include_blank: false, class: "form-control", style: "width: 250px;"}) %></caption>
+            <tr>
+              <th>Action type</th>
+              <th>Error type</th>
+              <th class="text-center">Count</th>
+            </tr>
+          </thead>
+          <tbody id="phone_usages_statistics" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="box box-widget">
+  		<div class="box-header with-border">
+      	<h3 class="box-title"><i class="fa fa-tripadvisor"></i> Crawler statistics</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+  		</div>
+  		<div class="box-body">
+				<div id="crawler_prgs">
+					<div class="progress">
+						<span id="dashboard_crawler_statuses_text" class="progress-bar-span"></span>
+						<div class="progress-bar"></div>
+					</div>
+				</div>
+				<table class="table table-bordered table-striped vertical-align-middle">
+					<thead>
+            <caption style="margin-bottom: 10px;"><%= select_tag(:crawler_statuses_period, options_for_select([['Last 5 minutes', 0.0835], ['Last 10 minutes', 0.167], ['Last 30 minutes', 0.5], ['Last 1 hour', 1.0], ['Last 2 hours', 2.0], ['Last 3 hours', 3.0], ['Last 6 hours', 6.0], ['Last 9 hours', 9.0], ['Last 12 hours', 12.0], ['Last 24 hours', 24.0], ['Last 48 hours', 48.0], ['Last 72 hours', 72.0], ['Last week', 168.0], ['Last 2 weeks', 336.0], ['Last month', 720.0], ['Last 3 months', 1440.0], ['Last 6 months', 4320.0], ['Last year', 8760.0], ['All the time', 0.0]], params[:crawler_statuses_period]), { include_blank: false, class: "form-control", style: "width: 150px;"}) %></caption>
+						<tr>
+							<th>Status</th>
+							<th style="width: 60px;">Count</th>
+						</tr>
+					</thead>
+					<tbody id="crawler_statuses_statistics" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+				</table>
+
+        <table class="table table-bordered table-striped vertical-align-middle" style="margin-top: 10px;">
+          <caption><b><u>Successfull crawling running time</u></b></caption>
+          <tbody>
+            <tr><td>Minimum</td><td class="text-center"><span id="dashboard_crawler_statuses_minimum_running_time" class="numbers">-</span></td></tr>
+            <tr><td>Maximum</td><td class="text-center"><span id="dashboard_crawler_statuses_maximum_running_time" class="numbers">-</span></td></tr>
+            <tr><td>Average</td><td class="text-center"><span id="dashboard_crawler_statuses_average_running_time" class="numbers">-</span></td></tr>
+          </tbody>
+        </table>
+			</div>
+		</div>
+	</div>
+	<div class="item">
+		<h1 class="page-header">Assets</h1>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-envelope"></i> Email Accounts</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <thead>
+            <tr>
+              <th>Status Name</th>
+              <th class="text-center">YES</th>
+              <th class="text-center">NO</th>
+            </tr>
+          </thead>
+          <tr><td>Active </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true }, id: 'dashboard_active_email_accounts_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: false, deleted: false }, id: 'dashboard_inactive_email_accounts_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Lost </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, lost: true, deleted: true }, id: 'dashboard_lost_email_accounts_size', target: '_blank', class: 'numbers' %></td><td></td></tr>
+          <tr><td>Deleted </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, lost: false, deleted: true }, id: 'dashboard_deleted_email_accounts_size', target: '_blank', class: 'numbers' %></td><td></td></tr>
+          <tr><td>Recovery Email </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, has_recovery_email: true}, id: 'dashboard_has_recovery_email_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, has_recovery_email: false}, id: 'dashboard_has_no_recovery_email_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Alternate Email </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, has_alternate_email: true}, id: 'dashboard_has_alternate_email_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, has_alternate_email: false}, id: 'dashboard_has_no_alternate_email_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Recovery Phone (Assigned)</td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, recovery_phone_assigned: true }, id: 'dashboard_with_recovery_phone_assigned_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, recovery_phone_assigned: 'no' }, id: 'dashboard_without_recovery_phone_assigned_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Recovery Email Sync</td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, recovery_email_sync: true }, id: 'dashboard_recovery_email_sync_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, recovery_email_sync: false }, id: 'dashboard_not_recovery_email_sync_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Recovery Phone (In progress) </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, recovery_phone_assigned: false }, id: 'dashboard_waiting_recovery_phone_assigned_size', target: '_blank', class: 'numbers' %></td><td></td></tr>
+          <tr><td>Recovery Phone (Suspended) </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, recovery_phone_assigned: 'suspended' }, id: 'dashboard_suspended_recovery_phone_assigned_size', target: '_blank', class: 'numbers' %></td><td></td></tr>
+          <tr><td>Assigned to client </td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, assigned_to_client: true}, id: 'dashboard_assigned_to_client_accounts_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', { controller: 'email_accounts', account_type: operational_type, is_active: true, assigned_to_client: false}, id: 'dashboard_not_assigned_to_client_accounts_size', target: '_blank', class: 'numbers' %></td>
+					<tr><td>Active accounts pool</td><td class="text-center"><b><%= link_to '', 'javascript://', id: 'dashboard_active_accounts_pool_size', target: '_blank', class: 'numbers' %></b></td><td></td></tr>
+        </table>
+
+        <table class="table table-bordered table-striped vertical-align-middle" style="margin-top: 10px;">
+					<thead>
+            <caption style="margin-bottom: 10px;"><%= select_tag(:email_accounts_period, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last 72 hours', 72], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760], ['Last 2 years', 17520], ['Last 3 years', 26280]], params[:email_accounts_period]), { include_blank: false, class: "form-control", style: "width: 150px;"}) %></caption>
+            <tr>
+              <th>Status Name</th>
+              <th class="text-center">Active accounts</th>
+              <th class="text-center">Inactive accounts</th>
+            </tr>
+					</thead>
+					<tr><td>Recovery Inbox Emails</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_active_accounts_recovery_inbox_emails_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_inactive_accounts_recovery_inbox_emails_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Status changed to</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_active_accounts_status_changed_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_inactive_accounts_status_changed_size', target: '_blank', class: 'numbers' %></td></tr>
+				</table>
+      </div>
+    </div>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-cloud"></i> API</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <caption><b><%= link_to 'API Accounts', api_accounts_path, target: '_blank' %></b></caption>
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 40px;">ID</th>
+              <th>Service</th>
+              <th class="text-center">Success</th>
+              <th class="text-center">Fail</th>
+              <th class="text-center">Bid</th>
+              <th class="text-center" style="width: 90px;">Balance</th>
+            </tr>
+          </thead>
+          <tbody id="api_accounts_statistics" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+        </table>
+      </div>
+    </div>
+		<div class="box box-widget">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-phone-square"></i> Phones</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+				<table class="table table-bordered table-striped vertical-align-middle">
+					<thead>
+						<caption><b><u>Total:</u> </b><%= link_to '<span id="dashboard_dids_size" class="numbers"></span>'.html_safe, phones_path(phone_provider_id: @did_phone_provider_id), target: '_blank' %></caption>
+						<tr>
+							<th class="text-center">Country</th>
+							<th>Region</th>
+							<th style="width: 30px;">Count</th>
+						</tr>
+					</thead>
+					<tbody id="dids_statistics" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+				</table>
+			</div>
+		</div>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-sitemap"></i> IP Addresses</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+				<table class="table table-bordered table-striped vertical-align-middle">
+					<caption><b><u>Total:</u> </b><%= link_to '<span id="dashboard_ip_addresses_size" class="numbers"></span>'.html_safe, ip_addresses_path, target: '_blank' %></caption>
+					<tr>
+						<% 6.times do |i|%>
+							<td class="text-center" style="width: 75px;">
+								<% i.times do %>
+									<i class="fa fa-star fav-star"></i>
+								<% end %>
+								<% (5-i).times do %>
+									<i class="fa fa-star-o fav-star"></i>
+								<% end %>
+							</td>
+						<% end %>
+					</tr>
+					<tr>
+						<% 6.times do |i|%>
+							<td class="text-center"><%= link_to IpAddress.by_rating(i).size, ip_addresses_path(rating: i), class: 'numbers', target: "_blank" %></td>
+						<% end %>
+					</tr>
+				</table>
+        <p style="margin-top: 10px;">Last successfully grabbed ratings time: <b><span id="dashboard_last_success_grab_ip_address_ratings_date"></span></b></p>
+      </div>
+		</div>
+    <div class="box box-widget collapsed-box">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-file-text-o"></i> AAE Project Templates</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <thead>
+            <caption><b><u>Total:</u> </b><%= link_to '<span id="dashboard_templates_aae_projects_size" class="numbers"></span>'.html_safe, templates_aae_projects_path, target: '_blank' %></caption>
+            <tr>
+              <th>Project type</th>
+              <th class="text-center">Approved</th>
+              <th class="text-center">Not approved</th>
+            </tr>
+          </thead>
+          <tbody id="templates_aae_projects" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+        </table>
+      </div>
+    </div>
+	</div>
+	<div class="item">
+		<h1 class="page-header">Production</h1>
+		<div class="box box-widget">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-youtube"></i> Youtube Channels</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+        <div>
+          <div style="display:inline-block;">
+            <dl class="dl-horizontal">
+              <dt>Total created:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_published_business_channels_size', target: '_blank' %></dd>
+              <dt>Total not created:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_not_published_business_channels_size', target: '_blank' %></dd>
+              <dt>Total channels:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_channels_size', target: '_blank' %></dd>
+            </dl>
+          </div>
+          <div style="display:inline-block; float: right;">
+            <dl class="dl-horizontal">
+              <dt title="Total pending approval">Total pending approval:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_pending_approval_business_channels_size', target: '_blank' %></dd>
+              <dt>Total blocked:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_blocked_business_channels_size', target: '_blank' %></dd>
+            </dl>
+          </div>
+        </div>
+        <hr style="margin-top: 5px; margin-bottom: 0;"/>
+				<table class="table table-bordered table-striped vertical-align-middle" style="margin-top: 10px;">
+          <caption style="margin-bottom: 10px;">
+            <label style="width: 80px;">Time period:</label>
+            <%= select_tag(:youtube_channels_period, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last 72 hours', 72], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760], ['All the time', 0]], params[:youtube_channels_period]), { include_blank: false, class: "form-control", style: "width: 150px;"}) %>
+          </caption>
+          <caption style="margin-bottom: 10px;">
+            <label style="width: 80px;">Bot server:</label>
+            <%= select_tag(:youtube_channels_bot_server_id, options_from_collection_for_select(BotServer.where(human_emulation: true).order(:id), :id, :name, params[:youtube_channels_bot_server_id]), { include_blank: true, class: "form-control", style: "width: 150px;", placeholder: "Choose bot server"}) %>
+          </caption>
+          <caption style="margin-bottom: 10px;">
+            <label style="width: 80px;">Client:</label>
+            <%= select_tag(:youtube_channels_client_id, options_from_collection_for_select(Client.where(is_active: true).order(:name), :id, :name, params[:youtube_channels_client_id]), { include_blank: true, class: "form-control", style: "width: 150px;", placeholder: "Choose client"}) %>
+          </caption>
+					<thead>
+						<tr>
+							<th>Status Name</th>
+							<th class="text-center">YES</th>
+							<th class="text-center">NO</th>
+						</tr>
+					</thead>
+          <tr><td>Pending approval </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_pending_approval_business_channels_size', target: '_blank', class: 'numbers' %></td><td class="text-center">-</td></tr>
+					<tr><td>Brand Account Created </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_published_business_channels_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_not_published_business_channels_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Created by phone </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_created_by_phone_business_channels_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><span id='dashboard_not_created_by_phone_business_channels_size' class='numbers'></span></td></tr>
+          <tr><td>Phone Verified </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_phone_verified_business_channels_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_phone_unverified_business_channels_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Associated websites </td><td class="text-center">-</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_not_associated_websites_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Filled with content </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_filled_business_channels_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_unfilled_business_channels_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Blocked </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_blocked_business_channels_size', target: '_blank', class: 'numbers' %></td><td class="text-center">-</td></tr>
+				</table>
+        <hr/>
+        <table class="table table-bordered table-striped vertical-align-middle" style="margin-top: 10px;">
+          <caption><b><u>Average posting time</u></b></caption>
+          <tr><td>Channel posting time </td><td class="text-center"><span id="dashboard_youtube_channels_average_posting_time" class="numbers"></span></td></tr>
+          <tr><td>Website association time </td><td class="text-center"><span id="dashboard_associated_website_average_time" class="numbers"></span></td></tr>
+        </table>
+        <hr/>
+				<% calc_methods = %w(minimum maximum average sum) %>
+        <% yt_channel_fields = {"views"=>"fa-eye", "subscribers"=>"fa-pencil-square-o", "comments"=>"fa-comments-o"} %>
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <caption><b><u>Youtube statistics</u></b></caption>
+          <thead>
+            <tr>
+							<th></th>
+              <% calc_methods.each do |cm| %>
+                <th class="text-center"><%= cm.titleize %></th>
+              <% end %>
+            </tr>
+          </thead>
+					<% yt_channel_fields.each_pair do |key, value| %>
+	          <tr>
+							<th class="text-center" title="<%= key.titleize %>"><i class="fa <%= value %>"></i></th>
+	            <% calc_methods.each do |cm| %>
+	              <td class="text-center"><span id="dashboard_yt_channel_statistics_<%= cm %>_<%= key %>" class="numbers"></span></td>
+	            <% end %>
+	          </tr>
+					<% end %>
+        </table>
+			</div>
+		</div>
+		<div class="box box-widget">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-youtube-play"></i> Youtube Videos</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+        <div>
+          <div style="display:inline-block;">
+            <dl class="dl-horizontal">
+              <dt>Total published:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_published_videos_size', target: '_blank' %></dd>
+              <dt>Total not published:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_not_published_videos_size', target: '_blank' %></dd>
+              <dt>Total videos:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_videos_size', target: '_blank' %></dd>
+            </dl>
+          </div>
+          <div style="display:inline-block; float: right;">
+            <dl class="dl-horizontal">
+              <dt>Total pending:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_pending_approval_videos_size', target: '_blank'%></dd>
+              <dt>Total deleted:</dt>
+              <dd><%= link_to '', 'javascript://', id: 'dashboard_total_deleted_videos_size', target: '_blank' %></dd>
+            </dl>
+          </div>
+        </div>
+        <hr style="margin-top: 5px; margin-bottom: 0;"/>
+				<table class="table table-bordered table-striped vertical-align-middle" style="margin-top: 10px;">
+          <caption style="margin-bottom: 10px;">
+            <label style="width: 80px;">Time period:</label>
+            <%= select_tag(:youtube_videos_period, options_for_select([['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last 72 hours', 72], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760], ['All the time', 0]], params[:youtube_videos_period]), { include_blank: false, class: "form-control", style: "width: 150px;"}) %>
+          </caption>
+          <caption style="margin-bottom: 10px;">
+            <label style="width: 80px;">Bot server:</label>
+            <%= select_tag(:youtube_videos_bot_server_id, options_from_collection_for_select(BotServer.where(human_emulation: true).order(:id), :id, :name, params[:youtube_videos_bot_server_id]), { include_blank: true, class: "form-control", style: "width: 150px;", placeholder: "Choose bot server"}) %>
+          </caption>
+          <caption style="margin-bottom: 10px;">
+            <label style="width: 80px;">Client:</label>
+            <%= select_tag(:youtube_videos_client_id, options_from_collection_for_select(Client.where(is_active: true).order(:name), :id, :name, params[:youtube_videos_client_id]), { include_blank: true, class: "form-control", style: "width: 150px;", placeholder: "Choose client"}) %>
+          </caption>
+					<thead>
+						<tr>
+							<th>Status Name</th>
+							<th class="text-center">YES</th>
+							<th class="text-center">NO</th>
+						</tr>
+					</thead>
+					<tr><td>Published </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_published_videos_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_not_published_videos_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Deleted </td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_deleted_videos_size', target: '_blank', class: 'numbers' %></td><td class="text-center">-</td></tr>
+          <tr><td>Pending approval</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_pending_approval_videos_size', target: '_blank', class: 'numbers' %></td><td class="text-center">-</td></tr>
+          <tr><td>With posted annotations</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_annotations_posted_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_annotations_not_posted_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>With posted cards</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_cards_posted_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_cards_not_posted_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>With posted overlays</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_call_to_action_overlays_posted_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_call_to_action_overlays_not_posted_size', target: '_blank', class: 'numbers' %></td></tr>
+          <tr><td>Posted on G+</td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_posted_on_google_plus_videos_size', target: '_blank', class: 'numbers' %></td><td class="text-center"><%= link_to '', 'javascript://', id: 'dashboard_not_posted_on_google_plus_videos_size', target: '_blank', class: 'numbers' %></td></tr>
+				</table>
+        <!-- <div id="youtube_videos_progress" style="margin-top: 10px;">
+          <div class="progress">
+            <div class="progress-bar progress-bar-success published" style="width: 0%" title="Published">
+              <span></span>
+            </div>
+            <div class="progress-bar progress-bar-warning progress-bar active not-published" style="width: 0%" title="Not published">
+              <span></span>
+            </div>
+            <div class="progress-bar progress-bar-danger pending" style="width: 0%" title="Pending approval">
+              <span></span>
+            </div>
+          </div>
+        </div> -->
+        <hr/>
+        <table class="table table-bordered table-striped vertical-align-middle" style="margin-top: 10px;">
+          <caption><b><u>Average posting time</u></b></caption>
+          <tr><td>Video posting time </td><td class="text-center"><span id="dashboard_youtube_videos_average_posting_time" class="numbers"></span></td></tr>
+          <tr><td>Annotations time </td><td class="text-center"><span id="dashboard_youtube_video_annotations_average_time" class="numbers"></span></td></tr>
+          <tr><td>Cards time </td><td class="text-center"><span id="dashboard_youtube_video_cards_average_time" class="numbers"></span></td></tr>
+          <tr><td>Adwords campaigns time </td><td class="text-center"><span id="dashboard_adwords_campaigns_average_time" class="numbers"></span></td></tr>
+          <tr><td>Adwords campaign groups time </td><td class="text-center"><span id="dashboard_adwords_campaign_groups_average_time" class="numbers"></span></td></tr>
+          <tr><td>Call to action overlays time </td><td class="text-center"><span id="dashboard_call_to_action_overlays_average_time" class="numbers"></span></td></tr>
+          <tr><td>Google+ upload time </td><td class="text-center"><span id="dashboard_google_plus_upload_average_time" class="numbers"></span></td></tr>
+        </table>
+        <hr/>
+        <% yt_video_fields = {"views"=>"fa-eye", "likes"=>"fa-thumbs-o-up", "dislikes"=>"fa-thumbs-o-down", "favorites"=>"fa-star-o", "comments"=>"fa fa-comments-o"} %>
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <caption><b><u>Youtube statistics</u></b></caption>
+          <thead>
+            <tr>
+							<th></th>
+							<% calc_methods.each do |cm| %>
+                <th class="text-center"><%= cm.titleize %></th>
+              <% end %>
+            </tr>
+          </thead>
+					<% yt_video_fields.each_pair do |key, value| %>
+	          <tr>
+							<td class="text-center" title="<%= key.titleize %>"><i class="fa <%= value %>"></i></td>
+	            <% calc_methods.each do |cm| %>
+	              <td class="text-center"><span id="dashboard_yt_video_statistics_<%= cm %>_<%= key %>" class="numbers"></span></td>
+	            <% end %>
+	          </tr>
+					<% end %>
+        </table>
+			</div>
+		</div>
+    <div class="box box-widget">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-user"></i> Clients</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div id="clients_statistics"></div>
+      </div>
+    </div>
+	</div>
+  <div class="item">
+		<h1 class="page-header">Network</h1>
+		<div class="box box-widget">
+			<div class="box-header with-border">
+      	<h3 class="box-title"><i class="fa fa-server"></i> Bot Server Usage</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+  		</div>
+			<div class="box-body">
+				<table  class="table table-bordered table-striped vertical-align-middle">
+					<th colspan="2" class="text-center"><b><u>Hardware Info</u></b></th>
+					<tr><td style="width: 150px;">CPU </td><td><span class="numbers"><span id="active_threads_cpu_usage"></span> %</span></td></tr>
+					<tr><td style="width: 150px;">Current RAM </td><td><span class="numbers"><span id="active_threads_ram_usage"></span> GB</span> / <span class="numbers"><span id="active_threads_ram"></span> GB</span></td></tr>
+					<tr><td style="width: 150px;">HDD free space </td><td><span id="active_threads_hdd_free_space" class="numbers"></span> / <span id="active_threads_hdd_total_space" class="numbers"></span></td></tr>
+					<tr><td style="width: 150px;">Container Uptime </td><td><span id="active_threads_container-uptime" class="numbers"></span></td></tr>
+				</table>
+    	</div>
+		</div>
+    <% %w(nas database broadcaster delayed_jobs_0 delayed_jobs_1 delayed_jobs_2).each do |server| %>
+      <div class="box box-widget">
+        <div class="box-header with-border">
+          <h3 class="box-title">
+            <i class="fa fa-server"></i>
+            <% if %w(delayed_jobs_0 delayed_jobs_1 delayed_jobs_2).include?(server) %>
+              <%= "#{server.gsub(/[0-9]+/, '').titleize.humanize} server ##{server.last.to_i + 1}" %>
+            <% elsif server == 'broadcaster' %>
+              <%= link_to "#{server.titleize.humanize} server", "http://10.50.50.247:19999", target: "_blank", title: "Live statistics" %>
+            <% elsif server == 'database' %>
+              <%= link_to "#{server.titleize.humanize} server", "http://10.50.50.246:19999", target: "_blank", title: "Live statistics" %>
+            <% else %>
+              <%= server.titleize.humanize %> server
+            <% end %>
+          </h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table table-bordered table-striped vertical-align-middle">
+            <caption><b><u>CPU</u></b></caption>
+            <thead>
+              <tr>
+                <th class="text-center">Last 1 min.</th>
+                <th class="text-center">Last 5 min.</th>
+                <th class="text-center">Last 15 min.</th>
+                <th class="text-center">Cores</th>
+                <th class="text-center">Threads</th>
+              </tr>
+            </thead>
+            <tbody id="<%= server %>_cpu_load_average" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+          </table>
+          <hr/>
+          <table class="table table-bordered table-striped vertical-align-middle">
+            <caption><b><u>MEMORY</u></b></caption>
+            <thead>
+              <tr>
+                <th class="text-center"></th>
+                <th class="text-center">Total</th>
+                <th class="text-center">Used</th>
+                <th class="text-center">Free</th>
+                <th class="text-center">Shared</th>
+                <th class="text-center">Buff / cache</th>
+                <th class="text-center">Available</th>
+              </tr>
+            </thead>
+            <tbody id="<%= server %>_memory" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+          </table>
+          <hr/>
+          <table class="table table-bordered table-striped vertical-align-middle">
+            <caption><b><u>STORAGE</u></b></caption>
+            <thead>
+              <tr>
+                <th class="text-center">Used</th>
+                <th class="text-center">Available</th>
+                <th class="text-center">Total</th>
+                <th class="text-center">Use %</th>
+                <th>Target</th>
+              </tr>
+            </thead>
+            <tbody id="<%= server %>_hdds" role="alert" aria-live="polite" aria-relevant="all"></tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+    <div class="box box-widget collapsed-box">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-line-chart"></i> Piwik statistics</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+        </div>
+      </div>
+      <div id="piwik_statistics" class="box-body">
+        <%= render partial: 'client_landing_pages/statistics', layout: false, locals: {client_landing_pages: ClientLandingPage.where("piwik_id IS NOT NULL") } %>
+      </div>
+    </div>
+	</div>
+	<div class="item">
+		<h1 class="page-header">Server brain</h1>
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-slack"></i> CPU</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+        <div class="text-center">
+          <%= select_tag(:system_load_period, options_for_select([['Last hour', 1], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last 72 hours', 72], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720]], params[:system_load_period]), { include_blank: false, class: "form-control", style: "width: 250px;"}) %>
+        </div>
+        <% (0..0).each do |e| %>
+          <div id="cpu_ram_last_hour_<%= e %>" style="height: 300px; margin: 0 auto;"></div>
+        <% end %>
+				<table class="table table-bordered table-striped vertical-align-middle">
+					<tr><td>Name </td><% (0..0).each do |e| %><td><span id="hardware_cpu_name_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Base Clock </td><% (0..0).each do |e| %><td><span id="hardware_cpu_base_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Max Clock </td><% (0..0).each do |e| %><td><span id="hardware_cpu_max_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Thermal Design Power </td><% (0..0).each do |e| %><td><span id="hardware_cpu_thermal_design_power_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Core Voltage </td><% (0..0).each do |e| %><td><span id="hardware_cpu_core_voltage_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Bus Speed </td><% (0..0).each do |e| %><td><span id="hardware_cpu_bus_speed_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Multiplier </td><% (0..0).each do |e| %><td><span id="hardware_cpu_multiplier_<%= e %>" class="numbers"></span></td><% end %></tr>
+          <tr><td>Loads </td><% (0..0).each do |e| %><td><span id="hardware_cpu_loads_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Temperatures </td><% (0..0).each do |e| %><td><span id="hardware_cpu_temperatures_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<!-- <tr><td>Clocks </td><% (0..0).each do |e| %><td><span id="hardware_cpu_clocks_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Loads </td><% (0..0).each do |e| %><td><span id="hardware_cpu_loads_<%= e %>" class="numbers"></span></td><% end %></tr> -->
+				</table>
+			</div>
+		</div>
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-tv"></i> GPU</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+				<table class="table table-bordered table-striped vertical-align-middle">
+					<% gpu_size = Setting.get_value_by_name("BotServer::MAX_GPU_SIZE").to_i-1 %>
+					<tr><td>Name </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_name_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Temperature </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_temperature_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Core Clock </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_core_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Memory Clock </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_memory_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Shader Clock </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_shader_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Core Load </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_core_load_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Memory Load </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_memory_load_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>VideoEngineLoad </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_video_engine_load_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>MemoryControlLoad </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_memory_control_load_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Fan Speed </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_gpu_fan_speed_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Fan Control </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_fan_control_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Boose Core Clock </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_boose_core_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Max Core Clock </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_max_core_clock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Max Memory Clock </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_max_memory_cock_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Memory Size </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_memory_size_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Memory Bandwidth </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_memory_bandwidth_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Driver Version </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_driver_version_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Shaders </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_shaders_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Pixel Rate </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_pixel_rate_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Texture Rate </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_texture_rate_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>TDP </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_tdp_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>BusWidth </td><% (0..gpu_size).each do |e| %><td><span id="hardware_gpu_bus_width_<%= e %>" class="numbers"></span></td><% end %></tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="item">
+		<h1 class="page-header">Server memory</h1>
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-random"></i> RAM</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <table class="table table-bordered table-striped vertical-align-middle">
+          <tr><td>Load </td><td><span id="hardware_ram_load" class="numbers"></span></td></tr>
+          <tr><td>Used Memory </td><td><span id="hardware_ram_used_memory" class="numbers"></span></td></tr>
+          <tr><td>Available Memory </td><td><span id="hardware_ram_available_memory" class="numbers"></span></td></tr>
+          <tr><td>CAS Latency </td><td><span id="hardware_ram_cas_latency" class="numbers"></span></td></tr>
+          <tr><td>RAS To CAS Delay </td><td><span id="hardware_ram_ras_to_cas_delay" class="numbers"></span></td></tr>
+          <tr><td>RAS Precharge </td><td><span id="hardware_ram_ras_precharge" class="numbers"></span></td></tr>
+          <tr><td>TRAS </td><td><span id="hardware_ram_tras" class="numbers"></span></td></tr>
+          <tr><td>Frequency </td><td><span id="hardware_ram_frequency" class="numbers"></span></td></tr>
+        </table>
+      </div>
+    </div>
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-hdd-o"></i> HDD</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+				<table class="table table-bordered table-striped vertical-align-middle">
+					<% hdd_size = Setting.get_value_by_name("BotServer::MAX_HDD_SIZE").to_i-1 %>
+					<tr><td>Name </td><% (0..hdd_size).each do |e| %><td><span id="hardware_hdd_name_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Temperature </td><% (0..hdd_size).each do |e| %><td><span id="hardware_hdd_temperature_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Used Space </td><% (0..hdd_size).each do |e| %><td><span id="hardware_hdd_used_space_<%= e %>" class="numbers"></span></td><% end %></tr>
+					<tr><td>Total Space </td><% (0..hdd_size).each do |e| %><td><span id="hardware_hdd_total_space_<%= e %>" class="numbers"></span></td><% end %></tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="item">
+		<h1 class="page-header">Server body</h1>
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-dashboard"></i> Mainboard</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+				<div class="row">
+					<div class="col-md-12">
+						<table class="table table-bordered table-striped vertical-align-middle">
+							<tr><td>Name </td><td><span id="hardware_mainboard_name" class="numbers"></span></td></tr>
+							<tr><td>VBat </td><td><span id="hardware_mainboard_vbat" class="numbers"></span></td></tr>
+							<tr><td>Temperature </td><td><span id="hardware_mainboard_temperature" class="numbers"></span></td></tr>
+							<tr><td>Chip Set </td><td><span id="hardware_mainboard_chip_set" class="numbers"></span></td></tr>
+							<tr><td>South Bridge </td><td><span id="hardware_mainboard_south_bridge" class="numbers"></span></td></tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title"><i class="fa fa-signal"></i> Network</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+			</div>
+			<div class="box-body">
+				<div class="row">
+					<div class="col-md-12">
+						<table class="table table-bordered table-striped vertical-align-middle">
+							<tr><td>Upload </td><td><span id="hardware_net_status_upload" class="numbers"></span></td></tr>
+							<tr><td>Download </td><td><span id="hardware_net_status_download" class="numbers"></span></td></tr>
+							<tr><td>Host IP </td><td><span id="hardware_net_status_host_ip" class="numbers"></span></td></tr>
+							<tr><td>Host Name </td><td><span id="hardware_net_status_host_name" class="numbers"></span></td></tr>
+							<tr><td>Mac Address </td><td><span id="hardware_net_status_mac_address" class="numbers"></span></td></tr>
+							<tr><td>Public IP </td><td><span id="hardware_net_status_public_ip" class="numbers"></span></td></tr>
+							<tr><td>OS Version </td><td><span id="hardware_net_status_os_version" class="numbers"></span></td></tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="customNavigation">
+	<a class="prev" href="javascript://"><i class="glyphicon glyphicon-chevron-left"></i></a>
+	<a class="next" href="javascript://"><i class="glyphicon glyphicon-chevron-right"></i></a>
+</div>
+<div class="modal modal-wide fade" id="client_legend" style="z-index: 999999;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>

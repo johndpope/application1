@@ -1,0 +1,26 @@
+<%
+  channel_art_images = render partial: "sandbox/video_blenders/youtube_setup/channel_setup/channel_art_images", locals: {channel_arts: @channel_arts}
+%>
+if ('<%=@channel_arts.length%>' != 0){
+  $('.channel_arts_components').html('<%= escape_javascript(channel_art_images) %>');
+<% unless @channel_arts.first.blank? %>
+  $('.channel_art_selected').attr('src','<%= @channel_arts.first.file.url %>');
+  $('.channel_art_container a').attr('href','<%= @channel_arts.first.file.url %>');
+<% end %>
+}
+
+$('.template_img').on('click', function(e){
+  var channel_art_src = $(e.target).data('src');
+  $('body').find('.channel_art_container a').attr('href',channel_art_src);
+  $('body').find('.channel_art_selected').attr('src',channel_art_src);
+  $('.template_img').removeClass('active');
+  $(e.target).addClass('active');
+});
+
+$('.template_img').each(function(index, element){
+  $(element).css("opacity",0);
+  var self = this
+  setTimeout(function(){
+    $(self).css("opacity",1);
+  }, index*50);
+});

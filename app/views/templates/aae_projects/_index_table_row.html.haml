@@ -1,0 +1,50 @@
+%td{class: "text-center"}= item.id
+%td
+	- unless item.project_type.blank?
+		= t("templates_aae_projects.project_types.#{item.project_type}")
+%td= item.title
+%td.text-center
+	- unless item.content_validation.nil?
+		- span_class = item.content_validation? ? 'success' : 'danger'
+		- span_text = item.content_validation? ? 'YES' : 'NO'
+		%span.label{:class => "label-#{span_class}"}
+			= span_text
+%td.text-center
+	= fa_icon('lock', title: t("templates.aae_project.content_lock")) if item.content_lock?
+- %w(texts images).each do |i|
+	- span_class = item.send("has_#{i}?") ? 'success' : 'danger'
+	- span_text = item.send("has_#{i}?") ? 'YES' : 'NO'
+	%td.text-center
+		%span.label{:class => "label-#{span_class}"}
+			= span_text
+%td.text-center
+	- prefix = item.is_special ? 'success' : 'danger'
+	- text = item.is_special ? t('yes') : t('no')
+	%span.label{class: ('label-' + prefix)}= text
+%td.text-center
+	= link_to templates_aae_project_preview_thumbnail_path(item), data: {remote: true}  do
+		= image_tag item.thumbnail.url(:thumb), style: 'height: 18px; width: 32px;' unless item.thumbnail.blank?
+%td.text-center
+	- unless item.video.blank?
+		= link_to templates_aae_project_preview_video_path(item), data: {remote: true}, class: 'btn btn-default btn-sm' do
+			= fa_icon 'play'
+%td.text-center
+	- dynamic_aae_project_test = Templates::DynamicAaeProject.where(aae_project_id: item.id, target: Templates::DynamicAaeProject.target.find_value(:test).value).last
+	- if dynamic_aae_project_test.present?
+		- if !dynamic_aae_project_test.rendered_video.blank?
+			= link_to dynamic_aae_project_test.rendered_video.url, class: 'btn btn-default btn-sm preview-video', rel: "fancybox-button", title: dynamic_aae_project_test.rendered_video_updated_at do
+				= fa_icon 'film'
+		- else
+			= fa_icon 'hourglass-start', title: dynamic_aae_project_test.updated_at
+%td.text-center
+	= Time.at(item.video_duration).utc.strftime("%M:%S") unless item.video_duration.blank?
+%td.text-center
+	- unless item.notes.blank?
+		= link_to 'javascript://', class: "btn btn-default btn-sm",
+		data: {container: "body", content: item.notes, placement: "top", toggle: "popover", trigger: "hover"} do
+			= fa_icon 'exclamation', class: "text-danger"
+- %w(is_approved is_active).each do |f|
+	%td.text-center
+		- prefix = item.send(f) ? 'success' : 'danger'
+		- text = item.send(f) ? t('yes') : t('no')
+		%span.label{class: ('label-' + prefix)}= text

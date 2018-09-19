@@ -1,0 +1,6 @@
+<%
+	row = render partial: "clients/source_video_image_tag_selection/index_table_row", locals: {item: @source_video, row_nr: ''}
+	row_id = dom_id(@source_video)
+%>
+$('#<%= row_id%>').replaceWith('<%= escape_javascript(row)%>');
+$(".<%= @source_video.class.to_s.underscore.gsub('/','_')%>_modal").modal('hide');

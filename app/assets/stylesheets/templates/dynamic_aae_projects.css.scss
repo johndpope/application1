@@ -1,0 +1,30 @@
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  vertical-align: middle !important;
+}
+.templates_dynamic_aae_projects{
+	&.index{
+		#templates_dynamic_aae_project_items{
+			.id{width: 40px;}
+			.aae_project_id{width: 120px;}
+			.aae_project_type{width: 200px;}
+			.target{width: 150px;}
+			.client{width: 250px;}
+			.source_video{width: 150px;}
+			.rendered_video, .rendered_video_thumb, .images, .texts, .tar_project{width: 40px;}
+			.created_at{width: 80px;}
+			.location_type{width: 100px;}
+			.location_id{width: 150px;}
+			.created_at{width: 120px;}
+		}
+
+		.dynamic_aae_project_images_modal{
+			.dynamic-aae-project{
+				margin-bottom: 5px;
+				.image{
+					img{width:auto; height:100%;}
+					margin-bottom: 3px;
+				}
+			}
+		}
+	}
+}

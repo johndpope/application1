@@ -1,0 +1,491 @@
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<%= form_for @email_account do |f| %>
+	<input type='hidden' name='_method' value='put'>
+	<div>
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#general-tab" data-toggle="tab">General</a></li>
+			<% if @email_account.email_item.present? && @email_account.email_item_type == 'GoogleAccount' %>
+				<li><a href="#google-tab" data-toggle="tab">Google Specific</a></li>
+        <li><a href="#activity-tab" data-toggle="tab">Activity</a></li>
+				<li><a href="#adwords-campaigns-tab" data-toggle="tab">Adwords Campaigns <span class="badge bg-blue"><%= @email_account.email_item.adwords_campaigns.size %></span></a></li>
+				<% if @email_account.account_type.present? && @email_account.account_type.operational? %>
+					<li><a href="#youtube-tab" data-toggle="tab">Channels <span class="badge bg-blue"><%= @email_account.email_item.youtube_channels.size %></span></a></li>
+				<% end %>
+        <li><a href="#recovery-inbox-emails-tab" data-toggle="tab">History</a></li>
+				<li><a href="#screenshots-tab" data-toggle="tab">Screenshots <span class="badge bg-blue"><%= @email_account.screenshots.size %></span></a></li>
+			<% end %>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="general-tab">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label :email, class: 'control-label' %>
+									<%= best_in_place @email_account, :email, :as => :input, class: 'bip-input' %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label :password, class: 'control-label' %>
+									<%= best_in_place @email_account, :password, :as => :input %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'First Name', class: 'control-label' %>
+									<%= best_in_place @email_account, :firstname, :as => :input %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Last Name', class: 'control-label' %>
+									<%= best_in_place @email_account, :lastname, :as => :input %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Birth Date', class: 'control-label' %>
+									<%= f.text_field :birth_date, class: 'form-control datepicker', value: @email_account.birth_date.try(:strftime, '%m/%d/%Y'), placeholder: 'mm/dd/yyyy' %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label "Gender", class: 'control-label' %>
+									<%= best_in_place @email_account, :gender, as: :checkbox, collection: EmailAccount::GENDERS.invert,
+										class: "bip-checkbox btn btn-xs btn-#{@email_account.gender.try(:male?) ? 'success' : 'danger'}", style: 'width: 48px;' %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Secret Question', class: 'control-label' %>
+									<%= best_in_place @email_account, :secret_question, :as => :input %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Secret Answer', class: 'control-label' %>
+									<%= best_in_place @email_account, :secret_answer, :as => :input %>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Recovery Email', class: 'control-label' %>
+								 <%= best_in_place @email_account, :recovery_email, :as => :input %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Recovery Email Password', class: 'control-label' %>
+								 <%= best_in_place @email_account, :recovery_email_password, :as => :input %>
+								</div>
+							</div>
+							<!-- <div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Recovery Phone Number', class: 'control-label' %>
+									<%= best_in_place @email_account, :recovery_phone_number, :as => :input %>
+								</div>
+							</div> -->
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Recovery Phone', class: 'control-label' %>
+									<div>
+										<span class="control-label"><%= @email_account.try(:recovery_phone).try(:value) %></span>
+									</div>
+								</div>
+							</div>
+							<div class="row" style="margin-bottom: 3px;">
+								<div id="locality_block" class="form-group col-md-10">
+									<%= f.label 'Location', class: 'control-label' %>
+									<%= f.hidden_field :locality_id, class: 'select2 ajax form-control', data: { source: localities_path } %>
+								</div>
+							</div>
+							<div class="row" style="margin-bottom: 3px;">
+								<div id="region_block" class="form-group col-md-10">
+									<%= f.label 'Region', class: 'control-label' %>
+									<%= f.hidden_field :region_id, class: 'select2 ajax form-control', data: { source: regions_path } %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Creation Source', class: 'control-label' %>
+									<%= best_in_place @email_account, :creation_source, :as => :input %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'IP address', class: 'control-label' %>
+									<% if @email_account.ip_address %>
+										<div>
+											<span class="control-label"><%= @email_account.ip_address.address %></span>
+										</div>
+										<!-- <%#= best_in_place @email_account, :ip_address_id, as: :select, collection: Hash[IpAddress.all.order(address: :asc).pluck(:id, :address).flatten.each_slice(2).to_a],
+											class: "bip-select" %> -->
+									<% else %>
+										<%= best_in_place @email_account, :ip, :as => :input %>
+									<% end %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'IP Address Notes', class: 'control-label' %>
+									<%= best_in_place @email_account, :ip_notes, :as => :textarea %>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+              <div class="row">
+                <div class="form-group col-md-10">
+                  <%= f.label 'Bot server', class: 'control-label' %>
+                  <%= best_in_place @email_account, :bot_server_id, :as => :select, :collection => [['', '-']] + BotServer.all.select(:id, :name).order(:id).pluck(:id, :name) %>
+                </div>
+              </div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Client', class: 'control-label' %>
+									<%= best_in_place @email_account, :client_id, :as => :select, :collection => [['', '-']] + Client.all.order(:name).pluck(:id, :name) %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Notes', class: 'control-label' %>
+									<%= best_in_place @email_account, :notes, :as => :textarea %>
+								</div>
+							</div>
+							<div class="row">
+								<div id="account_type_block" class="form-group col-md-10">
+									<%= f.label 'Account Type', class: 'control-label' %>
+									<%= best_in_place @email_account, :account_type, :as => :select, :collection => [['', '-']] + EmailAccount::ACCOUNT_TYPES.collect{ |key, value| [key, key.to_s.humanize ]} %>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Is active', class: 'control-label' %>
+									<%= best_in_place @email_account, :is_active, as: :checkbox, collection: {false: 'NO', true: 'YES'},
+										class: "bip-checkbox btn btn-xs btn-#{@email_account.is_active ? 'success' : 'danger'}"%>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Deleted', class: 'control-label' %>
+									<%= best_in_place @email_account, :deleted, as: :checkbox, collection: {false: 'NO', true: 'YES'},
+										class: "inverse bip-checkbox btn btn-xs btn-#{@email_account.deleted ? 'danger' : 'success'}"%>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Is verified by phone', class: 'control-label' %>
+									<%= best_in_place @email_account, :is_verified_by_phone, as: :checkbox, collection: {false: 'NO', true: 'YES'},
+										class: "bip-checkbox btn btn-xs btn-#{@email_account.is_verified_by_phone ? 'success' : 'danger'}" %>
+								</div>
+							</div>
+              <div class="row">
+								<div class="form-group col-md-10">
+									<%= f.label 'Recovery email sync', class: 'control-label' %>
+									<%= best_in_place @email_account, :recovery_email_sync, as: :checkbox, collection: {false: 'NO', true: 'YES'},
+										class: "bip-checkbox btn btn-xs btn-#{@email_account.recovery_email_sync ? 'success' : 'danger'}" %>
+								</div>
+							</div>
+              <% [:last_disabled_at, :status_change_date, :updated_at, :created_at].each do |field| %>
+                <div class="row">
+                  <div class="form-group col-md-10">
+                    <i id="<%= field.to_s %>_time"><%= local_time(@email_account[field], format: "#{field.to_s.humanize.titleize} · %m/%d/%y %I:%M %p", title: @email_account[field].try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), id: "#{field.to_s}_time") if @email_account[field].present? %></i>
+                  </div>
+                </div>
+              <% end %>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+			<% if @email_account.email_item.present? && @email_account.email_item_type == 'GoogleAccount' %>
+				<% google_account = @email_account.email_item %>
+				<%= f.fields_for :email_item do |email_item| %>
+					<div class="tab-pane" id="google-tab">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="row">
+									<div class="col-md-4">
+										<div class="row">
+											<div class="form-group col-md-10">
+												<%= f.label 'Alternate Email', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :alternate_email, :as => :input %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-10">
+												<%= f.label 'Refresh Token', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :refresh_token, :as => :input %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-10">
+												<%= f.label 'Adwords ID', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :adwords_id, :as => :input %>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="row">
+											<div id="account_category_block" class="form-group col-md-10">
+												<%= f.label 'Account Category', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :account_category, :as => :select, :collection => [['', '-']] + GoogleAccount::ACCOUNT_CATEGORIES.collect{ |key, value| [key, key.to_s.humanize ]} %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-10">
+												<%= f.label 'Domain', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :domain, :as => :input %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-10">
+												<%= f.label 'Adwords Account Name', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :adwords_account_name, :as => :input, html_attrs: {maxlength: "#{GoogleAccount::ADWORDS_ACCOUNT_NAME_LIMIT}"} %>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="row">
+											<div id="google_status_block" class="form-group col-md-10">
+												<%= f.label 'Google Status', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :google_status, :as => :select, :collection => [['', '-']] + GoogleAccount::GOOGLE_STATUSES.collect{ |key, value| [key, key.to_s.humanize ]} %>
+											</div>
+										</div>
+										<div class="row">
+											<div class="form-group col-md-10">
+												<%= f.label 'Phone Owner', class: 'control-label' %>
+												<%= best_in_place @email_account.email_item, :phone_owner, :as => :input %>
+											</div>
+										</div>
+                    <div class="row">
+                      <div class="form-group col-md-10">
+                        <%= f.label 'Youtube Data Api Key', class: 'control-label' %>
+                        <%= best_in_place @email_account.email_item, :youtube_data_api_key, :as => :input %>
+                      </div>
+                    </div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane" id="activity-tab">
+						<div class="row">
+							<div class="col-md-12">
+								<% if @email_account.email_item.google_account_activity.present? %>
+									<% google_account_activity_id = @email_account.email_item.google_account_activity.id %>
+									<% col_items_limit = @activity_columns.size / 4 + 1 %>
+									<div class="row">
+										<div class="form-group col-md-3">
+											<%= f.label 'Google Account Activity ID:', class: 'control-label' %>
+											<span><%= google_account_activity_id %></span>
+										</div>
+										<div class="form-group col-md-3">
+											<%= f.label 'Last Recovery Answer:', class: 'control-label' %>
+											<span>
+												<% last_recovery_answer = @email_account.email_item.google_account_activity.try(:recovery_answer).try(:last) %>
+												<% if last_recovery_answer.present? %>
+													<%= GoogleAccountActivity::RECOVERY_ANSWERS.key(last_recovery_answer) %>
+												<% end %>
+											</span>
+										</div>
+									</div>
+									<%= email_item.fields_for :google_account_activity do |account_activity| %>
+										<div class="row">
+											<% (0..3).each do |index| %>
+												<div class="col-md-3">
+													<table class="table table-hover table-striped table-bordered">
+														<tbody>
+															<% @activity_columns[index*col_items_limit ...(index+1)*col_items_limit ].each do |col| %>
+																<tr>
+																	<td class="td-label"><%=col.humanize.titleize.gsub('Gv', 'Google Voice:') %></td>
+																	<td style="width: 120px; text-align: center;">
+																		<%#= account_activity.hidden_field "#{col}" %>
+																		<% color = params[:activity].present? && params[:activity].include?(col) ? 'info' : 'warning' %>
+																		<a href="javascript://" class="btn btn-xs btn-<%= color %> activity-btn" id="<%= col %>_btn" data-field="<%= col %>" data-id="<%= google_account_activity_id %>">
+																			<i class="fa fa-refresh"></i>
+                                      <%= local_time(@email_account.email_item.google_account_activity.read_attribute(col).try(:last), format: '%m/%d/%y %I:%M %p', title: @email_account.email_item.google_account_activity.read_attribute(col).try(:last).try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if @email_account.email_item.google_account_activity.read_attribute(col).try(:last).present?%>
+																		</a>
+																	</td>
+																</tr>
+															<% end %>
+														</tbody>
+													</table>
+												</div>
+											<% end %>
+										</div>
+									<% end %>
+								<% end %>
+							</div>
+						</div>
+					</div>
+          <div class="tab-pane" id="adwords-campaigns-tab">
+            <%= render 'adwords_campaigns/index' %>
+          </div>
+          <% if @email_account.account_type.present? && @email_account.account_type.operational? %>
+						<div class="tab-pane" id="youtube-tab">
+							<div class="row">
+								<div class="col-md-12">
+									<% if File.exists?(Rails.root.join('app', 'views', 'email_accounts', 'legend', "#{@email_account.account_type}_email_account", 'assets', '_google_account.html.erb')) %>
+										<%= render partial: "email_accounts/legend/#{@email_account.account_type}_email_account/assets/google_account", locals: { email_account: @email_account } %>
+									<% end %>
+								</div>
+							</div>
+						</div>
+					<% end %>
+				<% end %>
+			<% end %>
+      <div class="tab-pane" id="recovery-inbox-emails-tab">
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+          <div class="form-group col-md-3">
+            <%= check_box_tag :show_inbox_emails_in_history, nil, true, {class: 'iCheck-helper'} %>
+            <%= label_tag :show_inbox_emails_in_history, 'Show inbox emails', class: 'small_label' do %>
+              Show inbox emails <span class="badge bg-grey"><%= @email_account.recovery_inbox_emails.size %></span>
+            <% end %>
+          </div>
+          <div class="form-group col-md-3">
+            <%= check_box_tag :show_recovery_responses_in_history, nil, true, {class: 'iCheck-helper'} %>
+            <%= label_tag :show_recovery_responses_in_history, 'Show recovery responses', class: 'small_label' do %>
+              Show recovery responses <span class="badge bg-orange"><%= RecoveryResponse.where(resource_type: "GoogleAccountActivity", resource_id: @email_account.email_item.google_account_activity.id).size + RecoveryResponse.where(resource_type: "YoutubeChannel", resource_id: @email_account.email_item.youtube_channels.map(&:id)).size %></span>
+            <% end %>
+          </div>
+          <div class="form-group col-md-3">
+            <%= check_box_tag :show_phone_usages_in_history, nil, true, {class: 'iCheck-helper'} %>
+            <%= label_tag :show_phone_usages_in_history, 'Show phone usages', class: 'small_label' do %>
+              Show phone usages <span class="badge" style="background-color: #42a8ca !important;"><%= PhoneUsage.where(phone_usageable_id: @email_account.email_item.google_account_activity.id, phone_usageable_type: "GoogleAccountActivity").size %></span>
+            <% end %>
+          </div>
+          <div class="form-group col-md-3">
+            <%= check_box_tag :show_screenshots_in_history, nil, true, {class: 'iCheck-helper'} %>
+            <%= label_tag :show_screenshots_in_history, 'Show screenshots', class: 'small_label' do %>
+              Show screenshots <span class="badge bg-blue"><%= @email_account.screenshots.size %></span>
+            <% end %>
+          </div>
+        </div>
+        <%
+          conversations = []
+          conversations << RecoveryInboxEmail.where(email_account_id: @email_account.id).order(date: :desc).map(&:attributes)
+          conversations << RecoveryResponse.where(resource_type: "GoogleAccountActivity", resource_id: @email_account.email_item.google_account_activity.id).map {|rr| attributes = rr.attributes; attributes["date"] = rr["created_at"] - 30.seconds; attributes}
+          conversations << RecoveryResponse.where(resource_type: "YoutubeChannel", resource_id: @email_account.email_item.youtube_channels.map(&:id)).map {|rr| attributes = rr.attributes; attributes["date"] = rr["created_at"] - 30.seconds; attributes}
+          conversations << PhoneUsage.where(phone_usageable_id: @email_account.email_item.google_account_activity.id, phone_usageable_type: "GoogleAccountActivity").map {|rr| attributes = rr.attributes; attributes["date"] = rr["created_at"]; attributes}
+          conversations << @email_account.screenshots.map {|rr| attributes = rr.attributes; attributes["date"] = rr["created_at"]; attributes["thumb_url"] = rr.image.url(:thumb); attributes["original_url"] = rr.image.url(:original); attributes}
+          conversations.flatten!
+          conversations.sort!{|a,b| b["date"] <=> a["date"] }
+        %>
+        <div class="row">
+            <div class="col-md-12">
+              <div class="box direct-chat direct-chat-warning">
+                <div class="box-body">
+                  <div class="direct-chat-messages">
+                    <% scr_counter = 0 %>
+                    <% conversations.each do |conversation|%>
+                      <% scr_counter = 0 unless conversation["original_url"].present? %>
+                      <% if conversation["body"].present? %>
+                        <div class="direct-chat-msg direct-chat-inbox-email col-md-12">
+                          <div class="direct-chat-info clearfix">
+                            <span class="direct-chat-name pull-left" style="font-variant: small-caps; font-size: larger;" title="Email Type: <%= conversation["email_type"]%>"><%= RecoveryInboxEmail.email_type.find_value(conversation["email_type"]) %></span>
+                            <span class="direct-chat-timestamp pull-right"><i><b><%= time_ago_in_words(conversation["date"]) %> ago</b></i> on <b><%= local_time(conversation["date"], format: '%m/%d/%y at %I:%M %p', title: conversation["date"].try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y at %I:%M %p - Eastern Time (US & Canada)')) if conversation["date"].present?%></b></span>
+                          </div>
+                          <% if conversation["sender"].include?("google") %>
+                            <img class="direct-chat-img" src="/google.png">
+                          <% else %>
+                            <img class="direct-chat-img" src="/youtube.png">
+                          <% end %>
+                          <div class="direct-chat-text">
+                            <span><b title="Subject"><%= conversation["subject"] %> · </b><i title="Sender"><%= conversation["sender"] %></i></span>
+                            <div><%= conversation["body"] %></div>
+                          </div>
+                        </div>
+                      <% elsif conversation["response"].present? %>
+                        <div class="direct-chat-msg right direct-chat-recovery-response col-md-12">
+                          <div class="direct-chat-info clearfix">
+                            <span class="direct-chat-name pull-right"><%= @email_account.full_name %></span>
+                            <span class="direct-chat-timestamp pull-left"><i><b><%= time_ago_in_words(conversation["date"]) %> ago</b></i> on <b><%= local_time(conversation["date"], format: '%m/%d/%y at %I:%M %p', title: conversation["date"].try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y at %I:%M %p - Eastern Time (US & Canada)')) if conversation["date"].present?%></b></span>
+                          </div>
+                          <img class="direct-chat-img" src="/user.png">
+                          <div class="direct-chat-text">
+                            <%= conversation["response"] %>
+                          </div>
+                        </div>
+                      <% elsif conversation["phone_usageable_type"].present? %>
+                        <div class="direct-chat-msg direct-chat-phone-usage col-md-12">
+                          <div class="direct-chat-info clearfix">
+                            <span class="direct-chat-name pull-left" style="font-variant: small-caps; font-size: larger;">Phone Usage</span>
+                            <span class="direct-chat-timestamp pull-right"><i><b><%= time_ago_in_words(conversation["date"]) %> ago</b></i> on <b><%= local_time(conversation["date"], format: '%m/%d/%y at %I:%M %p', title: conversation["date"].try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y at %I:%M %p - Eastern Time (US & Canada)')) if conversation["date"].present?%></b></span>
+                          </div>
+                          <img class="direct-chat-img" src="/phone.png">
+                          <div class="direct-chat-text direct-chat-text-blue">
+                            <% phone = Phone.where(id: conversation["phone_id"]).first %>
+                            <span><b>Phone:</b> <%= phone.try(:value) %></span><br/>
+                            <span><b><%= conversation["source_type"].present? ? PhoneUsage.source_type.find_value(conversation["source_type"]).to_s.upcase : "" %>:</b> <%= conversation["sms_code"].present? ? conversation["sms_code"] : "-" %></span><br/>
+                            <span><b>Resource Type:</b> <%= conversation["phone_usageable_type"].present? ? conversation["phone_usageable_type"].to_s.titleize : "-"%></span><br/>
+                            <span><b>Error Type:</b> <%= conversation["error_type"].present? ? PhoneUsage.error_type.find_value(conversation["error_type"]) : "-"%></span><br/>
+                            <span><b>Action Type:</b> <%= conversation["action_type"].present? ? PhoneUsage.action_type.find_value(conversation["action_type"]) : "-"%></span><br/>
+                            <span><b>Phone Provider:</b> <%= conversation["phone_provider_id"].present? ? PhoneProvider.where(id: conversation["phone_provider_id"]).first.try(:name) : "-"%></span><br/>
+                            <span><b>Phone Service:</b> <%= conversation["phone_service_id"].present? ? PhoneService.where(id: conversation["phone_service_id"]).first.try(:name) : "-"%></span><br/>
+                            <span><b>Country:</b> <%= conversation["phone_id"].present? ? phone.try(:country).try(:name) : "-" %></span>
+                          </div>
+                        </div>
+                      <% elsif conversation["original_url"].present? %>
+                        <% scr_counter += 1 %>
+                        <div class="direct-chat-screenshot col-md-3">
+                          <div class="direct-chat-info clearfix">
+                            <span class="direct-chat-timestamp"><i><b><%= time_ago_in_words(conversation["date"]) %> ago</b></i> on <b><%= local_time(conversation["date"], format: '%m/%d/%y at %I:%M %p', title: conversation["date"].try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y at %I:%M %p - Eastern Time (US & Canada)')) if conversation["date"].present?%></b></span>
+                          </div>
+                          <div class="img-screenshot">
+                            <span title="Action Type"><b><%= conversation["action_type"] ? conversation["action_type"] : '-' %></b></span><br/>
+                            <%= link_to (image_tag URI::escape(conversation["thumb_url"], '[]'), { class: "img-thumbnail livepreview", data: { src: conversation["original_url"] } }), URI::escape(conversation["original_url"], '[]'), { class: "image-preview", target: '_blank' } %>
+                          </div>
+                        </div>
+                        <% if scr_counter > 0 && scr_counter % 4 == 0 %>
+                          <div class="row">
+                            <div class="col-md-12">
+                            </div>
+                          </div>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+			<div class="tab-pane" id="screenshots-tab">
+				<div class="row">
+					<% if @email_account.email_item.present? && @email_account.email_item_type == 'GoogleAccount' %>
+						<div class="col-md-12">
+							<div class="row">
+								<div class="form-group col-md-4">
+									<%= f.label 'Error type', class: 'control-label' %>
+									<%= best_in_place @email_account.email_item, :error_type, :as => :select, :collection => [['', '-']] + GoogleAccount::ERROR_TYPES.sort.to_h.collect{ |key, value| [key, key.to_s.humanize ]}, inner_class: 'form-control'%>
+								</div>
+							</div>
+						</div>
+					<% end %>
+					<% if @email_account.screenshots.to_a.empty? %>
+						<div class="col-md-12">
+							<div class="alert alert-info">No items available</div>
+						</div>
+					<% end %>
+					<% @email_account.screenshots.sort.to_a.reverse.each_with_index do |screenshot, index| %>
+						<div class="col-lg-2 img-screenshot">
+              <span title="Action Type"><b><%= screenshot.action_type ? screenshot.action_type : '-' %></b></span><br/>
+							<%= link_to (image_tag URI::escape(screenshot.image.url(:thumb), '[]'), { class: "img-thumbnail livepreview #{'left-livepreview' if !(index % 6 == 0 || index % 6 == 1)}", data: { src: screenshot.image.url(:original) } }), URI::escape(screenshot.image.url(:original), '[]'), { class: "image-preview", target: '_blank' } %>
+							<p><%= local_time(screenshot.created_at, format: '%m/%d/%y %I:%M %p', title: screenshot.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if screenshot.created_at.present?%></p>
+						</div>
+					<% end %>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

@@ -1,0 +1,12 @@
+$('[data-image-id="<%=params[:image_id]%>"]').closest('.qt').remove();
+$('[data-row-id="<%=params[:image_id]%>"]').remove();
+<%
+  client_images_results = render partial: '/sandbox/video_marketing_campaign_forms/content_step/images/client_images/client_images_results', locals: {uploaded_images: @uploaded_images}
+  client_images_paginate = render partial: '/sandbox/video_marketing_campaign_forms/content_step/images/client_images/client_images_paginate', locals: {uploaded_images: @uploaded_images}
+%>
+$('#client_images_results').replaceWith('<%= escape_javascript(client_images_results) %>');
+$('.client_images_paginate').replaceWith('<%= escape_javascript(client_images_paginate) %>');
+$('.page, .next, .first, .prev, .next_page').on('click', function () {
+  $('.animationload').show();
+});
+$('.animationload').hide();

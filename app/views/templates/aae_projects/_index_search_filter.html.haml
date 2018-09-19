@@ -1,0 +1,31 @@
+= form_tag templates_aae_projects_path, method: 'get', id: 'search_filter' do |f|
+	- yes_no_options = [[t('yes'), 'yes'],[t('no'), 'no']]
+	.box.box-default.box-solid
+		.box-header.with-border
+			%h3.box-title= fa_icon 'search', text: t('search_conditions')
+		.box-body
+			.row
+				.col-md-2
+					.form-group
+						= label_tag :project_type, t('templates_aae_projects.project_type')												
+						- grouped_options = {'Videos' => video_types,'Transitions' => transition_types}
+						%div
+							= select_tag(:project_type, grouped_options_for_select(grouped_options, params[:project_type]),
+								{include_blank: true, class: 'form-control', id: 'project_type'})
+				- %w(is_approved).each do |t|
+					.col-md-2
+						.form-group
+							= label_tag t, t("templates_aae_projects.#{t}")
+							%div
+								= select_tag(t, options_for_select(yes_no_options, params[t.to_sym]), {class: "form-control", id: t, include_blank: true})
+				.col-md-2
+					.form-group
+						= label_tag :id, t('templates_aae_projects.id')
+						%div
+							= text_field_tag :id, params[:id], class: "form-control"
+				.col-md-2
+					.form-group
+						= label_tag :id, t('templates_aae_projects.name')
+						%div
+							= text_field_tag :name, params[:name], class: "form-control"
+			= button_tag 'Reset', data: {disable_with: "<i class='fa fa-refresh fa-spin'></i> #{t('applying_filter')}"}, class: "btn btn-primary", style: "margin-top: 5px;", id: "reset_search_filter"

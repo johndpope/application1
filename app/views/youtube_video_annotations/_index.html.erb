@@ -1,0 +1,74 @@
+<div id="youtube_video_annotations_list" class="content-block">
+	<% if @youtube_video.id.present? %>
+		<div class="row">
+			<div class="col-md-5">
+	    </div>
+			<div class="col-md-7">
+				<div class="form-group">
+					<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+					<span class="badge bg-blue"><%= @youtube_video_annotations.size %></span>
+				</div>
+			</div>
+		</div>
+	<% end %>
+	<% unless @youtube_video_annotations.to_a.empty? %>
+		<table id="youtube_video_annotations_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th>Type</th>
+					<th>Start time</th>
+					<th>End time</th>
+					<th>Link type</th>
+					<th>Link</th>
+					<th>Link start time</th>
+					<th class="text-center">Ready</th>
+					<th class="text-center">Linked</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @youtube_video_annotations.each do |youtube_video_annotation| %>
+					<tr id="tr_yc_<%= youtube_video_annotation.id %>">
+						<td class="text-center"><%= youtube_video_annotation.id %></td>
+						<td><%= youtube_video_annotation.annotation_type %></td>
+						<td><%= youtube_video_annotation.start_time_to_time %></td>
+						<td><%= youtube_video_annotation.end_time_to_time %></td>
+						<td><%= youtube_video_annotation.link_type %></td>
+						<td><%= youtube_video_annotation.link %></td>
+						<td><%= youtube_video_annotation.link_start_time_to_time %></td>
+						<td class="text-center">
+							<% if youtube_video_annotation.ready %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<% if youtube_video_annotation.linked %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_youtube_video_youtube_video_annotation_path(@youtube_video.id, youtube_video_annotation), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, youtube_video_youtube_video_annotation_path(@youtube_video, youtube_video_annotation), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @youtube_video_annotations.to_a.empty? %>
+		<div class="row">
+			<div class="col-md-12">
+				<br>
+				<div class="alert alert-info">No items available</div>
+			</div>
+		</div>
+	<% end %>
+</div>

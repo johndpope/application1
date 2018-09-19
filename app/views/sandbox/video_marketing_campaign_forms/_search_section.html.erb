@@ -1,0 +1,120 @@
+<h4 id="search_results_help" class="text-center" style="display: none;">If you are a Distributor, Broker or Dealer, <br/>search for your company record in our database</h4>
+<div id="search_results" class="col-md-4">
+  <% clients = Client.distinct.joins("INNER JOIN industries ON industries.id = clients.industry_id").where("clients.business_type = ? AND clients.logo_file_name IS NOT NULL AND clients.industry_id IS NOT NULL", Client.business_type.find_value(:manufacturer).value)
+    brands_logos = {}
+    clients.each do |client|
+      brands_logos[client.name.to_s.strip.downcase.gsub(" ", "_")] = client.logo.url
+    end
+  %>
+  <%= hidden_field_tag :brands_logos_json, brands_logos.to_json %>
+  <div id="search_results_content" class="box box-primary" style="display: none">
+    <div class="box-header with-border text-center">
+      <h3 class="box-title"><b><i class="fa fa-check-square-o"></i> IDENTIFY YOUR PROFILE BELOW</b></h3>
+      <p>(Please select all records that refer to your company, as there are several records in our system)</p>
+    </div>
+    <div class="box-body">
+      <!-- <div class="row">
+        <div class="text-center">
+          <div class="form-group">
+            <label class="control-label"><i class="fa fa-database"></i> These accounts matched your search:</label>
+            <span id="total_serach_results" class="badge bg-blue"><%#= dealers.total_count %></span>
+          </div>
+        </div>
+      </div> -->
+      <div id="dealers_table">
+        <%= render partial: "search_tbody", locals: { dealers: dealers} %>
+      </div>
+      <%= render partial: "paginate", locals: { dealers: dealers } %>
+      <%= link_to "Sign Up", detect_other_dealers_sandbox_video_marketing_campaign_forms_path(dealer_id: ""), id: "video_marketing_campaign_form_sign_up", class: "btn btn-warning btn-lg pull-left", data: {remote: true}, style: "margin-top: 25px; margin-bottom: 20px;" %>
+    </div>
+  </div>
+</div>
+<div id="search_filters" class="col-md-4 needs-validation" style="display: none; margin-top: 17px">
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h4 class="box-title text-center"><b><i class="fa fa-search"></i> Search for your profile</b></h4>
+    </div>
+    <div class="box-body">
+      <%= form_tag({ action: :search }, { method: :get, remote: true, id: 'filters_form' }) do |f| %>
+        <div class="form-group">
+          <%= label_tag :name, "Company Name <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+          <div class="input-group full-width">
+            <div class="input-group-addon">
+              <i class="fa fa-building-o"></i>
+            </div>
+            <%= search_field_tag :name, params[:name], class: 'form-control', required: true, placeholder: "Company Name" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag :phone, "Phone Number <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+          <div class="input-group full-width">
+            <div class="input-group-addon">
+              <i class="fa fa-phone"></i>
+            </div>
+            <%= search_field_tag :phone, params[:phone], class: 'form-control phone-number', required: true, placeholder: "Phone Number" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag :email, "Email <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+          <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_form.search.email", default: "Please introduce your Email address that is indicated on your Website and Social Media.")}) %>
+          <div class="input-group full-width">
+            <div class="input-group-addon">
+              <i class="fa fa-at"></i>
+            </div>
+            <%= email_field_tag :email, params[:email], class: 'form-control', required: true, placeholder: "Email" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag :zipcode, "Zip Code <span class='red-star'>*</span>".html_safe, class: "control-label popover-box", data: {content: "Required field",  toggle: 'popover'} %>
+          <div class="input-group full-width">
+            <div class="input-group-addon">
+              <i class="fa fa-map-marker"></i>
+            </div>
+            <%= search_field_tag :zipcode, params[:zipcode], class: 'form-control numeric', required: true, placeholder: "Zip Code", maxlength: 5 %>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= label_tag :website, "Website", class: "control-label" %>
+          <div class="input-group full-width">
+            <div class="input-group-addon">
+              <i class="fa fa-globe"></i>
+            </div>
+            <%= search_field_tag :website, params[:website], class: 'form-control', placeholder: "Website" %>
+          </div>
+        </div>
+        <div id="additional_filters" style="display: none;">
+          <div class="form-group">
+            <%= label_tag :id, "ID", class: "control-label"%>
+            <i class='fa fa-question-circle popover-box' data-content="Use this filter if our sales person gave ID number to you" data-toggle='popover' style='color: black;'></i>
+            <div class="input-group full-width">
+              <div class="input-group-addon">
+                <i class="fa fa-life-ring"></i>
+              </div>
+              <%= search_field_tag :id, params[:id], class: 'form-control numeric', placeholder: "ID" %>
+            </div>
+          </div>
+        </div>
+        <%= hidden_field_tag :industry_id %>
+        <div class="form-group row" style="margin: 0 0 15px 15px;">
+          <a class="pull-right" href="javascript://" onclick="$(this).hide(); $('#additional_filters').show();"><b>Show more filters</b></a>
+        </div>
+        <!-- <div class="form-group" style="display: none;">
+          <label>Industry:</label>
+          <%#= select_tag(:industry_id, options_from_collection_for_select(Industry.distinct.joins("INNER JOIN dealers ON industries.id = dealers.industry_id"), :id, :name, params[:industry_id]), include_blank: false, class: 'dropdown-toggle form-control') %>
+        </div> -->
+        <!-- <div class="form-group">
+          <label>Brand</label>
+          <%#= select_tag(:brand_id, options_for_select([], params[:brand_id]), include_blank: true, class: 'dropdown-toggle form-control') %>
+        </div> -->
+        <!-- <div class="form-group">
+          <label>State</label>
+          <%#= select_tag(:state, options_for_select(Dealer.select(:state).distinct.pluck(:state).compact.sort, params[:state]), include_blank: true, class: 'dropdown-toggle select-box form-control') %>
+        </div> -->
+        <div class="form-group">
+          <button id="filter-apply" type="submit" class="btn btn-primary btn-lg">Search</button>
+        </div>
+        <br/>
+      <% end %>
+    </div>
+  </div>
+</div>

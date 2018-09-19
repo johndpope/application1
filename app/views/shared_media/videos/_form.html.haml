@@ -1,0 +1,71 @@
+.modal.fade{id: dom_id(item.becomes(Social::Video), 'modal'), class: "#{item.class.to_s.underscore.gsub('/','_')}_modal"}
+  .modal-dialog.modal-lg
+    .modal-content
+      = form_for item,
+      url: {controller: params[:controller], action: (item.new_record? ? 'create' : 'update')},
+      authenticity_token: true, data: {remote: true}, :multipart => true do |f|
+        .modal-header
+          %button.close{ type: 'button', data: { dismiss: 'modal' } }
+            %span &times;
+          %h4= "Update video: #{item.id}"
+        .modal-body
+          .row
+            .col-md-6
+              .form-group
+                = f.label :title
+                = f.text_field :title, class: "form-control", placeholder: "Enter title"
+            .col-md-6
+              .form-group
+                = f.label :client_id
+                - clients = Client.order(:name)
+                = f.select :client_id, options_from_collection_for_select(clients, :id, :name, f.object.client_id), {include_blank: true}, class: "form-control"
+          .row
+            .col-md-12
+              .form-group
+                = f.label nil, "Tags"
+                = f.text_field :tag_list, class: "form-control"
+          .row
+            .col-md-12
+              .form-group
+                = f.label :notes
+                = f.text_area :notes, class: 'form-control', rows: 3, placeholder: 'Enter description for audio'
+          .row
+            .col-md-6
+              = f.label nil, "Country"
+              - country_name = Geobase::Country.find(item.country).name unless item.country.blank?
+              = f.text_field :country, data: {name: country_name}, class: "form-control"
+            .col-md-6
+              - region1_name = Geobase::Region.find(item.region1).name unless item.region1.blank?
+              = f.label nil, "State"
+              = f.text_field :region1, data: {name: region1_name}, class: "form-control"
+            .col-md-6
+              - region2_name = Geobase::Region.find(item.region2).name unless item.region2.blank?
+              = f.label nil, "County"
+              = f.text_field :region2, data: {name: region2_name}, class: "form-control"
+            .col-md-6
+              - city_name = Geobase::Locality.find(item.city).name unless item.city.blank?
+              = f.label nil, "City"
+              = f.text_field :city, data: {name: city_name}, class: "form-control"
+          %hr
+          .row
+            .col-md-6
+              .form-group
+                = label_tag nil, 'Video', class: 'control-label'
+                - unless f.object.file.blank?
+                  %div= video_tag f.object.file.url, controls: true, autobuffer: false, style: "width: 400px;", class: "img-thumbnail"
+            .col-md-6
+              = label_tag nil, 'Uploaded at', class: 'control-label'
+              %div= local_time(f.object.file_updated_at, format: '%m/%d/%y %I:%M %p', title: f.object.file_updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))
+        .modal-footer
+          %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}}= t(:close)
+          = f.submit (item.new_record? ? t(:create) : t(:update)),
+          class: 'btn btn-primary',
+          data: {disable_with: (item.new_record? ? t(:creating) : t(:updating))}
+
+:javascript
+  $(function(){
+    $('select').select2({
+      allowClear: true,
+      placeholder: "Choose ..."
+    })
+  })

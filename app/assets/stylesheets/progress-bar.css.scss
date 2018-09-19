@@ -1,0 +1,50 @@
+$height_progressBar: 30px;
+.progress {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+    background-color: #b5b5b5;
+    height: $height_progressBar;
+    position: relative;
+    box-shadow: 0 0 30px #f9f9f9 inset;
+  span.progress-bar-span {
+      width: 100%;
+      color: #fff;
+      text-align: center;
+      line-height: $height_progressBar;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-shadow: 0 0 15px #000;
+  }
+}
+
+.progress-bar {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+    min-width: 1%;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: $height_progressBar;
+    overflow: hidden;
+    span {
+        width: 100%;
+        color: #fff;
+        text-align: center;
+        line-height: $height_progressBar;
+        font-weight: bold;
+        text-shadow: 0 0 15px #000;
+    }
+}
+
+.progress-bar.active {
+  -webkit-animation: progress-bar-stripes 2s linear infinite;
+  -moz-animation: progress-bar-stripes 2s linear infinite;
+  -o-animation: progress-bar-stripes 2s linear infinite;
+  animation: progress-bar-stripes 2s linear infinite;
+  -webkit-animation-direction: reverse;
+  -moz-animation-direction: reverse;
+  -ms-animation-direction: reverse;
+  -o-animation-direction: reverse;
+  animation-direction: reverse;
+}

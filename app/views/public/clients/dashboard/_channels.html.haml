@@ -1,0 +1,15 @@
+- last_month_date = (Time.now - 30.days).strftime("%Y-%m-%d 00:00:00")
+- channels_statistics_data_json = {}
+- channels_views_statistics_data_json = {}
+- channels_stat_query = @client.id == 7 ? "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(yt_statistics.view_count) as views, SUM(yt_statistics.subscriber_count) as subscribers FROM yt_statistics LEFT JOIN youtube_channels ON youtube_channels.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeChannel' WHERE resource_type = 'YoutubeChannel' AND yt_statistics.created_at > '#{last_month_date}' AND youtube_channels.client_id = #{@client.id} AND youtube_channels.is_active = TRUE AND youtube_channels.channel_type = #{YoutubeChannel.channel_type.find_value(:business).value} GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC" : "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(yt_statistics.view_count) as views, SUM(yt_statistics.subscriber_count) as subscribers FROM yt_statistics LEFT JOIN youtube_channels ON youtube_channels.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeChannel' LEFT OUTER JOIN google_accounts ON google_accounts.id = youtube_channels.google_account_id LEFT OUTER JOIN email_accounts ON email_accounts.email_item_id = google_accounts.id LEFT OUTER JOIN clients ON clients.id = email_accounts.client_id WHERE resource_type = 'YoutubeChannel' AND yt_statistics.created_at > '#{last_month_date}' AND clients.id = #{@client.id} AND youtube_channels.is_active = TRUE AND youtube_channels.channel_type = #{YoutubeChannel.channel_type.find_value(:business).value} GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC"
+- channels_stat_keys = %w(subscribers)
+- channels_stat_result = ActiveRecord::Base.connection.execute(channels_stat_query).to_a
+- channels_stat_keys.each{|k| channels_statistics_data_json[k] = channels_stat_result.map{|x| x[k].to_i}}
+- channels_views_statistics_data_json["views"] = channels_stat_result.map{|x| x["views"].to_i}
+.row
+  .col-md-12
+    .row
+      .col-md-12
+        %div{id: "channels_views_statistics_chart", data: channels_views_statistics_data_json}
+      .col-md-12
+        %div{id: "channels_statistics_chart", data: channels_statistics_data_json}

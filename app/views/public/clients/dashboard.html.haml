@@ -1,0 +1,474 @@
+- is_grab_statistics_queue_empty = Delayed::Job.where("queue = ? and handler not like '%\n- \n- \n- true\n'", DelayedJobQueue::GRAB_YOUTUBE_STATISTICS).exists?.nil?
+#dashboard_container
+  - content_for(:header){t('dashboard')}
+  - content_for(:small_header){@client.name}
+
+  = hidden_field_tag 'client_id', @client.public_profile_uuid
+  .row
+    .col-md-6
+      .box.box-widget
+        .box-header.with-border
+          %h3.box-title
+            = fa_icon 'area-chart'
+            Posting
+          .box-body{id: 'dashboard_posting', style: 'min-height: 517px;'}
+            %img{class: 'loading-image', src:'/images/loader.gif', alt: 'Loading...'}
+    .col-md-6
+      .box.box-widget
+        .box-header.with-border
+          %h3.box-title
+            = fa_icon 'area-chart'
+            Totals
+          - unless is_grab_statistics_queue_empty
+            .box-tools.pull-right
+              %span{class: "label label-danger"} GRAB STATISTIC DATA IS IN PROGRESS RIGHT NOW
+          .box-body{id: 'dashboard_totals', style: 'min-height: 517px;'}
+            %img{class: 'loading-image', src:'/images/loader.gif', alt: 'Loading...'}
+  .row
+    .col-md-6
+      .box.box-widget
+        .box-header.with-border
+          %h3.box-title
+            = fa_icon 'youtube-play'
+            Youtube Channels
+          - unless is_grab_statistics_queue_empty
+            .box-tools.pull-right
+              %span{class: "label label-danger"} STATISTIC DATA IS IN PROGRESS RIGHT NOW
+          .box-body{id: 'dashboard_channels', style: 'min-height: 860px;'}
+            %img{class: 'loading-image', src:'/images/loader.gif', alt: 'Loading...'}
+            .row{style: 'display: none;'}
+              .col-md-12
+                .row
+                  .col-md-12
+                    %div{id: "channels_views_statistics_chart"}
+                  .col-md-12
+                    %div{id: "channels_statistics_chart"}
+    .col-md-6
+      .box.box-widget
+        .box-header.with-border
+          %h3.box-title
+            = fa_icon 'youtube'
+            Youtube Videos
+          - unless is_grab_statistics_queue_empty
+            .box-tools.pull-right
+              %span{class: "label label-danger"} GRAB STATISTIC DATA IS IN PROGRESS RIGHT NOW
+          .box-body{id: 'dashboard_videos', style: 'min-height: 860px;'}
+            %img{class: 'loading-image', src:'/images/loader.gif', alt: 'Loading...'}
+            .row{style: 'display: none;'}
+              .col-md-12
+                .row
+                  .col-md-12
+                    %div{id: "videos_views_statistics_chart"}
+                  .col-md-12
+                    %div{id: "videos_statistics_chart"}
+  .row
+    .col-md-12
+      .box.box-widget
+        .box-header.with-border
+          %h3.box-title
+            = fa_icon 'line-chart'
+            Landing pages
+          .box-body{id: 'dashboard_piwik', style: 'min-height: 250px;'}
+            %img{class: 'loading-image', src:'/images/loader.gif', alt: 'Loading...'}
+            .row{style: 'display: none;'}
+              %div{id: "piwik_statistics_chart"}
+  = link_to 'Client information (pdf)', public_client_report_path(params[:client_id], :format => :pdf), :target => "blank", class: "link-to-pdf hidden"
+
+- content_for(:javascripts) do
+  :javascript
+    $(function () {
+      var channels_views_statistics_options = {
+        title: {
+          text: 'youtube channels views',
+          align: 'center'
+        },
+        xAxis: {
+          reversed: true,
+          tickWidth: 0,
+          gridLineWidth: 1,
+          labels: {
+            align: 'left',
+            x: 3,
+            y: -3,
+            formatter: function () {
+              return this.value + ' days ago';
+            }
+          }
+        },
+        yAxis: {
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'left',
+            x: 3,
+            y: 16
+          },
+          showFirstLabel: false
+        },
+        tooltip: {
+          formatter: function () {
+            interval = ''
+            days_value = Math.floor(Highcharts.numberFormat(this.x, 0) % 30);
+            months_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 30);
+            years_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 365);
+            if(years_value > 0) {
+              interval += '<b>' + years_value + '</b>' + ' years '
+            }
+            if(months_value > 0) {
+              interval += '<b>' + months_value + '</b>' + ' months '
+            }
+            interval += '<b>' + days_value + '</b>' + ' days ago'
+            return interval + '<br/>' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b>';
+          }
+        },
+        legend: {
+          layout: 'horizontal',
+          itemDistance: 50
+        },
+        series: [
+          {
+            name: 'Views',
+            data: []
+          }
+        ],
+        credits: {
+          enabled: false
+        }
+      }
+
+      var channels_statistics_options = {
+        title: {
+          text: 'youtube channels other',
+          align: 'center'
+        },
+        xAxis: {
+          reversed: true,
+          tickWidth: 0,
+          gridLineWidth: 1,
+          labels: {
+            align: 'left',
+            x: 3,
+            y: -3,
+            formatter: function () {
+              return this.value + ' days ago';
+            }
+          }
+        },
+        yAxis: {
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'left',
+            x: 3,
+            y: 16
+          },
+          showFirstLabel: false
+        },
+        tooltip: {
+          formatter: function () {
+            interval = ''
+            days_value = Math.floor(Highcharts.numberFormat(this.x, 0) % 30);
+            months_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 30);
+            years_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 365);
+            if(years_value > 0) {
+              interval += '<b>' + years_value + '</b>' + ' years '
+            }
+            if(months_value > 0) {
+              interval += '<b>' + months_value + '</b>' + ' months '
+            }
+            interval += '<b>' + days_value + '</b>' + ' days ago'
+            return interval + '<br/>' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b>';
+          }
+        },
+        legend: {
+          layout: 'horizontal',
+          itemDistance: 50
+        },
+        series: [
+          {
+            name: 'Subscribers',
+            data: []
+          }
+        ],
+        credits: {
+          enabled: false
+        }
+      }
+
+      var videos_views_statistics_options = {
+        title: {
+          text: 'youtube videos views',
+          align: 'center'
+        },
+        xAxis: {
+          reversed: true,
+          tickWidth: 0,
+          gridLineWidth: 1,
+          labels: {
+            align: 'left',
+            x: 3,
+            y: -3,
+            formatter: function () {
+              return this.value + ' days ago';
+            }
+          }
+        },
+        yAxis: {
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'left',
+            x: 3,
+            y: 16
+          },
+          showFirstLabel: false
+        },
+        tooltip: {
+          formatter: function () {
+            interval = ''
+            days_value = Math.floor(Highcharts.numberFormat(this.x, 0) % 30);
+            months_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 30);
+            years_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 365);
+            if(years_value > 0) {
+              interval += '<b>' + years_value + '</b>' + ' years '
+            }
+            if(months_value > 0) {
+              interval += '<b>' + months_value + '</b>' + ' months '
+            }
+            interval += '<b>' + days_value + '</b>' + ' days ago'
+            return interval + '<br/>' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b>';
+          }
+        },
+        legend: {
+          layout: 'horizontal',
+          itemDistance: 50
+        },
+        series: [
+          {
+            name: 'Views',
+            data: []
+          }
+        ],
+        credits: {
+          enabled: false
+        }
+      }
+
+      var videos_statistics_options = {
+        title: {
+          text: 'youtube videos other',
+          align: 'center'
+        },
+        xAxis: {
+          reversed: true,
+          tickWidth: 0,
+          gridLineWidth: 1,
+          labels: {
+            align: 'left',
+            x: 3,
+            y: -3,
+            formatter: function () {
+              return this.value + ' days ago';
+            }
+          }
+        },
+        yAxis: {
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'left',
+            x: 3,
+            y: 16
+          },
+          showFirstLabel: false
+        },
+        tooltip: {
+          formatter: function () {
+            interval = ''
+            days_value = Math.floor(Highcharts.numberFormat(this.x, 0) % 30);
+            months_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 30);
+            years_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 365);
+            if(years_value > 0) {
+              interval += '<b>' + years_value + '</b>' + ' years '
+            }
+            if(months_value > 0) {
+              interval += '<b>' + months_value + '</b>' + ' months '
+            }
+            interval += '<b>' + days_value + '</b>' + ' days ago'
+            return interval + '<br/>' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b>';
+          }
+        },
+        legend: {
+          layout: 'horizontal',
+          itemDistance: 50
+        },
+        series: [
+          {
+            name: 'Likes',
+            data: []
+          },
+          {
+            name: 'Dislikes',
+            data: []
+          },
+          {
+            name: 'Favorites',
+            data: []
+          }
+          ,
+          {
+            name: 'Comments',
+            data: []
+          }
+        ],
+        credits: {
+          enabled: false
+        }
+      }
+
+      var piwik_statistics_options = {
+        title: {
+          text: 'landing pages',
+          align: 'center'
+        },
+        xAxis: {
+          reversed: true,
+          tickWidth: 0,
+          gridLineWidth: 1,
+          labels: {
+            align: 'left',
+            x: 3,
+            y: -3,
+            formatter: function () {
+              return this.value + ' days ago';
+            }
+          }
+        },
+        yAxis: {
+          title: {
+            text: null
+          },
+          labels: {
+            align: 'left',
+            x: 3,
+            y: 16
+          },
+          showFirstLabel: false
+        },
+        tooltip: {
+          formatter: function () {
+          interval = ''
+          days_value = Math.floor(Highcharts.numberFormat(this.x, 0) % 30);
+          months_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 30);
+          years_value = Math.floor(Highcharts.numberFormat(this.x, 0) / 365);
+          if(years_value > 0) {
+            interval += '<b>' + years_value + '</b>' + ' years '
+          }
+          if(months_value > 0) {
+            interval += '<b>' + months_value + '</b>' + ' months '
+          }
+          interval += '<b>' + days_value + '</b>' + ' days ago'
+          return interval + '<br/>' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b>';
+          }
+        },
+        legend: {
+          layout: 'horizontal',
+          itemDistance: 50
+        },
+        series: [
+          {
+            name: 'Visits',
+            data: []
+          },
+          {
+            name: 'Actions',
+            data: []
+          },
+          {
+            name: 'Page views',
+            data: []
+          }
+        ],
+        credits: {
+          enabled: false
+        }
+      }
+      $('#channels_views_statistics_chart').highcharts(channels_views_statistics_options);
+      var channels_views_statistics_chart = $('#channels_views_statistics_chart').highcharts();
+
+      $('#channels_statistics_chart').highcharts(channels_statistics_options);
+      var channels_statistics_chart = $('#channels_statistics_chart').highcharts();
+
+      $('#videos_views_statistics_chart').highcharts(videos_views_statistics_options);
+      var videos_views_statistics_chart = $('#videos_views_statistics_chart').highcharts();
+
+      $('#videos_statistics_chart').highcharts(videos_statistics_options);
+      var videos_statistics_chart = $('#videos_statistics_chart').highcharts();
+
+      $('#piwik_statistics_chart').highcharts(piwik_statistics_options);
+      var piwik_statistics_chart = $('#piwik_statistics_chart').highcharts();
+
+      function dashboard_content(client_id, part) {
+        $.ajax({
+          type: 'GET',
+          url: '/public/clients/' + client_id + '/dashboard_content?part=' + part,
+          dataType: 'html',
+          error: function () {
+            console.log('Error getting dashboard ' + part);
+            setTimeout(function (data) {
+              dashboard_content(client_id, part);
+            }, 10000)
+          },
+          success: function (data) {
+            $('#dashboard_' + part).html(data);
+            console.log(part);
+            if (part == 'piwik'){
+              $('#piwik_statistics_chart').highcharts(piwik_statistics_options);
+              var piwik_statistics_chart = $('#piwik_statistics_chart').highcharts();
+              var piwik_statistics_data = $('#piwik_statistics_chart').data();
+              piwik_statistics_chart.series[0].setData(piwik_statistics_data['visits']);
+              piwik_statistics_chart.series[1].setData(piwik_statistics_data['actions']);
+              piwik_statistics_chart.series[2].setData(piwik_statistics_data['pageviews']);
+            }
+            if (part == 'channels'){
+              $('#channels_views_statistics_chart').highcharts(channels_views_statistics_options);
+              var channels_views_statistics_chart = $('#channels_views_statistics_chart').highcharts();
+              var channels_views_statistics_data = $('#channels_views_statistics_chart').data();
+              channels_views_statistics_chart.series[0].setData(channels_views_statistics_data['views']);
+
+              $('#channels_statistics_chart').highcharts(channels_statistics_options);
+              var channels_statistics_chart = $('#channels_statistics_chart').highcharts();
+              var channels_statistics_data = $('#channels_statistics_chart').data();
+              channels_statistics_chart.series[0].setData(channels_statistics_data['subscribers']);
+            }
+            if (part == 'videos') {
+              $('#videos_views_statistics_chart').highcharts(videos_views_statistics_options);
+              var videos_views_statistics_chart = $('#videos_views_statistics_chart').highcharts();
+              var videos_views_statistics_data = $('#videos_views_statistics_chart').data();
+              videos_views_statistics_chart.series[0].setData(videos_views_statistics_data['views']);
+
+              $('#videos_statistics_chart').highcharts(videos_statistics_options);
+              var videos_statistics_chart = $('#videos_statistics_chart').highcharts();
+              var videos_statistics_data = $('#videos_statistics_chart').data();
+              videos_statistics_chart.series[0].setData(videos_statistics_data['likes']);
+              videos_statistics_chart.series[1].setData(videos_statistics_data['dislikes']);
+              videos_statistics_chart.series[2].setData(videos_statistics_data['favorites']);
+              videos_statistics_chart.series[3].setData(videos_statistics_data['comments']);
+            }
+          }
+        });
+      }
+
+      $(document).ready(function () {
+        var client_id = $('#client_id').val();
+        dashboard_content(client_id, 'posting');
+        dashboard_content(client_id, 'piwik');
+        dashboard_content(client_id, 'totals');
+        dashboard_content(client_id, 'channels');
+        dashboard_content(client_id, 'videos');
+      });
+    });

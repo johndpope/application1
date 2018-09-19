@@ -1,0 +1,29 @@
+%td.image
+  = link_to 'javascript://' do
+    = image_tag "/sandbox/icons/icon1.png"
+%td.time
+  .ln
+  = link_to 'javascript://' do
+    %span.num= 1
+%td.regenerate_block
+  .col-md-2
+    = link_to regenerate_video_thumbnail_image_sandbox_client_video_blenders_path, class: "btn btn-regenerate", data: {remote: true, "disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i>'} do
+      = fa_icon 'refresh 2x'
+  .col-md-10
+    .title-block
+      %h3
+        %b Thumbnail
+      .sm_description
+        Size:
+        %span.font_red 1280x720
+        px.
+      .sm_description
+        Format:
+        %span.font_red png,jpg
+    .col-md-6
+      - unless @video_thumbnails.blank?
+        = link_to (image_tag @video_thumbnails.first.file.url, data: {id: @video_thumbnails.first.id}, class: "video_thumbnail_img img-thumbnail selected_thumbnail", alt: "no image"), @video_thumbnails.first.file.url, {target: '_blank'}
+    .col-md-6
+      .video_thumbnail_component
+        - @video_thumbnails.map do |item|
+          = link_to (image_tag URI::escape(item.file.url(:thumb), '[]'), {class: 'img-thumbnail thumbnail_img', data: {src: item.file.url(:original), id: item.id} }), 'javascript://', {target: '_blank'}

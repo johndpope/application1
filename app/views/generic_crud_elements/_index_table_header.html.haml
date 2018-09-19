@@ -1,0 +1,12 @@
+%tr
+  %th{style: "width: 40px;"}= t('row_nr')
+  = render partial: "#{@view_folder}/index_table_header"
+  - if @show_action_bar == true
+    %th{style: "width: 120px;"}
+      - if @show_add_button == true
+        = link_to url_for(controller: params[:controller], action: 'new'), class: "btn btn-sm btn-primary",
+        data: {remote: true,
+          disable_with: t('adding'),
+          toggle: 'modal', target: "#{@clazz.to_s.underscore.gsub('/', '_')}_modal"},
+        title: t('add') do
+          = fa_icon 'plus', text: t('add')

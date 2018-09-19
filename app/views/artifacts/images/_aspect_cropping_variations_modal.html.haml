@@ -1,0 +1,29 @@
+.modal.fade{ id: dom_id(image.becomes(Artifacts::Image), 'aspect_cropping_variations_modal') }
+	.modal-dialog.modal-lg
+		.modal-content
+			.modal-header
+				%button.close{ type: 'button', data: { dismiss: 'modal' } }
+					%span &times;
+				%h4= "Artifacts::Image##{image.id}"
+			.modal-body
+				- if image.image_aspect_cropping_variations.blank?
+					.alert.alert-info
+						%strong Sorry. There are no croopping variations for this image
+				- else
+					- gravities = %w(n nw ne s sw se c w e)
+					- cropping_layouts = %w(vertical horizontal square)
+					- gravities.each_with_index do |g, i|
+						- collapse_block_id = "collapse_#{g}"
+						.panel.panel-default
+							.panel-heading{role: "tab"}
+								%h4.panel-title
+									%a{role: "button", data: {toggle: "collapse", parent: "#gravity_accordion"}, href: "##{collapse_block_id}", "aria-expanded" => "true", "aria-controls" => "#{collapse_block_id}"}
+										= t("artifacts.images.gravities.#{g}")
+							.panel-collapse.collapse{id: "#{collapse_block_id}", class:('in' if i == 0).to_s, role: "tabpanel"}
+								.panel-body
+									.row
+										- cropping_layouts.each do |l|
+											.col-md-4
+												%img{class: 'img-responsive', src: "#{image.image_aspect_cropping_variations.file.url("#{l}_#{g}")}"}
+			.modal-footer
+				%button{ type: 'button', class:'btn btn-primary', data: { dismiss: 'modal' } } Close

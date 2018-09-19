@@ -1,0 +1,9 @@
+.admin_sandbox_clients{
+	&.index{
+		#sandbox_client_items{
+			.id{width: 40px;}
+			.is_active{width: 100px;}
+			.subject_image, .background_image, .logo{width: 100px;}
+		}
+	}
+}

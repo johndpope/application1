@@ -1,0 +1,26 @@
+.fragments-of-history{id: "eq-#{campaign_video_stage.month_nr.to_i - 1}"}
+	.container.main-body
+		.cvd-title
+			%h2
+				%b Title
+				Rotation
+			.title
+				%h3= campaign_video_stage.title
+	.container.main-body.cvd-dtt
+		.box-content-ah.cvd-description
+			%h2
+				%b Description
+				Rotation
+			.description
+				%p= campaign_video_stage.description
+		.box-content-ah.cvd-thumbnail
+			%h2
+				%b Thumbnail
+				Rotation
+			= image_tag campaign_video_stage.thumbnail.url
+		.box-content-ah.cvd-tags
+			%h2
+				%b Tags
+			.tags
+				- campaign_video_stage.tags.split(',').each do |tag|
+					%b.metka= tag.strip

@@ -1,0 +1,4 @@
+<% legend = render partial: 'clients/exclude_aae_templates/index/exclusion_settings_legend' %>
+$('#template_exclusion_settings_legend').replaceWith('<%= escape_javascript(legend)%>');
+$('tr[data-is-special=true] i.fa-lock').<%= @client.ignore_special_templates? ? 'show' : 'hide' %>();
+$('tr[data-is-special=true][data-is-excluded=false]').<%= @client.ignore_special_templates? ? 'add' : 'remove' %>Class("danger");

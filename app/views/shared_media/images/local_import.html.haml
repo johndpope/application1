@@ -1,0 +1,41 @@
+- header 'Upload your media files'
+- breadcrumb :media_upload, theme: "bootstrap"
+- content_for(:stylesheets) do
+  = stylesheet_link_tag 'jquery.fileupload'
+  = stylesheet_link_tag 'jquery.fileupload-ui'
+- content_for(:javascripts){javascript_include_tag 'jquery-fileupload'}
+- yes_no_options = [[t('yes'), true],[t('no'), false]]
+
+.container{:style => "width: 100%"}
+  .row
+    .section
+      .wizard
+        .wizard-inner
+          .connecting-line
+          %ul.nav.nav-tabs{:role => "tablist"}
+            %li.active{:role => "presentation"}
+              %h4.title_tab="Step 1"
+              .title_tab="Upload files"
+              %a{:href => "#step1", :data => {:toggle => "tab"}, :aria => {:controls => "step1"}, :role => "tab", :title => "Upload"}
+                %span.round-tab
+                  %i.glyphicon.glyphicon-folder-open
+            %li.disabled{:role => "presentation"}
+              %h4.title_tab="Step 2"
+              .title_tab= "Description"
+              %a{:href => "#step2", :data => {:toggle => "tab"}, :aria => {:controls => "step2"}, :role => "tab", :title => "Description"}
+                %span.round-tab
+                  %i.glyphicon.glyphicon-picture
+            %li.disabled{:role => "presentation"}
+              %h4.title_tab="Step 3"
+              .title_tab= "Uploaded images"
+              %a{:href => "#step3", :data => {:toggle => "tab"}, :aria => {:controls => "step3"}, :role => "tab", :title => "End"}
+                %span.round-tab
+                  %i.glyphicon.glyphicon-ok
+        .tab-content
+          .tab-pane.active#step1{:role => "tabpanel"}
+            = render partial: "files_upload"
+          .tab-pane#step2{:role => "tabpanel"}
+            = render partial: "description"
+          .tab-pane#step3{:role => "tabpanel"}
+            = render partial: "uploaded_images"
+          .clearfix

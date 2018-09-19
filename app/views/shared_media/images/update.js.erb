@@ -1,0 +1,9 @@
+<%
+  image = @image.becomes(Social::Image)
+  modal_dom_id = dom_id(image, 'modal')
+  box_id = dom_id(image)
+  new_box = render partial: "shared_media/images/image", locals: {image: @image}
+%>
+$('#<%= modal_dom_id %>').modal('hide')
+$('#<%= box_id %>').replaceWith('<%= escape_javascript(new_box) %>')
+$('#<%= box_id %>').effect('highlight', 720)

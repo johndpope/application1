@@ -1,0 +1,26 @@
+<div class="col-md-4" id="<%= dom_id(contact_person, 'row')%>">
+  <div class="box">
+    <div class="box-body box-profile">
+      <div class="user-block" style="margin-bottom: 5px;">
+        <img class="img-circle img-bordered-sm bg-aqua" src="/user.png"/>
+        <span class="username">
+          <%= link_to contact_person.full_name, edit_contact_person_path(contact_person),  { remote: true, title: 'Edit' } %>
+          <%= link_to '<i class="fa fa-times"></i>'.html_safe, contact_person, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: "pull-right btn-box-tool", title: "Delete" %>
+        </span>
+        <span class="description"><%= contact_person.title %></span>
+      </div>
+      <ul class="list-group list-group-unbordered">
+        <% if contact_person.phones.present? %>
+          <% contact_person.phones.each_with_index do |phone, index| %>
+            <li class="list-group-item"><b><%= ContactPerson::PHONE_TYPES.select {|k,v| v == phone[0..1]}.first.first.to_s.titleize %> phone</b> <span class="pull-right"><b style="color: green; font-size: larger;"><i class="fa fa-fw fa-phone-square"></i> <%= phone[2..-1] %></b></span></li>
+          <% end %>
+        <% else %>
+          <li class="list-group-item"><b>Phones</b> <span class="pull-right">-</span></li>
+        <% end %>
+        <li class="list-group-item"><b>Email</b> <span class="pull-right"><%= contact_person.email.present? ? contact_person.email : "-" %></span></li>
+        <li class="list-group-item"><b>Fax</b> <span class="pull-right"><%= contact_person.fax.present? ? contact_person.fax : "-" %></span></li>
+        <li class="list-group-item" title="<%= contact_person.notes %>"><b>Notes</b> <span class="pull-right"><%= contact_person.notes.present? ? contact_person.notes.truncate(30) : "-" %></span></li>
+      </ul>
+    </div>
+  </div>
+</div>

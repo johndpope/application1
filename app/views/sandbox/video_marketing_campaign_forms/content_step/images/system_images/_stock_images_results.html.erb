@@ -1,0 +1,24 @@
+<div id="stock_images_results" class="row">
+  <% if stock_images.try(:total_count).to_i > 0 %>
+    <% stock_images.each do |image| %>
+      <div class="col-md-2">
+        <div class="box box-solid box-primary artifacts_image" id="artifacts_image_<%= image.id %>" data-id="<%= image.id %>">
+          <div class="box-body">
+            <div class="parent">
+              <%
+                src = image.file.exists? ? image.file.url(:thumb) : image.url
+                src_original = image.file.exists? ? image.file.url(:original) : image.url_o
+              %>
+              <%= link_to(src_original, class: "image-preview", target: "_blank", title: image.title) do %>
+                <%= image_tag src, class: "img-thumbnail" %>
+              <% end %>
+              <%= link_to 'javascript://', title: 'Delete', class: 'delete-image' do %>
+                <%= fa_icon 'times', :class => 'text-danger' %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  value: MyText
+  admin_user_id: 1
+  resource_id: 1
+  resource_type: MyString
+
+two:
+  value: MyText
+  admin_user_id: 1
+  resource_id: 1
+  resource_type: MyString

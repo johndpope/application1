@@ -1,0 +1,13 @@
+<%
+  @type = params[:type]
+  short_description = render partial: '/admin/sandbox/youtube_channel/short_description', locals: {type: @type}
+%>
+$('.<%=params[:type]%>_block:last').after('<%= escape_javascript(short_description)%>');
+$('.remove_<%=@type%>_block').on('click', function(e){
+  $(this).closest('.<%=@type%>_block').remove();
+});
+
+$('textarea.form-control').on('keyup', function(){
+  var ls = $(this).val().length;
+  $(this).closest('.form-group').find('.badge').text(ls);
+});

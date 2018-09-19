@@ -1,0 +1,49 @@
+<%= form_for @recovery_attempt_response, :html => { :multipart => true } do |f| %>
+  <div class="row">
+    <% if flash[:notice] %>
+      <div class="col-md-12">
+        <div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+        </div>
+      </div>
+    <% end %>
+    <% if @recovery_attempt_response.errors.any? %>
+      <div class="col-md-12">
+        <div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@recovery_attempt_response.errors.count, 'error') %> prohibited this recovery attempt response from being saved</h4>
+        </div>
+      </div>
+    <% end %>
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group <%= 'has-error' if @recovery_attempt_response.errors[:response_type].present? %>" data-content="<%= @recovery_attempt_response.errors[:response_type].try(:join, ',') %>">
+                <%= f.label :response_type, class: 'control-label' %>
+                <%
+                  response_type = @recovery_attempt_response.response_type.try(:value) ? @recovery_attempt_response.response_type.try(:value) : params[:last_response_type]%>
+                <%= f.select(:response_type, options_for_select(RecoveryAttemptResponse::RESPONSE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, response_type), { include_blank: false, class: 'form-control', placeholder: 'Select response type' }) %>
+              </div>
+              <div class="form-group <%= 'has-error' if @recovery_attempt_response.errors[:response].present? %>" data-content="<%= @recovery_attempt_response.errors[:response].try(:join, ',') %>">
+                <%= f.label :response, class: 'control-label' %>
+                <%= f.text_area :response, { maxlength: '1000', size: '40x7', class: 'form-control', placeholder: 'Response' } %>
+              </div>
+              <div class="form-group col-md-12">
+                <div class="actions pull-right">
+                  <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, recovery_attempt_responses_path, class: 'btn btn-sm btn-primary' %>
+                  <%= f.submit :class => 'btn btn-sm btn-success', :id => 'recovery_attempt_response_submit' %>
+                  <% if %(new create).include?(params[:action]) %>
+                    <%= f.submit 'Create & Next', :class => 'btn btn-sm btn-primary', :name => 'submit_next' %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

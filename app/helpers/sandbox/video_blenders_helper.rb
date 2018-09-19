@@ -1,0 +1,2 @@
+module Sandbox::VideoBlendersHelper
+end

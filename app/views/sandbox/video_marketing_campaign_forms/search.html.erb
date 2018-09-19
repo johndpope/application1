@@ -1,0 +1,13 @@
+<% title 'Search' %>
+<div class="container main-body step-<%= params[:step] %>">
+  <%= render partial: 'sandbox/video_marketing_campaign_forms/steps' %>
+
+  <div class="industry_blocks_header">
+    <h3 class="text-center"><b><i class="fa fa-hand-o-up"></i> CHOOSE INDUSTRY</b></h3>
+  </div>
+
+  <div class="wrap1 step-<%= params[:step] %>">
+    <%= render partial: 'sandbox/video_marketing_campaign_forms/industry_section' %>
+    <%= render partial: 'sandbox/video_marketing_campaign_forms/search_section', locals: {dealers: @dealers} %>
+  </div>
+</div>

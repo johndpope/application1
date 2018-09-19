@@ -1,0 +1,37 @@
+<table id="table_annotation_templates" class="table no-margin">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Type</th>
+			<th>Description</th>
+			<th>Time</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<% item.each_with_index do | row, index | %>
+			<% json = (row['created_at'].present? || row['updated_at'].present?) ? row.at_json : row.to_json %>
+			<tr data-id="<%= index %>" data-json="<%= json.gsub('null', '""') %>">
+				<td><%= row['id'] if row['id'].present? %></td>
+				<th><%= YoutubeVideoAnnotation::TYPES.key(row['annotation_type'].to_i) %></th>
+				<td><%= h truncate(row['description'], length: 50) %></td>
+				<td>
+					<code><%= Time.at(row['start_time'].to_i).utc.strftime('%H:%M:%S') %></code> - <code><%= Time.at(row['end_time'].to_i).utc.strftime('%H:%M:%S') %></code>
+				</td>
+				<td>
+					<div class="btn-group pull-right">
+						<button class="getModal btn btn-sm btn-success btn-flat" type="button" data-type="annotation"><i class="glyphicon glyphicon-pencil mr"></i> Edit</button>
+						<button class="btn btn-sm btn-danger btn-flat delete" type="button" data-type="annotation"><i class="glyphicon glyphicon-trash mr"></i> Delete</button>
+					</div>
+				</td>
+			</tr>
+		<% end %>
+		<% unless item.present? %>
+			<tr>
+				<td class="center" colspan="5">
+					<h4>No items available</h4>
+				</td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>

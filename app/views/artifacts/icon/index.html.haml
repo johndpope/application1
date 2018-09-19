@@ -1,0 +1,30 @@
+- header "icon settings"
+.row
+  .col-md-4
+    = form_tag artifacts_apply_color_schema_path, data:{remote: true}, id: "icon_settings" do |f|
+      .panel.panel-default
+        .panel-heading
+          %h4= "Icon color fields"
+        .panel-body{:id => "color_options"}
+          .form-group
+            = link_to artifacts_browse_icon_path, class: "btn btn-success", data: { remote:true, disable_with: "browsing..." } do
+              = fa_icon 'search'
+              = t('browse')
+          #color_fields
+          .form-group
+          %hr
+          .form-group
+            = hidden_field :icon, "path"
+  .col-md-4
+    .panel.panel-default
+      .panel-heading
+        %h4= "Icon svg template"
+      .panel-body
+        #selected_icon
+  .col-md-4
+    .panel.panel-default
+      .panel-heading
+        %h4= "Blended icon"
+      .panel-body
+        #blended_icon
+          = image_tag '', class: "img-responsive thumbnail"

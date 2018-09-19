@@ -1,0 +1,8 @@
+- centered_columns = %w(id tags file images texts)
+- iconed_columns = {'tags' => 'tags', 'file' => 'image', 'images' => 'picture-o', 'texts' => 'file-text'}
+- %w(id title client_id location templates_image_template_id file texts images tags).each do |c|
+	%th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}
+		- if iconed_columns.key? c
+			= fa_icon iconed_columns[c], title: t("artifacts.dynamic_image.#{c}")
+		- else
+			= t("artifacts.dynamic_image.#{c}")

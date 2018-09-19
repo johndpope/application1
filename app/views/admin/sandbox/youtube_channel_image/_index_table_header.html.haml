@@ -1,0 +1,3 @@
+- centered_columns = ['file']
+- %w(id client file image_type).each do |c|
+  %th{class: "#{c} #{centered_columns.include?(c) ? 'text-center' : ''}"}=c.to_s.humanize

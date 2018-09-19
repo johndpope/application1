@@ -1,0 +1,14 @@
+-# - st = @piwik_statistics.select {|e| e["idsite"] == item.piwik_id }.first || {}
+%tr
+  %td{class: "text-center"}= page * params[:limit].to_i + index + 1
+  %td{class: "text-center"}= item.id
+  %td= link_to item.page_url, item.page_url, target: "BLANK"
+  %td{class: "text-center"}= item.piwik_statistics.last.try(:nb_visits).to_i.to_s(:delimited)
+  %td{class: "text-center"}= item.piwik_statistics.last.try(:nb_actions).to_i.to_s(:delimited)
+  %td{class: "text-center"}= item.piwik_statistics.last.try(:nb_pageviews).to_i.to_s(:delimited)
+  %td{class: "text-center"}
+    %span= item.associated_youtube_channels.size
+  %td{class: "text-center"}
+    %span= item.youtube_channels.size - item.associated_youtube_channels.size
+  %td{class: "text-center"}
+    %span= item.youtube_channels.size

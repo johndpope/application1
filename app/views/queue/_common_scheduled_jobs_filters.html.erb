@@ -1,0 +1,51 @@
+<%
+  order = [:run_at, :updated_at]
+  order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+  order_value = params[:order]
+  order_value = :run_at unless order_value
+%>
+<div class="box box-primary" style="border: 3px solid #d2d6de;">
+  <div class="box-header with-border">
+    <h3 class="box-title"><i class="fa fa-filter"></i> Filters</h3>
+  </div>
+  <div class="box-body">
+    <%= form_tag({ action: :scheduled_jobs }, { method: :get, remote: true, id: 'filters_form' }) do |f| %>
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-tag">
+            <div class="filter-label">Assigned to</div>
+            <%= select_tag(:scheduled_admin_user_id, options_from_collection_for_select(AdminUser.distinct.joins("INNER JOIN jobs ON admin_users.id = jobs.admin_user_id").order("admin_users.first_name ASC NULLS LAST, admin_users.last_name ASC NULLS LAST, admin_users.email ASC"), :id, :full_name, params[:scheduled_admin_user_id]), { include_blank: true, class: 'dropdown-toggle select-box form-control', placeholder: "Assigned to" }) %>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-tag">
+            <div class="filter-label">Order by:</div>
+      			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, nil), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-tag">
+            <div class="filter-label">Order type:</div>
+      			<%= select_tag('filter[order_type]', options_for_select(order_type, nil), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-tag">
+            <div class="filter-label">Items on page:</div>
+      			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:scheduled_limit]), class: 'dropdown-toggle select-box form-control') %>
+          </div>
+        </div>
+        <div class="col-md-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-tag">
+            <div class="filter-label">&nbsp;</div>
+            <button id="filter-apply" type="submit" class="btn btn-primary" onclick="$('.animationload').show();"><i class="fa fa-search"></i> Search</button>
+          </div>
+        </div>
+      </div>
+  	<% end %>
+  </div>
+</div>
+<hr/>

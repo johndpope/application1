@@ -1,0 +1,41 @@
+- unless f.object.new_record?
+  - selected_type = Sandbox::YoutubeChannelImage::IMAGE_TYPES[f.object.image_type.to_sym]
+  .form-group
+    = f.label :id, t('id')
+    = text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+
+.row
+  .col-md-6
+    .form-group
+      .select2-tags-wrapper
+        = f.label :sandbox_client_id, class: 'control-label'
+      .input-group
+        = f.select :sandbox_client_id, options_for_select(Sandbox::Client.order(:id).collect{|it| [it.client.name, it.id]}, f.object.sandbox_client_id), include_blank: true, class: 'form-control'
+  .col-md-6
+    .form-group
+      .select2-tags-wrapper
+        = f.label :image_type, class: 'control-label'
+      .input-group
+        = f.select :image_type, options_for_select(Sandbox::YoutubeChannelImage::IMAGE_TYPES.map{|v,k| [v,k]}, selected_type), include_blank: true, class: 'form-control'
+%hr
+.row{class: "fileupload-buttonbar"}
+  .col-md-7
+    %span{class: "btn btn-success fileinput-button"}
+      %i{class: "icon-plus icon-white"}
+      %span= t('browse')
+      = f.file_field :file, multiple: true, accept: 'image/png,image/gif,image/jpeg, image/jpg, image/svg'
+    %button{type: "submit", class:"btn btn-primary start"}
+      %i{class:"icon-upload icon-white"}
+      %span= t('start_all')
+    %button{type:"reset", class:"btn btn-warning cancel"}
+      %i{class:"icon-ban-circle icon-white"}
+      %span= t('cancel_all')
+  .col-md-5
+    .progress{class: "progress progress-success progress-striped active fade"}
+      .bar{style: "width:0%;"}
+.fileupload-loading
+%br
+%table{class:"table table-striped"}
+  %tbody{class: "files", data: {toggle: "modal-gallery", target: "#modal-gallery"}}
+
+= render partial: "local_import_templates"

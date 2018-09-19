@@ -1,0 +1,95 @@
+<% title 'IP Addresses' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i><%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+
+<div id="ip_addresses_list">
+	<div class="row">
+		<div class="col-md-5">
+			<%= link_to 'New IP Address', new_ip_address_path, class: 'btn btn-sm btn-primary' %>
+			<%= link_to 'Update Rating', update_rating_statistics_path, class: 'btn btn-sm btn-warning' %>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @ip_addresses.total_count %></span>
+        <label class="control-label pull-right" style="margin-right: 40px;">
+          <% if IpAddress.rating_successfully_finished? %>
+            <span class="text-green">Successfully grabbed ratings at: </span>
+          <% else %>
+            <span class="text-red blink">Failed to grab ratings today. Last success at: </span>
+          <% end %>
+          <% grab_ratings_time = Setting.get_value_by_name("IpAddress::LAST_SUCCESS_RATING_GRAB_DATE").try(:to_time) %>
+          <%= local_time(grab_ratings_time, format: '%m/%d/%y %I:%M %p', title: grab_ratings_time.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if grab_ratings_time.present? %>
+        </label>
+			</div>
+		</div>
+	</div>
+	<% unless @ip_addresses.to_a.empty? %>
+		<table id="ip_addresses_table" class="table table-bordered table-striped dataTable">
+			<%= render partial: 'ip_addresses_thead', locals: {display_only: false} %>
+			<tbody>
+				<% @ip_addresses.each do |ip_address| %>
+					<%= render partial: 'ip_address_row', locals: {ip_address: ip_address, display_only: false} %>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<div><%= paginate @ip_addresses, theme: 'bootstrap' %></div>
+
+	<% if @ip_addresses.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% end %>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :address, :port, :stage1, :stage2, :stage3, :stage4, :stage5, :rating, :last_assigned_at, :updated_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :address unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({ controller: :ip_addresses, action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+			<div class="filter-label">Address:</div>
+			<%= search_field_tag :address, params[:address], class: 'form-control' %>
+			<div class="filter-label">Port:</div>
+			<%= search_field_tag :port, params[:port], class: 'form-control' %>
+			<div class="filter-label">Country:</div>
+			<%= select_tag(:country_id, options_from_collection_for_select(Geobase::Country.order(:name), :id, :name, params[:country_id]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Rating:</div>
+			<%= select_tag('rating', options_for_select((0..5).to_a, params[:rating]), { include_blank: '', class: 'dropdown-toggle select-box form-control'}) %>
+      <div class="filter-label">Additional use:</div>
+      <%= select_tag(:additional_use, options_for_select([['YES', true], ['NO', false]], params[:additional_use]), { include_blank: '', class: 'form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100, 150, 200, 250, 500], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

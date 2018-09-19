@@ -1,0 +1,14 @@
+<%
+  template_settings = render partial: "image_template_settings", locals: {image_template: @template}
+%>
+
+$('#templates_settings').replaceWith('<%= escape_javascript(template_settings) %>');
+
+$('#image_blender_client_id').select2({
+  placeholder: "Choose client",
+  allowClear: true
+});
+
+$('.artifacts_image_blender #image_blender_tags').tagsinput({
+  tagClass: "label label-success"
+});

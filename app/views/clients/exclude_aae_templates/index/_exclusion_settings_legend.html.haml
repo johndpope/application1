@@ -1,0 +1,7 @@
+#template_exclusion_settings_legend
+	- if @client.ignore_special_templates?
+		%blockquote
+			%p{id: 'ignore_special_templates'}
+				%span.text-success
+					= fa_icon 'exclamation-circle'
+					You activated ignoring of special templates. All special templates for this client will be ignored

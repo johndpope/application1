@@ -1,0 +1,49 @@
+%tr
+  %td= page * params[:limit].to_i + index + 1
+  %td= item.id
+  %td
+    - unless item.thumbnail.blank?
+      = link_to item.thumbnail.url, rel:"fancybox-button",
+      class: "youtube-video-thumbnail", title: item.title, target: "_blank" do
+        = image_tag item.thumbnail.url(:thumb), style: "width: 40px; height: 25px;",
+        class: "livepreview", data: {src: item.thumbnail.url}
+  %td
+    - unless item.try(:screenshots).try(:last).try(:image).blank?
+      = link_to item.try(:screenshots).try(:last).try(:image).try(:url),
+      rel: "fancybox-button", class: "youtube-video-screenshot", target: "_blank" do
+        = image_tag item.try(:screenshots).try(:last).try(:image).try(:url, :thumb),
+        style: "width: 40px; height: 25px;",
+        class: "livepreview",data: {src: item.try(:screenshots).try(:last).try(:image).try(:url, :thumb)}
+  %td
+    - unless item.blended_video.nil? || item.blended_video.file.blank?
+      = link_to item.blended_video.file.url, rel: "fancybox-button", class: "blended-video" do
+        = fa_icon 'youtube-play', style: "color: red"
+  %td
+    - unless item.description.blank?
+      = link_to 'javascript://', class: "youtube-video-description",
+      data: {container: "body", content: item.description, placement: "top", toggle: "popover", trigger: "hover"} do
+        = fa_icon 'file-text-o'
+  %td
+    - unless item.tags.blank?
+      = link_to 'javascript://', class: "youtube-video-tags", data: {tags: item.tags} do
+        = fa_icon 'tags'
+  %td
+    - if item.url.present?
+      = link_to item.title, item.url, target: "BLANK"
+    - else
+      = item.title
+  %td
+    - if item.try(:youtube_channel).try(:url)
+      = link_to item.try(:youtube_channel).try(:youtube_channel_name), item.try(:youtube_channel).try(:url), target: "BLANK"
+    - else
+      = item.try(:youtube_channel).try(:youtube_channel_name)
+  %td= item.try(:youtube_channel).try(:email_account).try(:email)
+  %td= item.try(:youtube_channel).try(:email_account).try(:location).try(:formatted_name, primary_region: true, primary_region_code: true)
+  %td{class: "text-center"}= item.publication_date.present? ? local_time(item.publication_date, format: '%m/%d/%y %I:%M %p', title: item.publication_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) : "-"
+  - last_yt_statistics = item.yt_statistics.last
+  %td{class: "text-center", title: "Views"}= last_yt_statistics.try(:view_count) || "-"
+  %td{class: "text-center", title: "Likes"}= last_yt_statistics.try(:like_count) || "-"
+  %td{class: "text-center", title: "Dislikes"}= last_yt_statistics.try(:dislike_count) || "-"
+  %td{class: "text-center", title: "Favorites"}= last_yt_statistics.try(:favorite_count) || "-"
+  %td{class: "text-center", title: "Comments"}= last_yt_statistics.try(:comment_count) || "-"
+  %td{class: "text-center"}= last_yt_statistics.present? ? local_time(last_yt_statistics.updated_at, format: '%m/%d/%y %I:%M %p', title: last_yt_statistics.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) : "-"

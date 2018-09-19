@@ -1,0 +1,114 @@
+.title-block
+  %h2
+    %b YouTube
+    %span.font_red_no-weight Channel
+.row.header
+  .col-md-2
+    = link_to 'javascript://', class: "menu-toggle-link" do
+      = fa_icon 'align-justify'
+    = link_to 'javascript://' do
+      = image_tag "/sandbox/icons/youtube_icon1.png", id: "youtube_icon1"
+  .col-md-8
+    .input-group.input-group-sm.input-search
+      = text_field_tag :q, "", :class => 'form-control input-sm'
+      .input-group-btn
+        %button.btn.btn-default{ type: 'button' }
+          = fa_icon 'search'
+  .col-md-2.buttons
+    = link_to 'javascript://' do
+      = fa_icon 'th'
+    = link_to 'javascript://' do
+      = fa_icon 'upload'
+    = link_to 'javascript://' do
+      = fa_icon 'bell'
+    = link_to 'javascript://' do
+      = image_tag @sandbox_client.logo.url(:square_256), class: "channel_icon_img_small"
+.row
+  .col-md-2.aside
+    %ul.list
+      - %w(Home Trending Subscriptions).each_with_index do |v,i|
+        %li
+          = link_to 'javascript://'do
+            = image_tag "/sandbox/icons/side#{i+1}.png"
+            %b=v
+    %h5 LIBRARY
+    %ul.list
+      - %w(history watch_later playlist).each_with_index do |v,i|
+        %li
+          = link_to 'javascript://'do
+            = image_tag "/sandbox/icons/side#{i+4}.png"
+            %b=v.humanize
+    .menu
+      = link_to 'javascript://'do
+        = image_tag "/sandbox/icons/aside_menu.png"
+  .col-md-10.content
+    - unless @channel_arts.blank?
+      .channel_art_container= link_to (image_tag @channel_arts.first.file.url, {class: 'channel_art_selected', alt: 'no image', data: {id: @channel_arts.first.id} }), @channel_arts.first.file.url, {target: '_blank'}
+    - else
+      .channel_art_container=image_tag '/sandbox/icons/alt.png', class: "alt-image", alt: "no image"
+    .channel_header_containers
+      .inner-header-container
+        = link_to 'javascript://'do
+          = image_tag "/sandbox/icons/alt_image_channe_name.png", class: "channel_icon_img channel_icon_img_middle"
+        %h3.channel_name=@channel_name
+        .subscribers
+          .subscribers_count{:data => {:count => "0"}}
+          = "#{rand(1000..100000)} subscribers"
+      = link_to 'javascript://', class: "subscribe-button" do
+        %span.text="SUBSCRIBE"
+        %span.count="#{rand(1..99)}K"
+      = link_to 'javascript://', class: "ytb-bell-icon" do
+        = fa_icon 'bell'
+      %div{style: "clear:both"}
+
+      .row
+        .col-md-1
+        .col-md-10
+          .navigation_container
+            %ul#tabs
+              - %w(home videos playlist channels discussion about).each_with_index do |v,i|
+                %li{class: i == 0 ? "active" : ""}
+                  = link_to v.humanize.upcase, 'javascript://'
+              %div{style: "clear:both"}
+        .col-md-1
+    .row
+      .col-md-1
+      .col-md-10
+        .row.media-row
+          .yt_channel_video_content
+            - unless @video_thumbnails.blank?
+              - thumbnail_path = @video_thumbnails.first.file.url
+            - else
+              - thumbnail_path = ""
+            %video.video-js.vjs-default-skin#video3{controls: "controls", preload: "auto", data:{setup: "{}"}, width: "100%", height: "100%", poster: thumbnail_path, style: ""}
+              %source{src: @blended_video_src, type: "video/mp4"}
+          - @video_thumbnails.first(6).map do |item|
+            .video-item
+              = link_to "javascript://", target: 'blank' do
+                = image_tag URI::escape(item.file.url(:thumb)), class: "img-thumbnail thumbnail_img", data: {src: item.file.url(:original), id: item.id}
+                .time_block=(rand(24.hours.ago..Time.now).strftime "%M:%S").gsub(/^\d/,'')
+                %div{style: "clear:both"}
+              .video_title="Video title"
+              .channel_name=@channel_name
+              .views_count= "#{rand(10000..100000) / 1000},#{rand(10000..100000) % 1000} views - #{rand(1..10)} #{['hours','days','week'].sample} ago"
+
+        .row.media-row
+          .sample_str
+            .liked_videos Liked videos
+            .play_all PLAY ALL
+          %br
+          - (1..6).each do |i|
+            .video-item
+              = link_to 'javascript://', class: "it" do
+                = image_tag "/sandbox/icons/channel_images/#{i}.png", class: "video_image img-thumbnail"
+                = image_tag '/sandbox/icons/media_item.png'
+                .time_block= (rand(24.hours.ago..Time.now).strftime "%M:%S").gsub(/^\d/,'')
+
+      .col-md-1
+    .row
+      .col-md-12
+        .buttons-panel
+          = link_to regenerate_youtube_channel_sandbox_client_video_blenders_path(params[:client_uuid], params[:id]), class: "btn btn-different btn-lime", data: {"disable-with" => '<i class="fa fa-refresh fa-2x fa-spin-hover fa-spin"></i> <span><b>Change All</b></span>', remote: true, toggle: "popover", content: "Change channel and youtube setup automatic"} do
+            = fa_icon 'refresh'
+            %span
+              %b="Change All"

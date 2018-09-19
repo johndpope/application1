@@ -1,0 +1,64 @@
+<%
+  modal = render partial: 'other_dealers', locals: {dealers: dealers, query_params: query_params}
+  main_dealer_ids = query_params[:dealer_id]
+%>
+
+signup_action_url = "/sandbox/video_marketing_campaign_forms/landing?dealer_id="
+brands_logos_json = JSON.parse($("#brands_logos_json").val());
+var dealer_ids = JSON.parse("[<%= main_dealer_ids %>]");
+var dealers_present = "<%= dealers.present? %>";
+var final_url = "";
+
+function find_checked_dealers() {
+  final_url = signup_action_url + dealer_ids.join(",") + "&industry_id=" + $('#industry_id').val() + "&name=" + $("#name").val() + "&phone=" + $("#phone").val() + "&email=" + $("#email").val() + "&website=" + $("#website").val() + "&zipcode=" + $("#zipcode").val();
+  $("#signup_action_url_submit").attr("href", final_url)
+}
+
+$("#detect_other_dealers_modal").remove()
+$(".modal-backdrop").remove()
+$('body').append('<%= escape_javascript(modal) %>');
+find_checked_dealers();
+if (dealers_present == 'true') {
+  console.log("present");
+  $("#detect_other_dealers_modal").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+    $(this).remove()
+  })
+  $('.claim_option').find('.img-frame').removeClass('col-md-3').addClass('col-md-2');
+  $('.animationload').hide();
+
+  $('.iCheck-helper').iCheck({
+    checkboxClass: 'icheckbox_square-blue',
+    radioClass: 'iradio_square-blue',
+    increaseArea: '20%'
+  });
+
+  $('.dealers').on('ifChecked', function(event){
+    //console.log("Checked: " + $(this).val());
+    find_checked_dealers();
+  });
+  $('.dealers').on('ifUnchecked', function(event){
+    $(this).closest('.claim_option').find(".img-frame").first().removeClass('brand-frame-selected');
+    var itemtoRemove = $(this).val();
+    dealer_ids.splice($.inArray(itemtoRemove, dealer_ids),1);
+    find_checked_dealers();
+  });
+  $('.dealers').on('ifChecked', function(event){
+    $(this).closest('.claim_option').find(".img-frame").first().addClass('brand-frame-selected');
+    dealer_ids.push($(this).val());
+    find_checked_dealers();
+  });
+
+  $(".brand-name").each(function() {
+    brand_name = $(this).data("brand-name");
+    brand_logo_url = brands_logos_json[brand_name];
+    if (brand_logo_url) {
+      $(this).closest('.claim_option').find('.brand-logo').first().attr("src", brand_logo_url);
+    }
+  });
+
+  $('.img-frame').on('click', function (){
+    $(this).parent().parent().parent().find('.dealers').first().iCheck('toggle');
+  });
+} else {
+  window.location.href = final_url;
+}

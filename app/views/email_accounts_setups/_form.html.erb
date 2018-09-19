@@ -1,0 +1,244 @@
+<%= content_for(:javascripts){javascript_include_tag 'email_accounts_setups_form'} %>
+<%= form_for @email_accounts_setup, url: client_email_accounts_setup_path(@client, @email_accounts_setup), :html => { :multipart => true } do |f| %>
+	<div class="row">
+		<% if @email_accounts_setup.errors.any? %>
+			<div class="col-md-12">
+					<div id="error_explanation" class="alert alert-danger alert-dismissable">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@email_accounts_setup.errors.count, 'error') %> prohibited this email accounts setup from being saved</h4>
+            <div class="row" style="margin-top: 5px;">
+              <ul>
+              <% @email_accounts_setup.errors.full_messages.each do |msg| %>
+                <li class="col-md-3" style="padding-left: 0px; !important;"><%= msg %></li>
+              <% end %>
+              </ul>
+            </div>
+					</div>
+				</div>
+		<% end %>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-5">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group <%= 'has-error' if @email_accounts_setup.errors[:contract_id].present? %>" data-content="<%= @email_accounts_setup.errors[:contract_id].try(:join, ',') %>">
+								<%= f.label :contract, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "contract_id"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #A85D13; border: 1px solid #A85D13;"><i class="fa fa-file-text-o"></i></span>
+									<% contracts_array = Contract.where('client_id = ?', @client.id).map { |c| [c.display_name, c.id] } %>
+									<%= f.select :contract_id, options_for_select(contracts_array, @email_accounts_setup.contract_id), { include_blank: false }, { placeholder: 'Select contract', class: 'select2 form-control' } %>
+								</div>
+							</div>
+							<div id="regional_selection" class="form-group">
+								<label class="control-label">Country:</label>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "country_id"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgba(35, 164, 99, 1); border: 1px solid rgba(35, 164, 99, 1);"><i class="fa fa-flag"></i></span>
+									<%= f.select :country_id, options_from_collection_for_select(Geobase::Country.order(:id), :id, :name, @email_accounts_setup.country_id), {}, { class: 'select2 form-control' } %>
+								</div>
+							</div>
+							<div id="packages_radio_group" class="form-group">
+								<label class="control-label">Choose package</label>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "package"}) %>
+								<div class="radio">
+									<label>
+										<input type="radio" class="iCheck-helper" name="optionsRadios" id="top_cities_radio" value="1" <% if @email_accounts_setup.package.try(:value) == 1 %>checked=""<% end %>>
+										By top cities
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" class="iCheck-helper" name="optionsRadios" id="population_greater_than_radio" value="2" <% if @email_accounts_setup.package.try(:value) == 2 %>checked=""<% end %>>
+										By cities with population greater than ...
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" class="iCheck-helper" name="optionsRadios" id="states_radio" value="3" <% if @email_accounts_setup.package.try(:value) == 3 %>checked=""<% end %>>
+										By states
+									</label>
+								</div>
+								<!-- <div class="radio">
+									<label>
+										<input type="radio" class="iCheck-helper" name="optionsRadios" id="national_radio" value="4" <%# if @email_accounts_setup.package.try(:value) == 4 %>checked=""<%# end %>>
+										National
+									</label>
+								</div> -->
+								<div class="radio">
+									<label>
+										<input type="radio" class="iCheck-helper" name="optionsRadios" id="regional_radio" value="5" <% if @email_accounts_setup.package.try(:value) == 5 %>checked=""<% end %>>
+										Regional
+									</label>
+								</div>
+							</div>
+							<div id="cities_number_selection" class="form-group" <% if [2,3,4,5].include? (@email_accounts_setup.package.try(:value)) %>style="display: none;"<% end %>>
+								<label class="control-label">Number of top cities</label>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "top_cities_filter"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: rgba(35, 164, 99, 1); border: 1px solid rgba(35, 164, 99, 1);"><i class="fa fa-dot-circle-o"></i></span>
+									<% if ([0, 50, 100, 250, 500, 1000, 2000, 5000].include? (@email_accounts_setup.top_cities_filter)) || @email_accounts_setup.top_cities_filter.nil? %>
+										<% top_cities_btn_text = 'Enter your value' %>
+										<%= select_tag(:top_cities_select, content_tag(:option, '-', :value => '0') + options_for_select([['50', 50], ['100', 100], ['250', 250], ['500', 500], ['1000', 1000], ['2000', 2000], ['5000', 5000]], @email_accounts_setup.top_cities_filter), { include_blank: true, class: 'form-control' }) %>
+										 <%= f.number_field :top_cities_filter, placeholder: 'Enter number of top cities', class: 'numeric form-control', style: 'display: none;' %>
+									<% else %>
+										<% top_cities_btn_text = 'Choose from the list' %>
+										<%= select_tag(:top_cities_select, content_tag(:option, '-', :value => '0') + options_for_select([['50', 50], ['100', 100], ['250', 250], ['500', 500], ['1000', 1000], ['2000', 2000], ['5000', 5000]], @email_accounts_setup.top_cities_filter), { include_blank: true, class: 'form-control', style: 'display: none;' }) %>
+										 <%= f.number_field :top_cities_filter, placeholder: 'Enter number of top cities', class: 'numeric form-control' %>
+									<% end %>
+									<span class="input-group-btn">
+										<a id="top_cities_btn" class="btn btn-sm btn-info" href="javascript://"><%= top_cities_btn_text %></a>
+									</span>
+								</div>
+							</div>
+							<div id="population_greater_than_selection" class="form-group" <% if [1,3].include? (@email_accounts_setup.package.try(:value)) %>style="display: none;"<% end %>>
+								<label class="control-label">Population greater than:</label>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "population_filter"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #AB329C; border: 1px solid #AB329C;"><i class="fa fa-users"></i></span>
+									<% if ([0, 10000, 25000, 50000, 75000, 100000].include? (@email_accounts_setup.population_filter)) || @email_accounts_setup.population_filter.nil? %>
+										<% population_btn_text = 'Enter your value' %>
+										<%= select_tag(:population_select, content_tag(:option, '-', :value => '0') + options_for_select([['100 000', 100000], ['75 000', 75000], ['50 000', 50000], ['25 000', 25000], ['10 000', 10000]], @email_accounts_setup.population_filter), { include_blank: true, class: 'form-control' }) %>
+										<%= f.number_field :population_filter, placeholder: 'Enter population number', class: 'numeric form-control', style: 'display: none;' %>
+									<% else %>
+										<% population_btn_text = 'Choose from the list' %>
+										<%= select_tag(:population_select, content_tag(:option, '-', :value => '0') + options_for_select([['100 000', 100000], ['75 000', 75000], ['50 000', 50000], ['25 000', 25000], ['10 000', 10000]], @email_accounts_setup.population_filter), { include_blank: true, class: 'form-control', style: 'display: none;' }) %>
+										<%= f.number_field :population_filter, placeholder: 'Enter population number', class: 'numeric form-control' %>
+									<% end %>
+									<span class="input-group-btn">
+										<a id="population_btn" class="btn btn-sm btn-info" href="javascript://"><%= population_btn_text %></a>
+									</span>
+								</div>
+							</div>
+							<div id="states_selection" class="form-group" <% if [1,2,4].include? (@email_accounts_setup.package.try(:value)) %>style="display: none;"<% end %>>
+								<div id="state_select_checkbox">
+									<input id="state_select_all" type="checkbox" class="iCheck-helper">
+									<label class="control-label" for="state_select_all">Select all states/regions</label>
+									<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "states"}) %>
+                  <div class="counter-states pull-right">Current:&nbsp;<span class="badge bg-blue pull-right calc-one"><%= @email_accounts_setup.states.to_s.split(",").size %></span></div>
+								</div>
+								<%= f.select :states, options_from_collection_for_select(@states, :id, :name, @email_accounts_setup.states), {}, { :multiple => true, class: 'select2 form-control' } %>
+							</div>
+							<div id="national_selection" class="form-group" <% if [1,2,3].include? (@email_accounts_setup.package.try(:value)) %>style="display: none;"<% end %>>
+								<div id="localities_radio_group" class="form-group">
+									<label class="control-label">Choose</label>
+									<div class="radio">
+										<label>
+											<input type="radio" class="iCheck-helper" name="localitiesOptionsRadios" id="locality_cities_radio" value="1" <% unless @email_accounts_setup.counties.present? %>checked=""<% end %>> Localities</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="iCheck-helper" name="localitiesOptionsRadios" id="locality_counties_radio" value="2" <% if @email_accounts_setup.counties.present? %>checked=""<% end %>> Counties
+										</label>
+									</div>
+								</div>
+								<div class="form-group">
+									<a id="search_localities" href="javascript://" class="btn btn-sm btn-info">Search</a>
+									<a id="clear_localities" href="javascript://" class="btn btn-sm btn-danger">Clear</a>
+									<a id="select_all_localities" href="javascript://" class="btn btn-sm btn-primary pull-right">Select All</a>
+								</div>
+								<div id="cities_select_block" <% if @email_accounts_setup.counties.present? %>style="display: none;"<% end %>>
+                  <span id="badge_cities_current_count_span">Current:&nbsp;<span id="badge_cities_current_count" class="badge bg-black pull-right" title="Current"><%= ([4,5].include? (@email_accounts_setup.package.try(:value))) ? @email_accounts_setup.cities.size : 0 %></span></span>
+                  <span id="badge_cities_count_span"><span id="badge_cities_count" class="badge bg-blue pull-right" title="Total"><%= ([4,5].include? (@email_accounts_setup.package.try(:value))) ? @email_accounts_setup.cities.size : 0 %></span> Total:&nbsp;</span>
+									<div id="cities_select_div">
+										<%=hidden_field_tag :cities_list%>
+									</div>
+								</div>
+								<div id="counties_select_block" <% unless @email_accounts_setup.counties.present? %>style="display: none;"<% end %>>
+                  <span id="badge_counties_current_count_span">Current:&nbsp;<span id="badge_counties_current_count" class="badge bg-black pull-right" title="Current"><%= ([4,5].include? (@email_accounts_setup.package.try(:value))) ? @email_accounts_setup.counties.size : 0 %></span></span>
+                  <span id="badge_counties_count_span"><span id="badge_counties_count" class="badge bg-blue pull-right" title="Total"><%= ([4,5].include? (@email_accounts_setup.package.try(:value))) ? @email_accounts_setup.counties.size : 0 %></span> Total:&nbsp;</span>
+									<div id="counties_select_div">
+										<%=hidden_field_tag :counties_list, class: 'select2'%>
+									</div>
+								</div>
+							</div>
+							<%= f.hidden_field :client_id %>
+							<%= f.hidden_field :cities %>
+							<%= f.hidden_field :counties %>
+							<%= f.hidden_field :boroughs %>
+							<%= f.hidden_field :package %>
+							<input type="hidden" id="cities_json" value="<%=@cities_json.to_s%>"/>
+							<input type="hidden" id="counties_json" value="<%=@counties_json%>"/>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-5">
+					<div class="row">
+						<div class="col-md-12">
+              <div class="form-group" id="check_localities_block" <% if !@email_accounts_setup.cities.present? || ([3].include? @email_accounts_setup.package.try(:value)) %>style="display: none;"<% end %>>
+								<%= f.label "Check localities", class: 'control-label' %>
+                <br/>
+								<%= link_to 'Click here to review content statistics for localities', report_by_localities_artifacts_images_path(locality_ids: @email_accounts_setup.cities.to_a.map(&:to_i).join(",")), id: "check_localities_link", class: "btn btn-sm btn-info", target: "_blank" %>
+							</div>
+							<div class="form-group <%= 'has-error' if @email_accounts_setup.errors[:accounts_number].present? %>" data-content="<%= @email_accounts_setup.errors[:accounts_number].try(:join, ',') %>">
+								<%= f.label :accounts_number, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "accounts_number"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #3C4CBC; border: 1px solid #3C4CBC;"><i class="fa fa-user"></i></span>
+									<%= f.number_field :accounts_number, class: 'form-control numeric' %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :channels_per_account, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "channels_per_account"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #DD2826; border: 1px solid #DD2826;"><i class="fa fa-youtube-square"></i></span>
+									<%= f.number_field :channels_per_account, class: 'form-control numeric' %>
+								</div>
+							</div>
+							<div id="channels_reason_block" class="form-group" <% if @email_accounts_setup.channels_per_account == 1 %>style='display: none;'<% end %>>
+								<%= f.label :additional_channels_reason, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "additional_channels_reason"}) %>
+								<div class="input-group">
+									 <span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+									<%= f.text_area :additional_channels_reason, size: '40x5', class: 'form-control', placeholder: 'Additional channels reason' %>
+								</div>
+							</div>
+							<div class="form-group check-group" id="google_plus_div">
+                <div class="checkbox">
+  								<input type="checkbox" class="iCheck-helper" id="google_plus" <% if @email_accounts_setup.gplus_business_pages_per_account.present? && @email_accounts_setup.gplus_business_pages_per_account > 0 %>checked="checked"<% end %>>
+  								<label class="control-label" for="google_plus">Google+ business pages</label>
+									<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "gplus_business_pages_per_account"}) %>
+                </div>
+							</div>
+							<div id="googl_plus_pages_block" class="form-group" <% if @email_accounts_setup.gplus_business_pages_per_account.nil? || @email_accounts_setup.gplus_business_pages_per_account == 0 %>style='display: none;'<% end %>>
+								<%= f.label 'Google+ business pages per account', class: 'control-label' %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #D73D32; border: 1px solid #D73D32;"><i class="fa fa-google-plus"></i></span>
+									<%= f.number_field :gplus_business_pages_per_account, class: 'form-control numeric' %>
+								</div>
+							</div>
+							<div id="google_plus_reason_block" class="form-group" <% if @email_accounts_setup.gplus_business_pages_per_account.nil? || @email_accounts_setup.gplus_business_pages_per_account < 2 %>style='display: none;'<% end %>>
+								<%= f.label :additional_business_pages_reason, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "gplus_business_pages_per_account"}) %>
+								<div class="input-group">
+									 <span class="input-group-addon" style="background-color: #5FD8DD; border: 1px solid #5FD8DD;"><i class="fa fa-align-left"></i></span>
+									<%= f.text_area :additional_business_pages_reason, size: '40x5', class: 'form-control', placeholder: 'Additional G+ business pages reason' %>
+								</div>
+							</div>
+              <div class="form-group check-group">
+                <div class="checkbox">
+                  <label><%= f.check_box :use_dids_for_channels, class: 'iCheck-helper' %> Use DIDs for channels verification</label>
+									<%= tooltip_by_field({table_name: "email_accounts_setups", table_column: "use_dids_for_channels"}) %>
+                </div>
+              </div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row center">
+						<div class="btn-group btn-group-custom">
+							<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_email_accounts_setups_path(@client), class: 'btn btn-lg btn-primary' %>
+							<%= f.submit :class => 'btn btn-lg btn-success', :id => 'email_accounts_setup_submit' %>
+							<% if params[:action] == 'new' && @client.youtube_setups.empty? %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, new_client_youtube_setup_path(@client), class: 'btn btn-lg btn-primary' %>
+							<% else %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, client_youtube_setups_path(@client), class: 'btn btn-lg btn-primary' %>
+							<% end %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

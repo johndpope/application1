@@ -1,0 +1,8 @@
+<%
+  modal_dom_id = dom_id(text_chunk, 'modal')
+  row_id = dom_id(text_chunk, 'row')
+  new_row = render partial: 'text_chunk_row', locals: {text_chunk: text_chunk}
+%>
+
+$('#text_chunks_table tbody').prepend('<%= escape_javascript(new_row) %>');
+$('#modal_text_chunk').modal('hide')

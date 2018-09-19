@@ -1,0 +1,25 @@
+%td{class: "text-center"}= item.id
+%td= item.title
+%td= item.try(:video_campaign).try(:title)
+%td
+	= item.try(:locality).try(:name)
+	- if !item.sandbox_client.blank? && !item.video_campaign.blank? && !item.locality.blank?
+		%div
+			= link_to sandbox_client_content_blender_preview_path(item.sandbox_client.uuid, item.video_campaign.id, item.locality.id), title: t('admin.sandbox.preview_content_blender'), target: "_BLANK" do
+				= fa_icon 'search', text: 'preview content blender'
+%td{class: "text-center"}= item.month_nr
+%td= image_tag(item.thumbnail.url(:w60), style: "height: 45px; width: 60px;") unless item.thumbnail.blank?
+- %w(views position likes dislikes comments shares).each do |c|
+	%td{class: "text-center"}= item.send(c)
+%td{class: "text-center"}
+	- unless item.tags.blank?
+		= link_to 'javascript:', data: {tags: item.tags}, class: "tags-toggle" do
+			= fa_icon 'tags'
+%td{class: "text-center"}
+	- unless item.description.blank?
+		= link_to 'javascript:', data: {content: item.description.html_safe, id: item.id}, class: "description-toggle" do
+			= fa_icon 'list-alt'
+%td{class: "text-center"}
+	- label_text = item.is_active? ? t('yes') : t('no')
+	- label_class = item.is_active? ? 'success' : 'danger'
+	.label{class: "label-#{label_class}"}= label_text

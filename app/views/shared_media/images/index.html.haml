@@ -1,0 +1,34 @@
+- title 'Browse image files'
+- header 'Browse image files'
+- breadcrumb :media_browse, theme: "bootstrap"
+
+= form_tag shared_media_images_path, method: 'get', id: 'search_form' do
+  .box.box-primary
+    .box-body
+      .input-group.input-group-lg
+        = text_field_tag :q, params[:q], :class => 'form-control input-lg'
+        .input-group-btn#api-switch
+          %button.btn.btn-primary.search-btn#search-btn{ type: 'button' }
+            Search
+            = fa_icon 'search'
+          %button.btn.btn-default.image-clear-btn#image-clear-btn{ type: 'button' }
+            Clear
+            = fa_icon 'eraser'
+  = render partial: 'index_search_filter'
+
+- if @total_count.present? && @total_count > 0
+  .row
+    .col-md-12
+      %h4
+        = "Total: "
+        %span.label.label-success.total_count= @total_count
+  - if !@images.any?
+    .row
+      .col-lg-12.col-md-12
+        .alert.alert-info There is no some images for thie user
+  .row
+    - @images.each do |image|
+      = render 'image', image: image
+  .row
+    .col-lg-6.col-md-6
+      .pull-left= paginate @images, theme: 'bootstrap'

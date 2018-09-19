@@ -1,0 +1,118 @@
+<li class="treeview <%= 'active' if ['phones', 'phone_services', 'phone_service_accounts', 'phone_providers', 'phone_usages', 'phone_calls'].include? params[:controller] %>">
+	<a href="#"><i class="fa fa-phone"></i><span>Phones Stuff</span> <i class="fa pull-right fa-angle-left"></i></a>
+	<ul class="treeview-menu">
+		<li <%= 'class=active' if params[:controller] == 'phone_services' %>>
+			<a href="<%= phone_services_path %>"><i class="fa fa-angle-double-right"></i> Phone Services</a>
+		</li>
+		<li <% 'class=active' if params[:controller] == 'phone_service_accounts' %>>
+			<a href="<%= phone_service_accounts_path %>"><i class="fa fa-angle-double-right"></i> Phone Service Accounts</a>
+		</li>
+		<li <%= 'class=active' if params[:controller] == 'phone_providers' %>>
+			<a href="<%= phone_providers_path %>"><i class="fa fa-angle-double-right"></i> Phone Providers</a>
+		</li>
+		<li <%= 'class=active' if params[:controller] == 'phones' %>>
+			<a href="<%= phones_path %>"><i class="fa fa-angle-double-right"></i> Phones</a>
+		</li>
+		<li <%= 'class=active' if params[:controller] == 'phone_usages' %>>
+			<a href="<%= phone_usages_path %>"><i class="fa fa-angle-double-right"></i> Phone Usages</a>
+		</li>
+    <li <%= 'class=active' if params[:controller] == 'phone_calls' %>>
+			<a href="<%= phone_calls_path %>"><i class="fa fa-angle-double-right"></i> Phone Calls</a>
+		</li>
+	</ul>
+</li>
+<li>
+  <a href="#"><i class="fa fa-cloud"></i><span>Artifacts</span> <i class="fa pull-right fa-angle-left"></i></a>
+  <ul class="treeview-menu">
+    <%= render partial: "layouts/artifacts_sidebar" %>
+  </ul>
+</li>
+<% template_controllers = %w(templates/aae_projects templates/aae_project_dynamic_texts client_landing_page_templates templates/image_templates templates/aae_project_texts/correct_static_texts) %>
+<li class="treeview <%= 'active' if template_controllers.include? params[:controller] %>">
+	<a href="#">
+		<i class="fa fa-file-movie-o"></i>
+		<span>Templates</span> <i class="fa fa-angle-left pull-right"></i>
+	</a>
+	<ul class="treeview-menu">
+		<li class="<%= 'active' if params[:controller] == 'templates/aae_projects' %>">
+			<%= link_to templates_aae_projects_path do %>
+				<%= fa_icon 'file-text-o' %>
+				<span>AAE Templates</span>
+			<% end %>
+		</li>
+		<li class="<%= 'active' if params[:controller] == 'templates/aae_project_texts/correct_static_texts' %>">
+			<%= link_to templates_correct_static_texts_path do %>
+				<%= fa_icon 'file-text-o' %>
+				<span>Fix AAE Template Static Texts</span>
+			<% end %>
+		</li>
+		<li class="<%= 'active' if(params[:controller] == 'templates/aae_project_dynamic_texts' && params[:action] == 'quick_edit') %>">
+			<%= link_to templates_aae_project_dynamic_texts_quick_edit_path do %>
+				<%= fa_icon 'file-text-o' %>
+				<span>Quick edit of dynamic texts</span>
+			<% end %>
+		</li>
+    <li class="<%= 'active' if(params[:controller] == 'templates/aae_project_dynamic_texts' && params[:action] == 'report') %>">
+      <%= link_to templates_aae_project_dynamic_texts_report_path do %>
+        <%= fa_icon 'file-text-o' %>
+        <span>Dynamic text strings report</span>
+      <% end %>
+    </li>
+		<li class="<%= 'active' if(params[:controller] == 'client_landing_page_templates') %>">
+			<%= link_to client_landing_page_templates_path do %>
+				<%= fa_icon 'file-text-o' %>
+				<span>Client Landing Page Templates</span>
+			<% end %>
+		</li>
+		<li class="<%= 'active' if(params[:controller] == 'templates/image_templates') %>">
+			<%= link_to templates_image_templates_path do %>
+				<%= fa_icon 'file-text-o' %>
+				<span>Image templates</span>
+			<% end %>
+		</li>
+
+	</ul>
+</li>
+<li class="treeview <%= 'active' if %w(templates/dynamic_aae_projects dashboard/video_workflow/rendering_machines).include? params[:controller] %>">
+	<a href="#">
+		<i class="fa fa-file-movie-o"></i>
+		<span>Video Production</span> <i class="fa fa-angle-left pull-right"></i>
+	</a>
+	<ul class="treeview-menu">
+		<li class="<%= 'active' if params[:controller] == 'dashboard/video_workflow/rendering_machines' %>">
+			<%= link_to dashboard_video_workflow_rendering_machines_path do %>
+				<%= fa_icon 'dashboard' %>
+				<span>Dashboard</span>
+			<% end %>
+		</li>
+		<li class="<%= 'active' if params[:controller] == 'templates/aae_dynamic_projects' %>">
+			<%= link_to templates_dynamic_aae_projects_path do %>
+				<%= fa_icon 'file-text-o' %>
+				<span>Dynamic AAE Projects</span>
+			<% end %>
+		</li>
+	</ul>
+</li>
+<li class="treeview <%= 'active' if ['queue'].include? params[:controller] %>">
+  <a href="#"><i class="fa fa-users"></i><span>Queues</span> <i class="fa fa-angle-left pull-right"></i></a>
+  <ul class="treeview-menu">
+    <%= render partial: "layouts/queues_sidebar" %>
+  </ul>
+</li>
+<li class="treeview <%= 'active' if ['watching_video_categories', 'settings', 'recovery_attempt_responses', 'text_chunks'].include? params[:controller] %>">
+	<a href="#"><i class="fa fa-sliders"></i><span>Preferences</span> <i class="fa fa-angle-left pull-right"></i></a>
+	<ul class="treeview-menu">
+		<li <%= 'class=active' if params[:controller] == 'watching_video_categories' %>>
+			<a href="<%= watching_video_categories_path %>"><i class="fa fa-th-list"></i> Watching Categories</a>
+		</li>
+		<li <%= 'class=active' if params[:controller] == 'recovery_attempt_responses' %>>
+			<a href="<%= recovery_attempt_responses_path %>"><i class="fa fa-outdent"></i> Recovery Responses</a>
+		</li>
+		<li <%= 'class=active' if params[:controller] == 'text_chunks' %>>
+			<a href="<%= text_chunks_path %>"><i class="fa fa-cubes"></i> Text Chunks</a>
+		</li>
+		<li <%= 'class=active' if params[:controller] == 'settings' %>>
+			<a href="<%= settings_path %>"><i class="fa fa-gears"></i> Settings</a>
+		</li>
+	</ul>
+</li>

@@ -1,0 +1,59 @@
+.row
+	.col-md-5
+		.form-group{class: 'control-box'}
+			= label_tag '', "Client", class: 'control-label'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.client',:default => "")})
+			= text_field_tag "", @client.name, class: "form-control", disabled: "disabled"
+	.col-md-4
+		.form-group{class: 'control-box'}
+			= f.label :product_id, "Product *", class: 'control-label'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.product', :default => "")})
+			- products = @client.products.collect{|p| [p.name.titleize, p.id]}
+			= select(:source_video, :product_id, products, {include_blank: '', selected: (@source_video.product_id)}, {class: 'form-control select2'})
+	.col-md-3
+		.form-group{class: "control-box"}
+			= f.label :ready_for_production, "Ready for Production", class: 'control-label'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.ready_for_production', :default => "")})
+			- options = [[I18n.t('yes'), 'true'], [I18n.t('no'), 'false']]
+			= f.select :ready_for_production, options, {include_blank: true}, class: "form-control select2"
+.row
+	.col-md-12
+		.form-group{class: 'control-box'}
+			= f.label :custom_title, "Internal Title *", class: 'control-label'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.internal_title', :default => "")})
+			= f.text_field :custom_title, class: "form-control"
+= render partial: 'source_videos/modal_dialog/form/location_block', locals: {f: f}
+.checkbox
+	= label_tag '' do
+		= f.check_box :is_virtual
+		Is Virtual
+	= tooltip_by_field({tooltip_text: t("tooltips.subject_videos.is_virtual", :default => "")})
+	%p.help-block
+		When
+		%strong Is Virtual
+		&nbsp;option is checked, source video segment will not be included in final blended video
+.checkbox
+	= label_tag '' do
+		= f.check_box :use_only_sv_specific_dyn_text_strings
+		Use in Dyn. Projects only Subject Video specific Dynamic Text Strings
+	= tooltip_by_field({tooltip_text: t("tooltips.subject_videos.use_in_dynamic_projects", :default => "")})
+	%div.help-block
+		When this option is checked, only Dynamic Text String which are specific to this video will be used in Dynamic Projects.
+		.div
+			Otherwise Dynamic Text Strings will be selected in the following order:
+			.div
+				%ol{type: 1}
+					%li
+						Text Strings specific to this
+						%strong Subject Video
+					%li
+						Text Strings specific to
+						%strong Product
+						related with current Subject Video
+					%li
+						Text Strings specific to
+						%strong Client
+- if !@donor_source_video.nil?
+	= render partial: 'source_videos/modal_dialog/form/tab_control/donor/media_block'
+- else
+	= render partial: 'source_videos/modal_dialog/form/tab_control/media_block', locals: {f: f}

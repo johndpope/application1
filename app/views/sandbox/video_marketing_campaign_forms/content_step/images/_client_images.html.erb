@@ -1,0 +1,29 @@
+<div class="row">
+	<div class="col-md-6">
+		<div class="form-group">
+			<p><strong>Please upload your company logo</strong></p>
+			<p>File Size: up to <strong>2 megabytes</strong></p>
+			<%= f.file_field :logo, accept: 'image/png' %>
+			<% display_info_block = (!f.object.new_record? && f.object.logo.present?) %>
+			<% if display_info_block %>
+				<%=  link_to (image_tag URI::escape(f.object.logo.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(f.object.logo.url(:original), '[]'), { target: '_blank' } %>
+			<% end %>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="form-group">
+			<p><strong>Please upload your company badge logo</strong></p>
+			<p>File Size: up to <strong>2 megabytes</strong></p>
+			<%= f.file_field :badge_logo, accept: 'image/png' %>
+			<% display_info_block = (!f.object.new_record? && f.object.badge_logo.present?) %>
+			<% if display_info_block %>
+				<%=  link_to (image_tag URI::escape(f.object.badge_logo.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(f.object.badge_logo.url(:original), '[]'), { target: '_blank' } %>
+			<% end %>
+		</div>
+	</div>
+</div>
+<hr/>
+<%= render partial: "/sandbox/video_marketing_campaign_forms/content_step/images/client_images/upload_images", locals: {f: f} %>
+<hr/>
+<a id="images_back_btn" class="btn btn-default" href="javascript://" role="accordion-btn-prev"><i class="fa fa-arrow-left"></i> <b>Back</b></a>
+<a class="btn btn-primary" href="javascript://" role="accordion-btn-next"><b>Next</b> <i class="fa fa-arrow-right"></i></a>

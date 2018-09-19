@@ -1,0 +1,11 @@
+<tr id="<%= dom_id(setting, 'row')%>">
+  <td class="text-center"><%=setting.id %></td>
+  <td title="<%= setting.description %>"><%= setting.name %></td>
+  <td><%= truncate(setting.value, length: 60) %></td>
+  <td class="text-center actions">
+    <div class="btn-group btn-group-custom">
+      <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_setting_path(setting),  { class: 'btn btn-xs btn-primary', remote: true, title: 'Edit' } %>
+      <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, setting, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-danger' %>
+    </div>
+  </td>
+</tr>

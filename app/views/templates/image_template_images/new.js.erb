@@ -1,0 +1,3 @@
+<% image_block = render partial: 'templates/image_templates/image_template_images',
+	locals: { image_form: ActionView::Helpers::FormBuilder.new( "templates_image_template[images_attributes][#{Time.now.to_f.to_s.gsub('.','')}]", Templates::ImageTemplateImage.new, self, {}, proc {}) }%>
+$('#image_template_images tbody').append('<%= escape_javascript(image_block) %>');

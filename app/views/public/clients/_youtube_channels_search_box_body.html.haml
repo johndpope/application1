@@ -1,0 +1,6 @@
+.form-group
+  .row
+    .col-md-2
+      = sf.label :channel_type
+      - options = YoutubeChannel::CHANNEL_TYPES.collect{|k,v|[t("youtube_channel.channel_types.#{k.to_s}"), v]}
+      = sf.select :channel_type_eq, options_for_select(options, search.channel_type_eq), {include_blank: true}, class: "form-control"

@@ -1,0 +1,126 @@
+.modal.fade{id: dom_id(item.becomes(Artifacts::Audio), 'modal'), class: "#{item.class.to_s.underscore.gsub('/','_')}_modal"}
+  .modal-dialog.modal-lg
+    .modal-content
+      = form_for item,
+      url: {controller: params[:controller], action: (item.new_record? ? 'create' : 'update')},
+      authenticity_token: true, data: {remote: true}, :multipart => true do |f|
+        .modal-header
+          %button.close{ type: 'button', data: { dismiss: 'modal' } }
+            %span &times;
+          %h4= "Update audio #{item.id}"
+        .modal-body
+          %div{role: "tabpanel"}
+            %ul{class: "nav nav-tabs", role:"tablist"}
+              %li{role: "presentation", class: "active"}
+                %a{href: "#info-tab", aria: {controls: "info-tab"}, role: "tab", data: {toggle: "tab"}} Info
+              %li{role: "presentation"}
+                %a{href: "#screenshots-tab", aria: {controls: "screenshots-tab"}, role: "tab", data: {toggle: "tab"}} Screenshots
+
+            %div{class: "tab-content"}
+              %div{role: "tabpanel", class: "tab-pane active", id: "info-tab"}
+                .row
+                  .col-md-4
+                    .form-group
+                      = f.label :title
+                      = f.text_field :title, class: "form-control"
+                  .col-md-4
+                    .form-group
+                      = f.label :client_id
+                      - clients = Client.order(:name)
+                      = f.select :client_id, options_from_collection_for_select(clients, :id, :name, f.object.client_id), {include_blank: true}, class: "form-control"
+                  .col-md-4
+                    .form-group
+                      = f.label :sound_type
+                      = f.select :sound_type, options_for_select(Artifacts::Audio::SOUND_TYPE.collect{|k,v| [k.to_s.humanize,v]}, f.object.sound_type.try(:value)), {include_blank: true}, class: "form-control"
+                .row
+                  .col-md-4
+                    .form-group
+                      = f.label :attribution_required
+                      = f.select :attribution_required, options_for_select(Artifacts::Audio::ATTRIBUTION.collect{|k,v| [k.to_s.humanize,v]}, f.object.attribution_required.try(:value)), {include_blank: true}, class: 'form-control'
+                  .col-md-4
+                    .form-group
+                      = f.label :mood
+                      = f.select :mood, options_for_select(Artifacts::Audio::MOOD, f.object.mood.try(:value)), {include_blank: true}, class: 'form-control'
+                  .col-md-4
+                    .form-group
+                      = f.label :instrument
+                      = f.select :instrument, options_for_select(Artifacts::Audio::INSTRUMENT, f.object.instrument.try(:value)), {include_blank: true}, class: 'form-control'
+                .row
+                  .col-md-12
+                    .form-group
+                      = f.label :genres
+                      = f.select :genres, options_for_select(Genre.all.collect{|k| [k.name,k.id]}), {include_blank: true}, data: {collection: f.object.genre_ids}, class: 'form-control', multiple: "multiple"
+                .row
+                  .col-md-12
+                    .form-group
+                      = f.label nil, "Tags"
+                      = f.text_field :tag_list, class: "form-control"
+                .row
+                  .col-md-4
+                    .form-group
+                      = f.label nil, "Artist"
+                      = f.select :artifacts_artist_id, options_for_select(Artifacts::Artist.all.collect{|k| [k.name, k.id]}, f.object.artifacts_artist_id), {include_blank: true}, class: 'form-control'
+                  .col-md-4
+                    .form-group
+                      = f.label :source
+                      = f.url_field :source, class: "form-control", id: "audios_source"
+                  .col-md-4
+                    .form-group
+                      = f.label :license_type
+                      = f.select :license_type, options_for_select(Artifacts::Audio::LICENSES, f.object.license_type), {include_blank: true}, class: 'form-control'
+                .row
+                  .col-md-4
+                    .form-group
+                      = f.label :is_approved
+                      = f.check_box :is_approved
+                .row
+                  .col-md-4
+                    .form-group{class: "control-box"}
+                      = f.label :has_voice, "Has Voice", class: 'control-label'
+                      - options = [[I18n.t('yes'), 'true'], [I18n.t('no'), 'false']]
+                      = f.select :has_voice, options, {include_blank: true}, class: "form-control select2"
+
+                .row
+                  .col-md-12
+                    .form-group
+                      = f.label :description
+                      = f.text_area :description, class: 'form-control', rows: 3, placeholder: 'Enter description for audio'
+                %hr
+                .row
+                  .col-md-6
+                    .form-group
+                      = label_tag nil, 'Audio', class: 'control-label'
+                      - unless f.object.file.blank?
+                        %div= audio_tag f.object.file.url, controls: true, autobuffer: false, style: "width: 400px;"
+                  .col-md-6
+                    = label_tag nil, 'Uploaded at', class: 'control-label'
+                    %div= local_time(f.object.file_updated_at, format: '%m/%d/%y %I:%M %p', title: f.object.file_updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))
+              %div{role: "tabpanel", class: "tab-pane", id: "screenshots-tab"}
+                .row
+                  - if f.object.screenshots.to_a.empty?
+                    .col-md-12
+                      .alert.alert-info No items available
+                  - f.object.screenshots.sort.to_a.reverse.each_with_index do |screenshot, index|
+                    .col-lg-3.img-screenshot
+                      = link_to (image_tag URI::escape(screenshot.image.url(:thumb), '[]'), { class: "img-thumbnail livepreview #{'left-livepreview' if !(index % 4 == 0 || index % 4 == 1)}", data: { src: screenshot.image.url(:original) } }), URI::escape(screenshot.image.url(:original), '[]'), { target: '_blank' }
+                      %p
+                        = local_time(screenshot.created_at, format: '%m/%d/%y %I:%M %p', title: screenshot.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))
+        .modal-footer
+          %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}}= t(:close)
+          = f.submit (item.new_record? ? t(:create) : t(:update)),
+          class: 'btn btn-primary',
+          data: {disable_with: (item.new_record? ? t(:creating) : t(:updating))}
+
+:javascript
+  $('.livepreview.left-livepreview').livePreview({
+    position: 'left'
+  });
+
+  $('.livepreview').livePreview();
+
+  $(function(){
+    $('select').select2({
+      allowClear: true,
+      placeholder: "Choose ..."
+    })
+  })

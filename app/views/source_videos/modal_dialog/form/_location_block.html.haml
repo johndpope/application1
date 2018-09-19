@@ -1,0 +1,23 @@
+.row
+	- if @location_json
+		= hidden_field_tag '', @location_json.to_json, id: 'location_json'
+	.col-md-3
+		.form-group
+			= label_tag 'Country'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.country', :default => "")})
+			= f.hidden_field('country_id', id: 'country_id', class: "form-control")
+	.col-md-3
+		.form-group
+			= label_tag 'State'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.state', :default => "")})
+			= f.hidden_field('region1_id', id: 'region1_id', class: "form-control")
+	.col-md-3
+		.form-group
+			= label_tag 'County'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.county', :default => "")})
+			= f.hidden_field('region2_id', id: 'region2_id', class: "form-control")
+	.col-md-3
+		.form-group
+			= label_tag 'Locality'
+			= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.locality', :default => "")})
+			= f.hidden_field('locality_id', id: 'locality_id', class: "form-control")

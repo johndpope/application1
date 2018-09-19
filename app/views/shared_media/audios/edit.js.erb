@@ -1,0 +1,14 @@
+<%
+  modal = render partial: 'form', locals: {item: @audio}
+  modal_dom_id = dom_id(@audio.becomes(Social::Audio), 'modal')
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove();
+})
+
+$('#social_audio_tag_list').tagsinput({
+  tagClass: "label label-primary",
+  placeholder: "Enter tags..."
+});

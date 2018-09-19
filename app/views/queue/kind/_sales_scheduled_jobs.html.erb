@@ -1,0 +1,46 @@
+<% if File.exists?(Rails.root.join('app', 'views', 'queue', 'kind', "_#{params[:name]}_scheduled_jobs_filters.html.erb")) && %w(index scheduled_jobs).include?(params[:action]) %>
+  <div class="row">
+    <div class="col-md-12">
+      <%= render partial: "queue/kind/#{params[:name]}_scheduled_jobs_filters" %>
+    </div>
+  </div>
+<% end %>
+<div class="row">
+  <div class="col-md-5">
+    <% if %w(index scheduled_jobs).include?(params[:action]) %>
+      <%= render partial: "queue/paginate", locals: { jobs: jobs, paginate_class: "scheduled_jobs_paginate" } %>
+    <% end %>
+  </div>
+  <div class="col-md-7">
+    <div class="form-group">
+      <label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+      <span id="scheduled_jobs_total_serach_results" class="badge bg-blue"><%= %w(index scheduled_jobs).include?(params[:action]) ? jobs.total_count : jobs.size %></span>
+    </div>
+  </div>
+</div>
+<table id="scheduled_jobs_table" class="table table-striped dataTable">
+	<thead>
+		<tr>
+			<th style="width: 70px;">Job ID</th>
+      <th style="width: 70px;">Dealer ID</th>
+      <th>Dealer name</th>
+      <th>Brand</th>
+      <th>City</th>
+      <th>State</th>
+      <th style="width: 150px;" class="text-center">Status</th>
+      <th style="width: 100px;" class="text-center">Assigned to</th>
+      <th style="width: 85px;" class="text-center">Scheduled at</th>
+			<th style="width: 85px;" class="text-center">Updated at</th>
+      <th style="width: 85px;" class="text-center" title="Added in queue at">Added at</th>
+			<th style="width: 85px;" class="text-center">Running time</th>
+      <th style="width: 85px;" class="text-center">Call duration</th>
+      <% if params[:action] == 'index' %>
+        <th style="width: 150px;" class="text-center">Actions</th>
+      <% end %>
+		</tr>
+	</thead>
+  <%= render partial: "queue/scheduled_jobs_tbody", locals: { jobs: jobs } %>
+</table>
+<% if %w(index scheduled_jobs).include?(params[:action]) %>
+  <%= render partial: "queue/paginate", locals: { jobs: jobs, paginate_class: "scheduled_jobs_paginate" } %>
+<% end %>

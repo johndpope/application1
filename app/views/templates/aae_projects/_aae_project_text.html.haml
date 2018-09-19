@@ -1,0 +1,32 @@
+- is_valid = (aaep_form.object.name_presents == true || aaep_form.object.name_presents.nil?) && (aaep_form.object.value_presents == true || aaep_form.object.value_presents.nil?)
+- tr_class = is_valid ? '' : 'danger'
+%tr{id: dom_id(aaep_form.object, 'text_row'), class: tr_class}
+  %td
+    = aaep_form.object.id
+    = aaep_form.hidden_field :id
+  %td= aaep_form.text_field :name, class: "form-control"
+  %td= aaep_form.text_area :value, class: "form-control", rows: 1
+  %td.text-center{class: "is_static"}= aaep_form.check_box :is_static
+  %td
+    - text_type_options = grouped_options_for_select(@project_text_types, selected_key = aaep_form.object.text_type.try(:value))
+    = aaep_form.select :text_type, text_type_options, {include_blank: true}, {class: "form-control"}
+  - %w(name_presents value_presents).each do |f|
+    %td.text-center
+      - is_valid = aaep_form.object.send(f).nil? || aaep_form.object.send(f) == true
+      - prefix = is_valid ? 'success' : 'danger'
+      - text = is_valid ? t('yes') : t('no')
+      %span.label{class: ('label-' + prefix)}= text
+  %td
+    - if aaep_form.object.new_record?
+      = link_to "javascript:", class: "btn-danger btn btn-sm btn-remove-new-text" do
+        = fa_icon 'trash'
+        Remove
+    - elsif
+      - url = templates_aae_project_text_path(aaep_form.object, authenticity_token: form_authenticity_token)
+      = link_to url,
+        method: :delete,
+        data: { confirm: 'Are you sure?', remote: true, disable_with: t('removing') },
+        title: 'Delete',
+        class: 'btn btn-danger btn-sm btn-remove-existing-text' do
+        = fa_icon 'trash'
+        Remove

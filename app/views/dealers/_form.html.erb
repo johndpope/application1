@@ -1,0 +1,136 @@
+<% similar_dealers = dealer.new_record? ? [] : Dealer.get_similar_dealers(dealer, false) %>
+<div class="modal modal-wide fade" id="<%= dom_id(dealer, 'modal') %>" style="z-index: 9999 !important;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= nested_form_for dealer, url: {controller: params[:controller], action: (dealer.new_record? ? 'create' : 'update'), queue: params[:queue]}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <h4>
+            <% if dealer.new_record? %>
+              New Dealer
+            <% else %>
+              Dealer #<%= dealer.id %>
+            <% end %>
+          </h4>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px;">
+          <div class="nav-tabs client-tabs">
+            <ul class="nav nav-tabs">
+              <li class="tab-url active"><a href="#info" data-toggle="tab" aria-expanded="true"><b>INFO</b></a></li>
+              <li id="duplicates_li" class="tab-url blink" style="<%= 'display: none;' if !similar_dealers.present? %>"><a href="#duplicates" data-toggle="tab" aria-expanded="false" onclick="$('#duplicates_li').removeClass('blink');"><b>POSSIBLE DUPLICATES</b>&nbsp;&nbsp;<span class="badge bg-orange"><%= similar_dealers.size %></span></a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="info">
+                <input id="brand_list" type="hidden" value="<%= Dealer.select(:brand_id).distinct.pluck(:brand_id).sort.join('<sep/>')%>"/>
+                <%= f.hidden_field :id %>
+                <input id="brands_list" type="hidden" value="<%= Dealer.select(:brand_id).distinct.pluck(:brand_id).uniq.sort.join('<sep/>') %>" />
+                <div class="row">
+                  <% %w(brand_id other_brands name target_phone phone1 phone2 phone3 permalease_phone fax email website facebook_url twitter_url google_plus_url youtube_url linkedin_url blog_url yellow_pages_url license_number zipcode address_line1 address_line2 city state country).each do |e| %>
+                    <div class="form-group col-md-6 <%= 'has-error' if dealer.errors[:"#{e}"].present? %>" data-content="<%= dealer.errors[:"#{e}"].try(:join, ',') %>">
+                      <%= f.label :"#{e}", class: 'control-label' %>
+                      <%= f.text_field :"#{e}", class: "form-control #{'phone' if %w(target_phone phone1 phone2 phone3 permalease_phone fax).include?(e)}", placeholder: "#{e.titleize}" %>
+                    </div>
+                  <% end %>
+                </div>
+                <% if params[:queue] != 'true' %>
+                  <div class="form-group">
+                    <%= f.label :notes, class: 'control-label' %>
+                    <%= f.text_area :notes, class: "form-control", placeholder: "Notes", rows: 2 %>
+                  </div>
+                <% end %>
+                <p class="help-block">Please select the dealer's service areas (city, town, borough)</p>
+                <div class="row">
+                  <div class="col-md-3">
+                    <% default_country = Geobase::Country.find_by_code("US") %>
+                    <%= hidden_field_tag 'country_default', nil, data: {id: default_country.try(:id), name: default_country.try(:name)} %>
+                    <%= label_tag :country, "Country", class: "control-label" %>
+                    <%= text_field_tag :country, nil %>
+                    <%= hidden_field_tag :country_name, default_country.try(:name) %>
+                  </div>
+                  <div class="col-md-3">
+                    <%= label_tag :region1, "State", class: "control-label" %>
+                    <%= text_field_tag :region1, nil %>
+                  </div>
+                  <div class="col-md-6">
+                    <%= label_tag :city, "Locality", class: "control-label" %>
+                    <%= text_field_tag :city, nil %>
+                  </div>
+                </div>
+                <%
+                  cities = dealer.cities.present? ? Geobase::Locality.joins("LEFT OUTER JOIN geobase_regions ON geobase_regions.id = geobase_localities.primary_region_id").where("geobase_localities.id in (#{dealer.cities.to_s.gsub(/(\[|\])|"/, '')})").order("geobase_regions.name ASC, geobase_localities.name ASC") : []
+                  cities_json = cities.map { |e| {id: e.id, text: "#{e.name}, #{e.try(:primary_region).try(:code).try(:split, '<sep/>').try(:first).to_s.gsub('US-', '')}"} }
+                %>
+                <div class="row cities-div">
+                  <div class="col-md-12">
+                    <label class="control-label">Service areas</label>
+                    <span id="selected_localities_count" class="badge"><%= cities_json.size %></span>
+                  </div>
+                  <ul id="cities_list">
+                    <% cities_json.each do |city_json| %>
+                      <li class="col-md-3" data-id="<%= city_json[:id] %>">
+                        <a href="javascript://" class="btn btn-default btn-xs delete-city-link" title="Delete">
+                          <i class="fa fa-times"></i>
+                        </a>
+                        <%= city_json[:text] %>
+                      </li>
+                    <% end %>
+                  </ul>
+                  <p id="localities_missing_text" class="col-md-12" style="display: none; color: #f39c12 !important; font-variant-caps: small-caps;">There are no localities selected</p>
+                </div>
+                <br/>
+                <%= f.hidden_field :cities %>
+                <%= render partial: 'descriptions', locals: {dealer: dealer, f: f} %>
+              </div>
+              <div class="tab-pane" id="duplicates">
+                <div id="carousel-example-generic" class="carousel slide">
+                  <ol class="carousel-indicators">
+                    <% similar_dealers.each_with_index do |duplicate_dealer, index| %>
+                      <li data-target="#carousel-example-generic" data-slide-to="<%= index %>" class="<%= 'active' if index == 0 %>"></li>
+                    <% end %>
+                  </ol>
+                  <div class="carousel-inner">
+                    <% similar_dealers.each_with_index do |duplicate_dealer, index| %>
+                      <div id="duplicate_dealer_<%=duplicate_dealer.id %>" class="item <%= 'active' if index == 0 %>" data-id="<%=duplicate_dealer.id %>" style="padding-left: 60px; padding-right: 60px;">
+                        <div class="col-md-6">
+                          <div class="text-center" style="height: 50px;">
+                            <h4><b>Current dealer</b></h4>
+                          </div>
+                          <%= render partial: "dealer_compare", locals: {dealer: dealer, target: duplicate_dealer} %>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="text-center" style="height: 50px;">
+                            <h4><b>Possible duplicate</b></h4>
+                          </div>
+                          <%= render partial: "dealer_compare", locals: {dealer: duplicate_dealer, target: dealer} %>
+                          <div class="text-center">
+                            <span style="font-size: large;"><b>IS DUPLICATE?</b></span>
+                            <%= link_to "<b>YES</b>".html_safe, add_similar_dealer_path(dealer, dealer_id: duplicate_dealer.id, is_duplicate: true), remote: true, data: {confirm: "Are you sure?"}, class: "btn btn-success is-dupliate" %>
+                            <%= link_to "<b>NO</b>".html_safe, add_similar_dealer_path(dealer, dealer_id: duplicate_dealer.id, is_duplicate: false), remote: true, data: {confirm: "Are you sure?"}, class: "btn btn-danger" %>
+                          </div>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                  <a id="carousel_left" class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                    <span class="fa fa-angle-left"></span>
+                  </a>
+                  <a id="carousel_right" class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                    <span class="fa fa-angle-right"></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (dealer.new_record? ? t(:create) : t(:update)), class: "submit-dealer btn #{dealer.errors.present? ? 'btn-danger' : 'btn-primary'}", data: {disable_with: (dealer.new_record? ? t(:creating) : t(:updating)) } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<%= javascript_include_tag 'dealers_form' %>
+<%= stylesheet_link_tag 'dealers_form' %>

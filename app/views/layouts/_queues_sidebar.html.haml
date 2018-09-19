@@ -1,0 +1,27 @@
+%li.treeview{ :class => ('menu-open active' if params[:controller] == 'queue') }
+  = link_to '#' do
+    = fa_icon 'tty'
+    %span Sales
+    %i{class: "fa pull-right fa-angle-left"}
+  %ul.treeview-menu
+    %li.treeview{:class => ('active' if params[:controller] == 'queue' && params[:name] == 'sales' && %w(index edit).include?(params[:action]))}
+      = link_to index_queue_path(name: 'sales') do
+        = fa_icon 'play'
+        %span Start
+    %li.treeview{:class => ('active' if params[:controller] == 'queue' && params[:name] == 'sales' && params[:action] == 'report_by_admin_users')}
+      = link_to report_by_admin_users_queue_path(name: 'sales') do
+        = fa_icon 'list-alt'
+        %span Report by admin users
+  = link_to '#' do
+    = fa_icon 'building'
+    %span Dealer check
+    %i{class: "fa pull-right fa-angle-left"}
+  %ul.treeview-menu
+    %li.treeview{:class => ('active' if params[:controller] == 'queue' && params[:name] == 'dealer_check' && %w(index edit).include?(params[:action]))}
+      = link_to index_queue_path(name: 'dealer_check') do
+        = fa_icon 'play'
+        %span Start
+    %li.treeview{:class => ('active' if params[:controller] == 'queue' && params[:name] == 'dealer_check' && params[:action] == 'report_by_admin_users')}
+      = link_to report_by_admin_users_queue_path(name: 'dealer_check') do
+        = fa_icon 'list-alt'
+        %span Report by admin users

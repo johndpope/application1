@@ -1,0 +1,80 @@
+/*
+*= require fancybox
+*/
+
+.fancybox-skin {
+  padding: 5px 0px 0px 5px !important;
+}
+
+.fancybox-inner {
+  overflow: auto; width: 500px !important; height: 45px !important; padding-top: 5px;
+}
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  padding: 4px !important;
+  vertical-align: middle !important;
+}
+
+.actions{
+  a {
+    margin: 2px;
+  }
+}
+
+.nav-tabs a {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.filter-label {
+    margin-top: 2px;
+    font-weight: bold;
+}
+
+form {
+  display: block;
+  margin-bottom: 30px;
+
+  .form-control input { height: 24px; }
+
+  .popover.bottom {
+    padding: 0;
+    border-color: #f56954;
+
+    .arrow {
+      border-bottom-color: #f56954 !important;
+
+      &::after { border-bottom-color: #f2dede; }
+    }
+
+    .popover-content {
+      background-color: #f2dede;
+      color: #a94442;
+      border-radius: 6px;
+    }
+  }
+}
+th, td {
+  font-size: 13px;
+}
+.overflow {
+  word-wrap: break-word;
+}
+
+.box-title-center {
+  text-align: center;
+  display: block !important;
+}
+
+span.subtitle {
+  text-align: center;
+  display: block;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.date-range-filter > input.form-control{
+    width: 150px;
+    display: inline-block;
+    margin-bottom: 5px;
+}

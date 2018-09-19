@@ -1,0 +1,31 @@
+.form-group
+	.row
+		- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false'] ]
+		.col-md-2
+			= sf.label :project_type, t('templates.aae_project.project_type')
+			- video_types = Templates::VIDEO_CHUNK_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- transition_types = Templates::TRANSITION_TYPES.collect{|k,v| [I18n.t("templates.video_types.#{k.to_s}"), v]}
+			- grouped_options = {'Videos' => video_types,'Transitions' => transition_types}
+			= sf.select :project_type_eq, grouped_options_for_select(grouped_options, @search.project_type_eq), {include_blank: '', selected: @search.project_type_eq}, {class: 'form-control'}
+		.col-md-1
+			= sf.label :id, t('templates.aae_project.id')
+			= sf.search_field :id_eq, class: 'form-control'
+		.col-md-9
+			= sf.label :title, t('templates.aae_project.title')
+			= sf.search_field :title_cont, class: 'form-control'
+	.row
+		.col-md-2
+			= sf.label :is_approved_eq, t('templates.aae_project.is_approved')
+			= sf.select :is_approved_eq, options_for_select(yes_no_options, @search.is_approved_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :is_active_eq, t('templates.aae_project.is_active')
+			= sf.select :is_active_eq, options_for_select(yes_no_options, @search.is_active_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :content_validation_eq, t('templates.aae_project.content_validation')
+			= sf.select :content_validation_eq, options_for_select(yes_no_options, @search.content_validation_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :is_special_eq, t('templates.aae_project.is_special')
+			= sf.select :is_special_eq, options_for_select(yes_no_options, @search.is_special_eq), {include_blank: true}, class: 'form-control'
+		.col-md-2
+			= sf.label :notes_present, t('templates.aae_project.has_notes')
+			= sf.select :notes_present, options_for_select(yes_no_options, @search.notes_present), {include_blank: true}, class: 'form-control'

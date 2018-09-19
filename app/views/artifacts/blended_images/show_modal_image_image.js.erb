@@ -1,0 +1,8 @@
+<%
+  modal = render partial: 'show_modal_image_image', locals: {dynamic_image_images: @dynamic_image_images}
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#modal_image_image").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})

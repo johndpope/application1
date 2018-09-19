@@ -1,0 +1,53 @@
+- header 'Media Dashboard'
+- breadcrumb :artifacts_dashboard, theme: "bootstrap"
+
+.box.box-info
+  .box-header.with-border
+    .col-md-3.box-title By tags
+    .col-md-3.box-title By state
+    .col-md-3.box-title By county
+    .col-md-3.box-title By city
+  .box-body
+    .row#recap
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Social::Image.where(:user_id => current_user.id).distribution_by_tag.first(32).each do |k, v|
+            %li
+              %a{ href: shared_media_images_path(ransack: { tags_name_cont: k }) }
+                = fa_icon 'tag'
+                = k
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Social::Image.where(:user_id => current_user.id).distribution_by_region1.first(32).each do |k, v|
+            %li
+              - region1 = k[0][0]
+              - country = k[1][0]
+              %a{ href: shared_media_images_path(ransack: { region1_eq: region1, country_eq: country }) }
+                = "#{k[0][1]},#{k[1][1]}"
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Social::Image.where(:user_id => current_user.id).distribution_by_region2.first(32).each do |k, v|
+            %li
+              - region2 = k[0][0]
+              - region1 = k[1][0]
+              %a{ href: shared_media_images_path(ransack: { region2_cont: region2, region1_cont: region1 }) }
+                = "#{k[0][1]},#{k[1][1]}"
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+      .col-md-3
+        %ul.nav.nav-pills.nav-stacked
+          - Social::Image.where(:user_id => current_user.id).distribution_by_city.first(32).each do |k, v|
+            %li
+              - city = k[0][0]
+              - region1 = k[1][0]
+              %a{ href: shared_media_images_path(ransack: { city_cont: city, region1_cont: region1 }) }
+                = "#{k[0][1]},#{k[1][1]}"
+                %span.pull-right.label.label-default= v.to_s(:delimited)
+  .box-footer
+
+.row
+  .col-md-6
+    #country
+  .col-md-6
+    #region

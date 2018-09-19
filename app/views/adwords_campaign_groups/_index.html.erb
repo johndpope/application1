@@ -1,0 +1,69 @@
+<div id="adwords_campaign_groups_list" class="content-block">
+	<% if @adwords_campaign.id.present? %>
+		<div class="row">
+			<div class="col-md-5">
+				<%= link_to 'New Adwords Campaign Group', new_email_account_adwords_campaign_adwords_campaign_group_path(@email_account, @adwords_campaign), class: 'btn btn-sm btn-primary' %>
+			</div>
+			<div class="col-md-7">
+				<div class="form-group">
+					<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+					<span class="badge bg-blue"><%= @adwords_campaign_groups.size %></span>
+				</div>
+			</div>
+		</div>
+	<% end %>
+	<% unless @adwords_campaign_groups.to_a.empty? %>
+		<table id="@adwords_campaign_groups_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th>Name</th>
+					<th>Video Ad URL</th>
+					<th>Video Ad Format</th>
+					<th class="text-center">Ready</th>
+					<th class="text-center">Linked</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @adwords_campaign_groups.each do |adwords_campaign_group| %>
+					<tr id="tr_ac_<%= adwords_campaign_group.id %>">
+						<td class="text-center"><%= adwords_campaign_group.id %></td>
+						<td><%= adwords_campaign_group.name %></td>
+						<td><%= link_to truncate(adwords_campaign_group.video_ad_url_normalized, length: 50), adwords_campaign_group.video_ad_url_normalized, title: adwords_campaign_group.video_ad_url_normalized, target: '_blank' %></td>
+						<td><%= adwords_campaign_group.video_ad_format %></td>
+						<td class="text-center">
+							<% if adwords_campaign_group.ready %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<% if adwords_campaign_group.linked %>
+								<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_email_account_adwords_campaign_adwords_campaign_group_path(@email_account, @adwords_campaign, adwords_campaign_group), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, email_account_adwords_campaign_adwords_campaign_group_path(@email_account, @adwords_campaign,  adwords_campaign_group), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @adwords_campaign_groups.to_a.empty? %>
+		<div class="row">
+			<div class="col-md-12">
+				<br>
+				<div class="alert alert-info">No items available</div>
+			</div>
+		</div>
+	<% end %>
+</div>

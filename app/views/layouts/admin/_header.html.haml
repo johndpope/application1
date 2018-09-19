@@ -1,0 +1,25 @@
+%header.main-header
+  = link_to admin_sandbox_root_path, class: "logo" do
+    %span.logo-mini
+      %strong= t('admin.root_abbr')
+    %span.logo-lg
+      %strong= t('admin.root_name')
+  %nav.navbar.navbar-static-top{role: "navigation"}
+    %a.sidebar-toggle{href: "javascript:", data:{toggle: "offcanvas"}, role: "button"}
+      %span.sr-only Toggle Navigation
+    .navbar-custom-menu
+      %ul.nav.navbar-nav
+        %li
+          %a{ href: 'javascript:', id: 'scroll-up', title: 'Scroll up' }
+            = fa_icon 'arrow-up'
+        %li
+          %a{ href: 'javascript:', id: 'scroll-down', title: 'Scroll down' }
+            = fa_icon 'arrow-down'
+        - if admin_user_signed_in?
+          %li
+            = link_to destroy_admin_user_session_url do
+              %i.glyphicon.glyphicon-log-out
+              Sign Out
+      = yield :top_nav
+    .navbar-custom-menu
+      .nav.navbar-nav

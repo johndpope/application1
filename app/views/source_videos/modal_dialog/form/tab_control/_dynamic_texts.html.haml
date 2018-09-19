@@ -1,0 +1,39 @@
+- grouped_dynamic_texts = @source_video.templates_aae_project_dynamic_texts.group_by(&:text_type)
+#source_video_dynamic_texts
+  #dynamic_texts_accordion.panel-group
+    - @dynamic_text_settings.each do |project_type, dynamic_texts|
+      - dynamic_texts.each do |text_type, settings|
+        .panel.panel-default
+          .panel-heading
+            %h4.panel-title
+              = link_to "#panel_#{text_type}", data:{toggle: "collapse", parent: "#dynamic_texts_accordion"}, "area-expanded" => "true" do
+                .row
+                  .col-md-11
+                    %strong= t("templates.aae_project_text.types.#{text_type}")
+                  .col-md-1
+                    %span{class: "pull-right label label-#{grouped_dynamic_texts[text_type.to_s].to_a.size == 0 ? 'danger' : 'primary'}"}= grouped_dynamic_texts[text_type.to_s].to_a.size
+          .panel-collapse{id: "panel_#{text_type}",
+          class: "collapse", "aria-labelledby" => "templates_aae_project_dynamic_texts",
+          data:{character_limit: settings[:limit], project_type: project_type, text_type: text_type}}
+            .panel-body
+              .row
+                .col-md-3
+                  %label Character Limit:
+                .col-md-9= (settings[:limit])
+              .row{style: 'margin-bottom: 10px'}
+                .col-md-3
+                  %label Min number of text strings:
+                .col-md-9= (settings[:min_items_count] || 1)
+              = f.fields_for :templates_aae_project_dynamic_texts, grouped_dynamic_texts[text_type.to_s].to_a do |builder|
+                .form-group.dynamic-text-box
+                  = builder.hidden_field :project_type, data:{type: "project_type"}
+                  = builder.hidden_field :text_type, data:{type: "text_type"}
+                  = builder.hidden_field :id
+                  .input-group
+                    = builder.text_field :value, class: "form-control", placeholder: "Enter text (character limit: #{settings[:limit]})", maxlength: settings[:limit]
+                    %span.input-group-btn
+                      = builder.link_to_remove '<i class="fa fa-trash-o"></i>'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-danger'
+                  .help-block
+                    Characters Entered:
+                    %strong.character-limit= builder.object.value.to_s.size
+              = f.link_to_add '<i class="fa fa-plus"></i> Add'.html_safe, :templates_aae_project_dynamic_texts, class: "btn btn-sm btn-primary"

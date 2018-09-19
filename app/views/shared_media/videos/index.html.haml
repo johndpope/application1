@@ -1,0 +1,30 @@
+- title 'Video Storage'
+- header 'Video Storage'
+- content_for(:stylesheets) do
+  = stylesheet_link_tag 'progress-bar'
+  = stylesheet_link_tag 'fancybox'
+- content_for(:javascripts) do
+  = javascript_include_tag 'jquery-live-preview'
+  = javascript_include_tag 'fancybox'
+
+= form_tag shared_media_videos_path, method: 'get', id: 'video_search_form' do
+  .box.box-primary
+    .box-body
+      .input-group.input-group-lg
+        = text_field_tag :q, params[:q], :class => 'form-control input-lg'
+        .input-group-btn#api-switch
+          %button.btn.btn-primary.video-search-btn#video-search-btn{ type: 'button' }
+            Search
+            = fa_icon 'search'
+          %button.btn.btn-default.video-clear-btn#video-clear-btn{ type: 'button' }
+            Clear
+            = fa_icon 'eraser'
+  = render partial: 'index_search_filter'
+- if @total_count.present? && @total_count > 0
+  - if !@videos.any?
+    .row
+      .col-lg-12.col-md-12
+        .alert.alert-info There no some files
+  .row
+    .col-md-12
+      = render 'index_table', audios: @videos

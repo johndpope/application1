@@ -1,0 +1,157 @@
+<% title 'Clients' %>
+<% header 'Clients' %>
+<% breadcrumb :clients %>
+<% client_ids_has_subject_videos_for_render = Client.select(:id).joins(:rendering_settings).where("clients.is_active IS TRUE").where("video_workflow_client_has_subject_videos_for_render(clients.id) IS TRUE").order("client_rendering_settings.rendering_priority ASC, clients.name ASC").pluck(:id) %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+<div id="clients_list">
+	<div class="row">
+		<div class="col-md-5">
+      <div class="input-group">
+        <%= select_tag(:industry_package, options_from_collection_for_select(Industry.select("industries.*, count(industries.id) as cnt").joins("LEFT JOIN clients ON clients.industry_id = industries.id").where("clients.industry_id IS NOT NULL").group("industries.id").order("cnt desc"), :id, :display_name), { include_blank: true, class: 'form-control', placeholder: "Select from most popular industries", style: "width: 350px;" }) %>
+        <span class="input-group-btn pull-left">
+          <%= link_to 'New Client', new_client_path, class: 'btn btn-sm btn-warning', id: "new_client_button", style: "height: 28px;" %>
+        </span>
+      </div>
+    </div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+				<span class="badge bg-blue"><%= @clients.total_count %></span>
+			</div>
+		</div>
+	</div>
+	<% unless @clients.to_a.empty? %>
+		<table id="clients_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th class="text-center sort" style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th id="name-th" data-field="name" class="sort">Name</th>
+					<!-- <th id="email-th" data-field="email" class="sort">Email</th> -->
+					<th id="industry-th" data-field="industry" class="sort">Industry</th>
+					<!-- <th class="text-center sort" id="zipcode-th" data-field="zipcode">Zip Code</th> -->
+					<th id="locality-th" data-field="locality" class="sort">Locality</th>
+					<th id="region-th" data-field="region" class="sort">Region</th>
+					<th id="country-th" data-field="country" class="sort">Country</th>
+					<th style="width: 80px;" class="text-center">Public Profile</th>
+					<th style="width: 60px;" class="text-center">PDF Report</th>
+					<th style="width: 35px;" class="text-center sort" id="is_active-th" data-field="is_active">Active</th>
+          <th>Bot server assigned for email accounts</th>
+          <th style="width: 35px;" class="text-center">Rendering Priority</th>
+          <th style="width: 50px;" class="text-center">Has videos for render</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% @clients.each do |client| %>
+					<tr id="tr_cl_<%= client.id %>" style="<%= 'background-color: #afd4af !important;' if client_ids_has_subject_videos_for_render.first == client.id %>" title="<%= 'Current rendering client' if client_ids_has_subject_videos_for_render.first == client.id %>">
+            <td class="text-center" title="Details"><%= link_to client.id, 'javascript://', data: { legend_url: legend_client_path(client) } %></td>
+						<td><%= link_to client.name, edit_client_path(client), target: '_blank' %></td>
+						<!-- <td><%#= client.email %></td> -->
+						<td><%= link_to client.industry.nickname || client.industry.name, client.industry.source_url, target: '_blank' if client.industry.present? %></td>
+						<!-- <td class="text-center"><%#= client.zipcode %></td> -->
+						<td><%= client.locality %></td>
+						<td><%= client.region %></td>
+						<td><%= client.country %></td>
+						<td class="text-center"><%= link_to "link", public_client_dashboard_path(client.public_profile_uuid), target: "_BLANK"%></td>
+						<td class="text-center"><%= link_to "PDF", public_client_report_path(client.public_profile_uuid) + ".pdf", target: "_BLANK"%></td>
+						<td class="text-center">
+							<% if client.is_active %>
+								<%= link_to 'Y', { controller: 'clients', is_active: true, limit: params[:limit] }, class: 'btn btn-success btn-xs sort_link' %>
+							<% else %>
+								<%= link_to 'N', { controller: 'clients', is_active: false, limit: params[:limit] }, class: 'btn btn-danger btn-xs sort_link' %>
+							<% end %>
+						</td>
+            <% assign_bot_enabled = EmailAccount.where(client_id: client.id).present? %>
+            <td>
+              <% if assign_bot_enabled %>
+                <%= select_tag(:bot_server_id, options_from_collection_for_select(BotServer.where(human_emulation: true).order(:id), :id, :name, EmailAccount.where(client_id: client.id).order(id: :asc).first.try(:bot_server_id)), { include_blank: true, class: "form-control bot-server", data: {selected_value: EmailAccount.where(client_id: client.id).order(id: :asc).first.try(:bot_server_id).to_s}}) %>
+              <% end %>
+            </td>
+            <td class="text-center <%= 'blink' if client_ids_has_subject_videos_for_render.first == client.id %>">
+              <b><%= client.try(:rendering_settings).try(:rendering_priority) %></b>
+            </td>
+            <td class="text-center <%= 'blink' if client_ids_has_subject_videos_for_render.first == client.id %>">
+							<% if client_ids_has_subject_videos_for_render.include?(client.id) %>
+								<span class="label label-success">Y</span>
+							<% else %>
+								<span class="label label-default">N</span>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_client_path(client), { class: 'btn btn-xs btn-primary' } %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, client, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @clients.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">No items available</div>
+		</div>
+	<% else %>
+		<div><%= paginate @clients, theme: 'bootstrap' %></div>
+	<% end %>
+</div>
+
+<div class="modal modal-wide fade" id="client_legend" style="z-index: 999999;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :name, :email, :industry, :zipcode, :locality, :region, :country, :is_active, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		industry_id = params[:industry_id]
+		order_value = params[:order]
+		order_value = :created_at unless order_value
+	%>
+	<div id="search_params">
+		<%= hidden_field_tag :regions_url, regions_path %>
+		<%= form_tag({ controller: :clients, action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= select_tag(:id, options_from_collection_for_select(Client.select(:id).order(:id), :id, :id, params[:id]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Name:</div>
+      <%= select_tag(:name, options_from_collection_for_select(Client.select(:name).distinct.order(:name), :name, :name, params[:name]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Email:</div>
+			<%= select_tag(:email, options_from_collection_for_select(Client.select(:email).distinct.where("clients.email IS NOT NULL AND clients.email <> ''").order(:email), :email, :email, params[:email]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Industry:</div>
+      <%= hidden_field_tag :industry_id, params[:industry_id], class: 'ajax form-control', data: { source: industries_json_list_path } %>
+      <div class="filter-label">Zip Code:</div>
+			<%= select_tag(:zipcode, options_from_collection_for_select(Client.select(:zipcode).distinct.where("clients.zipcode IS NOT NULL AND clients.zipcode <> ''").order(:zipcode), :zipcode, :zipcode, params[:zipcode]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Locality:</div>
+			<%= select_tag(:locality, options_from_collection_for_select(Client.select(:locality).distinct.where("clients.locality IS NOT NULL AND clients.locality <> ''").order(:locality), :locality, :locality, params[:locality]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Region:</div>
+      <%= select_tag(:region, options_from_collection_for_select(Client.select(:region).distinct.where("clients.region IS NOT NULL AND clients.region <> ''").order(:region), :region, :region, params[:region]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Country:</div>
+      <%= select_tag(:country, options_from_collection_for_select(Client.select(:country).distinct.where("clients.country IS NOT NULL AND clients.country <> ''").order(:country), :country, :country, params[:country]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Active:</div>
+			<%= select_tag(:is_active, options_for_select([['YES', true], ['NO', false]], params[:is_active]), { include_blank: true, class: 'form-control' }) %>
+      <div class="filter-label">Visible:</div>
+			<%= select_tag(:visible, options_for_select([['YES', true], ['NO', false]], params[:visible]), { include_blank: false, class: 'form-control' }) %>
+      <div class="filter-label">Has assets:</div>
+      <%= select_tag(:has_assets, options_for_select([['YES', true]], params[:has_assets]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10 , 15, 20, 25, 30, 40, 50, 100, 250, 500 ], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

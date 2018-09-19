@@ -1,0 +1,73 @@
+<%= form_for @youtube_video_card, url: 	youtube_video_youtube_video_card_path(@youtube_video_card.youtube_video, @youtube_video_card), :html => { :multipart => true } do |f| %>
+	<%= f.hidden_field :youtube_video_id %>
+	<% if @youtube_video_card.errors.any? %>
+		<div id="error_explanation" class="alert alert-danger alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+			<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@youtube_video_card.errors.count, 'error') %> prohibited this youtube video card from being saved</h4>
+		</div>
+	<% end %>
+	<div class="form-group <%= 'has-error' if @youtube_video_card.errors[:card_type].present? %>" data-content="<%= @youtube_video_card.errors[:card_type].try(:join, ',') %>">
+		<%= f.label :type, class: 'control-label' %>
+		<%= f.select(:card_type, options_for_select(YoutubeVideoCard::TYPES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video_card.card_type.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select type' }) %>
+	</div>
+	<div id="card_image_div" class="form-group <%= 'has-error' if @youtube_video_card.errors[:card_image].present? %>" data-content="<%= @youtube_video_card.errors[:card_image].try(:join, ',') %>">
+		<%= f.label :card_image, class: 'control-label' %>
+		<% if @youtube_video_card.id && @youtube_video_card.card_image.present? %>
+			<%= link_to (image_tag URI::escape(@youtube_video_card.card_image.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(@youtube_video_card.card_image.url(:original), '[]'), { target: '_blank' } %>
+		<% end %>
+		<%= f.file_field :card_image %>
+	</div>
+	<div id="card_title_div" class="form-group <%= 'has-error' if @youtube_video_card.errors[:card_title].present? %>" data-content="<%= @youtube_video_card.errors[:card_title].try(:join, ',') %>">
+		<%= f.label :card_title, class: 'control-label' %>
+		<%= f.text_field :card_title, class: 'form-control', placeholder: 'Card title', maxlength: "#{YoutubeVideoCard::CARD_TITLE_LIMIT}" %>
+	</div>
+	<div class="form-group <%= 'has-error' if @youtube_video_card.errors[:url].present? %>" data-content="<%= @youtube_video_card.errors[:url].try(:join, ',') %>">
+		<%= f.label :url, class: 'control-label' %>
+		<%= f.text_field :url, class: 'form-control', placeholder: 'URL' %>
+	</div>
+	<div id="call_to_action_div" class="form-group <%= 'has-error' if @youtube_video_card.errors[:call_to_action].present? %>" data-content="<%= @youtube_video_card.errors[:call_to_action].try(:join, ',') %>">
+		<%= f.label :call_to_action, class: 'control-label' %>
+		<%= f.text_field :call_to_action, class: 'form-control', placeholder: 'Call to action', maxlength: "#{YoutubeVideoCard::CALL_TO_ACTION_LIMIT}" %>
+	</div>
+	<div id="teaser_text_div" class="form-group <%= 'has-error' if @youtube_video_card.errors[:teaser_text].present? %>" data-content="<%= @youtube_video_card.errors[:teaser_text].try(:join, ',') %>">
+		<%= f.label :teaser_text, class: 'control-label' %>
+		<%= f.text_field :teaser_text, class: 'form-control', placeholder: 'Teaser text', maxlength: "#{YoutubeVideoCard::TEASER_TEXT_LIMIT}" %>
+	</div>
+	<div id="custom_message_div" class="form-group <%= 'has-error' if @youtube_video_card.errors[:custom_message].present? %>" data-content="<%= @youtube_video_card.errors[:custom_message].try(:join, ',') %>">
+		<%= f.label :custom_message, class: 'control-label' %>
+		<%= f.text_field :custom_message, class: 'form-control', placeholder: 'Custom message', maxlength: "#{YoutubeVideoCard::CUSTOM_MESSAGE_LIMIT}" %>
+	</div>
+  <div class="form-group">
+    <%= f.label :start_time, class: 'control-label' %>
+    <%= f.hidden_field :start_time, class: 'form-control' %>
+    <div>
+      <input id="start_time_hours" name="value" value=0 size=2 readonly/>
+      <span class="time-delimiter">:</span>
+      <input id="start_time_minutes" name="value" value=0  size=2 readonly/>
+      <span class="time-delimiter">:</span>
+      <input id="start_time_seconds" name="value" value=0 size=2 readonly/>
+    </div>
+  </div>
+  <div class="row">
+  	<div class="col-md-6">
+      <div class="row">
+    		<div class="form-group col-md-6">
+    			<div class="checkbox">
+    				<label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+    			</div>
+    		</div>
+    		<div class="form-group col-md-6">
+    			<div class="checkbox">
+    				<label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+    			</div>
+    		</div>
+      </div>
+  	</div>
+  	<div class="col-md-6">
+  		<div class="actions pull-right">
+  			<%= link_to 'Back', edit_youtube_video_path(@youtube_video_card.youtube_video_id, :anchor => "cards-tab"), class: 'btn btn-sm btn-primary' %>
+  			<%= f.submit :class => 'btn btn-sm btn-success', :id => 'youtube_video_card_submit' %>
+  		</div>
+  	</div>
+  </div>
+<% end %>

@@ -1,0 +1,9 @@
+<%
+  products_block = render partial: 'shared_media/images/products_for_client', locals: {products_for_client: @products_for_client}
+%>
+$('#products_for_client').html('<%= escape_javascript(products_block) %>');
+
+$('#products').select2({
+  placeholder: "Choose product for client",
+  allowClear: true
+})

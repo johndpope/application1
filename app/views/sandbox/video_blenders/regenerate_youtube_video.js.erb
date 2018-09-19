@@ -1,0 +1,25 @@
+$('.yt_video_description').text('<%= escape_javascript(@video_description) %>');
+$('p.short').text('<%= escape_javascript(@video_description).truncate(300) %>');
+$('p.long').text('<%= escape_javascript(@video_description) %>');
+
+<%
+  video_title_component = render partial: "sandbox/video_blenders/youtube_setup/video_setup/video_title_patterns_component", locals: {video_title_schema: @video_title_schema}
+%>
+
+$('.video_title_components').html('<%= escape_javascript(video_title_component) %>');
+$('.yt_video_title').text('<%=@video_title%>');
+<% unless @channel_icon.blank? %>
+  $('.channel_icon_img').attr('src','<%=@channel_icon.file.url%>');
+<% end %>
+
+<%
+  channel_name_component = render partial: "sandbox/video_blenders/youtube_setup/channel_setup/channel_name_component", locals: {channel_schema: @channel_schema}
+%>
+$('.channel_name_components').html('<%= escape_javascript(channel_name_component) %>');
+$('h3.channel_name').text('<%=@channel_name%>');
+
+<% unless @video_thumbnails.blank? %>
+  src = $('#video1_html5_api').attr('src');
+  $('body').find('#video2_html5_api').attr('src', src).attr('poster','<%=@video_thumbnails.first.file.url%>');
+  $('body').find('#video3_html5_api').attr('src', src).attr('poster','<%=@video_thumbnails.first.file.url%>');
+<% end %>

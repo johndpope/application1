@@ -1,0 +1,11 @@
+New blocked youtube channel!
+===============================================
+
+All bot servers were killed and disabled daily activity.
+Click here <% if @youtube_channel_id.present? %>
+  <%= Rails.configuration.routes_default_url_options[:host] + Rails.application.routes.url_helpers.youtube_channels_path(id: @youtube_channel_id) %>
+<% else %>
+  <%= Rails.configuration.routes_default_url_options[:host] + Rails.application.routes.url_helpers.youtube_channels_path(blocked: true, channel_type: 1, last_time: 24, field_name: 'updated_at', table_name: 'youtube_channels') %>
+<% end %> to review.
+
+Thanks!

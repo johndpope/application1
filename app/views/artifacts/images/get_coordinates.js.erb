@@ -1,0 +1,9 @@
+<%=
+  unless params["city"].blank?
+    zip_code = Geobase::Locality.find(params[:city]).zip_codes.first
+    lat = zip_code.try(:latitude) unless params[:city].blank?
+    lon = zip_code.try(:longitude) unless params[:city].blank?
+  end
+%>
+$('#lat').val("<%= lat.to_s %>");
+$('#lng').val("<%= lon.to_s %>");

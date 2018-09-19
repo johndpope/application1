@@ -1,0 +1,13 @@
+<% if(@tooltip.persisted?) %>
+  $('body').find("[data-row='<%=@tooltip.table_column%>']").attr("id","<%=@tooltip.id%>")
+  $('body').find("[data-row='<%=@tooltip.table_column%>'] td.id").text("<%=@tooltip.id%>");
+  $('body').find("[data-row='<%=@tooltip.table_column%>'] input[type=hidden]#tooltip_id").val("<%=@tooltip.id%>");
+  $('body').find("[data-row='<%=@tooltip.table_column%>']").attr("class","").addClass("success");
+<% end %>
+
+<% if(@tooltip.destroyed?) %>
+  $('body').find("[data-row='<%=@tooltip.table_column%>']").attr("id","")
+  $('body').find("[data-row='<%=@tooltip.table_column%>'] td.id").text("");
+  $('body').find("[data-row='<%=@tooltip.table_column%>'] input[type=hidden]#tooltip_id").val("");
+  $('body').find("[data-row='<%=@tooltip.table_column%>']").attr("class","").addClass("danger");
+<% end %>

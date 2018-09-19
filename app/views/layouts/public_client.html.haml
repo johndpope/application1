@@ -1,0 +1,32 @@
+!!!
+%html
+  %head
+    %title Admin
+    %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' }
+    = stylesheet_link_tag 'public/clients/application'
+    = stylesheet_link_tag 'common'
+    = stylesheet_link_tag params[:controller]
+    = csrf_meta_tags
+    = yield :stylesheets
+  %body{class: "skin-blue sidebar-mini sidebar-open #{@body_class}", data: {page: @data_page}}
+    = render partial: '/overlay_spinner'
+    .wrapper
+      = render partial: 'layouts/public_client/header'
+      = render partial: 'layouts/public_client/sidebar'
+      .content-wrapper
+        %section.content-header
+          - if content_for? :header
+            %h1
+              = yield :header
+              - if content_for? :small_header
+                %small= yield :small_header
+        %section.content= yield
+      %footer.main-footer
+        %strong
+          = t :copyright
+          &copy;
+          = Time.now.year
+        = link_to "valynteen.com", "http://valynteen.com"
+    = javascript_include_tag 'public/clients/application'
+    = javascript_include_tag params['controller']
+    = yield :javascripts

@@ -1,0 +1,64 @@
+.callout.callout-info
+	%h4
+		= fa_icon 'question-circle'
+	%p
+		Gem
+		= link_to 'Whenewer','https://github.com/javan/whenever', class: "alert-link", target: "_BLANK"
+		is used in order to organize Cron Jobs. Get familiar with Whenewer's
+		= link_to 'Documetation','https://github.com/javan/whenever', class: "alert-link", target: "_BLANK"
+.callout.callout-warning
+	%h4
+		= fa_icon 'terminal'
+	%p
+		Write in terminal on your local PC
+		%div
+			%code cd [YOUR_LOCAL_PROJECT_PATH]
+		%div
+			%code cap production deploy:update_crontab
+		in order to synchronize your changes with
+		%strong Production
+
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.row
+	.col-md-4
+		.form-group
+			= f.label :period, t('whenever_cron_job.period') + ' *'
+			= f.text_field :period, class: "form-control"
+			%p{class: 'help-block'} Example: 1.minute
+	.col-md-4
+		.form-group
+			= f.label :at, t('whenever_cron_job.at')
+			= f.text_field :at, class: "form-control"
+			%p{class: 'help-block'}
+				Example:
+				%i 1:00 am
+.row
+	.col-md-4
+		.form-group
+			= f.label :job_group_id, t('whenever_cron_job.job_group')
+			= f.select(:job_group_id, WheneverCronJobGroup.order(:name).pluck(:name,:id), {include_blank: ''}, {class: 'form-control'})
+	.col-md-4
+		.form-group
+			= f.label :job_type, t('whenever_cron_job.job_type') + ' *'
+			- options = WheneverCronJob::JOB_TYPES.stringify_keys.map{|k,v|[t("whenever_cron_job.job_types.#{k}"),v]}
+			= f.select(:job_type, options_for_select(options, f.object.try(:job_type).try(:value)), {include_blank: ''}, {class: 'form-control'})
+.row
+	.col-md-12
+		.form-group
+			= f.label :job_value, t('whenever_cron_job.job_value')
+			= f.text_field :job_value, class: "form-control"
+			%p{class: 'help-block'}
+				Example:
+				%i YoutubeService.grab_youtube_statistics
+.form-group
+	= f.label :description, t("whenever_cron_job.description")
+	= f.text_area :description, rows: 3, class: "form-control"
+.row
+	.col-md-4
+		.form-group
+			- yes_no_options = [[t('yes'), 'true'],[t('no'), 'false']]
+			= f.label :is_active, t('whenever_cron_job.is_active')
+			= f.select(:is_active, yes_no_options, {include_blank: '', selected: f.object.is_active}, {class: 'form-control'})

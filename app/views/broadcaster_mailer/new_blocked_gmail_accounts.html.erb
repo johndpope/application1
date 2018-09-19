@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+	</head>
+	<body>
+		<h2>New blocked gmail accounts!</h2>
+    <p>For last 24 hours were <b>blocked</b> gmail accounts.</p>
+    <p>All bot servers were killed and disabled daily activity.</p>
+    <p>Click <a href="<%= Rails.configuration.routes_default_url_options[:host] + Rails.application.routes.url_helpers.email_accounts_path(account_type: 1, is_active: false, status_changed_last_time: 24) %>">here</a> to review.</p>
+    <br/>
+    <p>Thanks!</p>
+	</body>
+</html>

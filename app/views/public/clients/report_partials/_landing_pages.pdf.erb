@@ -1,0 +1,28 @@
+<% unless @client.client_landing_pages.blank? %>
+  <% @client.client_landing_pages.each do |landing| %>
+    <% unless landing.screenshots.blank? %>
+
+
+      <page size="A4">
+        <%= render partial: 'public/clients/report_partials/report_header', locals: {client: @client} %>
+        <div class="content">
+          <section class="section3">
+            <div class="container">
+
+              <p style="margin: 0px; padding: 5px 0px;">
+                <span class="fs16">Video Landing Page: </span>
+                <span class="video-lp-link"><%= landing.page_url %></span>
+              </p>
+
+              <div class="crop-screen">
+                <%= wicked_pdf_image_tag landing.screenshots.last.image, class: "video-lp-screen" %>
+              </div>
+            </div>
+          </section>
+        </div>
+        <%= render partial: 'public/clients/report_partials/report_footer', locals: {client: @client} %>
+      </page>
+
+    <% end %>
+  <% end %>
+<% end %>

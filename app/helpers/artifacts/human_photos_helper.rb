@@ -1,0 +1,2 @@
+module Artifacts::HumanPhotosHelper
+end

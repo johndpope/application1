@@ -1,0 +1,55 @@
+<% summary_points_passed = VideoMarketingCampaignForm.find(@video_marketing_campaign_form.id).summary_points_passed %>
+<% has_errors_in_summary_points = (@video_marketing_campaign_form.errors.messages[:"wordings.source"].present? || @video_marketing_campaign_form.errors.messages[:"wordings.name"].present?) ? true: false %>
+<div>
+  <div class="form-group">
+		<div class="panel-group" id="content_accordion" role="tablist" aria-multiselectable="true">
+		  <div class="panel panel-default accordion-panel-primary">
+		    <div class="panel-heading" role="tab" id="system_images_heading">
+		      <h4 class="panel-title">
+		        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#content_accordion" href="#system_images_section" aria-expanded="false" aria-controls="system_images_section">
+							<b><i class="fa  fa-picture-o"></i> SYSTEM IMAGES</b>
+							<span class="badge badge-step pull-right">STEP 2.2</span>
+		        </a>
+		      </h4>
+		    </div>
+		    <div id="system_images_section" class="panel-collapse collapse" role="tabpanel" aria-labelledby="system_images_heading">
+		      <div class="panel-body">
+		        <%= render partial: '/sandbox/video_marketing_campaign_forms/content_step/images/system_images', locals:{f: f, stock_images: stock_images, stock_image_templates: stock_image_templates}%>
+		      </div>
+		    </div>
+		  </div>
+			<div class="panel panel-default accordion-panel-primary" style="<%= 'opacity: 0.7; cursor: not-allowed;' if !summary_points_passed %>">
+		    <div class="panel-heading" role="tab" id="client_images_heading">
+		      <h4 class="panel-title">
+		        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#content_accordion" href="#client_images_section" aria-expanded="false" aria-controls="client_images_section">
+							<b><i class="fa  fa-picture-o"></i> YOUR IMAGES</b>
+							<span class="badge badge-step pull-right">STEP 2.1</span>
+		        </a>
+		      </h4>
+		    </div>
+		    <div id="client_images_section" class="panel-collapse collapse <%= 'in' if summary_points_passed && !has_errors_in_summary_points %>" role="tabpanel" aria-labelledby="client_images_heading">
+		      <div class="panel-body">
+		        <%= render partial: '/sandbox/video_marketing_campaign_forms/content_step/images/client_images', locals:{f: f}%>
+		      </div>
+		    </div>
+		  </div>
+			<div class="panel panel-default accordion-panel-<%= has_errors_in_summary_points.present? ? 'danger' : 'primary' %>">
+		    <div class="panel-heading" role="tab" id="summary_points_heading">
+		      <h4 class="panel-title">
+		        <a role="button" data-toggle="collapse" data-parent="#content_accordion" href="#summary_points_section" aria-expanded="true" aria-controls="summary_points_section">
+		          <b><i class="fa fa-list-alt"></i> SUMMARY POINTS</b> <%= tooltip_by_field({tooltip_text: t("tooltips.video_marketing_campaign_forms.summary_points",:default => "Summary Points are phrases that represent specific facts about your company. Summary Points will be used in video production.")}) %> <span id="summary_points_total" class="badge calc"><%= @video_marketing_campaign_form.wordings.size %></span><span class="badge badge-step pull-right">STEP 1</span>
+		        </a>
+						<% if has_errors_in_summary_points %><small style="color: white;"> · One of the fields is blank</small><% end %>
+		      </h4>
+		    </div>
+		    <div id="summary_points_section" class="panel-collapse collapse <%= 'in' if !summary_points_passed || has_errors_in_summary_points %>" role="tabpanel" aria-labelledby="summary_points_heading">
+		      <div class="panel-body">
+		        <%= render partial: '/sandbox/video_marketing_campaign_forms/content_step/summary_points', locals:{f: f,
+							has_errors_in_summary_points: has_errors_in_summary_points,
+							summary_points_passed: summary_points_passed} %>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<%= content_for(:title) { 'Contact us' } %>
+
+<div class="container main-body">
+	<div class="row">
+		<div class="col-md-6">
+			<div class="title-block lite">
+				<h1>
+					Call Us <b>via</b> <span class="font_red_no-weight">Phone</span>
+					<div class="gray-line"></div>
+				</h1>
+			</div>
+			<div class="phone">
+				<h1>+1-XXX-XXX-XXXX</h1>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="title-block lite">
+				<h1>Send Us <b>A</b> <span class="font_red_no-weight">Message</span></h1>
+			</div>
+			<%= render partial: 'form' %>
+		</div>
+	</div>
+</div>

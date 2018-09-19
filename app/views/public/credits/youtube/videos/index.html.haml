@@ -1,0 +1,18 @@
+- content_for(:title){'Media Credits / Youtube Videos'}
+- content_for(:header){'Youtube Videos Media Credits'}
+- breadcrumb :youtube_videos_credits
+
+#youtube_videos_credits
+	%div= paginate @youtube_videos, theme: "bootstrap"
+	%h4
+		%span.label.bg-green= @youtube_videos.total_count
+		%span items totally
+	.row
+		- @youtube_videos.each do |yv|
+			.col-md-2
+				.youtube-video
+					.title{title: yv.title}= yv.title
+					.thumb
+						= link_to public_credits_youtube_video_path(yv.id)  do
+							= image_tag yv.thumbnail.url(:thumb), class: "thumb"
+	%div= paginate @youtube_videos, theme: "bootstrap"

@@ -1,0 +1,21 @@
+<li class="header">You have <%= @contact_us.length %> messages</li>
+<li>
+	<ul class="menu">
+		<% @contact_us.each do | contact_us | %>
+			<li>
+				<a href="<%= sandbox_contact_us_path %>">
+					<div class="pull-left">
+						<% if contact_us.client.present? && contact_us.client.logo_file_name.present? %>
+							<img class="img-circle" src="<%= "http://sandbox.echovideoblender.net/system/clients/logos/#{contact_us.client.id}/thumb/#{contact_us.client.logo_file_name}" %>" alt="Client logo">
+						<% else %>
+							<img class="img-circle" src="/images/man-photo.png" alt="No logo">
+						<% end %>
+					</div>
+					<h4><%= contact_us.name.present? ? contact_us.name : (contact_us.client.present? ? contact_us.client.name : 'no name') %> <small><i class="fa fa-clock-o"></i> <%= time_ago_in_words(contact_us.created_at) %></small></h4>
+					<p title="<%= contact_us.text %>"><%= truncate(contact_us.text, length: 40) %></p>
+				</a>
+			</li>
+		<% end %>
+	</ul>
+</li>
+<li class="footer"><a href="<%= sandbox_contact_us_path %>">See All Messages</a></li>

@@ -1,0 +1,167 @@
+<%
+  client = email_accounts_setup.client
+  client_descriptions = []
+  industry_descriptions = []
+  client_donors = client.donors
+  if target == 'channel'
+    client_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Client' AND name = 'short_description'", client.id).order(updated_at: :desc).pluck(:source)
+    industry_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Industry' AND name = 'short_description'", client.industry.id).order(updated_at: :desc).pluck(:source)
+  else
+    client_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Client' AND name = 'long_description'", client.id).order(updated_at: :desc).pluck(:source)
+    industry_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Industry' AND name = 'long_description'", client.industry.id).order(updated_at: :desc).pluck(:source)
+  end
+%>
+
+<div class="modal modal-wide fade" id="descriptions_modal" style="z-index: 9999 !important;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal" type="button">
+          <span>×</span>
+        </button>
+        <h4>
+          <%= target.upcase%> DESCRIPTION COMPONENTS
+        </h4>
+      </div>
+      <div class="modal-body" style="padding-bottom: 35px;">
+        <div class="nav-tabs client-tabs">
+          <ul class="nav nav-tabs">
+            <li class="tab-url active"><a href="#client_tab" data-toggle="tab" style="font-variant: small-caps;">Client</a></li>
+            <li class="tab-url"><a href="#industry_tab" data-toggle="tab" style="font-variant: small-caps;">Industry</a></li>
+            <% if target == 'video' %>
+              <li class="tab-url"><a href="#products_tab" data-toggle="tab" style="font-variant: small-caps;">Products</a></li>
+              <li class="tab-url"><a href="#subject_videos_tab" data-toggle="tab" style="font-variant: small-caps;">Subject Videos</a></li>
+            <% end %>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="client_tab">
+              <label><%= link_to client.name, edit_client_path(client), target: "_blank" %></label>
+              <span class="badge"><%= client_descriptions.size %></span>
+              <% if client_descriptions.present? %>
+                <% client_descriptions.each do |d| %>
+                  <pre class="ws-pw"><%= d %></pre>
+                <% end %>
+              <% else %>
+                <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+              <% end %>
+              <!-- ignore donor client channel descriptions -->
+              <% if client_donors.present? && target == 'video' %>
+                <hr/>
+                <label><h4><u>DONORS:</u></h4></label>
+                <ul>
+                  <% client_donors.each do |donor| %>
+                      <li style="margin-left: 30px;">
+                        <label><%= link_to donor.name, edit_client_path(donor), target: "_blank" %></label>
+                        <%
+                          client_donor_descriptions = []
+                          if target == 'video'
+                            client_donor_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Client' AND (name = 'short_description' OR name = 'long_description')", donor.id).order(updated_at: :desc).pluck(:source)
+                          else
+                            # client_donor_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Client' AND name = 'short_description'", donor.id).order(updated_at: :desc).pluck(:source)
+                          end
+                        %>
+                        <span class="badge"><%= client_donor_descriptions.size %></span>
+                        <% if client_donor_descriptions.present? %>
+                          <% client_donor_descriptions.each do |d| %>
+                            <pre class="ws-pw"><%= d %></pre>
+                          <% end %>
+                        <% else %>
+                          <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+                        <% end %>
+                      </li>
+                  <% end %>
+                </ul>
+              <% end %>
+            </div>
+            <div class="tab-pane" id="industry_tab">
+              <label><%= link_to client.industry.name, wordings_path(resource_id: client.industry.id, resource_type: 'Industry', name: target == 'channel' ? 'short_description' : 'long_description'), target: "_blank" %></label>
+              <span class="badge"><%= industry_descriptions.size %></span>
+              <% if industry_descriptions.present? %>
+                <% industry_descriptions.each do |d| %>
+                  <pre class="ws-pw"><%= d %></pre>
+                <% end %>
+              <% else %>
+                <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+              <% end %>
+            </div>
+            <% if target == 'video' %>
+              <div class="tab-pane" id="products_tab">
+                <% email_accounts_setup.contract.products.each do |product| %>
+                  <label><%= link_to product.name, edit_client_product_path(product.client, product), target: "_blank" %></label>
+                  <% product_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Product' AND name = 'long_description'", product.id).order(updated_at: :desc).pluck(:source) %>
+                  <span class="badge"><%= product_descriptions.size %></span>
+                  <% if product_descriptions.present? %>
+                    <% product_descriptions.each do |d| %>
+                      <pre class="ws-pw"><%= d %></pre>
+                    <% end %>
+                  <% else %>
+                    <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+                  <% end %>
+                  <% if product.parent.present? %>
+                    <hr/>
+                    <label><h4><u>DONOR:</u></h4></label>
+                    <ul>
+                      <li style="margin-left: 30px;">
+                        <label><%= link_to product.parent.name, edit_client_product_path(product.parent.client, product.parent), target: "_blank" %></label>
+                        <% parent_product_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'Product' AND name = 'long_description'", product.parent.id).order(updated_at: :desc).pluck(:source) %>
+                        <span class="badge"><%= parent_product_descriptions.size %></span>
+                        <% if parent_product_descriptions.present? %>
+                          <% parent_product_descriptions.each do |d| %>
+                            <pre class="ws-pw"><%= d %></pre>
+                          <% end %>
+                        <% else %>
+                          <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+                        <% end %>
+                      </li>
+                    </ul>
+                  <% end %>
+                  <hr/>
+                <% end %>
+              </div>
+              <div class="tab-pane" id="subject_videos_tab">
+                <%
+                  product_ids = email_accounts_setup.contract.products.map(&:id)
+                  subject_videos = SourceVideo.where(product_id: product_ids)
+                %>
+                <% subject_videos.each do |subject_video| %>
+                  <label><%= link_to subject_video.custom_title, client_subject_videos_path(client, anchor: "row_source_video_#{subject_video.id}"), target: "_blank" %></label>
+                  <% subject_video_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'SourceVideo' AND name = 'long_description'", subject_video.id).order(updated_at: :desc).pluck(:source) %>
+                  <span class="badge"><%= subject_video_descriptions.size %></span>
+                  <% if subject_video_descriptions.present? %>
+                    <% subject_video_descriptions.each do |d| %>
+                      <pre class="ws-pw"><%= d %></pre>
+                    <% end %>
+                  <% else %>
+                    <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+                  <% end %>
+                  <% donor_source_video = client.client_donor_source_videos.where(recipient_source_video_id: subject_video.id).first.try(:source_video) %>
+                  <% if donor_source_video.present? %>
+                    <label><h4><u>DONOR VIDEO:</u></h4></label>
+                    <ul>
+                      <li style="margin-left: 30px;">
+                        <label><%= link_to donor_source_video.custom_title, client_subject_videos_path(donor_source_video.client, anchor: "row_source_video_#{donor_source_video.id}"), target: "_blank" %></label>
+                        <% donor_subject_video_descriptions = Wording.select(:source).where("resource_id = ? AND resource_type = 'SourceVideo' AND name = 'long_description'", donor_source_video.id).order(updated_at: :desc).pluck(:source) %>
+                        <span class="badge"><%= donor_subject_video_descriptions.size %></span>
+                        <% if donor_subject_video_descriptions.present? %>
+                          <% donor_subject_video_descriptions.each do |d| %>
+                            <pre class="ws-pw"><%= d %></pre>
+                          <% end %>
+                        <% else %>
+                          <pre class="ws-pw bg-yellow">Missing descriptions</pre>
+                        <% end %>
+                      </li>
+                    </ul>
+                  <% end %>
+                  <hr/>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+      </div>
+    </div>
+  </div>
+</div>

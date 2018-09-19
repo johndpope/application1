@@ -1,0 +1,5 @@
+<div class="stock_images_paginate" style="margin-top: 10px;">
+  <% if stock_images.try(:total_count).to_i > 0 %>
+    <%= paginate stock_images, params: {controller: 'sandbox/video_marketing_campaign_forms', action: 'stock_images'}, theme: 'bootstrap', remote: true, param_name: "stock_images_page" %>
+  <% end %>
+</div>

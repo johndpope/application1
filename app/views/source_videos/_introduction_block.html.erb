@@ -1,0 +1,19 @@
+<div class="row introduction-block" style="margin-bottom: 3px;">
+	<div class="col-md-10">
+		<div>
+			<input class="form-control" placeholder="Internal video title" value="<%= introduction[:name] if introduction %>"/>
+		</div>
+		<div class="file-input">
+			<input placeholder="Choose File" disabled="disabled" class="upload-bar", value="<%= introduction[:name] if introduction %>.mp4" />
+			<div class="file-upload btn btn-primary btn-sm">
+		    	<i class="fa fa-upload"></i>
+		    	<%= file_field(:source_video, :introduction, class: 'upload') %>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-2">
+		<a href="javascript://" class="btn btn-<%= first == true ? 'primary' : 'danger' %> btn-<%= first == true ? 'add' : 'remove' %>-introduction">
+	  		<i class="fa fa-<%= first == true ? 'plus' : 'minus' %>"></i>
+		</a>
+	</div>
+</div>

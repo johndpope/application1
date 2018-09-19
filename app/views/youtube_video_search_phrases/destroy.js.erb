@@ -1,0 +1,7 @@
+$("#<%= dom_id(youtube_video_search_phrase, 'row') %>").remove()
+search_phrases_size = document.getElementById('youtube_video_search_phrases_table').getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+$('#search_phrases_size').text(search_phrases_size);
+if (search_phrases_size == 0) {
+  $('#youtube_video_search_phrases_table').hide();
+  $('#youtube_video_search_phrases_empty_alert').show();
+}

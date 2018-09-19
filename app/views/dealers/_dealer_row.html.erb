@@ -1,0 +1,31 @@
+<tr id="<%= dom_id(dealer, 'row')%>">
+  <td class="text-center"><%= dealer.id %></td>
+  <td><%= dealer.name %></td>
+  <td><%= dealer.brand_id %></td>
+  <td><%= dealer.zipcode %></td>
+  <td><%= dealer.city %></td>
+  <td><%= dealer.state %></td>
+  <td class="text-center"><%= dealer.country %></td>
+  <td class="text-center">
+    <% if dealer.has_records_in_sales_queue? %>
+      <label class="label label-success">YES</label>
+    <% else %>
+      <label class="label label-danger">NO</label>
+    <% end %>
+  </td>
+  <% dealer_check_queue_admin_user_email = AdminUser.select("admin_users.email").joins("inner join jobs on jobs.admin_user_id = admin_users.id inner join dealers on dealers.id = jobs.resource_id and jobs.resource_type = 'Dealer'").where("dealers.id = ? AND jobs.completed = true AND jobs.queue = 'dealer_check'", dealer.id).pluck(:email).last %>
+  <td class="text-center"><%= dealer_check_queue_admin_user_email %></td>
+  <td class="text-center"><%= dealer.versions.last.try(:whodunnit) %></td>
+  <td class="text-center"><%= local_time(dealer.updated_at, format: '%m/%d/%y %I:%M %p', title: dealer.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if dealer.updated_at.present?%></td>
+  <td class="text-center"><%= local_time(dealer.created_at, format: '%m/%d/%y %I:%M %p', title: dealer.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if dealer.created_at.present?%></td>
+  <td class="text-center"><%= link_to "Link", new_sandbox_video_marketing_campaign_form_path(dealer_id: dealer.id, industry_id: dealer.industry_id), target: "_blank" %></td>
+  <td class="text-center actions">
+    <div class="btn-group btn-group-custom">
+      <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_dealer_path(dealer), { class: 'btn btn-xs btn-primary edit-dealer', remote: true, title: 'Edit' } %>
+      <% if dealer.email.present? && dealer_check_queue_admin_user_email.present? %>
+        <%= link_to '<i class="fa fa-paper-plane-o"></i> Send Invitation'.html_safe, send_invitation_dealer_path(dealer), method: :post, data: { confirm: 'Are you sure?', remote: true }, class: "btn btn-xs btn-success #{'disabled' if dealer.sent_emails.where(email_type: SentEmail.email_type.find_value('First Dealer Sign Up Invitation').value).size > 0}", title: 'Send Invitation' %>
+      <% end %>
+      <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, dealer, method: :delete, data: { confirm: 'Are you sure?', remote: true }, class: 'btn btn-xs btn-danger' %>
+    </div>
+  </td>
+</tr>

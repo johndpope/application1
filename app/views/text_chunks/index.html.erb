@@ -1,0 +1,77 @@
+<% title 'Text chunks' %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<div id="text_chunks_list">
+	<div class="row">
+		<div class="col-md-5"><%= link_to 'New text chunk', new_text_chunk_path, remote: true, class: 'btn btn-sm btn-primary' %></div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total search results:</label>
+				<span class="badge bg-blue"><%= @text_chunks.total_count %></span>
+			</div>
+		</div>
+	</div>
+
+	<table id="text_chunks_table" class="table table-bordered table-striped dataTable">
+		<thead>
+			<tr>
+				<th style="width: 50px;" class="sort text-center" id="id-th" data-field="id">ID</th>
+				<th>Chunk type</th>
+				<th>Value</th>
+				<th class="sort" id="admin_user_id-th" data-field="admin_user_id">Admin user</th>
+				<th class="sort" id="updated_by-th" data-field="updated_by">Updated by</th>
+				<th class="sort" id="updated_at-th" data-field="updated_at">Updated at</th>
+				<th class="sort" id="created_at-th" data-field="created_at">Created at</th>
+				<th style="width: 130px;" class="text-center">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @text_chunks.each do |text_chunk| %>
+				<%= render partial: 'text_chunk_row', locals: {text_chunk: text_chunk} %>
+			<% end %>
+		</tbody>
+	</table>
+
+	<div><%= paginate @text_chunks, theme: 'bootstrap' %></div>
+</div>
+
+<div id="filter" class="no-print"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:id, :chunk_type, :updated_at, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :updated_at unless order_value
+	%>
+	<div id="search_params">
+		<%= form_tag({  action: :index }, { method: :get, id: 'filters_form' }) do |f| %>
+			<div class="filter-label">ID:</div>
+			<%= search_field_tag :id, params[:id], class: 'form-control numeric' %>
+			<div class="filter-label">Chunk type:</div>
+			<%= select_tag(:chunk_type, options_for_select(TextChunk.select(:chunk_type).distinct.where('chunk_type IS NOT NULL').pluck(:chunk_type).sort, params[:chunk_type]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Value:</div>
+			<%= search_field_tag :value, params[:value], class: 'form-control' %>
+			<div class="filter-label">Admin user:</div>
+			<%= select_tag(:admin_user_id, options_from_collection_for_select(AdminUser.all.order(:email), :id, :full_name, params[:admin_user_id]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Updated user:</div>
+			<%= select_tag(:updated_by_id, options_from_collection_for_select(AdminUser.all.order(:email), :id, :email, params[:updated_by_id]), { include_blank: true, class: 'form-control' }) %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Items on page:</div>
+			<%= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %>
+			<div class="filter-label text-center">
+				<div class="col-md-12">
+					<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+				</div>
+			</div>
+		<% end %>
+	</div>
+</div>

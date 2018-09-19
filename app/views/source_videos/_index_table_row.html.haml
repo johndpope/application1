@@ -1,0 +1,50 @@
+%tr{id: dom_id(source_video, 'row')}
+  %td= source_video.id
+  %td= source_video.custom_title
+  %td= client.name
+  %td= source_video.product.name
+  %td= number_to_human_size(source_video.video_file_size) unless source_video.blank?
+  %td= Time.at(source_video.video_duration).utc.strftime("%M:%S") unless source_video.video_duration.blank?
+  %td{class: "text-center"}
+    - unless source_video.tag_list.to_a.blank?
+      = link_to 'javascript://', data: {tags: source_video.tag_list.to_a.join(',')}, class: "source-video-tags" do
+        = fa_icon 'tags'
+  %td{class: "text-center"}
+    - label_text = source_video.is_virtual? ? t('yes') : t('no')
+    - label_class = source_video.is_virtual? ? 'success' : 'danger'
+    .label{class: "label-#{label_class}"}= label_text
+  %td{class: "text-center"}
+    - label_text = source_video.ready_for_production? ? t('yes') : t('no')
+    - label_class = source_video.ready_for_production? ? 'success' : 'danger'
+    .label{class: "label-#{label_class}"}= label_text
+  %td{class: "text-center"}
+    .btn-group{role: 'group'}
+      = link_to edit_client_source_video_path(source_video, client_id: client.id),
+        remote: true,
+        title: 'Edit',
+        data: {toggle: 'modal', target: ".source-video-modal", disable_with: '..'},
+        class: 'btn btn-default btn-sm edit-btn' do
+        = fa_icon 'pencil'
+      = link_to client_source_video_path(client, source_video, authenticity_token: form_authenticity_token),
+        method: :delete,
+        data: { confirm: 'Are you sure?', remote: true },
+        title: 'Delete',
+        class: 'btn btn-default btn-sm' do
+        = fa_icon 'trash', :class => 'text-danger'
+    .btn-group{role: 'group'}
+      = link_to clone_client_source_video_path(source_video, client_id: client.id),
+        method: :post,
+        title: 'Clone without video file',
+        data: {confirm: 'Are you sure?', remote: true, toggle: 'modal', target: ".source-video-modal", disable_with: '..'},
+        class: 'btn btn-default btn-sm edit-btn' do
+        = fa_icon 'clone'
+        = fa_icon 'minus'
+        = fa_icon 'file-video-o'
+      = link_to clone_client_source_video_path(source_video, client_id: client.id, with_video: true),
+        method: :post,
+        title: 'Clone with video file',
+        data: {confirm: 'Are you sure?', remote: true, toggle: 'modal', target: ".source-video-modal", disable_with: '..'},
+        class: 'btn btn-default btn-sm edit-btn' do
+        = fa_icon 'clone'
+        = fa_icon 'plus'
+        = fa_icon 'file-video-o'

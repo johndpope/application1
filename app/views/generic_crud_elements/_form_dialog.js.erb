@@ -1,0 +1,25 @@
+<% if defined?(item.errors) && !item.errors.empty? %>
+  window.error_messages = JSON.parse('<%= escape_javascript(item.errors.messages.select{|k,v| k unless v.blank?}.to_json.html_safe) %>')
+
+	$('.form-group').removeClass('has-error');
+	$('.error-label').remove();
+
+	for(k in window.error_messages){
+		control_el = $('[name="<%= @item.class.to_s.underscore.gsub('/','_')%>[' + k + ']"]');
+		control_el.closest('.form-group').addClass('has-error');
+		for(i in window.error_messages[k]){
+			error_block = $('<div class="error-label"><label class="control-label"></label></div>')
+			error_block.find('label').text(window.error_messages[k][i])
+			control_el.after(error_block)
+		}
+	}
+<% else %>
+  <%
+		modal = render partial: "generic_crud_elements/form", locals: {item: item}
+		clazz = item.class.to_s.underscore.gsub('/','_')
+	%>
+	$('body').remove(".<%=clazz%>_modal").append('<%= escape_javascript(modal) %>');
+  $('.<%=clazz%>_modal').modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function(e){
+      $(this).remove()
+  })
+<% end %>

@@ -1,0 +1,3 @@
+<% text_block = render partial: 'templates/aae_projects/aae_project_text',
+	locals: { aaep_form: ActionView::Helpers::FormBuilder.new( "templates_aae_project[aae_project_texts_attributes][#{Time.now.to_f.to_s.gsub('.','')}]", Templates::AaeProjectText.new, self, {}, proc {}) }%>
+$('#<%= dom_id(@aae_project, "text_items")%> tbody').append('<%= escape_javascript(text_block) %>');

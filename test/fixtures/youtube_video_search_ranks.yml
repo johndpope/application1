@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  rank: 1
+  search_type: 1
+  youtube_video_search_phrase_id: 1
+  current: false
+
+two:
+  rank: 1
+  search_type: 1
+  youtube_video_search_phrase_id: 1
+  current: false

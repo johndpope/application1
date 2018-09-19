@@ -1,0 +1,22 @@
+%tr
+  %th.id ID
+  %th.screenshot{style: "width: 65px;"} Screenshot
+  %th.audio{style: "width: 50px;"} Audio
+  %th.artist Artist
+  %th.title Title
+  %th.sound_type.text-center Sound type
+  %th.attribution_required.text-center Attribution required
+  %th.is_approved.text-center
+    = "Is approved"
+    = check_box_tag :is_approved_check_all, "", false, class: "is_approved_check_all"
+  %th.client Client
+  %th.genre.text-center Genre
+  %th.mood.text-center Mood
+  %th.audio_category.text-center Category
+  %th.tags.text-center Tags
+  %th.has_voice.text-center Has voice
+  %th.actions
+    = link_to new_artifacts_audio_path, class: 'btn btn-sm btn-primary',
+      data: {remote: true, disable_with: t('adding'), toggle: 'modal', target: "uploading_audio_modal" },
+      title: t('add') do
+      = fa_icon 'plus', text: t('add')

@@ -1,0 +1,43 @@
+<%= form_for @associated_website, url: youtube_channel_associated_website_path(@associated_website.youtube_channel, @associated_website), :html => { :multipart => true } do |f| %>
+	<%= f.hidden_field :youtube_channel_id %>
+
+		<% if @associated_website.errors.any? %>
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@associated_website.errors.count, 'error') %> prohibited this associated website from being saved</h4>
+				</div>
+			</div>
+		<% end %>
+    <div class="form-group">
+      <%= f.label :client_landing_page, class: 'control-label' %>
+      <%= f.select :client_landing_page_id, options_from_collection_for_select(ClientLandingPage.where("client_id = ?", @associated_website.youtube_channel.try(:google_account).try(:email_account).try(:client_id)), :id, :page_url, @associated_website.client_landing_page_id), { include_blank: false }, { class: 'select2 form-control' } %>
+    </div>
+    <div class="form-group">
+      <%= f.label :association_method, class: 'control-label' %>
+      <%= f.select :association_method, options_for_select(AssociatedWebsite::ASSOCIATION_METHODS.collect{ |key, value| [key, value] }, @associated_website.association_method.try(:value)), { include_blank: true }, { class: 'select2 form-control' } %>
+    </div>
+    <div class="form-group">
+      <%= f.label :dns_record, class: 'control-label' %>
+      <%= f.text_field :dns_record, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <div class="checkbox">
+        <label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="checkbox">
+        <label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+      </div>
+    </div>
+		<div class="row">
+			<div class="form-group col-md-12">
+				<div class="actions pull-right">
+					<%= link_to 'Back', edit_youtube_channel_path(@associated_website.youtube_channel_id, :anchor => "associated-websites-tab"), class: 'btn btn-sm btn-primary' %>
+					<%= f.submit :class => 'btn btn-sm btn-success', :id => 'associated_website_submit' %>
+				</div>
+			</div>
+		</div>
+
+<% end %>

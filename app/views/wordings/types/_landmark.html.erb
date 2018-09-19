@@ -1,0 +1,20 @@
+<div class="col-md-3">
+	<label class="control-label" for="country_id">Country</label>
+	<%= select_tag(:country_id, options_from_collection_for_select(@countries, :id, :name, @country_by_id), { include_blank: true, class: 'form-control select-template', placeholder: 'Select country' }) %>
+</div>
+<div class="col-md-3">
+	<label class="control-label" for="state_id">State</label>
+	<%= select_tag(:state_id, options_from_collection_for_select(@state, :id, :name, @search_state.try(:id)), { include_blank: true, class: 'form-control select-template', placeholder: 'Select state' }) %>
+</div>
+<% if params[:state_id].present? %>
+	<div class="col-md-3">
+		<label class="control-label" for="locality_id">Locality</label>
+		<%= select_tag(:locality_id, options_from_collection_for_select(@localities, :id, :full_name, @search_locality.try(:id)), { include_blank: true, class: 'form-control select-template', placeholder: 'Select locality' }) %>
+	</div>
+<% end %>
+<% if params[:locality_id].present? %>
+	<div class="col-md-3">
+		<label class="control-label" for="landmark_id">Landmark</label>
+		<%= select_tag(:landmark_id, options_from_collection_for_select(@landmarks, :id, :name, @landmark_by_id), { include_blank: true, class: 'form-control', data: { insert_resource: 'Geobase::Landmark' }, placeholder: 'Select landmark' }) %>
+	</div>
+<% end %>

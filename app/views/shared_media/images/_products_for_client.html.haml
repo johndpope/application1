@@ -1,0 +1,5 @@
+.form-group
+  = label_tag 'products', 'Products for client', class: "control-label"
+  = select_tag 'products', options_from_collection_for_select(@products_for_client, 'id', 'name'),
+    {class: 'form-control', include_blank: true, data: {remote: true}}
+  %p.help-block Select client's product

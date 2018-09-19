@@ -1,0 +1,2 @@
+<% row = render partial: 'clients/exclude_aae_templates/index/index_table_row', locals: {index: params[:index].to_i, item: @aae_project} %>
+$('#<%= dom_id(@aae_project) %>').replaceWith('<%= escape_javascript(row)%>');

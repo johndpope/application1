@@ -1,0 +1,26 @@
+<%
+  modal = render partial: 'new'
+%>
+$('body').append('<%= escape_javascript(modal) %>');
+$("#uploading_audio").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})
+
+$('#audios_client_id, #sound_type, #audios_author, #audios_attribution_required, #audios_mood, #audios_instruments, #audios_license_type, #audios_instrument, #audios_type, #audios_artist').select2({
+  placeholder: 'Choose',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true
+});
+
+$('#audios_genre').select2({
+  placeholder: "Select a genre",
+  allowClear: true
+}).on('change', function(e){
+  $('#audios_genre_id').val(e.val);
+})
+
+$('#audios_tags').tagsinput({
+  tagClass: "label label-success",
+  placeholder: "Enter tags..."
+});

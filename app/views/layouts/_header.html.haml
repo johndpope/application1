@@ -1,0 +1,23 @@
+%header.main-header
+  = link_to root_path, class: "logo" do
+    %span.logo-mini
+      %b B
+    %span.logo-lg
+      %b Broadcaster
+  %nav.navbar.navbar-static-top
+    = link_to '', 'javascript:', class: "sidebar-toggle", data: {toggle: "offcanvas"}, role: "button"
+    .navbar-custom-menu
+      %ul.nav.navbar-nav
+        %li
+          %a{ href: 'javascript:', id: 'scroll-up', title: 'Scroll up' }
+            = fa_icon 'arrow-up'
+        %li
+          %a{ href: 'javascript:', id: 'scroll-down', title: 'Scroll down' }
+            = fa_icon 'arrow-down'
+        - if File.exists? Rails.root.join('app/views/layouts', 'roles', current_admin_user.try(:roles).to_s, '_navbar_custom_menu.html.haml')
+          = render partial: "layouts/roles/#{current_admin_user.roles}/navbar_custom_menu"
+        - if admin_user_signed_in?
+          %li
+            = link_to destroy_admin_user_session_url do
+              %i.glyphicon.glyphicon-log-out
+              Sign Out

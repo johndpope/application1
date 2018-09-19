@@ -1,0 +1,72 @@
+<div class="content-block">
+	<% if @youtube_video.id.present? && !@youtube_video.call_to_action_overlay.present? %>
+		<div class="row">
+			<div class="col-md-5">
+	      <%= link_to 'New Call To Action Overlay', new_youtube_video_call_to_action_overlay_path(@youtube_video), class: 'btn btn-sm btn-primary' %>
+	    </div>
+			<div class="col-md-7">
+				<div class="form-group">
+				</div>
+			</div>
+		</div>
+	<% end %>
+	<% if @youtube_video.call_to_action_overlay.present? %>
+		<table id="@youtube_video.call_to_action_overlays_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="min-width: 25px;" id="id-th" data-field="id">ID</th>
+					<th>Headline</th>
+					<th>Display URL</th>
+					<th>Destination URL</th>
+          <th>Adwords campaign groups</th>
+					<th class="text-center">Ready</th>
+					<th class="text-center">Linked</th>
+					<th style="width: 115px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="tr_ctao_<%= @youtube_video.call_to_action_overlay.id %>">
+					<td class="text-center"><%= @youtube_video.call_to_action_overlay.id %></td>
+					<td><%= @youtube_video.call_to_action_overlay.headline %></td>
+					<td><%= @youtube_video.call_to_action_overlay.display_url_normalized %></td>
+					<td><%= link_to truncate(@youtube_video.call_to_action_overlay.destination_url_normalized, length: 50), @youtube_video.call_to_action_overlay.destination_url_normalized, title: @youtube_video.call_to_action_overlay.destination_url_normalized, target: '_blank' %></td>
+          <td>
+            <% @youtube_video.adwords_campaign_groups.each do |acg| %>
+              <%= link_to acg.name, edit_email_account_adwords_campaign_adwords_campaign_group_path(@youtube_video.youtube_channel.google_account.email_account.id, acg.adwords_campaign, acg.id), target: '_blank' %>
+              <br/>
+            <% end %>
+          </td>
+					<td class="text-center">
+						<% if @youtube_video.call_to_action_overlay.ready %>
+							<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+						<% else %>
+							<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+						<% end %>
+					</td>
+					<td class="text-center">
+						<% if @youtube_video.call_to_action_overlay.linked %>
+							<%= link_to 'YES', 'javascript://', class: 'btn btn-success btn-xs sort_link' %>
+						<% else %>
+							<%= link_to 'NO', 'javascript://', class: 'btn btn-danger btn-xs sort_link' %>
+						<% end %>
+					</td>
+					<td class="text-center">
+						<div class="btn-group btn-group-custom">
+							<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_youtube_video_call_to_action_overlay_path(@youtube_video.id, @youtube_video.call_to_action_overlay), { class: 'btn btn-xs btn-primary' } %>
+							<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, youtube_video_call_to_action_overlay_path(@youtube_video, @youtube_video.call_to_action_overlay), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% unless @youtube_video.call_to_action_overlay.present? %>
+		<div class="row">
+			<div class="col-md-12">
+				<br>
+				<div class="alert alert-info">No call to action overlay available</div>
+			</div>
+		</div>
+	<% end %>
+</div>

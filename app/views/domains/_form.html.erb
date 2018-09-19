@@ -1,0 +1,35 @@
+<div class="modal modal-wide fade" id="<%= dom_id(domain, 'modal') %>" style="z-index: 9999 !important;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_for domain, url: {controller: params[:controller], action: (domain.new_record? ? 'create' : 'update')}, data: {remote: true}, :multipart => true do |f| %>
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">
+            <span>×</span>
+          </button>
+          <h4>
+            <% if domain.new_record? %>
+              New Domain
+            <% else %>
+              Domain <%= domain.id %>
+            <% end %>
+          </h4>
+        </div>
+        <div class="modal-body" style="padding-bottom: 35px;">
+          <%= f.hidden_field :id %>
+          <div class="form-group <%= 'has-error' if domain.errors[:name].present? %>" data-content="<%= domain.errors[:name].try(:join, ',') %>">
+            <%= f.label :name, class: 'control-label' %>
+            <%= f.text_field :name, { class: 'form-control', placeholder: 'Name' } %>
+          </div>
+          <div class="form-group">
+            <%= f.check_box :parked, class: 'iCheck-helper' %>
+            <%= f.label :parked, class: 'control-label' %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <%= f.submit (domain.new_record? ? t(:create) : t(:update)), class: 'btn btn-primary', data: {disable_with: (domain.new_record? ? t(:creating) : t(:updating)) } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

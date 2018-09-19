@@ -1,0 +1,22 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">
+        <%= link_to client.name, public_client_dashboard_path(client.public_profile_uuid), target: "_blank"%>
+      </h4>
+		</div>
+		<div class="modal-body" id="client_info_modal_body">
+      <table class="table table-bordered table-striped vertical-align-middle">
+        <caption><h4><b>ASSETS</b></h4></caption>
+        <%= render partial: 'client_statistics_head', locals: {multiple: false} %>
+        <tbody role="alert" aria-live="polite" aria-relevant="all">
+          <%= render partial: 'client_statistics_row', locals: {client: client, multiple: false} %>
+        </tbody>
+      </table>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+</div>

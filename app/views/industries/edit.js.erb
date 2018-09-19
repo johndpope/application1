@@ -1,0 +1,153 @@
+//= require 'jquery_nested_form'
+<%
+  modal = render partial: 'form', locals: {industry: @industry}
+  modal_dom_id = dom_id(@industry, 'modal')
+%>
+
+$("div.modal-backdrop.fade.in").remove();
+$('#<%= modal_dom_id %>').remove();
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+});
+
+$('.animationload').hide();
+
+$('.has-error').popover({  trigger: 'hover',  placement: 'bottom',  animation: true});
+
+var title_patterns_selectors = [
+  '#industry_business_channel_title_patterns',
+  '#industry_business_video_title_patterns'
+]
+
+$(title_patterns_selectors).select2()
+
+// Apply select2 to fields with multiple values
+var selectors = [
+  '#industry_business_channel_entity_csv',
+  '#industry_business_channel_subject_csv',
+  '#industry_business_channel_descriptor_csv',
+  '#industry_business_video_entity_csv',
+  '#industry_business_video_subject_csv',
+  '#industry_business_video_descriptor_csv',
+  '#industry_alternate_names_csv',
+  '#industry_industry_title_components_csv',
+  '#industry_summary_points_csv'
+].join(', ');
+
+$(selectors).select2({
+  multiple: true,
+  data: [],
+  width: '100%',
+  createSearchChoice: function (term, data) { return { id: term, text: term }; },
+  initSelection: function (element, callback) {
+    var values = $.map($(element).val().split(/\s*,\s*/), function (v) {
+      return { id: v, text: v };
+    });
+    callback(values);
+  }
+});
+
+$(selectors).each(function(){
+  var target_id = $(this).attr("id");
+  $("#" + target_id + "_count").text($(this).val().split(",").filter(Boolean).length);
+});
+
+$(selectors).on('change', function(){
+  var target_id = $(this).attr("id");
+  $("#" + target_id + "_count").text($(this).val().split(",").filter(Boolean).length);
+});
+
+// Counter characters
+function calc_one (text_area) {
+  text_area.closest('.form-group').find('.calc-one').text(text_area.val().length);
+}
+
+$('fieldset textarea').each(function () {
+  calc_one($(this));
+});
+
+$(document).on('keyup', 'fieldset textarea', function () {
+  calc_one($(this));
+});
+
+$(document).on('change', 'fieldset textarea', function () {
+  calc_one($(this));
+});
+
+$(document).on('change', '.description-name-select', function () {
+  text_input = $(this).closest('fieldset').find('textarea');
+  text_input_limit = $('option:selected', $(this)).attr('data-text-type-limit');
+  text_input_value = text_input.val();
+  if (text_input_limit != undefined) {
+    text_input.val(text_input_value.slice(0,text_input_limit));
+    text_input.attr('maxlength', text_input_limit);
+    text_input.attr('placeholder', 'Enter text (character limit: ' + text_input_limit + ')');
+    text_input.trigger('change');
+    if (text_input_value.length > text_input_limit){
+      alert("Text string will be truncated!");
+      text_input.effect('highlight', { color: 'red' }, 3000);
+      text_input.trigger('keyup');
+    }
+  } else {
+    text_input.val('');
+    text_input.removeAttr('maxlength');
+    text_input.attr('placeholder', 'Enter text');
+    text_input.trigger('keyup');
+  }
+});
+
+
+$('.add_nested_fields').on('mouseup', function () {
+  setTimeout(function(){
+    var el = $('#descriptions textarea:last');
+    if (el.val() == '    ' || el.val() == '          ') {
+      el.val('');
+    }
+  }, 100);
+});
+
+$('[data-toggle="popover"]').popover({
+	content: $(this).data('content'),
+	title: $(this).data('title'),
+	html: true,
+	placement: 'top',
+	container:'.modal',
+	trigger: 'hover'
+});
+
+var colors = ["primary"];
+
+function colorTags(){
+  var tags = $('div#tag_list_block .tag');
+  for(var i = 0; i < tags.length; i++){
+    tags[i].className = "tag label label-tags label-" + colors[i % (colors.length)];
+  }
+}
+
+function countKeywords(){
+  tag_list_count = 0;
+  var tag_list_block = $("#tag_list_block");
+  var tag_list_block_input = $("#tag_list_block div.bootstrap-tagsinput");
+  var tag_list = $("#industry_tag_list").val();
+  var tag_list_array = tag_list.split(",").filter(Boolean);
+  tag_list_count = tag_list_array.length;
+  $("#tag_list_count").text(tag_list_count);
+}
+
+$("#industry_tag_list").tagsinput();
+$(".bootstrap-tagsinput input").css('width', '');
+$("#industry_tag_list").on("change", function(){
+  countKeywords();
+  colorTags();
+});
+countKeywords();
+colorTags();
+
+$('#business_channel_title_patterns_arrow_down').on('click', function(){
+  $("#industry_business_channel_title_patterns").select2("open");
+});
+
+$('#business_video_title_patterns_arrow_down').on('click', function(){
+  $("#industry_business_video_title_patterns").select2("open");
+});

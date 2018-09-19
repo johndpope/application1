@@ -1,0 +1,7 @@
+- unless f.object.new_record?
+	.form-group
+		= f.label :id, t('id')
+		= text_field_tag '', f.object.id, class: "form-control", disabled: "disabled"
+.form-group
+	=f.label :name, t('product_category.name') + ' *'
+	=f.text_field :name, class: "form-control"

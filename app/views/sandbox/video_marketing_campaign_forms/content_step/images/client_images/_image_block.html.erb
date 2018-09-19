@@ -1,0 +1,8 @@
+<div class = 'col-md-2 qt'>
+  <div class='u-photo-block'>
+    <a class='u-photo-remove' href='/sandbox/video_marketing_campaign_forms/<%= params[:id] %>/client_images_destroy/<%=item.id%>' data-method='delete' data-remote='true' data-image-id="<%=item.id %>">
+      <i class='fa fa-times fa-2x'></i>
+    </a>
+    <img alt='' class='u-photo' src="<%= item.file.url %>">
+  </div>
+</div>

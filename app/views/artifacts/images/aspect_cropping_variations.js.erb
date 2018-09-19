@@ -1,0 +1,9 @@
+<%
+  modal = render partial: 'aspect_cropping_variations_modal', locals: {image: @image}
+  modal_dom_id = dom_id(@image.becomes(Artifacts::Image), 'aspect_cropping_variations_modal')
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})

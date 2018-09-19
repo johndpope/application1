@@ -1,0 +1,45 @@
+!!!
+%html
+	%head
+		%title
+			- if content_for? :title
+				= yield :title
+			- else
+				= 'User page'
+		%meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' }
+		= stylesheet_link_tag 'application'
+		= stylesheet_link_tag params[:controller]
+		= csrf_meta_tags
+		= yield :stylesheets
+	%body{class: "skin-blue sidebar-mini sidebar-open #{@body_class}", data: {page: @data_page}}
+		= yield :body_top
+		.wrapper
+			= render partial: "layouts/shared_media/header"
+			= render partial: "layouts/shared_media/sidebar1"
+			%aside.content-wrapper
+				%section.content-header
+					- if content_for? :header
+						%h1
+							= yield :header
+							- if content_for? :small_header
+								%small= yield :small_header
+					= breadcrumbs separator: ' &rsaquo; ', class: :breadcrumb
+					= yield :content_header_bottom
+				%section.content
+					- if flash[:notice]
+						#notice_explanation{class: "alert alert-success alert-dismissable alert-fade-out", role: "alert"}
+							%button.close{type: "button", data:{dismiss: "alert"}, "aria-hidden" => "true"}×
+							%h4
+								= fa_icon 'exclamation-circle', class: "icon"
+								= flash[:notice]
+					= yield
+			%footer.main-footer
+				%strong
+					= t :copyright
+					&copy;
+					= Time.now.year
+				%strong= t("valynteen_solutions")
+		= yield :body_button
+		= javascript_include_tag 'shared_media/application'
+		= javascript_include_tag params[:controller]
+		= yield :javascripts

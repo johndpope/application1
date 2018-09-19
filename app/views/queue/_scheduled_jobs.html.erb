@@ -1,0 +1,5 @@
+<% if File.exists? (Rails.root.join('app', 'views', 'queue', 'kind', "_#{params[:name]}_scheduled_jobs.html.erb")) %>
+  <%= render partial: "queue/kind/#{params[:name]}_scheduled_jobs", locals: { jobs: jobs } %>
+<% else %>
+  <%= render partial: "queue/common_scheduled_jobs", locals: { jobs: jobs } %>
+<% end %>

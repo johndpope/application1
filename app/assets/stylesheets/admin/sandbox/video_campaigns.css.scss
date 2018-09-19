@@ -1,0 +1,9 @@
+.admin_sandbox_video_campaigns{
+	&.index{
+		#sandbox_video_campaign_items{
+			.id{width: 40px;}
+			.order_nr{width: 80px;}			
+			.is_active {width: 80px;}
+		}
+	}
+}

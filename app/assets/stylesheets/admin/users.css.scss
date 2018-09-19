@@ -1,0 +1,25 @@
+thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+  vertical-align: middle !important;
+}
+.admin_users{
+	&.index{
+		#admin_user_items{
+			.id{width: 40px;}
+			.roles{width: 120px;}
+		}
+		.phone-type {
+			width: 200px;
+		}
+		.phone {
+			width: 325px;
+			height: 28px;
+		}
+		.delete-link {
+			width: 35px;
+			height: 28px;
+			.fa {
+				display: block !important;
+			}
+		}
+	}
+}

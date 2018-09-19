@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  email_from: MyString
+  email_to: MyString
+  email_date: MyString
+  email_subject: MyString
+  email_body: MyText
+  channel_name: MyString
+  youtube_channel_id: 1
+  strike: 1
+  youtube_video_ids: MyText
+
+two:
+  email_from: MyString
+  email_to: MyString
+  email_date: MyString
+  email_subject: MyString
+  email_body: MyText
+  channel_name: MyString
+  youtube_channel_id: 1
+  strike: 1
+  youtube_video_ids: MyText

@@ -1,0 +1,36 @@
+<thead>
+  <tr>
+    <th rowspan="2" class="sort text-center" id="id-th" data-field="id" style="width: 45px;" class="text-center">ID</th>
+    <th rowspan="2" class="sort" id="address-th" data-field="address">Address</th>
+    <th rowspan="2" class="sort text-center" id="port-th" data-field="port" style="width: 40px;">Port</th>
+    <th rowspan="2" class="text-center">Target</th>
+    <th rowspan="2">Country</th>
+    <th rowspan="2" class="sort text-center" id="stage1-th" data-field="stage1" style="width: 60px;">Spam Check</th>
+    <th rowspan="2" class="sort text-center" id="stage2-th" data-field="stage2" style="width: 60px;">Proxy Alive</th>
+    <th rowspan="2" class="sort text-center" id="stage3-th" data-field="stage3" style="width: 60px;">Google Test</th>
+    <th rowspan="2" class="sort text-center" id="stage4-th" data-field="stage4" style="width: 60px;">Blacklist</th>
+    <th rowspan="2" class="sort text-center" id="stage5-th" data-field="stage5" style="width: 60px;">Zenno Lab</th>
+    <th rowspan="2" class="sort text-center" id="rating-th" data-field="rating" style="width: 60px;">Rating</th>
+    <th colspan="3" class="text-center" style="width: 180px;" title="Accounts assigned to clients">Assigned Accounts</th>
+    <th colspan="3" class="text-center" style="width: 190px;" title="Unassigned accounts">Unassigned Accounts</th>
+    <th rowspan="2" class="text-center" style="width: 45px;" title="Total active accounts">Total Active</th>
+    <th rowspan="2" class="text-center" style="width: 45px;" title="Total inactive accounts">Total Inactive</th>
+    <th rowspan="2" class="text-center" style="width: 45px;" title="Total deleted accounts">Total Deleted</th>
+    <th rowspan="2" class="text-center" style="width: 65px;" title="Actual Accounts">Actual Accounts</th>
+    <th rowspan="2" class="text-center" style="width: 65px;" title="All accounts, including old bought accounts">All Accounts</th>
+    <th rowspan="2" class="sort text-center" id="updated_at-th" data-field="updated_at" style="width: 65px;">Updated At</th>
+    <th rowspan="2" class="sort text-center" id="last_assigned_at-th" data-field="last_assigned_at" style="width: 65px;">Last Assigned</th>
+    <!-- <th class="sort" id="updated_at-th" data-field="updated_at" style="width: 130px;">Updated At</th> -->
+    <% unless display_only %>
+      <th rowspan="2" style="width: 200px;" class="text-center">Actions</th>
+    <% end %>
+  </tr>
+  <tr>
+    <th class="text-center" style="color: green;">Active</th>
+    <th class="text-center" style="color: #ff7a00;">Inactive</th>
+    <th class="text-center" style="color: #d73925;">Deleted</th>
+    <th class="text-center" style="color: green;">Active</th>
+    <th class="text-center" style="color: #ff7a00;">Inactive</th>
+    <th class="text-center" style="color: #d73925;">Deleted</th>
+  </tr>
+</thead>

@@ -1,0 +1,38 @@
+- breadcrumb :artifacts_image_blender, theme: "bootstrap"
+- header t("artifacts.image_blender")
+- options = Templates::ImageTemplate::TYPES.map{|template_type| [t("templates.image_template.types.#{template_type.gsub("Templates::","")}"), template_type]}.sort!
+.row
+  .col-md-4
+    = form_tag artifacts_blend_image_path, data:{remote: true}, id:"form_blend" do |f|
+      .panel{class: "panel-default"}
+        .panel-heading
+          %h4= t("artifacts.blending_settings")
+        .panel-body
+          #blending_settings
+            .form-group
+              = label_tag "", t('artifacts.state')
+              = hidden_field :image_blender, :region1
+            .form-group
+              = label_tag "", t('artifacts.county')
+              = hidden_field :image_blender, :region2
+            .form-group
+              = label_tag "", t('artifacts.city')
+              = hidden_field :image_blender, :city
+
+            .form-group
+              = label_tag '', t("artifacts.template_types")
+              = select :image_blender, :type,
+                options_for_select(options),
+                {include_blank: true}, {class:'form-control', data: {url: artifacts_templates_by_type_path}}
+            #templates_by_type
+            #templates_settings
+            .form-group
+              = button_tag class: "btn btn-success btn-lg button_blend", type: "button", data: {disable_with: t("blending"), url: artifacts_blend_image_path} do
+                = fa_icon 'cogs'
+                = t("blend")
+  .col-md-8
+    .panel{class: "panel-default"}
+      .panel-heading
+        %h4= t("artifacts.blended_image")
+      .panel-body
+        #blended_image_wrapper

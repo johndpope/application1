@@ -1,0 +1,159 @@
+<%
+  modal = render partial: 'form', locals: {item: @video}
+  modal_dom_id = dom_id(@video.becomes(Social::Video), 'modal')
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#<%= modal_dom_id %>").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove();
+})
+
+$('#social_video_tag_list').tagsinput({
+  tagClass: "label label-primary",
+  placeholder: "Enter tags..."
+});
+
+$('#social_video_client_id').select2({
+  allowClear: true,
+  placeholder: "Choose ..."
+});
+
+$('#social_video_country').select2({
+  placeholder: 'Choose country',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/countries.json',
+    quietMillis: 300,
+    data: function (term, page) { return { name_or_code_cont: term, page: page, per_page: 10, sorts: 'name asc' } },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        ),
+        more: (page * 10) < data.total
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: element.val(), text: element.data('name')}
+    callback(data);
+  }
+}).on("change", function(e){
+  $('#social_video_region1, #social_video_region2, #social_video_city').select2('data', '');
+  console.log(e);
+});
+
+$('#social_video_region1').select2({
+  placeholder: 'Choose state',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/regions.json',
+    quietMillis: 300,
+    data: function (term, page) {
+      return {
+        name_or_code_cont: term,
+        level_eq: 1,
+        country_id_eq: $('#social_video_country').val(),
+        page: page,
+        per_page: 10,
+        sorts: 'name asc'
+      }
+    },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        )
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: element.val(), text: element.data('name')}
+    callback(data);
+  }
+}).on("change", function(e){
+  $('#social_video_region2, #social_video_city').select2('data', '');
+});
+
+$('#social_video_region2').select2({
+  placeholder: 'Choose county',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/regions.json',
+    quietMillis: 300,
+    data: function (term, page) {
+      return {
+        name_or_code_cont: term,
+        level_eq: 2,
+        country_id_eq: $('#social_video_country').val(),
+        parent_id_eq: $('#social_video_region1').val(),
+        page: page,
+        per_page: 10,
+        sorts: 'name asc'
+      }
+    },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        )
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: element.val(), text: element.data('name')}
+    callback(data);
+  }
+}).on("change", function(e){
+  $('#social_video_city').select2('data', '');
+});
+
+$('#social_video_city').select2({
+  placeholder: 'Choose city',
+  width: '100%',
+  minimumInputLength: 0,
+  allowClear: true,
+  ajax: {
+    url: '/geobase/localities.json',
+    quietMillis: 300,
+    data: function (term, page) {
+      return {
+        name_or_code_cont: term,
+        country_id_eq: $('#social_video_country').val(),
+        primary_region_id_eq: $('#social_video_region1').val(),
+        page: page,
+        per_page: 10,
+        sorts: ['population desc', 'name asc']
+      }
+    },
+    results: function (data, page){
+      return {
+        results: $.map(
+          data.items,
+          function(e){
+            return { id: e.id, text: e.name }
+          }
+        )
+      }
+    }
+  },
+  initSelection: function(element,callback){
+    var data = {id: element.val(), text: element.data('name')}
+    callback(data);
+  }
+});

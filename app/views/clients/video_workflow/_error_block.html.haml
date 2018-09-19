@@ -1,0 +1,16 @@
+.box.box-danger#client_workflow_errors
+	.box-header
+		%h3.box-title
+			= fa_icon 'warning'
+			General Workflow Errors
+	.box-body
+		- @delayed_jobs.each do |k,v|
+			- if v[:failed_count] > 0
+				.callout.callout-danger
+					%h4
+						= fa_icon 'warning'
+						= k.to_s.titleize
+					%p
+						You have
+						%strong= v[:failed_count]
+						Delayed Jobs failed

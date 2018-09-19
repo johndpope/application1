@@ -1,0 +1,13 @@
+.admin_whenever_cron_jobs{
+	&.index{
+		#whenever_cron_job_items{
+			.id:{width: 40px;}
+			.period{width: 100px;}
+			.at{width: 80px;}
+			.job_group{width: 150px;}
+			.job_type{width: 120px;}
+			.job_value{width: 300px;}
+			.is_active{width: 80px;}
+		}
+	}
+}

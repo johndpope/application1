@@ -1,0 +1,28 @@
+%tr{class: "template-upload fade in audios", id: dom_id(audio, "row")}
+  %td= audio.id
+  %td
+    %audio{controls: "controls", class: 'audio_player', autoplay: false, preload: "none"}
+      %source{src: "#{audio.file}", type: "audio/mp3"}
+  %td= audio.file_file_name
+  %td= audio.title
+  %td= audio.try(:clients).try(:name)
+  %td= audio.notes
+  %td= "#{(audio.file_file_size.to_f / 1000000).round(2)} Mb"
+  %td
+    - unless audio.tags.blank?
+      = link_to 'javascript://', class: "btn btn-default btn-sm tags_for_uploaded_audio",
+        data: {container: "body", tags: audio.tags, placement: "top", toggle: "popover", trigger: "hover"} do
+        = fa_icon 'tags'
+  %td.actions
+    = link_to edit_shared_media_audio_path(audio, authenticity_token: form_authenticity_token),
+      :data => {remote: true},
+      :title => 'Edit',
+      :class => 'btn btn-default btn-sm edit' do
+      = fa_icon 'pencil'
+
+    = link_to shared_media_audio_path(audio, authenticity_token: form_authenticity_token),
+      :method => "delete",
+      :data => {confirm: 'Are you sure?', remote: true},
+      :title => 'Delete',
+      :class => 'btn btn-default btn-sm delete' do
+      = fa_icon 'trash-o'

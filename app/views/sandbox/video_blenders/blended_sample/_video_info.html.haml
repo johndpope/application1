@@ -1,0 +1,24 @@
+%video{controls: "controls", preload: "auto"}
+	%source{src: @video.video.url, type: "video/mp4"}
+%h3.title
+	= @video.title
+- unless @video.description.blank?
+	%p= @video.description
+- unless @video.duration.blank?
+	%span.duration
+		%b Duration:
+		&nbsp;
+		= Time.at(@video.duration).utc.strftime('%H:%M:%S')
+	&nbsp;|&nbsp;
+- unless @video.media_info.blank?
+	%span.duration
+		%b Resolution:
+		= "#{@video.media_info.video[0].width}x#{@video.media_info.video[0].height}"
+	%div{style: "float: right;"}
+		%span.duration
+			%b Frame rate:
+			= "#{@video.media_info.video[0].frame_rate}"
+		&nbsp;|&nbsp;
+		%span.duration
+			%b Bit rate:
+			= "#{@video.media_info.video[0].bit_rate}"

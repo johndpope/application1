@@ -1,0 +1,47 @@
+.form-group{title: "In Video Title will be used 1 component (either Subject Video component (from subject videos tab) OR product video title component (from products tab) OR subject component (from YouTube Setup tab))"}
+	.select2-tags-wrapper
+		= f.label "subject_title_components_csv", "Subject video title components"
+		%span{id: "source_video_subject_title_components_csv_count", class: "badge"}= "0"
+		= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.subject_video_title_components', :default => "")})
+	= f.hidden_field :subject_title_components_csv, data: { placeholder: "Subject title components" }
+#descriptions-accordion.panel-group{"aria-multiselectable" => "true", :role => "tablist", :title => "Short statements will be used in YouTube Video Cards, Annotations and Call to Action Overlays"}
+	- has_errors_in_descriptions = (@source_video.errors.messages[:"wordings.source"].present? || @source_video.errors.messages[:"wordings.name"].present?) ? true: false
+	.panel.panel-default
+		#descriptions_heading.panel-heading
+			%h4.panel-title
+				%a{"aria-controls" => "descriptions", "aria-expanded" => "true", "data-parent" => "descriptions-accordion", "data-toggle" => "collapse", :href => "#descriptions", :role => "button"}
+					%b Descriptions & short statements
+					%span.badge.calc= @source_video.wordings.size
+					= tooltip_by_field({tooltip_text: t('tooltips.subject_videos.description_and_short_statements', :default => "")})
+				- if has_errors_in_descriptions
+					%small.text-danger One of the fields is blank
+		#descriptions.panel-collapse.collapse{"aria-labelledby" => "descriptions"}
+			.panel-body
+				.form-group
+					= f.fields_for :wordings do |builder|
+						= builder.hidden_field :resource_id, value: @source_video.id
+						= builder.hidden_field :resource_type, value: 'SourceVideo'
+						%fieldset.form
+							%legend
+								= builder.link_to_remove '<i class="glyphicon glyphicon-remove"></i> Remove'.html_safe, data: {confirm: 'Are you sure?'}, class: 'btn btn-xs btn-danger btn-flat'
+							.row
+								.col-md-3
+									%label.control-label Type
+									= builder.select(:name, {'long_description'=>{'data-text-type-limit' => 1000}, 'short_statement'=>{'data-text-type-limit' => CallToActionOverlay::HEADLINE_LIMIT}}, {include_blank: true}, class: 'form-control description-name-select m-b')
+							.form-group
+								%label.control-label Text
+								.counter-characters.pull-right
+									Characters count:
+									%span.badge.calc-one 0
+								- limits = {'short_statement'=>CallToActionOverlay::HEADLINE_LIMIT, 'short_description'=>300, 'long_description'=>1000}
+								- if builder.object.id.present?
+									= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: "Enter text (character limit: #{limits[builder.object.name]})", maxlength: limits[builder.object.name]
+								- else
+									= builder.text_area :source, class: 'form-control ', rows: '3', placeholder: 'Enter text'
+					= f.link_to_add '<i class="fa fa-plus"></i> Add text'.html_safe, :wordings, class: "btn btn-sm btn-primary"
+%div{id: "tag_list_block", class:"form-group"}
+	%div
+		= f.label :tags, class: 'control-label'
+		= tooltip_by_field({tooltip_text: t("tooltips.common.tags", :default => "")})
+		%span{id: "tag_list_count", class: "badge"}= "0"
+	= f.text_field :tag_list, class: 'form-control', placeholder: 'Enter tags', value: @source_video.tag_list.to_a.sort.join(",")

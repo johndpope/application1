@@ -1,0 +1,2 @@
+module BotServersHelper
+end

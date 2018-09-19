@@ -1,0 +1,76 @@
+%li{class: ('active' if params[:controller] == 'dashboard')}
+	= link_to dashboard_path do
+		= fa_icon 'dashboard'
+		%span Dashboard
+%li
+	= link_to admin_users_path do
+		= fa_icon 'gears'
+		%span Admin Tools
+%li
+	= link_to public_credits_youtube_videos_path, targey: "BLANK" do
+		= fa_icon 'copyright'
+		%span= t('media_credits')
+%li
+	= link_to admin_sandbox_root_path do
+		= fa_icon 'cubes'
+		%span= t('sidebar.sandbox')
+%li
+	= link_to sandbox_root_path	 do
+		= fa_icon 'map'
+		%span= t('sidebar.sales_portal')
+%li
+	= link_to search_sandbox_video_marketing_campaign_forms_path, target: "_blank" do
+		%i.glyphicon.glyphicon-log-in
+		%span= t('sidebar.sales_portal_client_signup')
+%li
+	= link_to 'http://crm.echovideoblender.com', target: "_blank" do
+		= fa_icon 'shopping-cart'
+		%span= 'CRM System'
+%li{class: ('active' if ['clients', 'representatives', 'products', 'client_landing_pages', 'contracts', 'accounts_setup'].include? params[:controller])}
+	= link_to clients_path do
+		= fa_icon 'user'
+		%span Clients
+%li{class: ('active' if params[:controller] == 'invoices')}
+	= link_to invoices_path do
+		= fa_icon 'paypal'
+		%span Invoices
+%li{class: ('active' if params[:controller] == 'blending_patterns')}
+	= link_to blending_patterns_path do
+		= fa_icon 'files-o'
+		%span Blending Patterns
+
+%li.treeview{class: ('active' if %w(host_machine email_accounts youtube_channels youtube_videos youtube_video_annotations youtube_video_cards wordings ip_addresses bot_servers training_infos social_accounts industries domains dealers youtube_video_search_ranks).include? params[:controller])}
+	= link_to 'javascript:' do
+		= fa_icon 'folder'
+		%span Assets
+		= fa_icon 'angle-left', class: "pull-right"
+	%ul.treeview-menu
+		%li{class: ('active' if params[:controller] == 'host_machine')}
+			= link_to host_machines_path do
+				= fa_icon 'angle-double-right', text: "Host Machines"
+		%li{class: ('active' if params[:controller] == 'email_accounts' &&  params[:action] != 'order')}
+			= link_to email_accounts_path do
+				= fa_icon 'angle-double-right', text: "Email Accounts"
+		%li{class: ('active' if params[:controller] == 'email_accounts' &&  params[:action] == 'order')}
+			= link_to "/email_accounts/tools/order" do
+				= fa_icon 'angle-double-right', text: "Order Email Accounts"
+		%li{class: ('active' if params[:controller] == 'youtube_channels' &&  params[:action] != 'order')}
+			= link_to "/youtube_channels" do
+				= fa_icon 'angle-double-right', text: "Youtube Channels"
+		%li{class: ('active' if %(youtube_videos youtube_video_annotations youtube_video_cards).include?(params[:controller]) && params[:action] != 'order')}
+			= link_to "/youtube_videos" do
+				= fa_icon 'angle-double-right', text: "Youtube Videos"
+		%li{class: ('active' if params[:controller] == 'social_accounts')}
+			= link_to social_accounts_path do
+				= fa_icon 'angle-double-right', text: "Social Accounts"
+		%li{class: ('active' if params[:controller] == 'wordings' && params[:action] != 'order')}
+			= link_to wordings_path do
+				= fa_icon 'angle-double-right', text: "Wordings"
+		- %w(dealers industries ip_addresses domains bot_servers training_infos).each do |c|
+			%li{class: ('active' if params[:controller] == c)}
+				= link_to eval("#{c}_path") do
+					= fa_icon 'angle-double-right', text: c.humanize
+		%li{class: ('active' if params[:controller] == 'youtube_video_search_ranks')}
+			= link_to youtube_video_search_ranks_path do
+				= fa_icon 'angle-double-right', text: "Search Ranks"
+= render partial: "layouts/roles/admin/custom_sidebar"

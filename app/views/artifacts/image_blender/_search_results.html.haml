@@ -1,0 +1,42 @@
+- popover_titles = {tag_list: t("artifacts.images.tags"), special_tag_list: t("artifacts.images.special_tags.special_tags")}
+#image_blender_search_results
+  .row
+    .col-md-12{style: "margin-top: 10px"}
+      %label{class: "control-label"}
+        = t('items_totally')
+      %span{class: "label label-default"}
+        = "#{@images.total_count}"
+
+  #paginator
+    = paginate(@images, :remote => true, :theme => "bootstrap")
+  .row
+    - @images.each_slice(3) do |image_row|
+      .row
+        .col-md-12
+          - image_row.each do |image|
+            - unless image.file.path.blank?
+              .col-md-4
+                %div.image-block{class: "thumbnail"}
+                  = image_tag image.try(:file).try(:url, :thumb), title: image.title, class: "img-responsive found-image", width: "300px",
+                    data: {path: image.try(:file).try(:path), id: image.id, dismiss: "modal"}
+                  %hr
+                  .btn-group{style: "width: 100%"}
+                    = link_to "#{image.file.url}", title: "show original", class: "btn btn-default btn-sm", target: "_BLANK" do
+                      = fa_icon 'eye', text: " #{image.id}"
+
+                    = link_to artifacts_image_info_path(image.id), title: "Image info:", class: "btn btn-default btn-sm info", data: {:remote => true, :content => "", :toggle => "popover", :placement => "bottom" } do
+                      = fa_icon 'info-circle', text: " Image info"
+
+                    = link_to artifacts_image_path(image.id), title: "show this image", class: "btn btn-default btn-sm", target: "_BLANK" do
+                      = fa_icon "image"
+
+                    = link_to 'javascript:', class: "btn btn-default btn-sm tags-toggle",
+                      data: { :tags => (image.tag_list.join(',') if image.tag_list.any?)},
+                      title: popover_titles[:tag_list] do
+                      = fa_icon "tags"
+
+                    - unless image.title.blank?
+                      = link_to "#{truncate(image.title, :length => 45, :separator => ' ')}", "#", title: "#{image.title}", class: "btn btn-default btn-sm", style: "width:100%"
+  %hr
+  #paginator
+    = paginate(@images, :remote => true, :theme => "bootstrap")

@@ -1,0 +1,7 @@
+.form-group{class: 'control-box'}
+  = f.label :value, class: 'control-label'
+  = tooltip_by_field({table_name: "templates_aae_project_dynamic_texts", table_column: "value"})
+  %p.help-block
+    %b Samples:
+    = I18n.t("templates_aae_projects.project_text_type_hints.#{f.object.text_type}")
+  = f.text_area :value, class: "form-control text-counter #{'has-error' if f.object.value.to_s.size > f.object.text_type_limit}", title: "#{'Too long! Limit is ' + f.object.text_type_limit.to_s + ' characters.' if f.object.value.to_s.size > f.object.text_type_limit}", rows: 3, maxlength: "#{f.object.text_type_limit}", placeholder: "Enter #{t("templates_aae_projects.project_text_types.#{f.object.text_type}")} (character limit: #{f.object.text_type_limit})"

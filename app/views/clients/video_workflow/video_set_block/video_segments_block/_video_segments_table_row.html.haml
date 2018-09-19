@@ -1,0 +1,91 @@
+- tr_class = if bvc.subject?
+	- 'info'
+- elsif bvc.try(:dynamic_aae_project).try(:rendered_video).try(:blank?)
+	- 'warning'
+- elsif !bvc.try(:dynamic_aae_project).try(:rendered_video).try(:blank?) && bvc.accepted == true
+	- 'success'
+- elsif bvc.accepted == false
+	- 'danger'
+
+%tr{class: tr_class, id: dom_id(bvc)}
+	%td{class: "text-center"}= bvc.order_nr
+	%td{class: "text-center"}= bvc.id
+	%td{class: "text-center"}= bvc.created_at.strftime('%m-%d-%Y %I:%M:%S %p')
+	%td{class: "text-center"}= bvc.try(:dynamic_aae_project).try(:rendered_at).try(:strftime,'%m-%d-%Y %I:%M:%S %p')
+	%td{class: "text-center"}
+		- unless bvc.templates_dynamic_aae_project_id.blank?
+			= bvc.templates_dynamic_aae_project_id
+			-unless bvc.try(:dynamic_aae_project).try(:tar_project).blank?
+				= link_to 'tar archive', bvc.dynamic_aae_project.tar_project.url, download: bvc.dynamic_aae_project.tar_project.url, style: "margin-left: 5px;"
+	%td{class: "text-center"}= bvc.try(:aae_project).try(:id)
+	%td{class: 'chunk_type'}
+		- unless bvc.chunk_type.blank?
+			= t("templates_aae_projects.project_types.#{bvc.chunk_type}")
+	%td
+		- unless bvc.dynamic_aae_project.blank?
+			- unless bvc.dynamic_aae_project.try(:rendering_machine).try(:name).blank?
+				= link_to bvc.dynamic_aae_project.rendering_machine.name, admin_rendering_machines_path(q: {id_eq: bvc.dynamic_aae_project.rendering_machine.id}), target: "_blank"
+	%td{class: 'segment-generation text-center'}
+		- unless bvc.chunk_type.subject?
+			- is_generated = bvc.try(:dynamic_aae_project).try(:is_created?) == true
+			- icon_class = 'refresh'
+			- label_class = 'warning'
+			- if is_generated
+				- icon_class = 'check'
+				- label_class = 'success'
+			- elsif @delayed_jobs[:segment_generation].key?(bvc.id)
+				- if @delayed_jobs[:segment_generation][bvc.id].first.attempts > 0
+					- icon_class = 'exclamation-triangle-o'
+					- label_class = 'danger'
+			= link_to (is_generated ? 'javascript://' : client_delayed_jobs_path(@client.id, @blended_video.id, 'segment_generation', video_segment_id: bvc.id)), data: (is_generated ? {} : {remote: true, disable_with: '<i class="fa fa-refresh fa-spin"></i>'})	do
+				%span.label{class: "label-#{label_class}"}
+					= fa_icon icon_class
+	%td{class: "text-center"}
+		- unless bvc.chunk_type.subject?
+			- previewable = !bvc.try(:dynamic_aae_project).try(:rendered_video).try(:blank?) || bvc.subject?
+			- icon_class = previewable == true ? 'success' : 'warning'
+			- icon = previewable == true ? 'check' : 'refresh'
+			%span.label{class: "label-#{icon_class}"}
+				= fa_icon "#{icon}"
+	%td{class: "text-center"}
+		- linkable = !bvc.try(:dynamic_aae_project).try(:rendered_video).try(:blank?) || bvc.subject?
+		- if linkable
+			- url = bvc.subject? ? bvc.try(:blended_video).try(:source_video).try(:video).try(:url) || bvc.try(:blended_video).try(:source_video).try(:donor).try(:video).try(:url) : bvc.try(:dynamic_aae_project).try(:rendered_video).try(:url)
+			= link_to url, class: "preview-video", rel: "fancybox-button", title: "Preview Video Chunk" do
+				= fa_icon 'youtube-play lg'
+	- display_content = !bvc.subject? && !bvc.try(:dynamic_aae_project).try(:rendered_video_file_name).blank?
+	%td{class: 'status text-center'}
+		- if display_content
+			- unless bvc.accepted.nil?
+				- label_class = bvc.accepted? ? 'success' : 'danger'
+				- label_text = bvc.accepted? ? 'Accepted' : 'Rejected'
+				%span.label{class: "label-#{label_class}"}= label_text
+	%td{class: "reviewed-by text-center"}= bvc.versions.last.whodunnit
+	%td{class: "notes text-center"}
+		- unless bvc.try(:dynamic_aae_project).try(:notes).blank?
+			= fa_icon 'sticky-note', data: {container: "body", content: bvc.dynamic_aae_project.notes.to_s, placement: "top", toggle: "popover", trigger: "hover"}, style:"cursor: pointer"
+	%td{class: 'actions'}
+		- if display_content
+			= link_to client_approve_blended_video_chunk_path(@client.id, bvc, true), data: {remote: true, method: 'post', disable_with: '...'}, class: "btn btn-sm btn-success#{' disabled' if bvc.accepted == true}", title: "Approve Video Chunk", style: "margin-right: 3px;" do
+				= fa_icon 'thumbs-o-up'
+			= link_to client_approve_blended_video_chunk_path(@client.id, bvc, false), data: {remote: true, method: 'post', disable_with: '...'}, class: "btn btn-sm btn-danger#{' disabled' if bvc.accepted == false}", title: "Reject Video Chunk", style: "margin-right: 3px;" do
+				= fa_icon 'thumbs-o-down'
+			= link_to client_approve_blended_video_chunk_path(@client.id, bvc, nil), data: {remote: true, method: 'post', disable_with: '...'}, class: "btn btn-sm btn-danger#{' disabled' if bvc.accepted.nil?}", title: "Clear Status", style: "margin-right: 3px;" do
+				= fa_icon 'eraser'
+			= link_to client_show_blended_video_chunk_notes_path(@client.id, bvc, nil), data: {remote: true, method: 'get', disable_with: '...'}, class: "btn btn-sm btn-warning", style: "margin-right: 3px;", title: "Notes" do
+				= fa_icon 'sticky-note'
+		- if !bvc.subject? && bvc.blended_video.youtube_video.blank? && !@has_youtube_video_jobs
+			= link_to client_regenerate_video_segment_path(@client.id, bvc.id), data: {remote: true, method: 'post', disable_with: '...'}, class: "btn btn-sm btn-primary", title: "Regenerate Video Segment", style: "margin-right: 3px;" do
+				= fa_icon 'gear'
+
+:javascript
+	$(".preview-video").each(function() {
+		var content, src;
+		src = $(this).attr("href");
+		content = '<video src="' + src + '" autoplay="true" type="video/mp4" controls="true" style="height: 540px; width: 960px" onloadstart="this.volume=0.35"></video>';
+		$(this).fancybox({
+			content: content,
+			minHeight: 540,
+			minWidth: 960
+		});
+	});

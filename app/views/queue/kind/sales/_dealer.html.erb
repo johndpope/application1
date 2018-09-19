@@ -1,0 +1,76 @@
+<% dealer = job.resource.resource %>
+<% if dealer.present? %>
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <div class="row">
+        <div class="col-md-3">
+          <div style="margin-top: 10px;">
+            <%= hidden_field_tag :start_time %>
+            <%= hidden_field_tag :end_time %>
+            <div class="btn-group btn-group-custom" style="width: auto;">
+              <a id="start_call" class="btn btn-success" href="javascript://" title="Start Call"><i class="fa fa-play"></i> Start Call</a>
+            </div>
+            <div class="btn-group btn-group-custom" style="width: auto;">
+              <a id="end_call" class="btn btn-danger disabled" style="display: none;" href="javascript://" title="End Call"><i class="fa fa-stop"></i> End Call</a>
+            </div>
+            <%= tooltip_by_field({tooltip_text: t("tooltips.queue.start_call", :default => "Press Start Call button (green) when you begin your call. When the call has ended, press the End Call button (red).")}) %>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label style="padding-top: 5px; margin-right: 5px;"><i class="fa fa-lightbulb-o"></i> Status</label>
+          <div class="input-group" style="width: auto;">
+            <%= select_tag(:job_status, options_for_select(Job::SALES_CALLS_STATUSES.to_h.collect{ |key, value| [key.to_s.humanize, value] }, Job::SALES_CALLS_STATUSES["Successful"]), { class: 'dropdown-toggle select-box form-control', name: "job[status]", style: "width: 200px;" }) %>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label style="padding-top: 5px; margin-right: 5px;"><i class="fa fa-fw fa-calendar-plus-o"></i> Reschedule <%= tooltip_by_field({tooltip_text: t("tooltips.queue.reschedule_date", :default => "Put your cursor in the data field box and the system will provide you with a calendar. Firstly, indicate the time and then, the date of the recall.")}) %></label>
+          <div class="input-group" style="width: auto;">
+            <input id="reschedule_date" class="form-control" type="text" name="reschedule_date" value="" style="width: 200px;" title="Click on the date after choosing time to apply changes"/>
+            <span class="input-group-btn pull-left">
+              <a id="clear_rescheduled" class="btn btn-default" href="javascript://" title="Clear"><i class="fa fa-fw fa-eraser"></i></a>
+            </span>
+          </div>
+        </div>
+        <div id="reassign_to_div" class="col-md-3" style="display: none;">
+          <label style="padding-top: 5px; margin-right: 5px;"><i class="fa fa-user"></i> Reassign to <%= tooltip_by_field({tooltip_text: t("tooltips.queue.job_reassigned_to", :default => "The current user is selected by default. You can reassign scheduled call to another user. For example, you can reassign Presentation for other person.")}) %></label>
+          <div class="input-group" style="width: auto;">
+            <%= hidden_field_tag :current_admin_user_id, current_admin_user.id %>
+            <%= select_tag(:job_reassigned_to, options_from_collection_for_select(AdminUser.distinct.order("first_name ASC NULLS LAST, email ASC"), :id, :full_name, current_admin_user.id), { include_blank: false, class: 'dropdown-toggle select-box form-control', name: "job[reassigned_to]", placeholder: "Select user", style: "width: 200px;" }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box box-success">
+    <div class="box-header with-border">
+      <h1 class="box-title pull-left" title="Dealer name">
+        <b><i class="fa fa-building"></i> Company Info</b>
+      </h1>
+      <div class="pull-right">
+        <div class="input-group" style="width: 100%;">
+          <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_dealer_path(dealer, queue: true), remote: true , class: 'btn btn-sm btn-primary', style: "margin-right: 10px;", title: "Edit dealer" %>
+          <button type="button" class="btn btn-box-tool pull-right" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="box-body">
+      <%= render partial: "dealers/dealer_queue_row", locals: { dealer: dealer } %>
+    </div>
+  </div>
+  <%= render partial: "contact_people/index", locals: { contact_people: job.resource.resource.contact_people } %>
+  <%= render partial: "sent_emails/index", locals: { sent_emails: job.resource.resource.sent_emails } %>
+  <%= render partial: "comments/index", locals: { comments: job.resource.comments } %>
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title"><i class="fa fa-fw fa-history"></i> <b>History</b></h3>
+      <div class="box-tools pull-right">
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body">
+      <%= render partial: "queue/history", locals: { jobs: job.history_items } %>
+    </div>
+  </div>
+<% end %>

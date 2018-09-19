@@ -1,0 +1,32 @@
+<div class="show-mail">
+	<div class="head">
+		<% if @contact_us.client.present? && @contact_us.client.logo_file_name.present? %>
+			<img class="logo" src="<%= "http://sandbox.echovideoblender.net/system/clients/logos/#{@contact_us.client.id}/thumb/#{@contact_us.client.logo_file_name}" %>" alt="Client logo">
+		<% else %>
+			<img class="logo" src="/images/man-photo.png" alt="No logo">
+		<% end %>
+		<% if @contact_us.name.present? %>
+			<div class="page-header">
+				<h3>
+					<%= "<span class=\"label label-success right\"><i class=\"glyphicon glyphicon-phone mr\"></i> #{@contact_us.phone}</span>".html_safe if @contact_us.phone.present? %>
+					<%= @contact_us.name %>
+					<%= "<small>< #{@contact_us.email} ></small>".html_safe if @contact_us.email.present? %>
+				</h3>
+			</div>
+		<% end %>
+		<% if @contact_us.read == 'true' %>
+			<button id="mark_as_read" class="btn btn-default btn-xs btn-flat right" data-status="false" type="button"><i class="glyphicon glyphicon-remove mr"></i> Mark as unread</button>
+		<% else %>
+			<button id="mark_as_read" class="btn btn-primary btn-xs btn-flat right" data-status="true" type="button"><i class="glyphicon glyphicon-ok mr"></i> Mark as read</button>
+		<% end %>
+		<% if @contact_us.client.present? %>
+			<p class="transparent"><%= "Client name: #{@contact_us.client.try(:name)}" %>, <%= "ID: #{@contact_us.client.try(:id)}" %></p>
+		<% end %>
+	</div>
+	<hr class="cb">
+	<div class="main"><%= @contact_us.text %></div>
+	<div class="foot">
+		Date: <code><%= local_time(@contact_us.created_at, format: '%m/%d/%y %I:%M %p', title: @contact_us.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))  %></code>
+		<%#= "from: #{@contact_us.source}" if @contact_us.source.present? %>
+	</div>
+</div>

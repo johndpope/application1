@@ -1,0 +1,26 @@
+.modal.fade{ id: 'modal_image_image' }
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button.close{ type: 'button', data: { dismiss: 'modal' } }
+          %span &times;
+        %h4= "Images for dynamic image: #{@item.id}"
+        .row
+          .col-md-12
+            = "Dynamic Image: #{@item.title}"
+      .modal-body
+        .row
+          - @dynamic_image_images.each do |item|
+            .col-md-4
+              %div.image-block{class: "thumbnail"}
+                = link_to (image_tag item.file.url(:thumb), {class: "thumbnail img-thumbnail"}), item.file.url, {target: '_blank'}
+                .btn-group
+                  = link_to "#{item.id}", "#", title: "image id", class: "btn btn-default btn-sm"
+                  = link_to "#{item.title}", "#", title: "image name", class: "btn btn-default btn-sm"
+                  = link_to item.file.url, class: "btn btn-default btn-sm", title: "image's dimensions", target: "_BLANK" do
+                    - dimensions = Paperclip::Geometry.from_file(item.file.path)
+                    = fa_icon 'file-image-o', text: [dimensions.width.to_i, dimensions.height.to_i].join('x')
+                  = link_to artifacts_image_path(item.id), title: "show this image", class: "btn btn-default btn-sm", target: "_BLANK" do
+                    = fa_icon "image"
+      .modal-footer
+        = button_tag 'Cancel', {:class => 'btn btn-success',"data-dismiss" => "modal"}

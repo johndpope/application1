@@ -1,0 +1,36 @@
+- title t('templates_aae_projects.aae_templates')
+- header @client.name
+- small_header 'Dynamic Text Strings'
+- breadcrumb :client_dynamic_text_strings, @client
+
+= render partial: "navigation"
+- content_for(:javascripts){javascript_include_tag 'jquery.textcounter'}
+
+.row
+  .col-md-2
+    .box.box-solid
+      .box-header.with-border
+        %h3.box-title Video Segment Types
+      .box-body.no-padding
+        %ul.nav.nav-pills.nav-stacked
+          - @client_aae_template_types.each_with_index do |project_type, index|
+            - active = project_type == params[:project_type] || (params[:project_type].blank? && index == 0) ? 'active' : ''
+            - link = url_for(controller: "clients", action: "aae_templates", client_id: @client.id, project_type: project_type)
+            %li{class: "#{active}"}
+              = link_to "#{t('templates_aae_projects.project_types.' + project_type)} <i class='fa fa-question-circle popover-box pull-right' data-content=\" #{t('templates_aae_projects.project_types.tooltips.' + project_type)}\" data-toggle='popover'></i>".html_safe, link
+  .col-md-10
+    - Templates::AaeProjectText::PROJECT_TEXT_TYPES[@project_type.to_sym].each do |type|
+      = render partial: "templates/aae_project_dynamic_texts/index_table",
+      locals: {text_type: type, texts: @client.aae_project_dynamic_texts.with_text_type(type), client: @client, video_marketing_campaign_form: nil, project_type: @project_type}
+
+- content_for(:javascripts) do
+  :javascript
+    $('.remove-new-dynamic-text').on('click', function(){
+      $(this).closest('td').remove()
+    })
+    $('.text-counter', '.edit_templates_aae_project_dynamic_text').textcounter({
+      type: "character",
+      countSpaces: true,
+      stopInputAtMaximum: false,
+      counterText: "Characters Count: "
+    })

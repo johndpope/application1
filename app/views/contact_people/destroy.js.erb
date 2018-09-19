@@ -1,0 +1,4 @@
+$("#<%= dom_id(@contact_person, 'row') %>").remove()
+if ($('#contact_people_table .box-profile').length == 0) {
+  $('#no_items_tr').show();
+}

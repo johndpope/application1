@@ -1,0 +1,7 @@
+<h2>Hi <%= dealer.name %>!</h2>
+<% if sandbox_client.present? %>
+  <% client_url = "#{Rails.configuration.routes_default_url_options[:host]}#{Rails.application.routes.url_helpers.sandbox_client_path(sandbox_client.uuid)}" %>
+  <p>Here is link to <a href="<%= client_url %>" target="_blank"><b>sandbox</b></a></p>
+<% end %>
+<br/>
+<p>Thanks!</p>

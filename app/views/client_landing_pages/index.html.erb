@@ -1,0 +1,127 @@
+<% title 'Client Landing Pages' %>
+<% header @client.name %>
+<% small_header 'Landing Pages'%>
+<% breadcrumb :landing_pages, @client %>
+<%= render 'clients/navigation' %>
+<div id="client_landing_pages_list" class="content-block">
+  <div class="row">
+    <div class="col-md-5">
+      <div class="btn-group btn-group-custom">
+        <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, @products_link, class: 'btn btn-primary' %>
+        <%= link_to 'New landing page', new_client_client_landing_page_path(@client), class: 'btn btn-success' %>
+        <%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, @representatives_link, class: 'btn btn-primary' %>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="form-group">
+        <label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+        <span class="badge bg-blue">
+          <%=@client_landing_pages.size%>
+        </span>
+      </div>
+    </div>
+  </div>
+  <% unless @client_landing_pages.to_a.empty? %>
+    <table id="client_landing_pages_table" class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th style="min-width: 25px;" class="sort" id="id-th" data-field="id">ID</th>
+          <th>Product</th>
+          <th class="sort" id="title-th" data-field="title">Title</th>
+          <th class="sort" id="client_landing_page_template_id-th" data-field="client_landing_page_template_id">Template</th>
+          <th class="text-center sort" id="subdomain-th" data-field="subdomain">URL</th>
+          <th class="text-center sort" id="parked-th" data-field="parked">Parked</th>
+          <th class="text-center sort" id="hosted-th" data-field="hosted">Hosted</th>
+          <th>Updated by</th>
+          <th style="width: 85px;" class="text-center sort" id="updated_at-th" data-field="updated_at">Updated at</th>
+          <th style="width: 115px;" class="text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @client_landing_pages.each do |client_landing_page| %>
+          <tr id="tr_yc_<%=client_landing_page.id%>" style="<%= 'color: #f39c12 !important;' unless client_landing_page.hosted && client_landing_page.parked %>">
+            <td class="text-center"><%=client_landing_page.id %></td>
+            <td><%=client_landing_page.product.try(:name) %></td>
+            <td><%=client_landing_page.title %></td>
+            <td><%= link_to client_landing_page.client_landing_page_template.try(:name), edit_client_landing_page_template_path(client_landing_page.client_landing_page_template), target: '_blank' %></td>
+            <td>
+              <% if client_landing_page.parked && client_landing_page.hosted %>
+                <%= link_to client_landing_page.page_url, client_landing_page.page_url, target: '_blank' %>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% if client_landing_page.parked %>
+                <%= link_to 'Y', 'javascript://', class: 'btn btn-success btn-xs' %>
+              <% else %>
+                <%= link_to 'N', 'javascript://', class: 'btn btn-danger btn-xs' %>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <% if client_landing_page.hosted %>
+                <%= link_to 'Y', 'javascript://', class: 'btn btn-success btn-xs' %>
+              <% else %>
+                <%= link_to 'N', 'javascript://', class: 'btn btn-danger btn-xs' %>
+              <% end %>
+            </td>
+            <td>
+              <%= client_landing_page.versions.last.try(:whodunnit)%>
+            </td>
+            <td class="text-center">
+              <div style="width: 65px; text-align: right;">
+                <%= local_time(client_landing_page.updated_at, format: '%m/%d/%y %I:%M %p', title: client_landing_page.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-custom">
+                <%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_client_client_landing_page_path(@client, id: client_landing_page.id),  {class: 'btn btn-xs btn-primary' } %>
+                <% if !client_landing_page.parked && !client_landing_page.hosted && client_landing_page.domain.present?%>
+                  <%= link_to '<i class="fa fa-link"></i> Park & Host'.html_safe, park_and_host_client_client_landing_page_path(@client, id: client_landing_page.id), method: :get, data: { confirm: 'Are you sure?' }, class: "btn btn-xs btn-warning" %>
+                <% end %>
+                <% if client_landing_page.parked && client_landing_page.hosted %>
+                  <%= link_to '<i class="fa fa-eye"></i> Preview'.html_safe, client_landing_page.page_url, target: '_blank', class: "btn btn-xs btn-info", title: "It can take up to 24 hours for updating DNS records after first publish of this URL (to be accessible through the web)." %>
+                <% end %>
+                <% if client_landing_page.parked && client_landing_page.hosted && client_landing_page.domain.present?%>
+                  <%= link_to '<i class="fa fa-link"></i> Re-upload page'.html_safe, upload_index_file_client_client_landing_page_path(@client, id: client_landing_page.id), method: :get, data: { confirm: 'Are you sure?' }, class: "btn btn-xs btn-warning", style: "display: none;" %>
+                <% end %>
+                <%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, client_client_landing_page_path(@client, id: client_landing_page.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @client_landing_pages.to_a.empty? %>
+    <div class="row col-md-12">
+      <br>
+      <div class="alert alert-info">
+        No items available
+      </div>
+    </div>
+  <% end %>
+</div>
+<div id="filter" class="no-print" style="display:none;"><i class="fa fa-gear"></i></div>
+<div id="filter_settings" class="no-print" style="display:none;">
+  <h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+  <%
+    order = [:id, :client_landing_page_template_id, :title, :subdomain, :parked, :hosted, :updated_at]
+    order_type = [["Ascending", "asc"], ["Descending", "desc"]]
+    order_value = params[:order]
+    order_value = :updated_at unless order_value
+  %>
+  <div id="search_params">
+    <%= form_tag(client_client_landing_pages_path(@client), {method: :get, id: 'filters_form'}) do |f| %>
+      <div class="filter-label">Order by:</div>
+      <%= select_tag('filter[order]', options_for_select(order.collect { |key| [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label">Order type:</div>
+      <%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: '', class: 'dropdown-toggle select-box form-control' }) %>
+      <div class="filter-label text-center">
+        <div class="col-md-12">
+          <button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

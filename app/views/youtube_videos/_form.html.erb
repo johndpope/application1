@@ -1,0 +1,290 @@
+<%= content_for(:javascripts){javascript_include_tag 'youtube_videos_form'} %>
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<% if flash[:alert] %>
+	<div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:alert] %></h4>
+	</div>
+<% end %>
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#info-tab" data-toggle="tab">Info</a></li>
+	<li><a href="#annotations-tab" data-toggle="tab">Annotations <span class="badge bg-blue"><%= @youtube_video.youtube_video_annotations.size %></span></a></li>
+	<li><a href="#cards-tab" data-toggle="tab">Cards <span class="badge bg-blue"><%= @youtube_video.youtube_video_cards.size %></span></a></li>
+	<li><a href="#call-to-action-overlay-tab" data-toggle="tab">Call to action overlay <span class="badge bg-blue"><%= @youtube_video.call_to_action_overlay.present? ? 1 : 0 %></span></a></li>
+  <li><a href="#screenshots-tab" data-toggle="tab">Screenshots <span class="badge bg-blue"><%= @youtube_video.screenshots.size %></span></a></li>
+  <li><a href="#youtube-video-search-phrases-tab" data-toggle="tab">Search phrases <span id="search_phrases_size" class="badge bg-blue"><%= @youtube_video.youtube_video_search_phrases.size %></span></a></li>
+</ul>
+<div class="tab-content">
+	<div class="tab-pane active" id="info-tab">
+		<%= form_for @youtube_video, :html => { :multipart => true } do |f| %>
+			<div class="row">
+				<% if @youtube_video.errors.any? %>
+					<div class="col-md-12">
+						<div id="error_explanation" class="alert alert-danger alert-dismissable">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@youtube_video.errors.count, 'error') %> prohibited this youtube video from being saved</h4>
+						</div>
+					</div>
+				<% end %>
+				<div class="col-md-6">
+          <div class="form-group <%= 'has-error' if @youtube_video.errors[:youtube_channel_id].present? %>" data-content="<%= @youtube_video.errors[:youtube_channel_id].try(:join, ',') %>">
+            <%= f.label :youtube_channel, class: 'control-label' %>
+            <%= f.hidden_field :youtube_channel_id, class: 'select2 ajax form-control', data: { source: youtube_channels_json_list_path } %>
+          </div>
+					<div class="row">
+            <% if @youtube_video.blended_video.present? && @youtube_video.blended_video.file.present?%>
+  						<div class="form-group col-md-6">
+  							<%= f.label :video, class: 'control-label' %>
+								<br>
+								<video width="320" height="160" controls="controls" preload="none" class="thumbnail img-thumbnail">
+									<source src="<%=URI::escape(@youtube_video.blended_video.file.url(:original), '[]') %>" type="video/mp4">
+									Your browser does not support the video tag.
+								</video>
+  						</div>
+            <% end %>
+						<div class="form-group col-md-6 <%= 'has-error' if @youtube_video.errors[:thumbnail].present? %>" data-content="<%= @youtube_video.errors[:thumbnail].try(:join, ',') %>">
+							<%= f.label :thumbnail, class: 'control-label' %>
+							<% if @youtube_video.id && @youtube_video.thumbnail.present? %>
+								<%= link_to (image_tag URI::escape(@youtube_video.thumbnail.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(@youtube_video.thumbnail.url(:original), '[]'), { target: '_blank' } %>
+							<% end %>
+							<%= f.file_field :thumbnail %>
+						</div>
+					</div>
+					<div class="form-group <%= 'has-error' if @youtube_video.errors[:title].present? %>" data-content="<%= @youtube_video.errors[:title].try(:join, ',') %>">
+						<%= f.label :title, class: 'control-label' %>
+            <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+						<%= f.text_field :title, class: 'form-control count-characters', maxlength: "#{Setting.get_value_by_name('YoutubeVideo::VIDEO_NAME_LIMIT')}" %>
+					</div>
+					<div class="form-group">
+						<%= f.label "Youtube video id", class: 'control-label' %>
+						<%= f.text_field :youtube_video_id, class: 'form-control' %>
+					</div>
+					<div class="form-group">
+						<%= f.label :description, class: 'control-label' %>
+            <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+						<%= f.text_area :description, size: '40x10', class: 'form-control count-characters', placeholder: 'Description',  maxlength: "#{Setting.get_value_by_name('YoutubeVideo::VIDEO_DESCRIPTION_LIMIT')}" %>
+					</div>
+					<div id="keywords_block" class="form-group <%= 'has-error' if @youtube_video.errors[:tags].present? %>" data-content="<%= @youtube_video.errors[:tags].try(:join, ',') %>">
+						<%= f.label :tags, id: 'keywords_label', class: 'control-label' %>
+            <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+            <% tags_placeholder = "Enter tags comma separated without spaces (limit is '#{Setting.get_value_by_name('YoutubeVideo::TAGS_CHARS_LIMIT')} - (tags count - 1) x 2' characters)" %>
+						<%= f.text_area :tags, { size: '40x5', class: 'form-control count-characters', placeholder: tags_placeholder, title: tags_placeholder, maxlength: "#{Setting.get_value_by_name('YoutubeVideo::TAGS_CHARS_LIMIT')}" } %>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row">
+						<div class="form-group col-md-6">
+							<div class="checkbox">
+								<label><%= f.check_box :is_duplicate, class: 'iCheck-helper' %> Is duplicate</label>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<div class="checkbox">
+								<label><%= f.check_box :show_ratings, class: 'iCheck-helper' %> Show ratings</label>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<div class="checkbox">
+								<label><%= f.check_box :allow_embedding, class: 'iCheck-helper' %> Allow Embedding</label>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<div class="checkbox">
+								<label><%= f.check_box :notify_subscribers, class: 'iCheck-helper' %> Notify Subscribers</label>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<div class="checkbox">
+								<label><%= f.check_box :age_restriction, class: 'iCheck-helper' %> Age Restriction</label>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<div class="checkbox">
+								<label><%= f.check_box :show_statistics, class: 'iCheck-helper' %> Show Statistics</label>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<%= f.label :privacy_level, class: 'control-label' %>
+							<%= f.select(:privacy_level, options_for_select(YoutubeVideo::PRIVACY_LEVELS.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video.privacy_level.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select privacy level' }) %>
+						</div>
+						<div class="form-group col-md-6">
+							<%= f.label :allow_comments, class: 'control-label' %>
+							<%= f.select(:allow_comments, options_for_select(YoutubeVideo::ALLOW_COMMENTS.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video.allow_comments.try(:value)), { include_blank: '', class: 'form-control', placeholder: 'Select to allow comments' }) %>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<%= f.label :license, class: 'control-label' %>
+							<%= f.select(:license, options_for_select(YoutubeVideo::LICENSES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video.license.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select license' }) %>
+						</div>
+						<div class="form-group col-md-6">
+							<%= f.label :syndication, class: 'control-label' %>
+							<%= f.select(:syndication, options_for_select(YoutubeVideo::SYNDICATIONS.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video.syndication.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select syndication' }) %>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<%= f.label :category, class: 'control-label' %>
+							<%= f.select(:category, options_for_select(YoutubeVideo::CATEGORIES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video.category.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select category' }) %>
+						</div>
+						<div class="form-group col-md-6">
+							<%= f.label "3D Video", class: 'control-label' %>
+							<%= f.select(:video_3d, options_for_select(YoutubeVideo::VIDEOS_3DS.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_video.video_3d.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select 3D option' }) %>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<%= f.label :language, class: 'control-label' %>
+							<% language_id = @youtube_video.language_id.nil? ? Language.where(name: "English").first.try(:id) : @youtube_video.language_id%>
+							<%= f.select(:language_id, options_from_collection_for_select(Language.all.order(:name), :id, :name, language_id), { include_blank: false, class: 'form-control' }) %>
+						</div>
+					</div>
+          <div class="form-group">
+            <%= f.label :google_plus_comment, class: 'control-label' %>
+            <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+            <%= f.text_area :google_plus_comment, size: '40x3', class: 'form-control count-characters', placeholder: 'Google+ comment' %>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <div class="checkbox">
+                <label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <div class="checkbox">
+                <label><%= f.check_box :is_active, class: 'iCheck-helper' %> Is Active</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <div class="checkbox">
+                <label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <div class="checkbox">
+                <label><%= f.check_box :deleted, class: 'iCheck-helper' %> Deleted</label>
+              </div>
+            </div>
+          </div>
+          <% last_yt_statistics = @youtube_video.yt_statistics.last %>
+					<div class="row">
+            <div class="form-group col-md-6">
+              <%= f.label :publication_date, class: 'control-label' %>
+              <p class="help-block">
+                <% if @youtube_video.publication_date%>
+                  <%= local_time(@youtube_video.publication_date, format: '%m/%d/%y %I:%M %p', title: @youtube_video.publication_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), class: 'my-time') %>
+                <% else %>
+                  no data
+                <% end %>
+              </p>
+            </div>
+            <div class="form-group col-md-6">
+              <%= f.label :posted_on_google_plus_at, class: 'control-label' %>
+              <p class="help-block">
+                <% if @youtube_video.posted_on_google_plus && @youtube_video.posted_on_google_plus_at%>
+                    <%= local_time(@youtube_video.posted_on_google_plus_at, format: '%m/%d/%y %I:%M %p', title: @youtube_video.posted_on_google_plus_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), class: 'my-time') %>
+                <% else %>
+                  no data
+                <% end %>
+              </p>
+            </div>
+            <div class="form-group col-md-6">
+              <%= f.label :updated_at, class: 'control-label' %>
+              <p class="help-block">
+                <% if @youtube_video.updated_at%>
+                  <%= local_time(@youtube_video.updated_at, format: '%m/%d/%y %I:%M %p', title: @youtube_video.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), class: 'my-time') %>
+                <% else %>
+                  no data
+                <% end %>
+              </p>
+            </div>
+            <div class="form-group col-md-6">
+              <%= f.label :yt_statistics_updated_at, class: 'control-label' %>
+              <p class="help-block">
+                <% if last_yt_statistics %>
+                  <%= local_time(last_yt_statistics.updated_at, format: '%m/%d/%y %I:%M %p', title: last_yt_statistics.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), class: 'my-time') %>
+                <% else %>
+                  no data
+                <% end %>
+              </p>
+            </div>
+					</div>
+					<% yt_video_fields = {"view_count"=>"fa-eye", "like_count"=>"fa-thumbs-o-up", "dislike_count"=>"fa-thumbs-o-down", "favorite_count"=>"fa-star-o", "comment_count"=>"fa-commenting-o"} %>
+					<div class="form-group">
+						<%= f.label :youtube_statistics, class: 'control-label' %>
+						<table class="table table-bordered table-striped vertical-align-middle">
+							<thead>
+								<tr>
+									<% yt_video_fields.each_pair do |key, value|%>
+										<th class="text-center" title="<%= key.gsub('_count', '').pluralize.titleize %>"><i class="fa <%= value %>"></i></th>
+									<% end %>
+								</tr>
+							</thead>
+							<tr>
+								<% yt_video_fields.each_key do |key|%>
+									<td class="text-center"><%= last_yt_statistics.present? ? last_yt_statistics["#{key}"] : "-" %></td>
+								<% end %>
+							</tr>
+						</table>
+					</div>
+				</div>
+        <div class="form-group col-md-12">
+          <div class="actions text-center">
+            <div class="btn-group btn-group-custom">
+              <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, youtube_videos_path, class: 'btn btn-sm btn-primary' %>
+              <% if @youtube_video.youtube_channel.present? && @youtube_video.youtube_channel.google_account.present? && @youtube_video.youtube_channel.google_account.email_account.present?%>
+                <%= link_to "Edit Email Account", edit_email_account_path(@youtube_video.youtube_channel.google_account.email_account), target: "_blank", class: "btn btn-sm btn-warning" %>
+                <%= link_to "Edit Channel", edit_youtube_channel_path(@youtube_video.youtube_channel), target: "_blank", class: "btn btn-sm btn-info" %>
+              <% end %>
+              <%= f.submit :class => 'btn btn-sm btn-success', :id => 'youtube_video_submit' %>
+            </div>
+          </div>
+        </div>
+			</div>
+		<% end %>
+	</div>
+	<div class="tab-pane" id="annotations-tab">
+		<%= render 'youtube_video_annotations/index' %>
+	</div>
+	<div class="tab-pane" id="cards-tab">
+		<%= render 'youtube_video_cards/index' %>
+	</div>
+	<div class="tab-pane" id="call-to-action-overlay-tab">
+		<%= render 'call_to_action_overlays/index' %>
+	</div>
+  <div class="tab-pane" id="screenshots-tab">
+    <div class="row">
+      <% if @youtube_video.screenshots.to_a.empty? %>
+        <div class="col-md-12">
+          <br>
+          <div class="alert alert-info">
+            No items available
+          </div>
+        </div>
+      <% end %>
+      <% @youtube_video.screenshots.sort.to_a.reverse.each_with_index do |screenshot, index| %>
+        <div class="col-lg-2 img-screenshot">
+          <%= link_to (image_tag URI::escape(screenshot.image.url(:thumb), '[]'), {class: "img-thumbnail livepreview #{'left-livepreview' if !(index % 6 == 0 || index % 6 == 1)}", data: {src: screenshot.image.url(:original)}}), URI::escape(screenshot.image.url(:original), '[]'), {target: '_blank'} %>
+          <p><%= local_time(screenshot.created_at, format: '%m/%d/%y %I:%M %p', title: screenshot.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if screenshot.created_at.present?%></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="tab-pane" id="youtube-video-search-phrases-tab">
+    <%= render 'youtube_video_search_phrases/index' %>
+  </div>
+</div>

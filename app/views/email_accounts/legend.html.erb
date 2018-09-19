@@ -1,0 +1,18 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">Email Account</h4>
+		</div>
+		<div class="modal-body" id="image_info_modal_body">
+			<div class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs">
+				<% if File.exists? (Rails.root.join('app', 'views', 'email_accounts', 'legend', "#{email_account.account_type}_email_account", '_legend_content.html.erb')) %>
+					<%= render partial: "email_accounts/legend/#{email_account.account_type}_email_account/legend_content", locals: { email_account: email_account } %>
+				<% end %>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+</div>

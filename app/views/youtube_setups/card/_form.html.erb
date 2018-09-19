@@ -1,0 +1,25 @@
+<%= form_for @yvt, url: youtube_video_youtube_video_card_path(@yvt.youtube_video, @yvt), html: { multipart: true } do |f| %>
+	<%= f.hidden_field :id if @yvt[:id].present? %>
+	<%= f.hidden_field :youtube_video_id %>
+	<div class="row">
+		<div class="col-md-6">
+			<%= f.label :type, class: 'control-label' %>
+			<%= f.select(:card_type, options_for_select(YoutubeVideoCard::TYPES.collect{ | key, value | [key.to_s.humanize, value] }, @yvt.card_type.try(:value)), { include_blank: false }, { class: 'form-control' }) %>
+		</div>
+		<div class="col-md-6 <%= 'has-error' if @yvt.errors[:url].present? %>" data-content="<%= @yvt.errors[:url].try(:join, ',') %>">
+			<%= f.label :url, class: 'control-label' %>
+			<%= f.text_field :url, class: 'form-control', placeholder: 'URL' %>
+		</div>
+	</div>
+	<div id="channel_type_fields" class="row" <% if @yvt.card_type != YoutubeVideoCard.card_type.find_value('Channel')%>style="display: none;"<% end %>>
+		<hr class="cb m-v">
+		<div class="col-md-6">
+			<%= f.label :custom_message, class: 'control-label' %>
+			<%= f.text_field :custom_message, class: 'form-control', placeholder: 'Custom message', maxlength: "#{YoutubeVideoCard::CUSTOM_MESSAGE_LIMIT}" %>
+		</div>
+		<div class="col-md-6">
+			<%= f.label :teaser_text, class: 'control-label' %>
+			<%= f.text_field :teaser_text, class: 'form-control', placeholder: 'Teaser text', maxlength: "#{YoutubeVideoCard::TEASER_TEXT_LIMIT}" %>
+		</div>
+	</div>
+<% end %>

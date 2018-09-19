@@ -1,0 +1,99 @@
+<% title 'Contact Us' %>
+
+<% if flash[:notice] %>
+	<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+	</div>
+<% end %>
+
+<div class="text-center" style="margin-top: 20px;">
+  <div class="form-group">
+		<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+		<span class="badge bg-blue"><%= @contact_us.size %></span>
+	</div>
+</div>
+<% if !@contact_us.to_a.empty? %>
+	<table id="list_of_contact_us" class="table table-bordered table-hover dataTable">
+		<thead>
+			<tr>
+				<th class="sort" id="name-th" data-field="name">Name</th>
+				<th class="sort" id="client_name-th" data-field="client_name">Client name</th>
+				<th class="sort" id="email-th" data-field="email">Email</th>
+				<th class="sort" id="phone-th" data-field="phone">Phone</th>
+				<th>Message</th>
+				<th class="sort text-center" id="created_at-th" data-field="created_at" style="width: 150px;">Created at</th>
+				<th class="text-center" style="width: 200px;">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @contact_us.each do | contact_us | %>
+				<tr <%= 'class=active' if contact_us.read != 'true' %>>
+					<th><%= contact_us.name %></td>
+					<th><%= contact_us.client.name if contact_us.client.present? %></td>
+					<td><%= contact_us.email %></td>
+					<td><%= contact_us.phone %></td>
+					<td title="<%= contact_us.text %>"><%= truncate(contact_us.text, length: 100) %></td>
+					<td class="text-center"><%= local_time(contact_us.created_at, format: '%m/%d/%y %I:%M %p', title: contact_us.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %></td>
+					<td class="text-center">
+						<a class="btn btn-primary showInModal" href="javascript://" data-id="<%= contact_us.id %>"><i class="glyphicon glyphicon-eye-open mr"></i> Show</a>
+						<%= link_to '<i class="glyphicon glyphicon-remove mr"></i> Delete'.html_safe, sandbox_destroy_contact_us_path(id: contact_us.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+					</td>
+				</tr>
+			<% end %>
+		</tbody>
+	</table>
+	<div><%= paginate @contact_us, theme: 'bootstrap' %></div>
+<% else %>
+	<div class="alert alert-info">No items available</div>
+<% end %>
+
+<div id="toolbar-toggle" class=""><i class="fa fa-gear"></i></div>
+<div id="toolbar" class="">
+	<h4 style="margin: 0 0 5px 0; border-bottom: 1px dashed #ddd; padding-bottom: 3px;">Filters</h4>
+	<%
+		order = [:name, :client_name, :email, :phone, :created_at]
+		order_type = [['Ascending', 'asc'], ['Descending', 'desc']]
+		order_value = params[:order]
+		order_value = :created_at unless order_value
+	%>
+	<div>
+		<%= form_tag({ controller: :contact_us, action: :listing }, { method: :get, id: 'filters_form' }) do | f | %>
+			<div class="filter-label">Name:</div>
+			<%= search_field_tag :name, params[:name], class: 'form-control numeric' %>
+			<div class="filter-label">Client name:</div>
+			<%= search_field_tag :client_name, params[:client_name], class: 'form-control numeric' %>
+			<div class="filter-label">Email:</div>
+			<%= search_field_tag :email, params[:email], class: 'form-control numeric' %>
+			<div class="filter-label">Phone:</div>
+			<%= search_field_tag :phone, params[:phone], class: 'form-control numeric' %>
+			<div class="filter-label">Created at:</div>
+			<%= search_field_tag :created_at, params[:created_at], class: 'form-control numeric' %>
+			<div class="filter-label">Order by:</div>
+			<%= select_tag('filter[order]', options_for_select(order.collect { | key | [key.to_s.humanize, key] }, params[:filter][:order]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<div class="filter-label">Order type:</div>
+			<%= select_tag('filter[order_type]', options_for_select(order_type, params[:filter][:order_type]), { include_blank: false, class: 'dropdown-toggle select-box form-control' }) %>
+			<!-- <div class="filter-label">Items on page:</div>
+			<%#= select_tag('limit', options_for_select([5, 10, 15, 20, 25, 30, 40, 50, 100], params[:limit]), class: 'dropdown-toggle select-box form-control') %> -->
+			<hr class="m-v">
+			<div class="filter-label text-center">
+				<button id="filter-apply" type="submit" class="btn btn-primary pull-right">Apply</button>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<div class="modal fade" id="showMail" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Show Mail</h4>
+			</div>
+			<div class="modal-body"></div>
+		</div>
+	</div>
+</div>
+
+<%#= javascript_include_tag '/assets/sandbox/sandbox_contact_us/listing' %>
+<%#= javascript_include_tag '/assets/sandbox/sandbox_contact_us/filter' %>

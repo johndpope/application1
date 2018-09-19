@@ -1,0 +1,41 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">Wording (<%= wording.try(:name).try(:humanize) %>)</h4>
+		</div>
+		<div class="modal-body" id="image_info_modal_body">
+			<div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
+
+				<ul class="nav nav-pills">
+					<li class="active"><a href="#source" data-toggle="tab">Source</a></li>
+					<% if wording.spins.present? %>
+						<li><a href="#spin" data-toggle="tab">Spin</a></li>
+					<% end %>
+					<% if wording.spintax.present? %>
+						<li><a href="#spintax" data-toggle="tab">Spintax</a></li>
+					<% end %>
+				</ul>
+
+				<div class="tab-content">
+					<div class="tab-pane fade active in" id="source">
+						<pre class="ws-pw"><%= wording.source %></pre>
+					</div>
+					<% if wording.spins.present? %>
+						<div class="tab-pane fade" id="spin">
+							<pre class="ws-pw"><%= wording.spins %></pre>
+						</div>
+					<% end %>
+					<% if wording.spintax.present? %>
+						<div class="tab-pane fade" id="spintax">
+							<pre class="ws-pw"><%= wording.spintax %></pre>
+						</div>
+					<% end %>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+</div>

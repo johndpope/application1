@@ -1,0 +1,24 @@
+/= render partial: "modal_dialog_body_project_info"
+%h4 List of Images used in template
+= @item.images.count
+.row
+	- @item.images.order(:created_at).each do |image|
+		= image.ensure_unique_url
+		%br
+-# 	.col-md-3
+-# 		.row
+-# 			.image
+-# 				= link_to image.sample.url, target: "_BLANK", title: "View Image" do
+-# 					= image_tag image.sample.url, style: "width: 200px; height: 200px"
+			-# .info
+			-# 	.btn-group
+			-# 		= link_to image.file.url, class: "btn btn-default btn-sm", target: "_BLANK", title: "Dimensions" do
+			-# 			- dimensions = Paperclip::Geometry.from_file(image.file.path)
+			-# 			= fa_icon 'file-image-o', text: [dimensions.width.to_i, dimensions.height.to_i].join('x')
+			-# 		- if attribution = image.attribution
+			-# 			= link_to image.attribution.try(:component).try(:file).try(:url),
+			-# 			title: "Original Artifact Source Image", class: "btn btn-sm btn-default", target: "_BLANK" do
+			-# 				= fa_icon "image"
+			-# 			= link_to artifacts_image_url(image.attribution.try(:component).try(:id)),
+			-# 			title: "Original Artifact Image Details", class: "btn btn-default btn-sm", target: "_BLANK" do
+			-# 				= fa_icon "info-circle"

@@ -1,0 +1,2 @@
+module Templates::AaeProjectDynamicTextsHelper
+end

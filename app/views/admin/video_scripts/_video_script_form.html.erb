@@ -1,0 +1,14 @@
+<%= semantic_form_for [:admin, @video_script] do |f| %>
+<div class="label"><%= f.label :title %></div>
+<div style="margin-bottom: 10px;"><%= f.text_field :title %></div>
+<div class="label"><%= f.label :body %></div>
+<div style="margin-bottom: 10px;">
+	<%= f.text_area :body, as: :rich %>
+	<script>
+		CKEDITOR.replace('video_script_body', <%= Rich.options({ scoped: true }, "video_scripts/#{@video_script.id}", 0).to_json.html_safe %>)
+	</script>
+</div>
+<div class="label"><%= f.label :notes %></div>
+<div><%= f.text_area :notes, rows: 5 %></div>
+<%= f.actions %>
+<% end %>

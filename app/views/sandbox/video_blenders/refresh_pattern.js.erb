@@ -1,0 +1,19 @@
+<% pattern_str = @pattern.value.split(',') unless @pattern.blank? %>
+var patterns = "<%=@pattern.value%>";
+patterns = patterns.split(',');
+$('.video_pattern_items_block').html('');
+
+$.each(patterns, function(i,v){
+  setTimeout(function(){
+    if (v == 'subject'){
+      $('.video_pattern_items_block').append('<span class="label label-info ytb_pattern">Subject Video</span>');
+    }else{
+      v = v.charAt(0).toUpperCase() + v.substr(1).toLowerCase().replace(/_/g," ");
+      console.log(v);
+      $('.video_pattern_items_block').append('<span class="label label-default ytb_pattern">' + v + '</span>');
+    }
+  }, i*50);
+});
+
+$('#btn_regenerate').data('pattern','<%=pattern_str%>');
+regenerate_timeline();

@@ -1,0 +1,40 @@
+%h3="Location Info"
+.row
+  .col-md-12
+    = form_tag("/shared_media/images/group_update", multipart: true, remote: true) do
+      %table.table.table-striped.location_info
+        %tbody#location
+          %thead
+            %th="Image"
+            %th="Title"
+            %th="Country"
+            %th="State"
+            %th="Locality"
+            %th="City"
+          %script{:id => "tmpl-location", :type => "text/x-tmpl"}
+            {%file=o.files[0];%}
+            %tr
+              %td
+                = hidden_field_tag "images[geodata][][id]", "{%=file.id%}"
+                {% if(file.url){ %}
+                %span.preview.img-thumbnail
+                  %a{:href => "{%=file.url%}", :title => "{%=file.name%}"}
+                    %img{:src => "{%=file.url%}", :height => "60px", :width => "60px"}
+                {% } %}
+              - default_country = Geobase::Country.find_by_code("US")
+              %td= text_field_tag "images[geodata][][title]", "{%=file.title%}", class: "form-control", placeholder: "Image title"
+              %td= hidden_field_tag "images[geodata][][country]", "", class: "form-control country", data: {name: default_country.name, id: "{%=file.country%}", type: "country"}
+              %td= hidden_field_tag "images[geodata][][region1]", "", class: "form-control region1", data: {name: default_country.name, id: "{%=file.region1%}"}
+              %td= hidden_field_tag "images[geodata][][region2]", "", class: "form-control region2", data: {name: default_country.name, id: "{%=file.region2%}"}
+              %td= hidden_field_tag "images[geodata][][city]", "", class: "form-control city", data: {name: default_country.name, id: "{%=file.city%}"}
+
+      .row.center
+        .btn-group.btn-group-custom
+          = link_to "#", :class => "btn btn-primary prev-step" do
+            = fa_icon "arrow-left"
+            = "Back"
+          = submit_tag "Save", :class => "btn btn-success", data: {disable_with: "Saving..."} do
+            = fa_icon 'floppy-o'
+          = link_to "#", :class => "btn btn-primary next-step" do
+            = "Next"
+            = fa_icon "arrow-right"

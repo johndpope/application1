@@ -1,0 +1,54 @@
+#info_popover
+  .close_btn{type: 'button'}
+  .container-fluid
+    #owl-demo-2.owl-carousel.owl-theme
+      %article
+        %h4="Step Drag & Drop or Reginerate"
+        = image_tag "/assets/sandbox/info/step1.gif", class: "inner_image", alt: 'gid image'
+        .content
+          %b='1. You can transfer segments to a timeline,'
+          ='or by using the automatic method by clicking on'
+          %b="Regenerate"
+          ='and change to other video segments with the same sequence in the event if the time line has already been failed.'
+      %article
+        %h4="Shuffle"
+        = image_tag "/assets/sandbox/info/step2.gif", class: "inner_image", alt: 'gid image'
+        .content
+          %p='2. When you press the button'
+          %b="Shuffle"
+          ='button, you can change the sequence of video segments'
+      %article
+        %h4="Patterns"
+        = image_tag "/assets/sandbox/info/step3.gif", class: "inner_image", alt: 'gid image'
+        .content
+          %p='3. Here you can change'
+          %b='the sequence of video segments'
+      %article
+        %h4="Blending"
+        = image_tag "/assets/sandbox/info/step4.gif", class: "inner_image", alt: 'gid image'
+        .content
+          %p='4. When you click on the button'
+          %b="Blend It"
+          ='the formation of your video'
+      %article
+        %h4="Go to YouTube setup"
+        = image_tag "/assets/sandbox/info/step5.gif", class: "inner_image", alt: 'gid image'
+        .content
+        %p
+          %h2='5. Go to YouTube setup'
+  .slide-controls
+    .slide-pagination
+      = link_to 'javascript://', class: "nav_left" do
+        = fa_icon 'angle-left 3x'
+      = link_to 'javascript://', class: "nav_item" do
+        = fa_icon 'circle 2x'
+      = link_to 'javascript://', class: "nav_item" do
+        = fa_icon 'circle-thin 2x'
+      = link_to 'javascript://', class: "nav_item" do
+        = fa_icon 'circle-thin 2x'
+      = link_to 'javascript://', class: "nav_item" do
+        = fa_icon 'circle-thin 2x'
+      = link_to 'javascript://', class: "nav_item" do
+        = fa_icon 'circle-thin 2x'
+      = link_to 'javascript://', class: "nav_right" do
+        = fa_icon 'angle-right 3x'

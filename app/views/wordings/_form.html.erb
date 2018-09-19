@@ -1,0 +1,116 @@
+<%= content_for(:javascripts){javascript_include_tag '/assets/wordings/form'} %>
+<ul class="nav nav-pills">
+	<li class="active"><a href="#main" data-toggle="tab">Main</a></li>
+	<% if @wording.spins.present? %>
+		<li><a href="#spin" data-toggle="tab">Spin</a></li>
+	<% end %>
+	<li><a href="#history" data-toggle="tab">History</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane fade active in" id="main">
+		<%= form_for @wording, :html => { :multipart => true, :action => 'add_batch' } do |f| %>
+			<input id="name_list" type="hidden" value="<%= Wording.names_list.join('<sep/>') %>" data-params="<%= params.to_json if params.present? %>">
+			<%= f.hidden_field :id, { class: 'data-input', name: 'id' } if @wording.id.present? %>
+
+			<% if flash[:notice] %>
+				<div id="notice_explanation" class="alert alert-success alert-dismissable alert-fade-out">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= flash[:notice] %></h4>
+				</div>
+			<% end %>
+
+			<% if @wording.errors.any? %>
+				<div id="error_explanation" class="alert alert-danger alert-dismissable alert-fade-out">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@wording.errors.count, 'error') %> prohibited this wording from being saved</h4>
+				</div>
+			<% end %>
+
+			<div class="form-group">
+				<div class="m-v">
+					<label><input type="radio" name="select-type" value="country" <%= 'checked' if @is_country %>> Country</label>
+					<label><input type="radio" name="select-type" value="state" <%= 'checked' if @is_state %>> State</label>
+					<label><input type="radio" name="select-type" value="county" <%= 'checked' if @is_county %>> County</label>
+					<label><input type="radio" name="select-type" value="locality" <%= 'checked' if @is_locality %>> Locality</label>
+					<label><input type="radio" name="select-type" value="landmark" <%= 'checked' if @is_landmark %>> Landmark</label>
+					<label><input type="radio" name="select-type" value="industry" <%= 'checked' if @is_industry %>> Industry</label>
+				</div>
+				<div id="select2_boxes" class="row dn"></div>
+				<div class="row m-th">
+					<div class="col-md-4">
+						<%= f.label :resource_type, class: 'control-label' %>
+						<%= f.text_field :resource_type, { class: 'data-input form-control', name: 'resource_type', readonly: 'readonly' } %>
+					</div>
+					<div class="col-md-4">
+						<%= f.label 'Resource ID', class: 'control-label' %>
+						<%= f.text_field :resource_id, { class: 'data-input form-control', name: 'resource_id', readonly: 'readonly' } %>
+					</div>
+					<div class="col-md-4">
+						<%= f.label :url, class: 'control-label' %>
+						<%= f.text_field :url, { class: 'data-input form-control', name: 'url', placeholder: 'URL' } %>
+					</div>
+				</div>
+			</div>
+
+			<fieldset class="form">
+				<legend>Group of fields <%= link_to '<i class="glyphicon glyphicon-remove"></i>'.html_safe, 'javascript://', class: 'btn btn-xs btn-danger remove-fields', title: 'Remove group of fields' %></legend>
+				<div class="row">
+					<div class="col-md-4">
+						<label class="control-label">Name</label>
+						<input class="form-control input-name" type="text" value="<%= @wording.name if params[:action] == 'edit' %>" placeholder="Name">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="counter-characters pull-right">Characters count: <span class="label label-default">0</span></div>
+					<label class="control-label">Source</label>
+					<textarea class="form-control input-source" rows="14" placeholder="Source"><%= @wording.source if params[:action] == 'edit' %></textarea>
+				</div>
+		  </fieldset>
+
+			<div class="actions-btn">
+				<% if params[:action] == 'new' %>
+					<div class="pull-left">
+						<%= link_to '<i class="glyphicon glyphicon-plus mr"></i> Add group of fields'.html_safe, 'javascript://', id: 'add_fields', class: 'btn btn-sm btn-primary' %>
+					</div>
+				<% end %>
+				<div class="pull-right">
+          <% if params[:action] == 'edit' %>
+            <span>Updated<%= " by <b>#{@wording.updated_by.email}</b>".html_safe if @wording.updated_by.present? %> at <i><%= local_time(@wording.updated_at, format: '%m/%d/%y %I:%M %p', title: @wording.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if @wording.updated_at.present?%></i> (<%= time_ago_in_words(@wording.updated_at) %> ago)</span>
+          <% end %>
+					<%= link_to '<i class="glyphicon glyphicon-chevron-left mr"></i> Back'.html_safe, wordings_path, class: 'btn btn-sm btn-default' %>
+					<% if params[:action] == 'new' %>
+						<!-- <a id="save" class="btn btn-sm btn-primary" href="javascript://"><i class="glyphicon glyphicon-floppy-saved mr"></i> Create wordings</a> -->
+						<a id="next" class="btn btn-sm btn-success" href="javascript://">Create & next <i class="glyphicon glyphicon-chevron-right ml"></i></a>
+					<% else %>
+            <a id="update_and_new" class="btn btn-sm btn-primary" href="javascript://"><i class="glyphicon glyphicon-floppy-saved mr"></i> Update & new </a>
+						<a id="update" class="btn btn-sm btn-success" href="javascript://">Update & Next <i class="glyphicon glyphicon-chevron-right ml"></i></a>
+					<% end %>
+				</div>
+				<hr class="cb">
+			</div>
+		<% end %>
+	</div>
+	<% if params[:action] == 'edit' %>
+		<div class="tab-pane fade" id="spin">
+			<% @wording.spins.each do |spin| %>
+				<%= spin %>
+				<hr>
+			<% end %>
+		</div>
+	<% end %>
+	<div class="tab-pane fade" id="history">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Filter by name</h3>
+      </div>
+      <div id="filter_by_name" class="box-body">
+        <%= link_to 'All', 'javascript://', class: "history-wording-name btn btn-xs btn-primary", data: {name: ""} %>
+        <% Wording.names_list.each do |name| %>
+          <%= link_to name, 'javascript://', class: "history-wording-name btn btn-xs btn-default", data: {name: "#{name}"} %>
+        <% end %>
+      </div>
+    </div>
+    <div id="history_body"></div>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+- last_month_date = (Time.now - 30.days).strftime("%Y-%m-%d 00:00:00")
+- channels_stat_query_today = @client.id == 7 ? "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(view_count) as views, SUM(subscriber_count) as subscribers, MAX(view_count) as max_views, MAX(subscriber_count) as max_subscribers, MIN(view_count) as min_views, MIN(subscriber_count) as min_subscribers, round(AVG(view_count), 2) as avg_views, round(AVG(subscriber_count), 2) as avg_subscribers FROM public.yt_statistics LEFT JOIN youtube_channels ON youtube_channels.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeChannel' WHERE yt_statistics.resource_type = 'YoutubeChannel' AND yt_statistics.current = true AND youtube_channels.client_id = #{@client.id} AND youtube_channels.is_active = TRUE AND youtube_channels.channel_type = #{YoutubeChannel.channel_type.find_value(:business).value} GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC LIMIT 1" : "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(view_count) as views, SUM(subscriber_count) as subscribers, MAX(view_count) as max_views, MAX(subscriber_count) as max_subscribers, MIN(view_count) as min_views, MIN(subscriber_count) as min_subscribers, round(AVG(view_count), 2) as avg_views, round(AVG(subscriber_count), 2) as avg_subscribers FROM public.yt_statistics LEFT JOIN youtube_channels ON youtube_channels.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeChannel' LEFT OUTER JOIN google_accounts ON google_accounts.id = youtube_channels.google_account_id LEFT OUTER JOIN email_accounts ON email_accounts.email_item_id = google_accounts.id LEFT OUTER JOIN clients ON clients.id = email_accounts.client_id WHERE yt_statistics.resource_type = 'YoutubeChannel' AND yt_statistics.current = true AND clients.id = #{@client.id} AND youtube_channels.is_active = TRUE AND youtube_channels.channel_type = #{YoutubeChannel.channel_type.find_value(:business).value} GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC LIMIT 1"
+- videos_stat_query_today = @client.id == 7 ? "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(view_count) as views, SUM(like_count) as likes, SUM(dislike_count) as dislikes, SUM(favorite_count) as favorites, SUM(comment_count) as comments, MAX(view_count) as max_views, MAX(like_count) as max_likes, MAX(dislike_count) as max_dislikes, MAX(favorite_count) as max_favorites, MAX(comment_count) as max_comments, MIN(view_count) as min_views, MIN(like_count) as min_likes, MIN(dislike_count) as min_dislikes, MIN(favorite_count) as min_favorites, MIN(comment_count) as min_comments, round(AVG(view_count), 2) as avg_views, round(AVG(like_count), 2) as avg_likes, round(AVG(dislike_count), 2) as avg_dislikes, round(AVG(favorite_count), 2) as avg_favorites, round(AVG(comment_count), 2) as avg_comments FROM public.yt_statistics LEFT JOIN youtube_videos ON youtube_videos.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeVideo' LEFT OUTER JOIN youtube_channels ON youtube_channels.id = youtube_videos.youtube_channel_id WHERE yt_statistics.resource_type = 'YoutubeVideo' AND yt_statistics.current = true AND youtube_channels.client_id = #{@client.id} AND youtube_videos.is_active = TRUE GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC LIMIT 1" : "SELECT date_trunc('day', yt_statistics.created_at) as date, SUM(view_count) as views, SUM(like_count) as likes, SUM(dislike_count) as dislikes, SUM(favorite_count) as favorites, SUM(comment_count) as comments, MAX(view_count) as max_views, MAX(like_count) as max_likes, MAX(dislike_count) as max_dislikes, MAX(favorite_count) as max_favorites, MAX(comment_count) as max_comments, MIN(view_count) as min_views, MIN(like_count) as min_likes, MIN(dislike_count) as min_dislikes, MIN(favorite_count) as min_favorites, MIN(comment_count) as min_comments, round(AVG(view_count), 2) as avg_views, round(AVG(like_count), 2) as avg_likes, round(AVG(dislike_count), 2) as avg_dislikes, round(AVG(favorite_count), 2) as avg_favorites, round(AVG(comment_count), 2) as avg_comments FROM public.yt_statistics LEFT JOIN youtube_videos ON youtube_videos.id = yt_statistics.resource_id AND yt_statistics.resource_type = 'YoutubeVideo' LEFT OUTER JOIN youtube_channels ON youtube_channels.id = youtube_videos.youtube_channel_id LEFT OUTER JOIN google_accounts ON google_accounts.id = youtube_channels.google_account_id LEFT OUTER JOIN email_accounts ON email_accounts.email_item_id = google_accounts.id LEFT OUTER JOIN clients ON clients.id = email_accounts.client_id WHERE yt_statistics.resource_type = 'YoutubeVideo' AND yt_statistics.current = true AND clients.id = #{@client.id} AND youtube_videos.is_active = TRUE GROUP BY date_trunc('day', yt_statistics.created_at) ORDER BY date DESC LIMIT 1"
+- channels_stat_result_today = ActiveRecord::Base.connection.execute(channels_stat_query_today).first.to_h
+- videos_stat_result_today = ActiveRecord::Base.connection.execute(videos_stat_query_today).first.to_h
+- piwik_statistics_data_json = {}
+- piwik_stat_query = "SELECT date_trunc('day', piwik_statistics.created_at) as date, SUM(piwik_statistics.nb_visits) as visits, SUM(piwik_statistics.nb_actions) as actions, SUM(piwik_statistics.nb_pageviews) as pageviews FROM piwik_statistics LEFT JOIN client_landing_pages ON client_landing_pages.id = piwik_statistics.client_landing_page_id WHERE client_landing_pages.client_id = #{@client.id} GROUP BY date_trunc('day', piwik_statistics.created_at) ORDER BY date DESC"
+- piwik_stat_keys = %w(visits actions pageviews)
+- piwik_stat_result = ActiveRecord::Base.connection.execute(piwik_stat_query).to_a
+- piwik_stat_keys.each{|k| piwik_statistics_data_json[k] = piwik_stat_result.map{|x| x[k].to_i}}
+
+.row
+  .col-md-12
+    %h4 Videos
+    .row
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{videos_stat_result_today['max_views'].to_i.to_s(:delimited)} · MIN: #{videos_stat_result_today['min_views'].to_i.to_s(:delimited)} · AVG: #{videos_stat_result_today['avg_views'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-eye"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} views
+            %span{class: "info-box-number text-center"}= videos_stat_result_today["views"].present? ? videos_stat_result_today["views"].to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{videos_stat_result_today['max_likes'].to_i.to_s(:delimited)} · MIN: #{videos_stat_result_today['min_likes'].to_i.to_s(:delimited)} · AVG: #{videos_stat_result_today['avg_likes'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-thumbs-o-up"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} likes
+            %span{class: "info-box-number text-center"}= videos_stat_result_today["likes"].present? ? videos_stat_result_today["likes"].to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{videos_stat_result_today['max_dislikes'].to_i.to_s(:delimited)} · MIN: #{videos_stat_result_today['min_dislikes'].to_i.to_s(:delimited)} · AVG: #{videos_stat_result_today['avg_dislikes'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-thumbs-o-down"}
+          .info-box-content{title: ""}
+            %span{class: "info-box-text text-center"} dislikes
+            %span{class: "info-box-number text-center"}= videos_stat_result_today["dislikes"].present? ? videos_stat_result_today["dislikes"].to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{videos_stat_result_today['max_favorites'].to_i.to_s(:delimited)} · MIN: #{videos_stat_result_today['min_favorites'].to_i.to_s(:delimited)} · AVG: #{videos_stat_result_today['avg_favorites'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-star-o"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} favorites
+            %span{class: "info-box-number text-center"}= videos_stat_result_today["favorites"].present? ? videos_stat_result_today["favorites"].to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{videos_stat_result_today['max_comments'].to_i.to_s(:delimited)} · MIN: #{videos_stat_result_today['min_comments'].to_i.to_s(:delimited)} · AVG: #{videos_stat_result_today['avg_comments'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-comments-o"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} comments
+            %span{class: "info-box-number text-center"}= videos_stat_result_today["comments"].present? ? videos_stat_result_today["comments"].to_i.to_s(:delimited) : "-"
+    %h4 Channels
+    .row
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{channels_stat_result_today['max_views'].to_i.to_s(:delimited)} · MIN: #{channels_stat_result_today['min_views'].to_i.to_s(:delimited)} · AVG: #{channels_stat_result_today['avg_views'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-eye"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} views
+            %span{class: "info-box-number text-center"}= channels_stat_result_today["views"].present? ? channels_stat_result_today["views"].to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{channels_stat_result_today['max_subscribers'].to_i.to_s(:delimited)} · MIN: #{channels_stat_result_today['min_subscribers'].to_i.to_s(:delimited)} · AVG: #{channels_stat_result_today['avg_subscribers'].to_f.to_s(:delimited)}"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-pencil-square-o"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} subscribers
+            %span{class: "info-box-number text-center"}= channels_stat_result_today["subscribers"].present? ? channels_stat_result_today["subscribers"].to_i.to_s(:delimited) : "-"
+    %h4 Landing pages
+    .row
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{piwik_statistics_data_json['pageviews'].max.to_i.to_s(:delimited)} · MIN: #{piwik_statistics_data_json['pageviews'].min.to_i.to_s(:delimited)} · AVG: #{piwik_statistics_data_json['pageviews'].size > 0 ? (piwik_statistics_data_json['pageviews'].inject(:+).to_f / piwik_statistics_data_json['pageviews'].size).to_f.round(2).to_s(:delimited) : 0.0 }"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-eye"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} views
+            %span{class: "info-box-number text-center"}= piwik_statistics_data_json['pageviews'].first.present? ? piwik_statistics_data_json['pageviews'].first.to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{piwik_statistics_data_json['actions'].max.to_i.to_s(:delimited)} · MIN: #{piwik_statistics_data_json['actions'].min.to_i.to_s(:delimited)} · AVG: #{piwik_statistics_data_json['actions'].size > 0 ? (piwik_statistics_data_json['actions'].inject(:+).to_f / piwik_statistics_data_json['actions'].size).to_f.round(2).to_s(:delimited) : 0.0 }"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-hand-o-up"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} actions
+            %span{class: "info-box-number text-center"}= piwik_statistics_data_json['actions'].first.present? ? piwik_statistics_data_json['actions'].first.to_i.to_s(:delimited) : "-"
+      .col-md-4
+        .info-box.bg-light-blue{data: {"toggle"=> "tooltip", "original-title"=> "MAX: #{piwik_statistics_data_json['visits'].max.to_i.to_s(:delimited)} · MIN: #{piwik_statistics_data_json['visits'].min.to_i.to_s(:delimited)} · AVG: #{piwik_statistics_data_json['visits'].size > 0 ? (piwik_statistics_data_json['visits'].inject(:+).to_f / piwik_statistics_data_json['visits'].size).to_f.round(2).to_s(:delimited) : 0.0 }"}}
+          %span{class: "info-box-icon"}
+            %i{class: "fa fa-group"}
+          .info-box-content
+            %span{class: "info-box-text text-center"} visits
+            %span{class: "info-box-number text-center"}= piwik_statistics_data_json['visits'].first.present? ? piwik_statistics_data_json['visits'].first.to_i.to_s(:delimited) : "-"

@@ -1,0 +1,36 @@
+<div class="form-group <%= 'has-error' if @api_account.errors[:name].present? %>" data-content="<%= @api_account.errors[:name].try(:join, ',') %>">
+  <%= f.label :name, class: 'control-label' %>
+  <%= f.text_field :name, class: 'form-control', placeholder: "Name" %>
+</div>
+<div class="form-group <%= 'has-error' if @api_account.errors[:website].present? %>" data-content="<%= @api_account.errors[:website].try(:join, ',') %>">
+  <%= f.label :website, class: 'control-label' %>
+  <%= f.text_field :website, class: 'form-control', placeholder: "Website" %>
+</div>
+<div class="form-group <%= 'has-error' if @api_account.errors[:username].present? %>" data-content="<%= @api_account.errors[:username].try(:join, ',') %>">
+  <%= f.label :username, class: 'control-label' %>
+  <%= f.text_field :username, class: 'form-control', placeholder: "Username" %>
+</div>
+<div class="form-group <%= 'has-error' if @api_account.errors[:password].present? %>" data-content="<%= @api_account.errors[:password].try(:join, ',') %>">
+  <%= f.label :password, class: 'control-label' %>
+  <%= f.text_field :password, class: 'form-control', placeholder: "Password", autocomplete: "off" %>
+</div>
+<div class="form-group <%= 'has-error' if @api_account.errors[:api_key].present? %>" data-content="<%= @api_account.errors[:api_key].try(:join, ',') %>">
+  <%= f.label :api_key, class: 'control-label' %>
+  <%= f.text_field :api_key, class: 'form-control', placeholder: "Api Key" %>
+</div>
+<div class="form-group">
+  <%= f.label :balance, class: 'control-label' %>
+  <%= f.number_field :balance, min: 0, step: 0.01, class: 'form-control', placeholder: 'Balance' %>
+</div>
+<div class="form-group">
+  <%= f.label :currency, class: 'control-label' %>
+  <%= f.select(:currency, options_for_select(ConstantsService.currencies.collect{ |key, value| [key.to_s,value]}, @api_account.currency.try(:value)), { include_blank: true, class: 'form-control', placeholder: 'Select currency' }) %>
+</div>
+<div class="form-group <%= 'has-error' if @api_account.errors[:registration_email].present? %>" data-content="<%= @api_account.errors[:registration_email].try(:join, ',') %>">
+  <%= f.label :registration_email, class: 'control-label' %>
+  <%= f.text_field :registration_email, class: 'form-control', placeholder: "Registration email" %>
+</div>
+<div class="form-group">
+  <%= f.label :description, class: 'control-label' %>
+  <%= f.text_area :description, { size: '40x5', class: 'form-control', placeholder: 'Description' } %>
+</div>

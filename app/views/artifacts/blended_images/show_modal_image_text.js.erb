@@ -1,0 +1,8 @@
+<%
+  modal = render partial: 'show_modal_image_text', locals: {item: @item}
+%>
+
+$('body').append('<%= escape_javascript(modal) %>');
+$("#modal_image_text").modal({show: true}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+})

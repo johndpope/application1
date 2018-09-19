@@ -1,0 +1,4 @@
+<%
+  logo = render partial: "select_logo", locals: {client: @client}
+%>
+$('#logo_search_result').html('<%= escape_javascript(logo) %>');

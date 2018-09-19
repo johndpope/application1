@@ -1,0 +1,23 @@
+- header @client.name
+- small_header 'Client Specific Image Selection Tags'
+- title 'Client Specific Image Selection Tags'
+- breadcrumb :client_select_client_specific_image_tags, @client
+= render layout: 'client/setup/image_tag_selection', locals:{client: @client, active_tab: 'client'} do
+	= form_for @client, url: client_client_image_tag_selection_path(@client), method: :post do |f|
+		.form-group
+			= f.label :client_name_tag_list, 'Client Tags'
+			= tooltip_by_field({tooltip_text: t("tooltips.image_tag_selection.client_tags", :default => "")})
+			%div
+				= f.text_field :client_name_tag_list, class: 'form-control', placeholder: 'Enter comma separated tags ...', data:{taggable: 'true'}
+			%p.help-block
+				Client specific tags from Media Storage. For example:
+				%strong Oregon Heating
+		.form-group
+			= f.label :tag_list, 'General Tags'
+			= tooltip_by_field({tooltip_text: t("tooltips.image_tag_selection.general_tags", :default => "")})
+			%div
+				= f.text_field :tag_list, class: 'form-control', placeholder: 'Enter comma separated tags ...', data:{taggable: 'true'}
+			%p.help-block
+				General tags from Media Storage. For instance:
+				%strong air conditioning
+		= submit_tag 'Update', class: "btn btn-primary", data:{disable_with: "Updating ..."}

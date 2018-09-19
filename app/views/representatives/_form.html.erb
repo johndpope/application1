@@ -1,0 +1,140 @@
+<%= content_for(:javascripts){javascript_include_tag 'representatives_form'} %>
+<%= form_for @representative, url: client_representative_path(@client, @representative), :html => { :multipart => true } do |f| %>
+	<div class="row">
+		<% if @representative.errors.any? %>
+			<div class="col-md-12">
+				<div id="error_explanation" class="alert alert-danger alert-dismissable">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@representative.errors.count, 'error') %> prohibited this representative from being saved</h4>
+				</div>
+			</div>
+		<% end %>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-5">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<%= f.check_box :primary, class: 'iCheck-helper' %>
+								<%= f.label :primary, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "representatives", table_column: "primary"}) %>
+							</div>
+							<div class="form-group <%= 'has-error' if @representative.errors[:products].present? %>" data-content="<%= @representative.errors[:products].try(:join, ',') %>">
+								<%= f.label :products, class: 'control-label' %>
+								<%= tooltip_by_field({tooltip_text: t('tooltips.representatives.products', :default => "")}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #7C529E; border: 1px solid #7C529E;"><i class="fa fa-cube"></i></span>
+									<% products_array = Product.where('client_id = ?', @client.id).map { |p| [p.name, p.id] } %>
+									<%= f.select :products, options_for_select(products_array, @representative.products.pluck(:id).present? ? @representative.products.pluck(:id) : params[:products]), { include_blank: true }, { placeholder: 'Select products', class: 'select2 form-control', multiple: "multiple" } %>
+								</div>
+							</div>
+							<div class="form-group">
+								 <%= f.label :title, class: 'control-label' %>
+								 <%= tooltip_by_field({table_name: "representatives", table_column: "title"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #BF8440; border: 1px solid #BF8440;"><i class="fa fa-quote-left"></i></span>
+									<%= f.text_field :title, class: 'form-control', placeholder: 'Title' %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label "Name *", class: 'control-label', title: "Required field" %>
+								<%= tooltip_by_field({table_name: "representatives", table_column: "first_name"}) %>
+								<div style="width: 100%; display: flex;" class="input-group">
+									<span class="input-group-addon" style="background-color: #3C8DBC; border: 1px solid #3C8DBC;"><i class="fa fa-user"></i></span>
+									<div style="width: 40%;" class="<%= 'has-error' if @representative.errors[:first_name].present? %>" data-content="<%= @representative.errors[:first_name].try(:join, ',') %>">
+										<div class="input-group">
+											<%= f.text_field :first_name, class: 'form-control', placeholder: 'First name' %>
+										</div>
+									</div>
+									<div style="width: 20%; margin-left: 1px;">
+										<div class="input-group">
+											<%= f.text_field :mid_name, class: 'form-control', placeholder: 'Middle name' %>
+										</div>
+									</div>
+									<div style="width: 40%; margin-left: 2px;" class="<%= 'has-error' if @representative.errors[:last_name].present? %>" data-content="<%= @representative.errors[:last_name].try(:join, ',') %>">
+										<div class="input-group">
+											<%= f.text_field :last_name, class: 'form-control', placeholder: 'Last name' %>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								 <%= f.label :email, class: 'control-label' %>
+								 <%= tooltip_by_field({table_name: "representatives", table_column: "email"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #DA4338; border: 1px solid #DA4338;"><i class="fa fa-envelope"></i></span>
+									<%= f.email_field :email, class: 'form-control', placeholder: 'Email' %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :skype, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "representatives", table_column: "skype"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #00AFF0; border: 1px solid #00AFF0;"><i class="fa fa-skype"></i></span>
+									<%= f.text_field :skype, class: 'form-control', placeholder: 'Skype' %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-5">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+									<%= f.label :phones, class: 'control-label' %>
+									<%= tooltip_by_field({table_name: "representatives", table_column: "phones"}) %>
+									<%= f.hidden_field :phones_csv %>
+									<div id="phones_block" class="form-group">
+										<div class="phone-types-example" style="display: none;">
+											<%= select_tag('phone_type', options_for_select(Representative::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, nil), { include_blank: false, class: 'form-control phone-type phone-type-example' }) %>
+										</div>
+										<%unless @representative.phones.empty? %>
+											<% @representative.phones.each do |phone| %>
+												<div class="input-group phone-row">
+													<span class="input-group-addon" style="background-color: #43B51F; border: 1px solid #43B51F;"><i class="fa fa-phone"></i></span>
+													<%= select_tag('phone_type', options_for_select(Representative::PHONE_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, phone[0..1]), { include_blank: false, class: 'form-control phone-type' }) %>
+													<input type="text" class="form-control phone" placeholder="Phone Number" value="<%= phone.gsub(/[^0-9]/, '') %>"/>
+													<span class="input-group-btn"><a href="javascript://" class="btn btn-default delete-link" title="Delete"><i class="fa fa-times"></i></a></span>
+												</div>
+											<% end %>
+										<% end %>
+									</div>
+									<a id="phones_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus-circle"></i> Add</a>
+							</div>
+							<div class="form-group">
+								<%= f.label :fax, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "representatives", table_column: "fax"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #F1941D; border: 1px solid #F1941D;"><i class="fa fa-fax"></i></span>
+									<%= f.text_field :fax, class: 'form-control', placeholder: 'Fax Number', data: { inputmask: "'mask': '(999)-999-9999'", mask: '' } %>
+								</div>
+							</div>
+							<div class="form-group">
+								<%= f.label :notes, class: 'control-label' %>
+								<%= tooltip_by_field({table_name: "representatives", table_column: "notes"}) %>
+								<div class="input-group">
+									<span class="input-group-addon" style="background-color: #FEEE74; border: 1px solid #FEEE74;"><i class="fa fa-thumb-tack" style="color: #F80203"></i></span>
+									<%= f.text_area :notes, size: '40x5', class: 'form-control', placeholder: 'Notes' %>
+									<%= f.hidden_field :client_id %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row center">
+						<div class="btn-group btn-group-custom">
+							<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_representatives_path(@client), class: 'btn btn-lg btn-primary' %>
+							<%= f.submit :class => 'btn btn-lg btn-success', :id => 'representative_submit' %>
+							<% if params[:action] == 'new' && @client.products.empty? %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, new_client_product_path(@client), class: 'btn btn-lg btn-primary' %>
+							<% else %>
+								<%= link_to 'Skip <i class="fa fa-arrow-right"></i>'.html_safe, client_contracts_path(@client), class: 'btn btn-lg btn-primary' %>
+							<% end %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% end %>

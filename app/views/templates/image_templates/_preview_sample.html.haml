@@ -1,0 +1,9 @@
+.row
+	.col-md-2= label_tag '', 'ImageTemplate ID'
+	.col-md-10= label_tag '', @item.id
+.row
+	.col-md-2= label_tag '', 'Project Name'
+	.col-md-10= label_tag '', @item.name
+
+%p{style: "margin-top: 10px;"} Sample image
+= link_to (image_tag @item.sample.url, class: "thumbnail img-thumbnail", style: "width: 100%"), "#{@item.sample.url}", {target: '_blank'}

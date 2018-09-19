@@ -1,0 +1,337 @@
+<%= content_for(:javascripts){javascript_include_tag 'youtube_channels_form'} %>
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#info-tab" data-toggle="tab">Info</a></li>
+  <li><a href="#videos-tab" data-toggle="tab">Videos <span class="badge bg-blue"><%= @youtube_channel.youtube_videos.size %></span></a></li>
+  <li><a href="#associated-websites-tab" data-toggle="tab">Associated Websites <span class="badge bg-blue"><%= @youtube_channel.associated_websites.size %></span></a></li>
+	<li><a href="#screenshots-tab" data-toggle="tab">Screenshots <span class="badge bg-blue"><%= @youtube_channel.screenshots.size %></span></a></li>
+</ul>
+<div class="tab-content">
+	<div class="tab-pane active" id="info-tab">
+		<%= form_for @youtube_channel, :html => { :multipart => true } do |f| %>
+			<div class="row">
+				<% if @youtube_channel.errors.any? %>
+					<div class="col-md-12">
+						<div id="error_explanation" class="alert alert-danger alert-dismissable">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-exclamation-circle"></i> <%= pluralize(@youtube_channel.errors.count, 'error') %> prohibited this youtube channel from being saved</h4>
+						</div>
+					</div>
+				<% end %>
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group <%= 'has-error' if @youtube_channel.errors[:google_account].present? %>" data-content="<%= @youtube_channel.errors[:google_account].try(:join, ',') %>">
+										<%= f.label :email_account, class: 'control-label' %>
+										<%= f.hidden_field :google_account_id, class: 'select2 ajax form-control', data: { source: email_accounts_json_list_path } %>
+									</div>
+									<div class="form-group">
+										<%= f.label :channe_type, class: 'control-label' %>
+										<%= f.select(:channel_type, options_for_select(YoutubeChannel::CHANNEL_TYPES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_channel.channel_type.try(:value)), { include_blank: false, class: 'form-control', placeholder: 'Select channel type' }) %>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-6 <%= 'has-error' if @youtube_channel.errors[:channel_icon].present? %>" data-content="<%= @youtube_channel.errors[:channel_icon].try(:join, ',') %>">
+											<%= f.label :youtube_channel_icon, class: 'control-label' %>
+											<% if @youtube_channel.id && @youtube_channel.channel_icon.present? %>
+												<%= link_to (image_tag URI::escape(@youtube_channel.channel_icon.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(@youtube_channel.channel_icon.url(:original), '[]'), { target: '_blank' } %>
+											<% end %>
+											<%= f.file_field :channel_icon %>
+										</div>
+										<div class="form-group col-md-6 <%= 'has-error' if @youtube_channel.errors[:channel_art].present? %>" data-content="<%= @youtube_channel.errors[:channel_art].try(:join, ',') %>">
+											<%= f.label :youtube_channel_art, class: 'control-label' %>
+											<% if @youtube_channel.id && @youtube_channel.channel_art.present? %>
+												<%= link_to (image_tag URI::escape(@youtube_channel.channel_art.url(:thumb), '[]'), { class: 'thumbnail img-thumbnail' }), URI::escape(@youtube_channel.channel_art.url(:original), '[]'), { target: '_blank' } %>
+											<% end %>
+											<%= f.file_field :channel_art %>
+										</div>
+									</div>
+									<div class="form-group <%= 'has-error' if @youtube_channel.errors[:youtube_channel_name].present? %>" data-content="<%= @youtube_channel.errors[:youtube_channel_name].try(:join, ',') %>">
+										<%= f.label :youtube_channel_name, class: 'control-label' %>
+                    <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+										<%= f.text_field :youtube_channel_name, class: 'form-control count-characters', maxlength: "#{Setting.get_value_by_name('YoutubeChannel::CHANNEL_NAME_LIMIT')}" %>
+									</div>
+									<div class="form-group <%= 'has-error' if @youtube_channel.errors[:category].present? %>" data-content="<%= @youtube_channel.errors[:category].try(:join, ',') %>">
+										<%= f.label :category, class: 'control-label' %>
+										<%= f.select(:category, options_for_select(YoutubeChannel::CATEGORIES.collect{ |key, value| [key.to_s.humanize, value] }, @youtube_channel.category.try(:value)), { include_blank: true, class: 'form-control select2', placeholder: 'Select category' }) %>
+									</div>
+									<div class="form-group">
+										<%= f.label 'Youtube channel id', class: 'control-label' %>
+										<%= f.text_field :youtube_channel_id, class: 'form-control' %>
+									</div>
+									<div class="form-group">
+										<%= f.label :description, class: 'control-label' %>
+                    <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+										<%= f.text_area :description, size: '40x10', class: 'form-control count-characters', placeholder: 'Description',  maxlength: "#{Setting.get_value_by_name('YoutubeChannel::CHANNEL_DESCRIPTION_LIMIT')}" %>
+									</div>
+                  <div id="keywords_block" class="form-group <%= 'has-error' if @youtube_channel.errors[:keywords].present? %>" data-content="<%= @youtube_channel.errors[:keywords].try(:join, ',') %>">
+        						<%= f.label :keywords, id: 'keywords_label', class: 'control-label' %>
+                    <div class="counter-characters pull-right">Characters count: <span class="label label-default calc-one">0</span></div>
+                    <% keywords_placeholder = "Enter keywords comma separated without spaces (limit is '#{Setting.get_value_by_name('YoutubeChannel::TAGS_CHARS_LIMIT')} - (keywords count - 1) x 2' characters)" %>
+        						<%= f.text_area :keywords, { size: '40x5', class: 'form-control count-characters', placeholder: keywords_placeholder, title: keywords_placeholder, maxlength: "#{Setting.get_value_by_name('YoutubeChannel::TAGS_CHARS_LIMIT')}" } %>
+        					</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<%= f.label 'Channel Links', class: 'control-label' %>
+										<%= f.hidden_field :channel_links %>
+										<div id="channel_links_block">
+											<%if @channel_links %>
+												<% @channel_links['links'].each do |channel_link| %>
+													<div class="link-row">
+														<input type="text" value="<%= channel_link['name'] %>" class="form-control link-name" maxlength="30" placeholder="Link Title" />
+														<input type="text" value="<%= channel_link['url'] %>" class="form-control link-url" placeholder="Link URL" />
+														<a href="javascript://" class="btn btn-default btn-xs delete-link"><i class="fa fa-trash-o"></i></a>
+													</div>
+												<% end %>
+											<% end %>
+										</div>
+										<a id="channel_links_add" href="javascript://" class="btn btn-default btn-xs"><i class="fa fa-plus-circle"></i> Add</a>
+									</div>
+									<div class="form-group">
+										<%= f.label 'Business Inquiries Email', class: 'control-label' %>
+										<%= f.text_field :business_inquiries_email, class: 'form-control' %>
+									</div>
+									<div class="form-group">
+										<%= f.label 'Phone Number', class: 'control-label' %>
+										<%= f.text_field :phone_number, class: 'form-control' %>
+									</div>
+									<div class="form-group">
+										<%= f.label :notes, class: 'control-label' %>
+										<%= f.text_area :notes, size: '40x4', class: 'form-control', placeholder: 'Notes',  maxlength: '1000' %>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :is_active, class: 'iCheck-helper' %> Is active</label>
+											</div>
+										</div>
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :is_verified_by_phone, class: 'iCheck-helper' %> Phone verified</label>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :linked, class: 'iCheck-helper' %> Linked</label>
+											</div>
+										</div>
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :filled, class: 'iCheck-helper' %> Filled</label>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :overlay_google_plus, class: 'iCheck-helper' %> Overlay Google Plus</label>
+											</div>
+										</div>
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :recommendations, class: 'iCheck-helper' %> Recommendations</label>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :subscriber_counts, class: 'iCheck-helper' %> Subscriber Counts</label>
+											</div>
+										</div>
+										<div class="form-group col-md-6">
+											<div class="checkbox">
+												<label><%= f.check_box :advertisements, class: 'iCheck-helper' %> Advertisements</label>
+											</div>
+										</div>
+									</div>
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <div class="checkbox">
+                        <label><%= f.check_box :ready, class: 'iCheck-helper' %> Ready</label>
+                      </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <div class="checkbox">
+                        <label><%= f.check_box :blocked, class: 'iCheck-helper' %> Blocked</label>
+                      </div>
+                    </div>
+                  </div>
+                  <% last_yt_statistics = @youtube_channel.yt_statistics.last %>
+									<div class="row">
+										<div class="form-group col-md-6">
+											<%= f.label :updated_at, class: 'control-label' %>
+											<p class="help-block">
+												<% if @youtube_channel.updated_at%>
+                          <%= local_time(@youtube_channel.updated_at, format: '%m/%d/%y %I:%M %p', title: @youtube_channel.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'), class: 'my-time') %>
+													<% else %>
+														no data
+												<% end %>
+											</p>
+										</div>
+										<div class="form-group col-md-6">
+											<%= f.label :filling_date, class: 'control-label' %>
+											<p class="help-block">
+												<% if @youtube_channel.filling_date%>
+                          <%= local_time(@youtube_channel.filling_date, format: '%m/%d/%y %I:%M %p', title: @youtube_channel.filling_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) %>
+												<% else %>
+													no data
+												<% end %>
+											</p>
+										</div>
+										<div class="form-group col-md-6">
+											<%= f.label :publication_date, class: 'control-label' %>
+											<p class="help-block">
+												<% if @youtube_channel.publication_date%>
+                          <%= local_time(@youtube_channel.publication_date, format: '%m/%d/%y %I:%M %p', title: @youtube_channel.publication_date.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))%>
+												<% else %>
+													no data
+												<% end %>
+											</p>
+										</div>
+                    <div class="form-group col-md-6">
+                      <%= f.label :yt_statistics_updated_at, class: 'control-label' %>
+                      <p class="help-block">
+                        <% if last_yt_statistics %>
+                          <%= local_time(last_yt_statistics.updated_at, format: '%m/%d/%y %I:%M %p', title: last_yt_statistics.updated_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)'))%>
+                        <% else %>
+                          no data
+                        <% end %>
+                      </p>
+                    </div>
+									</div>
+									<% yt_channel_fields = {"view_count"=>"fa-eye", "subscriber_count"=>"fa-pencil-square-o", "comment_count"=>"fa-commenting-o"} %>
+									<div class="form-group">
+										<%= f.label :youtube_statistics, class: 'control-label' %>
+										<table class="table table-bordered table-striped vertical-align-middle">
+											<thead>
+												<tr>
+													<% yt_channel_fields.each_pair do |key, value|%>
+														<th class="text-center" title="<%= key.gsub('_count', '').pluralize.titleize %>"><i class="fa <%= value %>"></i></th>
+													<% end %>
+												</tr>
+											</thead>
+											<tr>
+												<% yt_channel_fields.each_key do |key|%>
+													<td class="text-center"><%= last_yt_statistics.present? ? last_yt_statistics["#{key}"] : "-" %></td>
+												<% end %>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+            <div class="form-group col-md-12">
+              <div class="actions text-center">
+                <div class="btn-group btn-group-custom">
+                  <%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, youtube_channels_path, class: 'btn btn-sm btn-primary' %>
+                  <% if @youtube_channel.google_account.present? && @youtube_channel.google_account.email_account.present? %>
+                    <%= link_to "Edit Email Account", edit_email_account_path(@youtube_channel.google_account.email_account), target: "_blank", class: "btn btn-sm btn-warning" %>
+                  <% end %>
+                  <%= f.submit :class => 'btn btn-sm btn-success', :id => 'youtube_channel_submit' %>
+                </div>
+              </div>
+            </div>
+					</div>
+				</div>
+			</div>
+		<% end %>
+	</div>
+  <div class="tab-pane" id="videos-tab">
+    <% if @youtube_channel.youtube_videos.empty? %>
+    	<div class="alert alert-info">No items available</div>
+    <% else %>
+      <div class="col-md-12">
+        <h4 class="text-center"><u><b>Youtube Videos:</b></u></h4>
+				<div class="row">
+	      	<% @youtube_channel.youtube_videos.each do |youtube_video| %>
+						<div class="col-md-6">
+		      		<div class="panel panel-<%= cycle('success', 'warning', 'default', 'danger', 'info') %>">
+		      			<div class="panel-heading">
+		      				<%= link_to youtube_video.title, edit_youtube_video_path(youtube_video), target: '_blank' %>
+		      			</div>
+		      			<div class="panel-body">
+                  <div class="row">
+		      					<div class="col-md-2 text-muted">Is active:</div>
+		      					<div class="col-md-10">
+		      						<% if youtube_video.is_active %>
+		      							<span class="label label-success">YES</span>
+		      						<% else %>
+		      							<span class="label label-danger">NO</span>
+		      						<% end %>
+		      					</div>
+		      				</div>
+		      				<div class="row">
+		      					<div class="col-md-2 text-muted">Linked:</div>
+		      					<div class="col-md-10">
+		      						<% if youtube_video.linked %>
+		      							<span class="label label-success">YES</span>
+		      						<% else %>
+		      							<span class="label label-danger">NO</span>
+		      						<% end %>
+		      					</div>
+		      				</div>
+		      				<div class="row">
+		      					<div class="col-md-2 text-muted">Ready:</div>
+		      					<div class="col-md-10">
+		      						<% if youtube_video.ready %>
+		      							<span class="label label-success">YES</span>
+		      						<% else %>
+		      							<span class="label label-danger">NO</span>
+		      						<% end %>
+		      					</div>
+		      				</div>
+		              <div class="row">
+		                <div class="col-md-2 text-muted">Deleted:</div>
+		                <div class="col-md-10">
+		                  <% if youtube_video.deleted %>
+		                    <span class="label label-danger">YES</span>
+		                  <% else %>
+		                    <span class="label label-success">NO</span>
+		                  <% end %>
+		                </div>
+		              </div>
+		      				<div class="row">
+		      					<div class="col-md-2 text-muted">URL:</div>
+		      					<div class="col-md-10">
+		      						<% unless youtube_video.youtube_video_id.blank? %>
+		      							<%= link_to youtube_video.url, youtube_video.url, target: "_blank", data: { confirm: "Are you sure?" } %>
+		      						<% end %>
+		      					</div>
+		      				</div>
+		      			</div>
+		      		</div>
+						</div>
+	      	<% end %>
+				</div>
+      </div>
+    <% end %>
+  </div>
+  <div class="tab-pane" id="associated-websites-tab">
+    <%= render 'associated_websites/index' %>
+  </div>
+	<div class="tab-pane" id="screenshots-tab">
+		<div class="row">
+			<% if @youtube_channel.screenshots.to_a.empty? %>
+				<div class="col-md-12">
+					<div class="alert alert-info">
+						No items available
+					</div>
+				</div>
+			<% end %>
+			<% @youtube_channel.screenshots.sort.to_a.reverse.each_with_index do |screenshot, index| %>
+				<div class="col-lg-2 img-screenshot">
+					<%= link_to (image_tag URI::escape(screenshot.image.url(:thumb), '[]'), {class: "img-thumbnail livepreview #{'left-livepreview' if !(index % 6 == 0 || index % 6 == 1)}", data: {src: screenshot.image.url(:original)}}), URI::escape(screenshot.image.url(:original), '[]'), {target: '_blank'} %>
+          <p><%= local_time(screenshot.created_at, format: '%m/%d/%y %I:%M %p', title: screenshot.created_at.try(:in_time_zone, 'Eastern Time (US & Canada)').try(:strftime, '%m/%d/%y %I:%M %p - Eastern Time (US & Canada)')) if screenshot.created_at.present?%></p>
+				</div>
+			<% end %>
+		</div>
+	</div>
+</div>

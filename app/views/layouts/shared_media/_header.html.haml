@@ -1,0 +1,24 @@
+%header.main-header
+  = link_to shared_media_root_path, class: "logo" do
+    %span.logo-mini
+      %b U
+    %span.logo-lg
+      %b User page
+  %nav.navbar.navbar-static-top
+    = link_to '', 'javascript:', class: "sidebar-toggle", data: {toggle: "offcanvas"}, role: "button"
+    .navbar-custom-menu
+      %ul.nav.navbar-nav
+        - if user_signed_in?
+          %li
+            = link_to destroy_user_session_path, :method => :delete do
+              = fa_icon 'user'
+              = "#{current_user.email}"
+          %li
+            = link_to destroy_user_session_path, :method => :delete do
+              %i.glyphicon.glyphicon-log-out
+              Logout
+        - elsif params[:controller] != 'social/media' && params[:action] == 'login'
+          %li
+            = link_to shared_media_user_login_path do
+              = fa_icon 'user'
+              = "Login"

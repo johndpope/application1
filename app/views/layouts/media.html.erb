@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Media Storage</title>
+		<%= stylesheet_link_tag 'application', media: 'all' %>
+		<%= javascript_include_tag 'application' %>
+
+		<%= stylesheet_link_tag params[:controller], media: 'all' %>
+		<%= stylesheet_link_tag 'media/media' %>
+		<%= javascript_include_tag params[:controller] %>
+		<%= javascript_include_tag 'media/media' %>
+
+		<%= yield :head %>
+
+		<%= csrf_meta_tags %>
+	</head>
+	<% page = [ :controller, :action ].map { |e| params[e].gsub('/', '_').camelize }.join %>
+	<body class="<%= params[:controller].gsub('/', '_').camelize %>">
+		<%= yield :body_top %>
+		<div class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation" data-page="<%= page %>">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="<%= root_path %>">Media Storage</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="<%= 'active' if params[:controller] == 'media/search' %>"><a href="<%= media_flickr_path%>">Search</a></li>
+						<li class="<%= 'active' if params[:controller] == 'media/storage' %>"><a href="<%= media_images_path%>">Storage</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<% unless Rails.env.production? %>
+							<li class="environment"><a href="javascript://"><%= Rails.env.to_s %>&nbsp;environment</a></li>
+						<% end %>
+						<% if admin_user_signed_in? %>
+							<li><a href="#"><%= current_admin_user[:email] %></a></li>
+							<li><%= link_to 'Sign out', destroy_admin_user_session_url %></li>
+						<% end %>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="sub_navbar" class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container">
+				<%= render partial: "#{params[:controller]}/subnav" %>
+			</div>
+		</div>
+		<div class="container" id="content_wrapper">
+			<%= breadcrumbs separator: ' &rsaquo; ', style: :bootstrap %>
+			<%= yield %>
+		</div>
+		<%= yield :body_bottom %>
+	</body>
+</html>

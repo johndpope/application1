@@ -1,0 +1,41 @@
+- title "Client's Subject Videos"
+- header @client.name
+- small_header 'Subject Videos'
+- breadcrumb :source_videos, @client
+
+- content_for(:javascripts) do
+  = javascript_include_tag 'jquery.remotipart'
+  = javascript_include_tag 'jquery.textcounter'
+  = javascript_include_tag 'clients/source_videos'
+
+= render layout: 'clients/subject_videos/manage', locals:{client: @client} do
+  = render partial: "clients/subject_videos/client/index_search_form"
+  .box
+    .box-header{class: "with-border"}
+      %h3{class: "box-title"} Subject Videos
+      .box-tools
+        -# %strong= @source_videos.total_count
+        %strong= @source_videos.size
+        items totally
+
+    .box-body
+      %table.table{class: "table-bordered table-hover table-striped", id: "source_videos"}
+        %tbody
+          %tr
+            %th{style: "width: 60px;"} ID
+            %th Internal title
+            %th{style: "width: 200px;"} Client
+            %th{style: "width: 200px;"} Campaign
+            %th{style: "width: 60px;"} Size
+            %th{style: "width: 60px;"} Duration (mm:ss)
+            %th{style: "width: 60px;", class: "text-center"} Tags
+            %th{style: "width: 80px;", class: "text-center"}= t("source_video.is_virtual")
+            %th{style: "width: 100px", class: "text-center"} Ready for production
+            %th{style: "width: 150px;", class: "text-center"}
+              = link_to new_client_source_video_path(@client), remote: true, class: "btn btn-primary btn-sm", data: {toggle: 'modal', target: '.source-video-modal', disable_with: t('adding')} do
+                = fa_icon "plus", text: "Add"
+          - @source_videos.each do |v|
+            = render partial: "/source_videos/index_table_row", locals: {client: @client, source_video: v}
+      -# .row
+      -#   .col-md-12
+      -#     = paginate @source_videos, theme: "bootstrap"

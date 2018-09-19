@@ -1,0 +1,8 @@
+<%
+	row_id = dom_id(@blended_video_chunk)
+	row = render partial: "clients/video_workflow/video_set_block/video_segments_block/video_segments_table_row", locals: {bvc: @blended_video_chunk}
+	blended_video_table_id = dom_id(@blended_video_chunk.blended_video)
+	blended_video_table_status_col = render partial: 'clients/video_workflow/video_set_block/video_set_table_row_status_col', locals: {blended_video: @blended_video_chunk.blended_video}
+%>
+$('#<%=row_id%>').replaceWith('<%= escape_javascript(row)%>');
+$('#<%= blended_video_table_id%> td.status').replaceWith('<%= escape_javascript(blended_video_table_status_col)%>')

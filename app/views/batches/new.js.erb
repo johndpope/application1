@@ -1,0 +1,11 @@
+<%
+  modal = render partial: 'form', locals: {batch: @batch}
+%>
+
+$("div.modal-backdrop.fade.in").remove();
+$('#modal_batch').remove();
+$('body').append('<%= escape_javascript(modal) %>');
+$("#modal_batch").modal({show: true, backdrop: 'static', keyboard: false}).on('hidden.bs.modal', function (e) {
+  $(this).remove()
+});
+$('.has-error').popover({  trigger: 'hover',  placement: 'bottom',  animation: true});

@@ -1,0 +1,29 @@
+.modal{class: "#{'modal-wide' if @large_form == true} fade #{item.class.to_s.underscore.gsub('/','_')}_modal", id: dom_id(item, 'modal')}
+  .modal-dialog{:class => ('modal-lg' if @large_form == true)}
+    .modal-content
+      = form_for item,
+      url: {controller: params[:controller], action: (item.new_record? ? 'create' : 'update')},
+      authenticity_token: true, data: {remote: true}, :multipart => true do |f|
+        .modal-header
+          %button{type: 'button', class: 'close', data: {dismiss: 'modal'}, 'area-label' => t(:close)}
+            %span{'area-hidden' => true} &times;
+          %h4{class: 'modal-title'}
+            #{item.new_record? ? t(:add) : t(:edit)}
+            - unless item.new_record?
+              &#35;
+              = item.id
+        .modal-body
+          = f.hidden_field :id
+          = render partial: "#{@view_folder}/form_body", locals: {f: f}
+        .modal-footer
+          %button{type: 'button', class: 'btn btn-default', data: {dismiss: 'modal'}}= t(:close)
+          = f.submit (item.new_record? ? t(:create) : t(:update)),
+          class: 'btn btn-primary',
+          data: {disable_with: (item.new_record? ? t(:creating) : t(:updating))}
+:javascript
+  $(function(){
+    $('select').select2({
+      allowClear: true,
+      placeholder: "Choose ..."
+    })
+  })

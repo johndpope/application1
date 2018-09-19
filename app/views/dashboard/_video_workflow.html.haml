@@ -1,0 +1,55 @@
+.box.box-widget{id: "video_workflow_box", data: {url: dashboard_video_workflow_path}}
+	.box-header.with-border
+		%h3.box-title
+			= fa_icon 'file-movie-o', text: 'Video Workflow'
+		.box-tools.pull-right
+			%button{type: "button", class: "btn btn-box-tool", data:{widget:"collapse"}}
+				= fa_icon 'minus'
+	.box-body
+		- progress_types = %w(in_progress done)
+		- item_types = %w(rendering blending content_creation)
+		%table{class: "table table-bordered table-striped vertical-align-middle", style: "margin-bottom: 15px"}
+			%thead
+				%caption{style: "margin-bottom: 10px;"}
+					- options = [['Last 1 hour', 1], ['Last 2 hours', 2], ['Last 3 hours', 3], ['Last 6 hours', 6], ['Last 9 hours', 9], ['Last 12 hours', 12], ['Last 24 hours', 24], ['Last 48 hours', 48], ['Last week', 168], ['Last 2 weeks', 336], ['Last month', 720], ['Last 3 months', 1440], ['Last 6 months', 4320], ['Last year', 8760]]
+					= select_tag(:video_workflow_period, options_for_select(options, params[:video_workflow_period]), { include_blank: false, class: "form-control", style: "width: 250px;"})
+				%tr
+					%th
+					- progress_types.each do |pt|
+						%th.text-center= (pt == 'in_progress' ? 'Incompleted' : pt.titleize.humanize)
+			- item_types.each do |it|
+				%tr
+					%td= it.titleize.humanize
+					- progress_types.each do |pt|
+						%td.text-center
+							%span.numbers{id: "dashboard_video_workflow_#{it}_#{pt}_size"}
+
+		%table{class: "table table-bordered table-striped vertical-align-middle", style: "margin-bottom: 15px"}
+			%caption
+				%strong UNDONE ITEMS
+			%tbody
+				%tr
+					%td Total Clients Undone
+					%td#clients_undone{width: "60px;"}
+				%tr
+					%td Total Subject Videos Undone
+					%td#subject_videos_undone
+				%tr
+					%td Total Video Sets Undone
+					%td#video_sets_undone
+
+		- jobs = %w(Templates::DynamicAaeProjects::CreateDynamicAaeProjectJob Templates::DynamicAaeProjects::TakeOutputVideoJob Templates::DynamicAaeProjects::RemoveOutputVideoFromRenderingMachineJob BlendedVideos::BlendVideoSetJob Youtube::CreateYoutubeVideoJob Youtube::GenerateThumbnailForCreatedYoutubeVideoJob)
+		%table{class: "table table-bordered table-striped vertical-align-middle", id: "delayed_jobs"}
+			%caption
+				%strong DELAYED JOBS
+			%thead
+				%tr
+					%th Job
+					%th{width: "60px;"} Failed
+					%th{width: "60px"} Total
+			%tbody
+				- jobs.each do |job|
+					%tr{id: job.gsub('::','')}
+						%td= t("delayed_jobs.#{job}")
+						%td.failed
+						%td.total

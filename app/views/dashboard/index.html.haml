@@ -1,0 +1,9 @@
+- header 'Dashboard'
+- content_for(:stylesheets){stylesheet_link_tag 'dashboard/admin'}
+- if flash[:notice]
+	#notice_explanation{class: "alert alert-success alert-dismissable alert-fade-out"}
+		%button.close{type: "button", data:{dismiss: "alert"}, "aria-hidden" => "true"}×
+		%h4
+			= fa_icon 'exclamation-circle', class: "icon"
+			= flash[:notice]
+= render partial: "#{current_admin_user.roles}" rescue nil

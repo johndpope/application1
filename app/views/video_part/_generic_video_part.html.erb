@@ -1,0 +1,64 @@
+<% 
+  require 'action_view'
+  require 'utils'
+
+  @video_part = VideoPart.new
+%>
+
+<%= form_for @video_part,   
+  url: { controller: :video_part, action: "create_#{video_part_type.underscore}"}, 
+  html: { multipart: true, class: "form-horizontal well", 'placeholder' => 'Internal video name' } do |f| %>  
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
+    <div class="col-sm-10">
+      <%= f.text_field :name, class: 'form-control' %>
+      <%= f.hidden_field :video_part_item_type, value: "#{video_part_type}" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Video file</label>
+    <div class="col-sm-10">
+      <%= f.file_field(:video) %>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+  </div>
+<% end %>
+
+<div id="video_items">
+	<h2>Video Items</h2>
+	<% if !@video_parts.to_a.empty? %>
+    	<table class="table table-bordered">
+			<tr>
+				<th>ID</th>
+				<th>Name</th>				
+				<th>Filename</th>
+				<th>Size</th>
+				<th>Created at</th>				
+				<th>Actions</th>
+			</tr>
+			<% for video_part in @video_parts %>
+				<tr>
+					<td><%= video_part.id %></td>
+					<td><%= video_part.name %></td>	
+					<td><%= link_to(Utils.shortify_file_name(video_part.video_file_name), 'javascript://', {:title=>video_part.video_file_name}) %></td>
+					<td><%= number_to_human_size(video_part.video_file_size) %></td>											
+					<td><%= video_part.created_at.strftime('%m-%d-%Y %R') %></td>			
+					<td>				
+						<%= button_to "Delete", {:controller => :video_part,
+		      				:action => 'destroy', 
+		      				:id => video_part.id }, 
+		      				:method => :delete %>
+					</td>
+				</tr>
+			<% end %>
+		</table>
+
+		<div><%= paginate @video_parts, theme: 'bootstrap' %></div>	
+	<% else %>
+		<div class="alert alert-info">No items</div>
+	<% end %>
+</div>

@@ -1,0 +1,84 @@
+<% img_path = Rails.env.development? ? "http://broadcaster.beazil.net" : Rails.configuration.routes_default_url_options[:host] %>
+<!DOCTYPE html>
+<html>
+  <%= render partial: 'head', locals: {img_path: img_path} %>
+  <div class="body">
+    <%= render partial: 'header', locals: {img_path: img_path} %>
+    <div class='content'>
+      <section id='section1'>
+        <div class='container'>
+
+          <h1>Hi There,</h1>
+
+          <a href="<%= @get_started_url + '&play_video=true'%>" class="link-to-video" target="_blank">
+            <img class="video-play-img" src="<%= img_path %>/echo_mailler/thumbnail.png"/>
+          </a>
+
+          <p class="learn-more">Learn More...</p>
+          <div class="col-md-12">
+            <img class="manufacturer-img" src="<%= img_path %>/echo_mailler/manufacturer.png"/>
+          </div>
+
+          <img id="split-line1" src="<%= img_path %>/echo_mailler/line1.png"/>
+        </div>
+
+      </section>
+
+      <section id='section2'>
+        <div class='container'>
+          <table class="table2">
+            <tr>
+              <td class="td-first">
+                <img class="section-img" src="<%= img_path %>/echo_mailler/section-img1.png"/>
+              </td>
+              <td class="td-last">
+                <h1 class="text-center">WHY VIDEO MARKETING?</h1>
+                <table class="table2-k">
+                  <% @why_video_marketing_list.each do |wvmi| %>
+                    <tr class="tb2-r">
+                      <td><img class="list-marker-img" src="<%= img_path %>/echo_mailler/list-marker-img.png"/></td>
+                      <td><%= wvmi.html_safe %></td>
+                    </tr>
+                  <% end %>
+                </table>
+              </td>
+            <tr>
+          </table>
+
+
+        </div>
+        <img id="split-line2" src="<%= img_path %>/echo_mailler/line2.png"/>
+      </section>
+
+      <section id='section3'>
+        <div class='container'>
+          <table class="table3">
+            <tr>
+              <td class="eq1">
+                <h1 class="text-center">WHY LOCAL ADVERTISING?</h1>
+                <table class="table3-sub">
+                  <% @why_local_advertising_list.each do |wlai| %>
+                    <tr>
+                      <td><img class="list-marker-img" src="<%= img_path %>/echo_mailler/list-marker-img.png"/></td>
+                      <td><%= wlai.html_safe %></td>
+                    </tr>
+                  <% end %>
+                </table>
+              </td>
+              <td class="eq2">
+                <img src="<%= img_path %>/echo_mailler/section-img2.png"/>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <img id="split-line3" src="<%= img_path %>/echo_mailler/line3.png"/>
+      </section>
+
+      <section id='section4'>
+        <%= link_to "Get Started", @get_started_url, class: "custom-btn inline", target: "_blank" %>
+      </section>
+      <%= render partial: 'signature', locals: {img_path: img_path} %>
+    </div>
+    <%= render partial: 'footer', locals: {img_path: img_path} %>
+  </div>
+</html>

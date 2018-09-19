@@ -1,0 +1,78 @@
+<% title 'Youtube Setup' %>
+<% header @client.name %>
+<% small_header 'Youtube Setups' %>
+<% breadcrumb :youtube_setups, @client %>
+<%= render 'clients/navigation' %>
+<div id="youtube_setups_list" class="content-block">
+	<div class="row">
+		<div class="col-md-5">
+			<div class="btn-group btn-group-custom">
+				<%= link_to '<i class="fa fa-arrow-left"></i> Back'.html_safe, client_email_accounts_setups_path(@client), class: 'btn btn-primary' %>
+				<%= link_to 'New youtube setup', new_client_youtube_setup_path(@client), class: 'btn btn-success' %>
+			</div>
+		</div>
+		<div class="col-md-7">
+			<div class="form-group">
+				<label class="control-label"><i class="fa fa-database"></i> Total results:</label>
+				<span class="badge bg-blue">
+					<%=@youtube_setups.size%>
+				</span>
+			</div>
+		</div>
+	</div>
+	<% unless @youtube_setups.to_a.empty? %>
+		<table id="youtube_setups_table" class="table table-bordered table-striped dataTable">
+			<thead>
+				<tr>
+					<th style="width: 75px;" id="id-th" data-field="id" class="text-center">ID</th>
+					<th id="email_accounts_setup_id-th" data-field="representative_id">Email Accounts Setup</th>
+					<th style="width:220px;" class="text-center">Actions</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<% @youtube_setups.each do |youtube_setup| %>
+					<tr id="tr_yc_<%=youtube_setup.id%>">
+						<td class="text-center"><%=youtube_setup.id %></td>
+						<td>
+							<% if youtube_setup.email_accounts_setup%>
+								<%= link_to youtube_setup.email_accounts_setup.display_name, edit_client_email_accounts_setup_path(@client, id: youtube_setup.email_accounts_setup.id), target: '_blank' %>
+							<% end %>
+						</td>
+						<td class="text-center">
+							<div class="btn-group btn-group-custom">
+								<%= link_to '<i class="fa fa-pencil"></i> Edit'.html_safe, edit_client_youtube_setup_path(@client, id: youtube_setup.id),	{class: 'btn btn-xs btn-primary' } %>
+                <% if youtube_setup.email_accounts_setup.present? && (youtube_setup.email_accounts_setup.cities.present? || youtube_setup.email_accounts_setup.regions.present?) %>
+                  <%= link_to "Test Video Titles", generate_test_titles_client_youtube_setup_path(@client, youtube_setup), {remote: true, class: "btn btn-xs btn-info", onclick: "$('.animationload').show();"} %>
+                <% end %>
+								<%= link_to '<i class="fa fa-eraser"></i> Delete'.html_safe, client_youtube_setup_path(@client, id: youtube_setup.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs btn-danger' %>
+								<% if youtube_setup.email_accounts_setup && !youtube_setup.email_accounts_setup.approved %>
+                  <%
+                    @ignore_array = []
+                    # @client.products.each do |product|
+                    #   @ignore_array << (link_to "There are no subject videos for product ##{product.id}", client_subject_videos_path(@client), target: "_blank") if product.source_videos.size == 0
+                    # end
+                    @ignore_array << (link_to "Short statements for source videos (optional)", client_subject_videos_path(@client), target: "_blank")
+                  %>
+									<%= link_to '<i class="fa fa-link"></i> Generate channels'.html_safe, assign_accounts_client_youtube_setup_path(@client, id: youtube_setup.id), method: :get, class: "assign-accounts btn btn-xs btn-success #{'disabled' if (@warnings_array - @ignore_array).present? }" %>
+								<% end %>
+								<% if youtube_setup.email_accounts_setup && youtube_setup.email_accounts_setup.approved %>
+									<%#= link_to '<i class="fa fa-link"></i> Regenerate channels content'.html_safe, regenerate_channels_content_client_youtube_setup_path(@client, id: youtube_setup.id), method: :get, data: { confirm: 'Are you sure?' }, class: "regenerate-channels-content btn btn-xs btn-warning" %>
+								<% end %>
+							</div>
+						</td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<% end %>
+
+	<% if @youtube_setups.to_a.empty? %>
+		<div class="row col-md-12">
+			<br>
+			<div class="alert alert-info">
+				No items available
+			</div>
+		</div>
+	<% end %>
+</div>

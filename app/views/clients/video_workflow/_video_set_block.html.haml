@@ -1,0 +1,66 @@
+.video-set-block{id: dom_id(blended_video, 'block')}
+  %table.table.video-item{id: dom_id(blended_video)}
+    %thead
+      %tr
+        %th{class: "id text-center"} Video Set ID
+        %th{class: "created_at text-center"} Created At
+        %th{class: "client_id"} Client
+        %th{class: "source_id"} Subject Video
+        %th{class: "location_id"} Location
+        %th{class: "blended_video_progress"} Rendering Progress
+        %th{class: "approval_status", title: "Approval Status"} Approval Status
+        %th{class: "blended_video text-center"}
+          = fa_icon 'youtube-play', title: "Preview Blended Video"
+        %th{class: "blending_pattern"} Blending Pattern
+    %tbody
+      %tr
+        %td.text-center= blended_video.id
+        %td.text-center= blended_video.created_at.strftime('%m-%d-%Y %I:%M:%S %p')
+        %td{title: @client.name}= @client.name
+        %td
+          - unless blended_video.source_video.blank?
+            - title = blended_video.try(:source_video).try(:custom_title)
+            .subject-video-name{title: title}= title
+            ID:
+            = blended_video.source_id
+            &nbsp;
+            - if blended_video.try(:source).try(:video).try(:present?) || blended_video.try(:source).try(:donor).try(:video).try(:present?)
+              |&nbsp;
+              = link_to 'Preview', blended_video.source_video.try(:video).try(:url) || blended_video.source_video.try(:donor).try(:video).try(:url), class: "preview-video", title: "Preview Subject Video"
+        %td
+          = @locations[blended_video.id][:name].split('<sep/>').first
+          %div
+            Type:
+            = @locations[blended_video.id][:type]
+            ,
+            ID:
+            = @locations[blended_video.id][:id]
+        %td
+          - progress_class_prefix = progress == 100 ? 'success' : 'warning'
+          .progress
+            .progress-bar{class: "progress-bar-#{progress_class_prefix}", style: "width: #{progress}%"}
+              %span.progress-bar-span= "#{progress.round(1)} %"
+        = render partial: 'clients/video_workflow/video_set_block/video_set_table_row_status_col', locals: {blended_video: blended_video}
+        %td{class: "text-center"}
+          - unless blended_video.try(:file).try(:blank?)
+            = link_to blended_video.file.url, title: "Preview Blended Video", class: "preview-video" do
+              = fa_icon 'youtube-play lg'
+        %td
+          - if @blending_patterns.present?
+            - pattern_classes = {'subject' => 'info', 'credits' => 'success'}
+            - @blending_patterns[blended_video.id].to_a.each do |bp|
+              - unless bp.blank?
+                %span.label{class: ("label-#{pattern_classes.key?(bp) ? pattern_classes[bp] : 'default'}")}= t("templates_aae_projects.project_types.#{bp}")
+        - if defined? blended_video_partial_row
+          = render partial: blended_video_partial_row, locals: {blended_video: blended_video}
+
+  = render partial: 'clients/video_workflow/video_set_block/progress_block', locals: {blended_video: blended_video}
+
+  .box.box-default{class: "collapsed-box", id: "blended_video_chunks_details", data:{url: client_video_chunks_block_path(@client.id, blended_video.id)}}
+    .box-header.with-border
+      %h3.box-title Video Segments
+      .box-tools.pull-right
+        = button_tag type: "button", class: "btn btn-box-tool", data: {widget: :collapse} do
+          = fa_icon 'plus'
+    .box-body{style: "display: none"}
+      = fa_icon 'refresh spin'

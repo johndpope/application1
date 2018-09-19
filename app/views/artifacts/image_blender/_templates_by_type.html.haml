@@ -1,0 +1,5 @@
+.form-group
+  = label_tag '', t("artifacts.image_templates")
+  = select :image_blender, :image_template_id,
+    options_from_collection_for_select(@templates_by_type, 'id', 'name', allow_blank: true),
+    {include_blank: true}, {class:'form-control', data: {url: artifacts_image_template_settings_path }}

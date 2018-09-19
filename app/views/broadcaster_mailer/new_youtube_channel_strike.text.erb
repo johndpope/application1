@@ -1,0 +1,9 @@
+New youtube channel strike!
+===============================================
+
+All bot servers were killed and disabled daily activity.
+<% if @youtube_channel_id.present? %>
+  Click here <%= Rails.configuration.routes_default_url_options[:host] + Rails.application.routes.url_helpers.youtube_channels_path(id: @youtube_channel_id) %> to review.
+<% end %>
+
+Thanks!

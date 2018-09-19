@@ -1,0 +1,103 @@
+<table class="table table_with_upload_files">
+  <thead>
+    <tr>
+      <th class="file_preview">PREVIEW</th>
+      <th class="file_name">FILE NAME</th>
+      <th class="file_license">LICENSE</th>
+      <th class="file_size">FILE SIZE</th>
+      <th class="file_rezolution">RESOLUTION</th>
+      <th class="file_actions fileupload-buttonbar">
+        <button class="btn btn-primary btn-xs start"><i class="glyphicon glyphicon-upload"></i><span> Upload all</span></button>
+        <button class="btn btn-warning btn-xs cancel"><i class="glyphicon glyphicon-ban-circle"></i><span> Cancel all</span></button>
+        <button type="button" class="btn btn-danger btn-xs delete"><i class="glyphicon glyphicon-trash"></i><span> Delete all</span></button>
+        <input type="checkbox" class="toggle">
+      </th>
+    </tr>
+  </thead>
+  <tbody class="files">
+    <script id="template-upload" type="text/x-tmpl">
+      {% for (var i=0, file; file=o.files[i]; i++) { %}
+          <tr class="template-upload fade">
+            <td>
+              <span class="preview"></span>
+              <strong class="error text-danger"></strong>
+            </td>
+
+            <td>
+                <p class="name">{%=file.name%}</p>
+                <strong class="error text-danger"></strong>
+            </td>
+
+            <td></td>
+
+            <td>
+              <p class="size"><%= t('proceccing')%></p>
+            </td>
+
+            <td></td>
+            <td class="actions">
+              {% if (!i && !o.options.autoUpload) { %}
+                  <button class="btn btn-primary btn-sm start" disabled>
+                      <i class="glyphicon glyphicon-upload"></i>
+                      <span><%= t('start')%></span>
+                  </button>
+              {% } %}
+              {% if (!i) { %}
+                  <button class="btn btn-warning btn-sm cancel">
+                      <i class="glyphicon glyphicon-ban-circle"></i>
+                      <span><%= t('cancel')%></span>
+                  </button>
+              {% } %}
+            </td>
+          </tr>
+      {% } %}
+    </script>
+
+    <script id="template-download" type="text/x-tmpl">
+
+      {% for (var i=0, file; file=o.files[i]; i++) { %}
+        <tr class="template-download fade" data-row-id="{%=file.id%}">
+            <td style="width: 100px;">
+              <input type="text" class="uploaded_image_id hidden" value="{%=file.id%}" style="width: 100%;">
+              <span class="preview">
+                  {% if (file.url) { %}
+                      <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery>
+                        <img src="{%=file.url%}" width="100%"/>
+                      </a>
+                  {% } %}
+              </span>
+              {% if (file.error) { %} <div><span class="label label-danger">Error</span> {%=file.error%}</div>{% } %}
+            </td>
+
+            <td>
+              {% if (file.url) { %}
+                  <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.url?'data-gallery':''%}>{%=file.name%}</a>
+              {% } else { %}
+                  <span>{%=file.name%}</span>
+              {% } %}
+            </td>
+
+            <td class="link_on_license_proof"></td>
+            <td><p class="size">{%=o.formatFileSize(file.size)%}</p></td>
+            <td><p class="resolution">{%= file.width %}x{%= file.height %}</p></td>
+
+            <td class="actions">
+              {% if (file.deleteUrl) { %}
+                <a href="{%=file.deleteUrl%}" class="btn btn-default delete" data-method="delete" data-remote=true data-id="{%=file.id%}" {% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                    <i class="glyphicon glyphicon-trash"></i>
+                </a>
+                <input type="checkbox" name="delete" value="1" class="toggle">
+              {% } else { %}
+                  <button class="btn btn-warning cancel">
+                      <i class="glyphicon glyphicon-ban-circle"></i>
+                      <span><%= t('cancel')%></span>
+                  </button>
+              {% } %}
+            </td>
+        </tr>
+
+      {% } %}
+    </script>
+
+  </tbody>
+</table>

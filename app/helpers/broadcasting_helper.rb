@@ -1,0 +1,2 @@
+module BroadcastingHelper
+end

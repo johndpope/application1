@@ -1,0 +1,2 @@
+module AssociatedWebsitesHelper
+end

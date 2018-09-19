@@ -1,0 +1,7 @@
+<%
+  new_row = render partial: 'batch_row', locals: {batch: @batch}
+%>
+
+$('#modal_batch').modal('hide')
+$('#batches_table tbody').prepend('<%= escape_javascript(new_row) %>');
+$('#totals').text("<%= Batch.count %>")

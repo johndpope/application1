@@ -1,0 +1,95 @@
+- title 'Templates/Correct AAE Template Static Texts'
+- header 'Correct AAE Template Static Texts'
+- breadcrumb :correct_static_texts
+- content_for(:stylesheets){stylesheet_link_tag 'fancybox'}
+- content_for(:javascripts) do
+	= javascript_include_tag 'jquery.textcounter'
+	= javascript_include_tag 'fancybox'
+= render partial: 'templates/aae_project_texts/correct_static_texts/index/search_filter'
+
+.box
+	.box-header
+		%h3.box-title List of Static Texts
+		.box-tools
+			%strong= @aae_templates.total_count
+			templates totally
+	.box-body
+		%blockquote
+			%p.text-info
+				=fa_icon 'exclamation-circle'
+				In case if
+				%strong Text Layer Value
+				cannot be used as universal meaning for all clients, you can overwrite it via
+				%strong Corrected Text Layer Value
+			%p.text-warning
+				=fa_icon 'exclamation-circle'
+				Length of
+				%strong Corrected Text Layer Value
+				must not be larger than length of
+				%strong Text Layer Value
+			%p.text-warning
+				=fa_icon 'exclamation-circle'
+				Length of
+				%strong Corrected Text Layer Value
+				should be approximately equal to length of
+				%strong Text Layer Value
+		- @aae_templates.to_a.each_with_index do |item, index|
+			.template-block
+				%table.table{class: "#{Templates::AaeProject.to_s.underscore.gsub('/','_')}_items"}
+					%tbody.thead
+						%th.row_nr.text-center #
+						%th.id.text-center Template ID
+						%th.project_type Template Type
+						%th.name Template Name
+						%th.sample-video.text-center Sample Video
+						%th.test-video.text-center Test Video
+					%tbody.tbody
+						%tr
+							%td.row_nr.text-center= row_nr((index+1), params[:page].to_i, @limit)
+							%td.id.text-center
+								= link_to item.id, templates_aae_projects_path("q[id_eq]" => item.id), target: "_BLANK"
+							%td.project_type
+								= t("templates_aae_projects.project_types.#{item.project_type}")
+							%td.name
+								= link_to item.name, templates_aae_projects_path("q[id_eq]" => item.id), target: "_BLANK"
+							%td.sample-video.text-center
+								- unless item.video_file_name.blank?
+									= link_to item.video.url, data:{'preview-template-sample' => "true"} do
+										= fa_icon 'play-circle'
+							%td.test-video.text-center
+								- if @test_outputs.key? item.id
+									= link_to @test_outputs[item.id], data:{'preview-template-test' => "true"} do
+										= fa_icon 'play-circle'
+				.box.box-default.collapsed-box.static-texts-block
+					.box-header.with-border
+						%h3.box-title
+							Static Texts
+						.box-tools.pull-right
+							= button_tag class: "btn btn-box-tool", data: {widget: "collapse"} do
+								= fa_icon 'plus'
+					.box-body{style: "display: none"}
+						%table.table.static_texts
+							%thead
+								%th.row_nr.text-center #
+								%th.id.text-center Text ID
+								%th.name Text Layer Name
+								%th.value Text Layer Value
+								%th.corrected_value Corrected Text Layer Value
+								%th.status
+							%tbody
+								- @items[item.id].each_with_index do |st_item, st_index|
+									%tr
+										%td.row_nr.text-center= (st_index+1)
+										%td.id.text-center= st_item.id
+										%td.name= st_item.name
+										%td.value
+											= text_area_tag '', st_item.value, rows: 3, class: 'form-control', readonly: "readonly"
+											%div
+												Characters Count:
+												%strong=st_item.value.size
+										%td.corrected_value
+											= form_for st_item, url: templates_aae_project_text_correct_path(st_item) do |f|
+												= f.text_area :corrected_value, rows: 3, class: "form-control", data: {"max-character-count" => st_item.value.size}
+										%td.status.text-center
+											= fa_icon 'refresh spin lg', class: 'saving-status-spinner', style: "display:none"
+		= paginate @aae_templates, theme: 'bootstrap'

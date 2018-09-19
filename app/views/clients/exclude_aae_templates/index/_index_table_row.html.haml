@@ -1,0 +1,33 @@
+- opt_out = @opt_outs.detect{|o|o[:templates_aae_project_id] == item.id}
+- included = opt_out.blank?
+%tr{id: dom_id(item), data:{"is-special" => item.is_special?.to_s, "is-excluded" => (!included).to_s}, class:("danger" if !included || (item.is_special? && @client.ignore_special_templates?))}
+	%td.text-center= (index+1)
+	%td.text-center
+		= fa_icon 'lock', title: 'This template is ignored',style:"display:#{item.is_special? && @client.ignore_special_templates? ? "" : "none"}"
+		= fa_icon 'minus-circle', title: 'This template is excluded' if !included
+	%td.text-center= item.id
+	%td.text-center
+		- unless item.thumbnail.blank?
+			= link_to item.thumbnail.url, class: "aae-project-thumbnail" do
+				= image_tag item.thumbnail.url(:thumb), style: "height: 18px; width: 32px;", class: "livepreview", data:{src: item.thumbnail.url}
+	%td.text-center
+		- unless item.video.blank?
+			= link_to item.video.url, class: "btn btn-default bnt-sm aae-project-video", rel: "fancybox-button" do
+				= fa_icon "play"
+	%td= item.name
+	%td.status{class: "text-center"}
+		- label_text = included ? 'Included' : 'Excluded'
+		- label_class = included ? 'success' : 'danger'
+		.label{class: "label-#{label_class}"}= label_text
+	%td.actions.text-center
+		- options = {class: "btn-danger",
+			title: "Exclude",
+			url: url_for(controller: "clients/exclude_aae_templates", action: :create, templates_aae_project_id: item.id, index: index),
+			data: {remote: true, method: "post", disable_with: "Excluding ..."}}
+		- unless included
+			- options[:class] = "btn-success"
+			- options[:title] = "Include"
+			- options[:url] = url_for(controller: "clients/exclude_aae_templates", action: :destroy, id: opt_out[:id], index: index)
+			- options[:data][:method] = "delete"
+			- options[:data][:disable_with] = "Including ..."
+		= link_to options[:title], options[:url], class: "btn btn-sm #{options[:class]}", data: options[:data]

@@ -1,0 +1,36 @@
+.nav-tabs-custom
+	%ul.nav.nav-tabs
+		- project_item_types = %w(text image)
+		- item_columns = {text: %w(name value is_static text_type), image: %w(file_name width height image_type)}
+		- project_item_types.each_with_index do |(key, value), index|
+			%li{class: ('active' if index == 0).to_s}
+				= link_to key.to_s.humanize.pluralize, "##{key.to_s.pluralize}", data: {toggle: 'tab'}
+		.tab-content{class: 'no-padding'}
+			- project_item_types.each_with_index do |item, index|
+				.tab-pane.chart{class: ('active' if index == 0), id: "#{item.pluralize}"}
+					.row
+						.col-md-12{style: "margin-bottom: 5px"}
+							= link_to "Add #{item}", url_for(action: "new", controller: "templates/aae_project_#{item.pluralize}", aae_project_id: aae_project.id), remote: true, class: "btn btn-primary btn-sm pull-right"
+					.row{style: "margin-bottom: 3px;"}
+						.col-md-12
+							%table{class: "table table-bordered table-striped dataTable #{item}-project-items-table", id: "#{dom_id(aae_project, "#{item}_items")}", role: "grid"}
+								%thead
+									%tr{role: "role"}
+										%th.id= t 'id'
+										- item_columns[item.to_sym].each do |c|
+											%th{class: c}
+												= t "templates_aae_projects.templates_aae_project_#{item.pluralize}.#{c}"
+												= tooltip_by_field({table_name: "templates_aae_project_#{item}s", table_column: c})
+										- if item == 'text'
+											%th.text-center{class: "name_presents"} Name Valid?
+											%th.text-center{class: "value_presents"} Value Valid?
+										- elsif item == 'image'
+											%th.text-center{class: "name_presents"} Filename Valid?
+										%th{class: 'actions'}= t 'actions'
+								%tbody
+									= f.fields_for "aae_project_#{item.pluralize}", eval("aae_project.aae_project_#{item.pluralize}") do |aaep_form|
+										= render partial: "templates/aae_projects/aae_project_#{item}", locals: {aaep_form: aaep_form}
+:javascript
+	$("body .accordion").on("click", ".btn-remove", function(){
+		$(this).closest('.panel').remove()
+	})

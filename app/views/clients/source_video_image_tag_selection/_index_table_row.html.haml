@@ -1,0 +1,13 @@
+%tr{id: dom_id(item)}
+	%td.text-center= item.id
+	%td= item.custom_title
+	%td
+		- item.artifacts_image_tags.each do |tag|
+			.label.label-default= tag
+	%td
+		.btn-group{role: "group"}
+			- url = url_for(controller: 'clients/source_video_image_tag_selection', action: 'edit_source_video_tags', source_video_id: item.id, client_id: @client.id)
+			= link_to url,
+			class: "btn btn-default btn-sm", title: t('edit'),
+			data:{toggle: "modal", target: ".source_video", remote: true, disable_with: '..'} do
+				= fa_icon "pencil"
